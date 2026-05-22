@@ -1,0 +1,260 @@
+{% extends 'core/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Автоматизированные системы - Картотека F1-F2{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content-card">
+        <h1><i class="fas fa-server"></i> Автоматизированные системы</h1>
+        <p class="lead">Установленные системы автоматизации на промышленных объектах</p>
+
+        {% if systems %}
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ systems|length }}</div>
+                        <div class="stat-label">Всего систем</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        {% with active_systems=all_systems|filter_status:'active' %}
+                        <div class="stat-number">{{ active_systems|length }}</div>
+                        {% endwith %}
+                        <div class="stat-label">Активных систем</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ system_types_count|default:"0" }}</div>
+                        <div class="stat-label">Типов систем</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ unique_vendors_count|default:"0" }}</div>
+                        <div class="stat-label">Уникальных вендоров</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Система</th>
+                        <th>Тип</th>
+                        <th>Объект</th>
+                        <th>Уровень</th>
+                        <th>Вендор</th>
+                        <th>Внедренец</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for system in systems %}
+                    <tr>
+                        <td>
+                            <!-- ИСПРАВЛЕНО: Здесь название системы, НЕ тип! -->
+                            <strong>{{ system.name }}</strong>
+                            <br><small class="text-muted">Версия: {{ system.version|default:"—" }}</small>
+                        </td>
+                        <td>
+                            <!-- А здесь ТИП системы -->
+                            <span class="badge
+                                {% if system.system_class == 'DCS' %}bg-primary
+                                {% elif system.system_class == 'MES' %}bg-success
+                                {% elif system.system_class == 'SCADA' %}bg-info
+                                {% elif system.system_class == 'PLC' %}bg-warning
+                                {% elif system.system_class == 'SIS' %}bg-danger
+                                {% elif system.system_class == 'ERP' %}bg-secondary
+                                {% else %}bg-secondary{% endif %}">
+                                {{ system.get_system_class_display|default:"—" }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'object_detail' system.object.id %}">
+                                {{ system.object.name|truncatechars:25 }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark">{{ system.level.code }}</span>
+                        </td>
+                        <td>
+                            {% if system.vendor %}
+                            <a href="{% url 'participant_detail' system.vendor.id %}">
+                                {{ system.vendor.name|truncatechars:20 }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if system.implementer %}
+                            <a href="{% url 'participant_detail' system.implementer.id %}">
+                                {{ system.implementer.name|truncatechars:20 }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if system.status == 'ACTIVE' %}
+                            <span class="badge bg-success">Активна</span>
+                            {% elif system.status == 'IN_PROGRESS' %}
+                            <span class="badge bg-warning">Внедряется</span>
+                            {% elif system.status == 'PLANNED' %}
+                            <span class="badge bg-info">Запланирована</span>
+                            {% elif system.status == 'MAINTENANCE' %}
+                            <span class="badge bg-warning">Обслуживание</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ system.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+                                    data-bs-target="#systemModal{{ system.id }}">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Modal для детальной информации -->
+                    <div class="modal fade" id="systemModal{{ system.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">{{ system.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Информация о системе:</h6>
+                                            <p><strong>Тип системы:</strong>
+                                                <span class="badge bg-info">{{ system.get_system_class_display|default:"—" }}</span>
+                                            </p>
+                                            <p><strong>Версия:</strong> {{ system.version|default:"Не указана" }}</p>
+                                            <p><strong>Уровень автоматизации:</strong> {{ system.level.name }}</p>
+                                            <p><strong>Статус:</strong>
+                                                {% if system.status == 'ACTIVE' %}
+                                                <span class="badge bg-success">Активна</span>
+                                                {% elif system.status == 'IN_PROGRESS' %}
+                                                <span class="badge bg-warning">Внедряется</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">{{ system.get_status_display }}</span>
+                                                {% endif %}
+                                            </p>
+
+                                            {% if system.modules %}
+                                            <h6 class="mt-3">Модули:</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                {% for module in system.modules %}
+                                                <span class="badge bg-light text-dark">{{ module }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <h6>Участники проекта:</h6>
+                                            <p><strong>Вендор:</strong>
+                                                {% if system.vendor %}
+                                                <a href="{% url 'participant_detail' system.vendor.id %}">{{ system.vendor.name }}</a>
+                                                {% else %}
+                                                <span class="text-muted">Не указан</span>
+                                                {% endif %}
+                                            </p>
+                                            <p><strong>Внедренец:</strong>
+                                                {% if system.implementer %}
+                                                <a href="{% url 'participant_detail' system.implementer.id %}">{{ system.implementer.name }}</a>
+                                                {% else %}
+                                                <span class="text-muted">Не указан</span>
+                                                {% endif %}
+                                            </p>
+
+                                            <h6 class="mt-3">Объект:</h6>
+                                            <p><a href="{% url 'object_detail' system.object.id %}">{{ system.object.name }}</a></p>
+                                            <p><small class="text-muted">{{ system.object.object_class.name|default:"" }}</small></p>
+
+                                            {% if system.vendor_product %}
+                                            <h6 class="mt-3">Вендорский продукт:</h6>
+                                            <p>
+                                                <a href="{% url 'vendor_product_detail' system.vendor_product.id %}">
+                                                    {{ system.vendor_product.name }}
+                                                </a>
+                                                <br><small class="text-muted">{{ system.vendor_product.get_product_type_display }}</small>
+                                            </p>
+                                            {% endif %}
+
+                                            {% if system.interfaces %}
+                                            <h6 class="mt-3">Интерфейсы:</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                {% for interface in system.interfaces %}
+                                                <span class="badge bg-secondary">{{ interface }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                    <a href="{% url 'object_detail' system.object.id %}" class="btn btn-primary">
+                                        К объекту
+                                    </a>
+                                    <a href="{% url 'automated_system_detail' system.id %}" class="btn btn-info">
+                                        <i class="fas fa-eye"></i> Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <h4><i class="fas fa-filter"></i> Фильтр по типам систем:</h4>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'system_list' %}" class="btn btn-sm btn-outline-primary">
+                    Все ({{ systems|length }})
+                </a>
+                {% for code, name in system_class_choices %}
+                {% with count=systems|filter_system_class:code|length %}
+                {% if count > 0 %}
+                <a href="?system_class={{ code }}" class="btn btn-sm btn-outline-secondary">
+                    {{ name }} ({{ count }})
+                </a>
+                {% endif %}
+                {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {% else %}
+        <div class="alert alert-warning mt-4">
+            <h5><i class="fas fa-exclamation-triangle"></i> Системы не найдены</h5>
+            <p>В системе еще не добавлены автоматизированные системы.</p>
+            <a href="{% url 'admin:core_automatedsystem_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Добавить первую систему
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.modal-body h6 {
+    color: #1a2980;
+    border-bottom: 2px solid #26d0ce;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+</style>
+{% endblock %}

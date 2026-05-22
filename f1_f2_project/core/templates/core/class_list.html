@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Классы объектов - Картотека F1-F2{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-3">📁 Классы объектов</h1>
+
+    <div class="content-card">
+        <div class="alert alert-info">
+            <h5>Список классов</h5>
+            <p>Всего классов: {{ classes|length }}</p>
+        </div>
+
+        {% if classes %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Объектов</th>
+                        <th>Уровень иерархии</th>
+                        <th>Подробнее</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class in classes %}
+                    <tr>
+                        <td>{{ class.name }}</td>
+                        <td>
+                            <span class="badge bg-dark">{{ class.object_count }}</span>
+                        </td>
+                        <td>
+                            {% if class.parent %}
+                            {{ class.parent.name }}
+                            {% else %}
+                            <span class="text-muted">1-ый уровень</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'class_detail' class.id %}" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <p>Классы не найдены.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

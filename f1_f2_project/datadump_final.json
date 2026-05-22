@@ -1,0 +1,1336 @@
+[
+{
+  "model": "core.companygroup",
+  "pk": 1,
+  "fields": {
+    "name": "ПАО \"Газпромнефть\"",
+    "description": "ПАО «Газпром нефть» — российская вертикально интегрированная нефтяная компания, которая занимается разведкой и разработкой нефтегазовых месторождений, нефтепереработкой, производством и реализацией нефтепродуктов. Входит в тройку крупнейших компаний России по объёмам добычи и переработки нефти, считается одним из лидеров российской нефтяной индустрии по эффективности."
+  }
+},
+{
+  "model": "core.companygroup",
+  "pk": 2,
+  "fields": {
+    "name": "ПАО \"Роснефть\"",
+    "description": "Геологоразведкой. Компания является мировым лидером по запасам углеводородов. \r\nДобычей и переработкой нефти и газа. На долю компании приходится около 40% объёмов добычи нефти в России и около 25% добычи газа. В состав компании входят 13 нефтеперерабатывающих (НПЗ), три нефтехимических и четыре газоперерабатывающих завода, три предприятия по производству катализаторов. \r\nfinance.mail.ru +1\r\nПоставкой топлива и розничными продажами. У компании самая крупная в стране сеть АЗС — около 3 тысяч станций. Также «Роснефть» развивает авиазаправочное, бункеровочное и битумное направления сбыта нефтепродуктов."
+  }
+},
+{
+  "model": "core.companygroup",
+  "pk": 3,
+  "fields": {
+    "name": "ООО «РН-КОММЕРЦИЯ»",
+    "description": "С 14 февраля 2023 года генеральный директор предприятия — Прошкин Алексей Евгеньевич (ИНН 244309424204"
+  }
+},
+{
+  "model": "core.address",
+  "pk": 1,
+  "fields": {
+    "country": "Россия",
+    "region": "Москва",
+    "city": "Москва",
+    "street": "Капотня",
+    "house": "вл. 1",
+    "fias_code": null,
+    "latitude": "55.638500",
+    "longitude": "37.793200"
+  }
+},
+{
+  "model": "core.address",
+  "pk": 2,
+  "fields": {
+    "country": "Россия",
+    "region": "Самарская область",
+    "city": "Сызрань",
+    "street": "ул. Астраханская",
+    "house": "1",
+    "fias_code": null,
+    "latitude": "53.149200",
+    "longitude": "48.453100"
+  }
+},
+{
+  "model": "core.legalentity",
+  "pk": 1,
+  "fields": {
+    "name": "ПАО «Газпром нефть»",
+    "inn": "5504036333",
+    "owner": null,
+    "group": null
+  }
+},
+{
+  "model": "core.legalentity",
+  "pk": 2,
+  "fields": {
+    "name": "ПАО «НК «Роснефть»",
+    "inn": "7706107510",
+    "owner": 2,
+    "group": 2
+  }
+},
+{
+  "model": "core.legalentity",
+  "pk": 3,
+  "fields": {
+    "name": "АО «Газпромнефть-МНПЗ»",
+    "inn": "7723008300",
+    "owner": 1,
+    "group": 1
+  }
+},
+{
+  "model": "core.legalentity",
+  "pk": 4,
+  "fields": {
+    "name": "АО «Сызранский НПЗ»",
+    "inn": "6325004580",
+    "owner": 4,
+    "group": 3
+  }
+},
+{
+  "model": "core.objectclass",
+  "pk": 1,
+  "fields": {
+    "name": "Нефтеперерабатывающий завод",
+    "code": "NPZ",
+    "description": "Нефтеперерабатывающий завод (НПЗ)",
+    "parent": null
+  }
+},
+{
+  "model": "core.objectclass",
+  "pk": 2,
+  "fields": {
+    "name": "Производство",
+    "code": "PROD",
+    "description": "Производственное подразделение",
+    "parent": 1
+  }
+},
+{
+  "model": "core.objectclass",
+  "pk": 3,
+  "fields": {
+    "name": "Цех",
+    "code": "WORKSHOP",
+    "description": "Производственный цех",
+    "parent": 1
+  }
+},
+{
+  "model": "core.objectclass",
+  "pk": 4,
+  "fields": {
+    "name": "Установка каталитического крекинга",
+    "code": "CRACKING",
+    "description": "Установка каталитического крекинга",
+    "parent": 2
+  }
+},
+{
+  "model": "core.objectclass",
+  "pk": 5,
+  "fields": {
+    "name": "Установка каталитического реформирования",
+    "code": "REFORMING",
+    "description": "Установка каталитического реформирования",
+    "parent": 3
+  }
+},
+{
+  "model": "core.objectclass",
+  "pk": 6,
+  "fields": {
+    "name": "Установка изомеризации",
+    "code": "ISOMERIZATION",
+    "description": "Установка изомеризации",
+    "parent": 3
+  }
+},
+{
+  "model": "core.object",
+  "pk": 1,
+  "fields": {
+    "name": "Московский НПЗ",
+    "short_name": "мнпз",
+    "hierarchy_level": "LEVEL_1",
+    "object_class": 1,
+    "technology": "Нефтепереработка",
+    "category": "MAIN",
+    "start_year": 1938,
+    "capacity": "12000.00",
+    "status": "ACTIVE",
+    "parent": null,
+    "address": 1,
+    "legal_entity": 3,
+    "created_at": "2026-02-19T19:29:29.964Z",
+    "updated_at": "2026-02-23T19:13:25.532Z"
+  }
+},
+{
+  "model": "core.object",
+  "pk": 4,
+  "fields": {
+    "name": "Сызранский НПЗ",
+    "short_name": "снпз",
+    "hierarchy_level": "LEVEL_1",
+    "object_class": 1,
+    "technology": "Нефтепереработка",
+    "category": "MAIN",
+    "start_year": 1942,
+    "capacity": "8500.00",
+    "status": "ACTIVE",
+    "parent": null,
+    "address": 2,
+    "legal_entity": 4,
+    "created_at": "2026-02-19T19:29:29.973Z",
+    "updated_at": "2026-02-26T09:03:58.390Z"
+  }
+},
+{
+  "model": "core.object",
+  "pk": 2,
+  "fields": {
+    "name": "Производство №2 - Комплекс вторичной переработки",
+    "short_name": "Производство №2",
+    "hierarchy_level": "LEVEL_2",
+    "object_class": 2,
+    "technology": "Вторичная переработка",
+    "category": "MAIN",
+    "start_year": 1970,
+    "capacity": "5000.00",
+    "status": "ACTIVE",
+    "parent": 1,
+    "address": 1,
+    "legal_entity": 3,
+    "created_at": "2026-02-19T19:29:29.968Z",
+    "updated_at": "2026-02-23T19:16:43.927Z"
+  }
+},
+{
+  "model": "core.object",
+  "pk": 5,
+  "fields": {
+    "name": "Цех №15",
+    "short_name": "",
+    "hierarchy_level": "LEVEL_2",
+    "object_class": 3,
+    "technology": "Каталитические процессы",
+    "category": "MAIN",
+    "start_year": 1970,
+    "capacity": "2000.00",
+    "status": "ACTIVE",
+    "parent": 4,
+    "address": 2,
+    "legal_entity": 4,
+    "created_at": "2026-02-19T19:29:29.976Z",
+    "updated_at": "2026-02-19T19:29:29.976Z"
+  }
+},
+{
+  "model": "core.object",
+  "pk": 3,
+  "fields": {
+    "name": "Комбинированная установка каталитического крекинга Г-43-107",
+    "short_name": "Г-43-107",
+    "hierarchy_level": "LEVEL_3",
+    "object_class": 4,
+    "technology": "Каталитический крекинг",
+    "category": "MAIN",
+    "start_year": 1985,
+    "capacity": "1900.00",
+    "status": "ACTIVE",
+    "parent": 2,
+    "address": 1,
+    "legal_entity": 3,
+    "created_at": "2026-02-19T19:29:29.970Z",
+    "updated_at": "2026-02-23T19:16:59.945Z"
+  }
+},
+{
+  "model": "core.object",
+  "pk": 7,
+  "fields": {
+    "name": "Установка изомеризации с предварительной гидроочисткой ПГИ-ДИГ/280",
+    "short_name": "ПГИ-ДИГ/280",
+    "hierarchy_level": "LEVEL_3",
+    "object_class": 6,
+    "technology": "Изомеризация",
+    "category": "MAIN",
+    "start_year": 2015,
+    "capacity": "280.00",
+    "status": "ACTIVE",
+    "parent": 5,
+    "address": 2,
+    "legal_entity": 4,
+    "created_at": "2026-02-19T19:29:29.982Z",
+    "updated_at": "2026-02-23T19:17:17.126Z"
+  }
+},
+{
+  "model": "core.object",
+  "pk": 6,
+  "fields": {
+    "name": "Установка каталитического реформирования ЛЧ-35-11/600",
+    "short_name": "ЛЧ-35-11/600",
+    "hierarchy_level": "LEVEL_3",
+    "object_class": 5,
+    "technology": "Каталитический риформинг",
+    "category": "MAIN",
+    "start_year": 1978,
+    "capacity": "600.00",
+    "status": "ACTIVE",
+    "parent": 5,
+    "address": 2,
+    "legal_entity": 4,
+    "created_at": "2026-02-19T19:29:29.979Z",
+    "updated_at": "2026-02-23T19:17:29.609Z"
+  }
+},
+{
+  "model": "core.automationlevel",
+  "pk": 1,
+  "fields": {
+    "code": "L1",
+    "name": "Уровень датчиков и исполнительных механизмов",
+    "description": "Датчики, сенсоры, исполнительные механизмы",
+    "order": 1,
+    "system_classes": [
+      "DCS",
+      "HMI",
+      "ESD",
+      "APC",
+      "FGS"
+    ]
+  }
+},
+{
+  "model": "core.automationlevel",
+  "pk": 2,
+  "fields": {
+    "code": "L2",
+    "name": "Уровень управления технологическим процессом",
+    "description": "DCS, PLC, SCADA системы управления",
+    "order": 2,
+    "system_classes": [
+      "DCS",
+      "HMI",
+      "ESD",
+      "APC",
+      "FGS"
+    ]
+  }
+},
+{
+  "model": "core.automationlevel",
+  "pk": 3,
+  "fields": {
+    "code": "L3",
+    "name": "Производственный уровень",
+    "description": "MES, LIMS, системы управления производством",
+    "order": 3,
+    "system_classes": [
+      "MES",
+      "MES+",
+      "MOM",
+      "APS",
+      "OEE",
+      "LIMS",
+      "WMS",
+      "CMMS",
+      "DT",
+      "DRTO"
+    ]
+  }
+},
+{
+  "model": "core.automationlevel",
+  "pk": 4,
+  "fields": {
+    "code": "L4",
+    "name": "Уровень планирования предприятия",
+    "description": "ERP, APS, системы планирования ресурсов",
+    "order": 4,
+    "system_classes": [
+      "ERP",
+      "PLM",
+      "CRM",
+      "HRM",
+      "PDES"
+    ]
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 1,
+  "fields": {
+    "object": 3,
+    "level": 1,
+    "status": "COMPLETED",
+    "implementation_year": 1985,
+    "notes": "Датчики и вибромониторинг"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 2,
+  "fields": {
+    "object": 3,
+    "level": 2,
+    "status": "COMPLETED",
+    "implementation_year": 1985,
+    "notes": "DCS, ESD, APC"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 3,
+  "fields": {
+    "object": 3,
+    "level": 3,
+    "status": "PLANNED",
+    "implementation_year": null,
+    "notes": "MES, LIMS - в перспективе"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 4,
+  "fields": {
+    "object": 6,
+    "level": 1,
+    "status": "COMPLETED",
+    "implementation_year": 1978,
+    "notes": "Датчики и вибромониторинг"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 5,
+  "fields": {
+    "object": 6,
+    "level": 2,
+    "status": "COMPLETED",
+    "implementation_year": 1978,
+    "notes": "DCS, ESD, APC"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 6,
+  "fields": {
+    "object": 6,
+    "level": 3,
+    "status": "PLANNED",
+    "implementation_year": null,
+    "notes": "MES, LIMS - в перспективе"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 7,
+  "fields": {
+    "object": 7,
+    "level": 1,
+    "status": "COMPLETED",
+    "implementation_year": 2015,
+    "notes": "Датчики и вибромониторинг"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 8,
+  "fields": {
+    "object": 7,
+    "level": 2,
+    "status": "COMPLETED",
+    "implementation_year": 2015,
+    "notes": "DCS, ESD, APC"
+  }
+},
+{
+  "model": "core.objectautomationlevel",
+  "pk": 9,
+  "fields": {
+    "object": 7,
+    "level": 3,
+    "status": "PLANNED",
+    "implementation_year": null,
+    "notes": "MES, LIMS - в перспективе"
+  }
+},
+{
+  "model": "core.participant",
+  "pk": 1,
+  "fields": {
+    "name": "Emerson Electric Co.",
+    "inn": "9909099111",
+    "participant_type": "FULL_CYCLE",
+    "is_partner": true,
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая",
+      "Энергетика"
+    ],
+    "contacts": {
+      "email": "info@emerson.ru",
+      "phone": "+7 (495) 981-60-00",
+      "address": "Москва, Пресненская наб., 10"
+    },
+    "profile": "Мировой лидер в области автоматизации технологических процессов",
+    "registration_date": "1992-05-15",
+    "website": "https://www.emerson.ru",
+    "kam_name": "Иванов Иван Иванович",
+    "kam_phone": "+7 (495) 123-45-67",
+    "contact_person": "Петров Петр Петрович",
+    "contact_phone": "+7 (495) 765-43-21",
+    "presentation_url": "https://www.emerson.ru/presentation",
+    "financial_data": [
+      {
+        "year": 2023,
+        "revenue": 150000,
+        "profit": 20000,
+        "employees": 1000
+      },
+      {
+        "year": 2022,
+        "revenue": 140000,
+        "profit": 18000,
+        "employees": 950
+      }
+    ],
+    "created_at": "2026-02-19T19:29:29.920Z",
+    "updated_at": "2026-02-19T19:29:29.921Z"
+  }
+},
+{
+  "model": "core.participant",
+  "pk": 3,
+  "fields": {
+    "name": "Honeywell International Inc.",
+    "inn": "9909099333",
+    "participant_type": "VENDOR",
+    "is_partner": true,
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая",
+      "Аэрокосмическая"
+    ],
+    "contacts": {
+      "email": "info@honeywell.ru",
+      "phone": "+7 (495) 796-98-00",
+      "address": "Москва, ул. Крылатская, 17"
+    },
+    "profile": "Международная корпорация в области технологий",
+    "registration_date": "1992-07-20",
+    "website": "https://www.honeywell.ru",
+    "kam_name": "Козлов Дмитрий Сергеевич",
+    "kam_phone": "+7 (495) 345-67-89",
+    "contact_person": "Александров Александр Александрович",
+    "contact_phone": "+7 (495) 987-65-43",
+    "presentation_url": "https://www.honeywell.ru/presentation",
+    "financial_data": [
+      {
+        "year": 2023,
+        "revenue": 120000,
+        "profit": 18000,
+        "employees": 800
+      },
+      {
+        "year": 2022,
+        "revenue": 115000,
+        "profit": 17000,
+        "employees": 780
+      }
+    ],
+    "created_at": "2026-02-19T19:29:29.926Z",
+    "updated_at": "2026-02-19T19:29:29.926Z"
+  }
+},
+{
+  "model": "core.participant",
+  "pk": 2,
+  "fields": {
+    "name": "Yokogawa Electric Corporation",
+    "inn": "9909099222",
+    "participant_type": "FULL_CYCLE",
+    "is_partner": true,
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая",
+      "Металлургия"
+    ],
+    "contacts": {
+      "email": "info@yokogawa.ru",
+      "phone": "+7 (495) 737-55-00",
+      "address": "Москва, Ленинградский пр-т, 37"
+    },
+    "profile": "Ведущий поставщик промышленной автоматизации",
+    "registration_date": "1995-03-15",
+    "website": "https://www.yokogawa.ru",
+    "kam_name": "Сидоров Алексей Владимирович",
+    "kam_phone": "+7 (495) 234-56-78",
+    "contact_person": "Николаев Николай Николаевич",
+    "contact_phone": "+7 (495) 876-54-32",
+    "presentation_url": "https://www.yokogawa.ru/presentation",
+    "financial_data": [
+      {
+        "year": 2023,
+        "revenue": 80000,
+        "profit": 12000,
+        "employees": 600
+      },
+      {
+        "year": 2022,
+        "revenue": 75000,
+        "profit": 11000,
+        "employees": 580
+      }
+    ],
+    "created_at": "2026-02-19T19:29:29.923Z",
+    "updated_at": "2026-02-19T19:29:29.923Z"
+  }
+},
+{
+  "model": "core.participant",
+  "pk": 5,
+  "fields": {
+    "name": "Кто-то поставляет",
+    "inn": "777777777777",
+    "participant_type": "SUPPLIER",
+    "is_partner": false,
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая",
+      "Энергетика"
+    ],
+    "contacts": {
+      "email": "info@siemens.ru",
+      "phone": "+7 (495) 737-55-00",
+      "address": "Москва, ул. Примерная"
+    },
+    "profile": "",
+    "registration_date": "2026-02-23",
+    "website": "https://simit.su/o-kompanii/",
+    "kam_name": "Круглов Андрей",
+    "kam_phone": "+79228535033",
+    "contact_person": "Круглов Андрей Андреевич",
+    "contact_phone": "+79178208830",
+    "presentation_url": "https://ru.ruwiki.ru/wiki/Siemens",
+    "financial_data": [
+      {
+        "year": 2023,
+        "revenue": 1500,
+        "profit": 200,
+        "employees": 50
+      }
+    ],
+    "created_at": "2026-02-23T19:24:13.010Z",
+    "updated_at": "2026-02-23T19:24:13.010Z"
+  }
+},
+{
+  "model": "core.participant",
+  "pk": 4,
+  "fields": {
+    "name": "НПЦ «Динамика»",
+    "inn": "7701234567",
+    "participant_type": "VENDOR",
+    "is_partner": false,
+    "industries": [
+      "Нефтегазовая",
+      "Энергетика",
+      "Транспорт"
+    ],
+    "contacts": {
+      "email": "info@npcdynamics.ru",
+      "phone": "+7 (3812) 32-67-89",
+      "address": "г. Омск, ул. Масленникова, 232"
+    },
+    "profile": "Разработчик систем вибромониторинга",
+    "registration_date": "2000-05-10",
+    "website": "https://www.npcdynamics.ru",
+    "kam_name": "Смирнов Павел Андреевич",
+    "kam_phone": "+7 (3812) 45-67-89",
+    "contact_person": "Васильев Василий Васильевич",
+    "contact_phone": "+7 (3812) 54-32-10",
+    "presentation_url": "https://www.npcdynamics.ru/presentation",
+    "financial_data": [
+      {
+        "year": 2023,
+        "revenue": 5000,
+        "profit": 800,
+        "employees": 120
+      },
+      {
+        "year": 2022,
+        "revenue": 4500,
+        "profit": 700,
+        "employees": 115
+      }
+    ],
+    "created_at": "2026-02-19T19:29:29.929Z",
+    "updated_at": "2026-02-19T19:29:29.929Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 1,
+  "fields": {
+    "name": "DeltaV",
+    "vendor": 1,
+    "product_type": "SOFTWARE",
+    "code": "DELTAV-DCS",
+    "description": "Распределённая система управления (DCS)",
+    "version": "v8.4",
+    "system_types": [
+      "DCS",
+      "SCADA"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая"
+    ],
+    "technical_specs": {
+      "platform": "Windows Server",
+      "architecture": "Распределённая",
+      "protocols": [
+        "OPC UA",
+        "Modbus",
+        "Profibus"
+      ]
+    },
+    "release_year": 2018,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-19T19:29:29.932Z",
+    "updated_at": "2026-02-19T19:29:29.932Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 2,
+  "fields": {
+    "name": "DeltaV SIS",
+    "vendor": 1,
+    "product_type": "SOFTWARE",
+    "code": "DELTAV-SIS",
+    "description": "Система аварийного останова (ESD)",
+    "version": "v8.4",
+    "system_types": [
+      "ESD",
+      "SIS"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая"
+    ],
+    "technical_specs": {
+      "platform": "Windows Server",
+      "safety_integrity_level": "SIL3",
+      "certification": "TÜV"
+    },
+    "release_year": 2018,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-19T19:29:29.935Z",
+    "updated_at": "2026-02-19T19:29:29.935Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 6,
+  "fields": {
+    "name": "Profit Suite",
+    "vendor": 3,
+    "product_type": "SOFTWARE",
+    "code": "PROFIT-SUITE",
+    "description": "Система расширенного управления процессом",
+    "version": "R410",
+    "system_types": [
+      "APC"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая"
+    ],
+    "technical_specs": {
+      "algorithms": [
+        "MPC",
+        "RTO"
+      ],
+      "platform": "Experion"
+    },
+    "release_year": 2013,
+    "end_of_support": "2018-12-31",
+    "is_active": false,
+    "created_at": "2026-02-19T19:29:29.948Z",
+    "updated_at": "2026-02-19T19:29:29.948Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 3,
+  "fields": {
+    "name": "CENTUM CS 3000",
+    "vendor": 2,
+    "product_type": "SOFTWARE",
+    "code": "CENTUM-CS3000",
+    "description": "Распределённая система управления",
+    "version": "R3.08.50",
+    "system_types": [
+      "DCS"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая",
+      "Металлургия"
+    ],
+    "technical_specs": {
+      "platform": "Windows Server",
+      "max_iops": 10000,
+      "redundancy": true
+    },
+    "release_year": 2010,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-19T19:29:29.938Z",
+    "updated_at": "2026-02-19T19:29:29.938Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 4,
+  "fields": {
+    "name": "CENTUM ProSafe RS",
+    "vendor": 2,
+    "product_type": "SOFTWARE",
+    "code": "PROSAFE-RS",
+    "description": "Система аварийного останова",
+    "version": "R3.02",
+    "system_types": [
+      "ESD"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая"
+    ],
+    "technical_specs": {
+      "safety_integrity_level": "SIL3",
+      "certification": "TÜV"
+    },
+    "release_year": 2010,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-19T19:29:29.941Z",
+    "updated_at": "2026-02-19T19:29:29.941Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 5,
+  "fields": {
+    "name": "PACE",
+    "vendor": 2,
+    "product_type": "SOFTWARE",
+    "code": "PACE-APC",
+    "description": "Система расширенного управления процессом",
+    "version": "2020",
+    "system_types": [
+      "APC"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Нефтехимическая"
+    ],
+    "technical_specs": {
+      "algorithms": [
+        "MPC",
+        "PID"
+      ],
+      "integration": "CENTUM"
+    },
+    "release_year": 2020,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-19T19:29:29.945Z",
+    "updated_at": "2026-02-19T19:29:29.945Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 8,
+  "fields": {
+    "name": "S7-1500",
+    "vendor": 5,
+    "product_type": "MAINTENANCE",
+    "code": "42",
+    "description": "",
+    "version": "",
+    "system_types": [],
+    "industries": [],
+    "technical_specs": {},
+    "release_year": null,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-23T19:24:13.012Z",
+    "updated_at": "2026-02-23T19:24:13.012Z"
+  }
+},
+{
+  "model": "core.vendorproduct",
+  "pk": 7,
+  "fields": {
+    "name": "КОМПАКС",
+    "vendor": 4,
+    "product_type": "SOFTWARE",
+    "code": "KOMPAKS",
+    "description": "Система вибромониторинга и диагностики",
+    "version": "v3.0",
+    "system_types": [
+      "SENSORS",
+      "DIAGNOSTICS"
+    ],
+    "industries": [
+      "Нефтегазовая",
+      "Энергетика"
+    ],
+    "technical_specs": {
+      "channels": 64,
+      "frequency_range": "0-20kHz",
+      "protection": "IP65"
+    },
+    "release_year": 2015,
+    "end_of_support": null,
+    "is_active": true,
+    "created_at": "2026-02-19T19:29:29.951Z",
+    "updated_at": "2026-02-19T19:29:29.951Z"
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 1,
+  "fields": {
+    "name": "АСУТП установки каталитического крекинга",
+    "system_class": "DCS",
+    "object": 3,
+    "level": 2,
+    "vendor": 1,
+    "integrator": 1,
+    "vendor_product": 1,
+    "created_at": "2026-02-19T19:29:29.985Z",
+    "updated_at": "2026-02-19T19:29:29.985Z",
+    "implementer": null,
+    "version": "v8.4",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": null,
+    "notes": "Основная система управления"
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 2,
+  "fields": {
+    "name": "ПАЗ установки каталитического крекинга",
+    "system_class": "ESD",
+    "object": 3,
+    "level": 2,
+    "vendor": 1,
+    "integrator": 1,
+    "vendor_product": 2,
+    "created_at": "2026-02-19T19:29:29.988Z",
+    "updated_at": "2026-02-19T19:29:29.988Z",
+    "implementer": null,
+    "version": "v8.4",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": null,
+    "notes": "Система аварийного останова (под вопросом)"
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 3,
+  "fields": {
+    "name": "СУУТП Honeywell Profit Suite",
+    "system_class": "APC",
+    "object": 3,
+    "level": 2,
+    "vendor": 3,
+    "integrator": 3,
+    "vendor_product": 6,
+    "created_at": "2026-02-19T19:29:29.991Z",
+    "updated_at": "2026-02-19T19:29:29.991Z",
+    "implementer": null,
+    "version": "R410",
+    "modules": [],
+    "interfaces": [],
+    "status": "INACTIVE",
+    "installation_date": "2013-06-01",
+    "notes": "Выведена из эксплуатации"
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 4,
+  "fields": {
+    "name": "СУУТП Yokogawa PACE",
+    "system_class": "APC",
+    "object": 3,
+    "level": 2,
+    "vendor": 2,
+    "integrator": 2,
+    "vendor_product": 5,
+    "created_at": "2026-02-19T19:29:29.994Z",
+    "updated_at": "2026-02-19T19:29:29.994Z",
+    "implementer": null,
+    "version": "2020",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": "2020-03-15",
+    "notes": "Система расширенного управления"
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 5,
+  "fields": {
+    "name": "Система вибромониторинга",
+    "system_class": "SENSORS",
+    "object": 3,
+    "level": 1,
+    "vendor": 1,
+    "integrator": null,
+    "vendor_product": null,
+    "created_at": "2026-02-19T19:29:29.997Z",
+    "updated_at": "2026-02-19T19:29:29.997Z",
+    "implementer": null,
+    "version": "",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": null,
+    "notes": "Контроль вибрации оборудования (возможно Emerson)"
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 6,
+  "fields": {
+    "name": "АСУТП установки реформирования",
+    "system_class": "DCS",
+    "object": 6,
+    "level": 2,
+    "vendor": 2,
+    "integrator": 2,
+    "vendor_product": 3,
+    "created_at": "2026-02-19T19:29:30.000Z",
+    "updated_at": "2026-02-19T19:29:30.000Z",
+    "implementer": null,
+    "version": "R3.08.50",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": "2010-05-20",
+    "notes": ""
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 7,
+  "fields": {
+    "name": "ПАЗ установки реформирования",
+    "system_class": "ESD",
+    "object": 6,
+    "level": 2,
+    "vendor": 2,
+    "integrator": 2,
+    "vendor_product": 4,
+    "created_at": "2026-02-19T19:29:30.003Z",
+    "updated_at": "2026-02-19T19:29:30.003Z",
+    "implementer": null,
+    "version": "R3.02",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": "2010-05-20",
+    "notes": ""
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 8,
+  "fields": {
+    "name": "Система вибромониторинга КОМПАКС",
+    "system_class": "SENSORS",
+    "object": 6,
+    "level": 1,
+    "vendor": 4,
+    "integrator": null,
+    "vendor_product": 7,
+    "created_at": "2026-02-19T19:29:30.006Z",
+    "updated_at": "2026-02-19T19:29:30.006Z",
+    "implementer": null,
+    "version": "v3.0",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": "2015-08-10",
+    "notes": ""
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 9,
+  "fields": {
+    "name": "АСУТП установки изомеризации",
+    "system_class": "DCS",
+    "object": 7,
+    "level": 2,
+    "vendor": 1,
+    "integrator": 1,
+    "vendor_product": 1,
+    "created_at": "2026-02-19T19:29:30.009Z",
+    "updated_at": "2026-02-19T19:29:30.009Z",
+    "implementer": null,
+    "version": "v8.4",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": null,
+    "notes": ""
+  }
+},
+{
+  "model": "core.automatedsystem",
+  "pk": 10,
+  "fields": {
+    "name": "ПАЗ установки изомеризации",
+    "system_class": "ESD",
+    "object": 7,
+    "level": 2,
+    "vendor": 1,
+    "integrator": 1,
+    "vendor_product": 2,
+    "created_at": "2026-02-19T19:29:30.012Z",
+    "updated_at": "2026-02-19T19:29:30.012Z",
+    "implementer": null,
+    "version": "v8.4",
+    "modules": [],
+    "interfaces": [],
+    "status": "ACTIVE",
+    "installation_date": null,
+    "notes": ""
+  }
+},
+{
+  "model": "core.classcharacteristic",
+  "pk": 1,
+  "fields": {
+    "object_class": 4,
+    "name": "Сырьё",
+    "code": "FEEDSTOCK",
+    "unit": "",
+    "description": "Исходное сырьё установки",
+    "is_required": true
+  }
+},
+{
+  "model": "core.classcharacteristic",
+  "pk": 2,
+  "fields": {
+    "object_class": 4,
+    "name": "Продукты",
+    "code": "PRODUCTS",
+    "unit": "",
+    "description": "Получаемые продукты",
+    "is_required": true
+  }
+},
+{
+  "model": "core.classcharacteristic",
+  "pk": 3,
+  "fields": {
+    "object_class": 5,
+    "name": "Сырьё",
+    "code": "FEEDSTOCK",
+    "unit": "",
+    "description": "Исходное сырьё установки",
+    "is_required": true
+  }
+},
+{
+  "model": "core.classcharacteristic",
+  "pk": 4,
+  "fields": {
+    "object_class": 5,
+    "name": "Продукты",
+    "code": "PRODUCTS",
+    "unit": "",
+    "description": "Получаемые продукты",
+    "is_required": true
+  }
+},
+{
+  "model": "core.classcharacteristic",
+  "pk": 5,
+  "fields": {
+    "object_class": 6,
+    "name": "Сырьё",
+    "code": "FEEDSTOCK",
+    "unit": "",
+    "description": "Исходное сырьё установки",
+    "is_required": true
+  }
+},
+{
+  "model": "core.classcharacteristic",
+  "pk": 6,
+  "fields": {
+    "object_class": 6,
+    "name": "Продукты",
+    "code": "PRODUCTS",
+    "unit": "",
+    "description": "Получаемые продукты",
+    "is_required": true
+  }
+},
+{
+  "model": "core.classautomationrequirement",
+  "pk": 1,
+  "fields": {
+    "object_class": 4,
+    "level": 2,
+    "requirement": "Наличие DCS системы управления и ESD системы аварийного останова",
+    "is_mandatory": true,
+    "regulation": "ПБ 09-540-03"
+  }
+},
+{
+  "model": "core.classautomationrequirement",
+  "pk": 2,
+  "fields": {
+    "object_class": 5,
+    "level": 2,
+    "requirement": "Наличие DCS системы управления и системы противоаварийной защиты",
+    "is_mandatory": true,
+    "regulation": "ПБ 09-540-03"
+  }
+},
+{
+  "model": "core.classautomationrequirement",
+  "pk": 3,
+  "fields": {
+    "object_class": 6,
+    "level": 2,
+    "requirement": "Наличие DCS системы управления и ESD системы аварийного останова",
+    "is_mandatory": true,
+    "regulation": "ПБ 09-540-03"
+  }
+},
+{
+  "model": "core.objectcharacteristicvalue",
+  "pk": 1,
+  "fields": {
+    "object": 3,
+    "characteristic": 1,
+    "value": "Гидроочищенный вакуумный газойль",
+    "measurement_date": null,
+    "notes": "Сырьё",
+    "updated_at": "2026-02-19T19:29:30.039Z"
+  }
+},
+{
+  "model": "core.objectcharacteristicvalue",
+  "pk": 2,
+  "fields": {
+    "object": 3,
+    "characteristic": 2,
+    "value": "УГ, ППФ, ББФ, ПГФ, БКК, Легкий кат.газойль, Тяжёлый кат.газойль, Фр. >420",
+    "measurement_date": null,
+    "notes": "Продукты",
+    "updated_at": "2026-02-19T19:29:30.042Z"
+  }
+},
+{
+  "model": "core.objectcharacteristicvalue",
+  "pk": 5,
+  "fields": {
+    "object": 7,
+    "characteristic": 5,
+    "value": "Легкая прямогонная фракция (НК-62С)",
+    "measurement_date": null,
+    "notes": "Сырьё",
+    "updated_at": "2026-02-19T19:29:30.051Z"
+  }
+},
+{
+  "model": "core.objectcharacteristicvalue",
+  "pk": 6,
+  "fields": {
+    "object": 7,
+    "characteristic": 6,
+    "value": "Изопентан (С5), Смесь изомеризатов (С5-С7), Сухой газ (С1-С2), Головная фракция (С3-С4)",
+    "measurement_date": null,
+    "notes": "Продукты",
+    "updated_at": "2026-02-19T19:29:30.053Z"
+  }
+},
+{
+  "model": "core.objectcharacteristicvalue",
+  "pk": 3,
+  "fields": {
+    "object": 6,
+    "characteristic": 3,
+    "value": "Прямогонная бензиновая фракция 85-180С",
+    "measurement_date": null,
+    "notes": "Сырьё",
+    "updated_at": "2026-02-19T19:29:30.044Z"
+  }
+},
+{
+  "model": "core.objectcharacteristicvalue",
+  "pk": 4,
+  "fields": {
+    "object": 6,
+    "characteristic": 4,
+    "value": "Катализат (октановое число 95-98), Водородсодержащий газ, Углеводородный газ",
+    "measurement_date": null,
+    "notes": "Продукты",
+    "updated_at": "2026-02-19T19:29:30.048Z"
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$VNVtS4SZj3TrlXVOnY8nYi$qrA2DrJIUTyGE4OspwlgvCaHInDCJCJqugDPWdXh1Pc=",
+    "last_login": "2026-02-23T17:55:48.028Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-02-23T17:55:42.767Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "pjcpx20bwsdsdpkt8sh3x8h1td67ng4y",
+  "fields": {
+    "session_data": ".eJxVjDsOwyAQBe9CHSHWmF_K9D4DWhYITiKQjF1FuXuE5CJp38y8N_N47MUfPW1-jezKgF1-t4D0THWA-MB6b5xa3bc18KHwk3a-tJhet9P9OyjYy6gjOJITWOGCFgQQlHUzaMwiS0smKgtgKVuMOU-QdQqQFMEsZXDGSPb5AtaTN6M:1vua9s:gXArHmqj8yB1dR2U-9VZPIwclK_6Pz6Tlp5B6cJZV8Q",
+    "expire_date": "2026-03-09T17:55:48.032Z"
+  }
+}
+]

@@ -1,0 +1,204 @@
+{
+  "participants": [
+    {
+      "name": "ООО \"Вендор-Тест\"",
+      "inn": "7701122334",
+      "participant_type": "VENDOR",
+      "is_partner": true,
+      "website": "https://vendor-test.ru",
+      "kam_name": "Иванов Иван Иванович",
+      "kam_phone": "+7 (495) 123-45-67",
+      "contact_person": "Петров Петр Петрович",
+      "contact_phone": "+7 (495) 111-22-33",
+      "profile": "Тестовый вендор"
+    },
+    {
+      "name": "ООО \"Интегратор-Тест\"",
+      "inn": "7701122335",
+      "participant_type": "ENGINEERING",
+      "is_partner": true,
+      "website": "https://integrator-test.ru",
+      "kam_name": "Сергеев Сергей Сергеевич",
+      "kam_phone": "+7 (495) 234-56-78",
+      "contact_person": "Алексеев Алексей Алексеевич",
+      "contact_phone": "+7 (495) 222-33-44",
+      "profile": "Тестовый интегратор"
+    },
+    {
+      "name": "АО \"Разработчик-Тест\"",
+      "inn": "7701122336",
+      "participant_type": "FULL_CYCLE",
+      "is_partner": true,
+      "website": "https://dev-test.ru",
+      "kam_name": "Козлов Козел Козлович",
+      "kam_phone": "+7 (495) 345-67-89",
+      "contact_person": "Михайлов Михаил Михайлович",
+      "contact_phone": "+7 (495) 333-44-55",
+      "profile": "Тестовый разработчик полного цикла"
+    }
+  ],
+  "objects": [
+    {
+      "name": "НПЗ Тестовый-1",
+      "short_name": "нпз1",
+      "hierarchy_level": "LEVEL_1",
+      "object_class": "Нефтеперерабатывающий завод",
+      "technology": "Нефтепереработка",
+      "category": "MAIN",
+      "start_year": 2024,
+      "capacity": 6000,
+      "status": "ACTIVE",
+      "legal_entity": "АО «Газпромнефть-МНПЗ»",
+      "address": "Москва,Капотня,1"
+    },
+    {
+      "name": "Установка Крекинг-1",
+      "short_name": "крек1",
+      "hierarchy_level": "LEVEL_3",
+      "object_class": "Установка каталитического крекинга",
+      "technology": "Каталитический крекинг",
+      "category": "MAIN",
+      "start_year": 2024,
+      "capacity": 1200,
+      "status": "ACTIVE",
+      "legal_entity": "АО «Газпромнефть-МНПЗ»",
+      "address": "Москва,Капотня,1"
+    },
+    {
+      "name": "Цех Переработки-1",
+      "short_name": "цех1",
+      "hierarchy_level": "LEVEL_2",
+      "object_class": "Цех",
+      "technology": "Переработка",
+      "category": "AUX",
+      "start_year": 2023,
+      "capacity": 500,
+      "status": "ACTIVE",
+      "legal_entity": "АО «Газпромнефть-МНПЗ»",
+      "address": "Москва,Капотня,1"
+    }
+  ],
+  "systems": [
+    {
+      "name": "АСУТП-Тест1",
+      "system_class": "DCS",
+      "object": "НПЗ Тестовый-1",
+      "vendor": "ООО \"Вендор-Тест\"",
+      "integrator": "ООО \"Интегратор-Тест\"",
+      "status": "ACTIVE",
+      "version": "4.2"
+    },
+    {
+      "name": "MES-Тест1",
+      "system_class": "MES",
+      "object": "НПЗ Тестовый-1",
+      "vendor": "ООО \"Вендор-Тест\"",
+      "integrator": "",
+      "status": "ACTIVE",
+      "version": "2.1"
+    },
+    {
+      "name": "SCADA-Тест1",
+      "system_class": "SCADA",
+      "object": "Установка Крекинг-1",
+      "vendor": "ООО \"Вендор-Тест\"",
+      "integrator": "ООО \"Интегратор-Тест\"",
+      "status": "ACTIVE",
+      "version": "3.0"
+    },
+    {
+      "name": "ПАЗ-Тест1",
+      "system_class": "ESD",
+      "object": "Установка Крекинг-1",
+      "vendor": "ООО \"Вендор-Тест\"",
+      "integrator": "ООО \"Интегратор-Тест\"",
+      "status": "ACTIVE",
+      "version": "1.5"
+    }
+  ],
+  "levels": [
+    {
+      "object": "НПЗ Тестовый-1",
+      "level": "L1",
+      "status": "COMPLETED",
+      "year": 2024
+    },
+    {
+      "object": "НПЗ Тестовый-1",
+      "level": "L2",
+      "status": "COMPLETED",
+      "year": 2024
+    },
+    {
+      "object": "НПЗ Тестовый-1",
+      "level": "L3",
+      "status": "PLANNED",
+      "year": 2025
+    },
+    {
+      "object": "Установка Крекинг-1",
+      "level": "L1",
+      "status": "COMPLETED",
+      "year": 2024
+    },
+    {
+      "object": "Установка Крекинг-1",
+      "level": "L2",
+      "status": "COMPLETED",
+      "year": 2024
+    },
+    {
+      "object": "Цех Переработки-1",
+      "level": "L1",
+      "status": "COMPLETED",
+      "year": 2023
+    }
+  ],
+  "projects": [
+    {
+      "name": "Модернизация АСУТП",
+      "participant": "ООО \"Интегратор-Тест\"",
+      "object": "НПЗ Тестовый-1",
+      "product": "АСУТП-Тест1",
+      "year": 2024,
+      "successful": true,
+      "description": "Полная замена системы"
+    },
+    {
+      "name": "Внедрение MES",
+      "participant": "ООО \"Вендор-Тест\"",
+      "object": "НПЗ Тестовый-1",
+      "product": "MES-Тест1",
+      "year": 2024,
+      "successful": true,
+      "description": "Управление производством"
+    },
+    {
+      "name": "Автоматизация",
+      "participant": "ООО \"Интегратор-Тест\"",
+      "object": "Установка Крекинг-1",
+      "product": "SCADA-Тест1",
+      "year": 2024,
+      "successful": true,
+      "description": "Диспетчеризация"
+    },
+    {
+      "name": "Безопасность",
+      "participant": "АО \"Разработчик-Тест\"",
+      "object": "Установка Крекинг-1",
+      "product": "ПАЗ-Тест1",
+      "year": 2024,
+      "successful": true,
+      "description": "ПАЗ"
+    },
+    {
+      "name": "АСУТП Цеха",
+      "participant": "ООО \"Интегратор-Тест\"",
+      "object": "Цех Переработки-1",
+      "product": "",
+      "year": 2024,
+      "successful": false,
+      "description": "Планирование"
+    }
+  ]
+}

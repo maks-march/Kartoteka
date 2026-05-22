@@ -1,0 +1,335 @@
+{% extends 'core/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Компоненты {{ object.name }} - Картотека F1-F2{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Навигация -->
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i></a>
+        <a href="{% url 'objects_list' %}">Объекты</a>
+        <a href="{% url 'object_detail' object.id %}">{{ object.name }}</a>
+        <span>Компоненты</span>
+    </div>
+
+    <!-- Заголовок -->
+    <div class="section-header">
+        <div class="header-content">
+            <div>
+                <h1><i class="fas fa-sitemap"></i> Компоненты объекта: {{ object.name }}</h1>
+                <p class="subtitle">Все установки и оборудование, входящие в состав объекта</p>
+            </div>
+            <div>
+                <a href="{% url 'object_detail' object.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Назад к объекту
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика компонентов -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ components|length }}</div>
+            <div class="stat-label">Всего компонентов</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+            <div class="stat-number">
+                {% with active_components=components|filter_status:'active' %}
+                    {{ active_components|length }}
+                {% endwith %}
+            </div>
+            <div class="stat-label">Активных</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+            <div class="stat-number">
+                {% with installations=components|filter_type:'installation' %}
+                    {{ installations|length }}
+                {% endwith %}
+            </div>
+            <div class="stat-label">Установок</div>
+        </div>
+    </div>
+
+    {% if components %}
+    <!-- Список компонентов -->
+    <div class="content-card">
+        <div class="components-grid">
+            {% for component in components %}
+            <div class="component-card">
+                <div class="card-header">
+                    <div class="component-type">
+                        <span class="badge badge-installation">
+                            {{ component.get_object_type_display }}
+                        </span>
+                        <span class="badge badge-component">
+                            Уровень {{ component.hierarchy_level }}
+                        </span>
+                    </div>
+
+                    <div class="component-status">
+                        <span class="status-badge
+                            {% if component.status == 'active' %}status-active
+                            {% elif component.status == 'project' %}status-project
+                            {% elif component.status == 'reconstruction' %}status-reconstruction
+                            {% else %}status-closed{% endif %}">
+                            {{ component.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h4 class="component-name">
+                        <a href="{% url 'object_detail' component.id %}">{{ component.name }}</a>
+                    </h4>
+
+                    {% if component.object_class %}
+                    <div class="component-class">
+                        <i class="fas fa-layer-group"></i>
+                        <span class="class-badge" title="{{ component.object_class.name }}">
+                            {{ component.object_class.code }}
+                        </span>
+                        {{ component.object_class.name|truncatechars:30 }}
+                    </div>
+                    {% endif %}
+
+                    <div class="component-details">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-calendar-alt"></i> Год ввода:</span>
+                            <span class="detail-value">{{ component.year_commissioned|default:"—" }}</span>
+                        </div>
+
+                        {% if component.raw_material_capacity %}
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-oil-can"></i> Сырье:</span>
+                            <span class="detail-value">{{ component.raw_material_capacity }} т/год</span>
+                        </div>
+                        {% endif %}
+
+                        {% if component.product_capacity %}
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-box"></i> Продукция:</span>
+                            <span class="detail-value">{{ component.product_capacity }} т/год</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Уровни автоматизации -->
+                    <div class="automation-levels">
+                        {% for level in component.objectautomationlevel_set.all %}
+                        <div class="level-badge">
+                            <span class="level-code">{{ level.level.code }}</span>
+                            <span class="level-status">
+                                {% if level.status == 'implemented' %}
+                                <i class="fas fa-check-circle text-success"></i>
+                                {% elif level.status == 'partial' %}
+                                <i class="fas fa-exclamation-circle text-warning"></i>
+                                {% else %}
+                                <i class="fas fa-clock text-info"></i>
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <span class="text-muted small">Нет данных об автоматизации</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="action-buttons">
+                        <a href="{% url 'object_detail' component.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-eye"></i> Подробнее
+                        </a>
+                        <a href="{% url 'admin:core_object_change' component.id %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <!-- Сообщение об отсутствии компонентов -->
+    <div class="content-card">
+        <div class="empty-state">
+            <i class="fas fa-sitemap fa-3x"></i>
+            <h3>Компоненты не найдены</h3>
+            <p>У этого объекта пока нет компонентов (установок, оборудования).</p>
+            <div class="action-buttons">
+                <a href="{% url 'admin:core_object_add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Добавить компонент
+                </a>
+                <a href="{% url 'object_detail' object.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Назад к объекту
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* Стили для компонентов */
+.components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.component-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.component-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.component-name {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
+
+.component-name a {
+    color: #5b6779;
+    text-decoration: none;
+}
+
+.component-name a:hover {
+    color: #3498db;
+}
+
+.component-class {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.component-details {
+    margin: 15px 0;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: #6c757d;
+}
+
+.detail-label i {
+    margin-right: 5px;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.automation-levels {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.level-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.level-code {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.badge-component {
+    background: #6c757d;
+    color: white;
+    font-size: 0.75rem;
+}
+
+/* Хлебные крошки */
+.breadcrumb {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.breadcrumb a {
+    color: #3498db;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.breadcrumb a:hover {
+    background: #e9ecef;
+}
+
+.breadcrumb span {
+    color: #6c757d;
+    padding: 5px 10px;
+}
+
+.breadcrumb i {
+    margin-right: 5px;
+}
+
+/* Заголовок с навигацией */
+.section-header {
+    margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .components-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        flex-direction: column;
+    }
+
+    .breadcrumb {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}

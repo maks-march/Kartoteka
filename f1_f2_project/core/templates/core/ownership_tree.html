@@ -1,0 +1,146 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Структура собственности - Картотека F1-F2{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'overview' %}">Главная</a></li>
+            <li class="breadcrumb-item active">Структура собственности</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">🏢 Структура собственности</h1>
+    
+    {% if not groups %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Нет данных о группах компаний.
+        <a href="/admin/core/companygroup/add/" class="alert-link">Добавить группу</a>
+    </div>
+    {% else %}
+
+    <div class="row">
+        {% for group in groups %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100" id="group-{{ group.id }}">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-building"></i> {{ group.name }}
+                    </h5>
+                    {% if group.description %}
+                    <small class="text-white-50">{{ group.description }}</small>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% for company in group.legalentity_set.all %}
+                    <div class="mb-4 pb-3 border-bottom">
+                        <h6 class="text-primary">
+                            <i class="fas fa-company"></i> {{ company.name }}
+                        </h6>
+                        <p class="text-muted small mb-2">ИНН: {{ company.inn }}</p>
+
+                        <!-- Объекты этой компании -->
+                        {% with objects=company.object_set.all %}
+                            {% if objects %}
+                            <div class="ms-3">
+                                <p class="mb-2"><strong>Объекты:</strong></p>
+                                {% for object in objects %}
+                                <div class="mb-2 p-2 bg-light rounded">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <a href="{% url 'object_detail' object.id %}" class="text-decoration-none">
+                                                <strong>{{ object.name }}</strong>
+                                            </a>
+                                            {% if object.short_name %}
+                                            <span class="badge bg-info ms-2">{{ object.short_name }}</span>
+                                            {% endif %}
+                                            <br>
+                                            <small class="text-muted">
+                                                {{ object.get_hierarchy_level_display }}
+                                                {% if object.technology %} | {{ object.technology }}{% endif %}
+                                            </small>
+                                        </div>
+                                        <span class="badge bg-secondary">
+                                            {{ object.start_year }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Количество систем на объекте -->
+                                    {% with systems_count=object.automated_systems.count %}
+                                    {% if systems_count > 0 %}
+                                    <div class="mt-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-server"></i> {{ systems_count }} систем
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted ms-3">Нет объектов</p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">В группе нет компаний</p>
+                    {% endfor %}
+
+                    <!-- Сводка по группе -->
+                    {% with companies=group.legalentity_set.all %}
+                    <div class="mt-3 pt-2 border-top">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <span class="badge bg-primary rounded-pill p-2">
+                                    {{ companies.count }} компаний
+                                </span>
+                            </div>
+                            <div class="col-4">
+                                <span class="badge bg-success rounded-pill p-2">
+                                    {% with total=0 %}
+                                        {% for company in companies %}
+                                            {{ company.object_set.count }}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </span>
+                            </div>
+                            <div class="col-4">
+                                <span class="badge bg-info rounded-pill p-2">
+                                    ИНН: {{ companies.first.inn|default:"—" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    transition: transform 0.2s;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.badge {
+    font-weight: 500;
+}
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+.text-white-50 {
+    color: rgba(255,255,255,0.8) !important;
+}
+</style>
+{% endblock %}
