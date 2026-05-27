@@ -1,0 +1,148 @@
+<!-- core/templates/core/vendor_product_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Вендорские продукты{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">
+        <i class="bi bi-box-seam"></i> Вендорские продукты
+    </h1>
+
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Вендор</label>
+                    <select name="vendor" class="form-select">
+                        <option value="">Все вендоры</option>
+                        {% for vendor in vendors %}
+                        <option value="{{ vendor.id }}"
+                                {% if filters.vendor == vendor.id|stringformat:"i" %}selected{% endif %}>
+                            {{ vendor.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Тип продукта</label>
+                    <select name="type" class="form-select">
+                        <option value="">Все типы</option>
+                        {% for code, name in product_types %}
+                        <option value="{{ code }}"
+                                {% if filters.type == code %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Поиск</label>
+                    <input type="text" name="q" class="form-control"
+                           placeholder="Название или код..."
+                           value="{{ filters.q|default:'' }}">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-filter"></i> Применить фильтры
+                    </button>
+                    <a href="{% url 'vendor_product_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Сбросить
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Карточки продуктов -->
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ product.name }}</h5>
+                    <small class="text-muted">Артикул: {{ product.code|default:"Не указан" }}</small>
+                </div>
+                <div class="card-body">
+                    <p><strong>Вендор:</strong> {{ product.vendor.name }}</p>
+                    <p><strong>Тип:</strong>
+                        {% if product.get_product_type_display %}
+                            {{ product.get_product_type_display }}
+                        {% elif product.get_type_display %}
+                            {{ product.get_type_display }}
+                        {% else %}
+                            {{ product.type|default:"Не указан" }}
+                        {% endif %}
+                    </p>
+                    <p><strong>Версия:</strong> {{ product.version|default:"Не указана" }}</p>
+
+                    {% if product.implementation_count %}
+                    <p><strong>Внедрений:</strong> {{ product.implementation_count }}</p>
+                    {% endif %}
+
+                    {% if product.client_count %}
+                    <p><strong>Клиентов:</strong> {{ product.client_count }}</p>
+                    {% endif %}
+
+                    {% if product.release_year %}
+                    <p><strong>Год выпуска:</strong> {{ product.release_year }}</p>
+                    {% endif %}
+
+                    {% if not product.is_active %}
+                    <span class="badge bg-secondary">Неактивен</span>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'vendor_product_detail' product.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Продукты не найдены
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.vendor %}&vendor={{ filters.vendor }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}">
+                    &laquo;
+                </a>
+            </li>
+            {% endif %}
+
+            {% for i in paginator.page_range %}
+                {% if page_obj.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ i }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.vendor %}&vendor={{ filters.vendor }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}">
+                        {{ i }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.vendor %}&vendor={{ filters.vendor }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
+{% endblock %}

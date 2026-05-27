@@ -1,0 +1,1082 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Граф связей - Картотека F1-F2{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" />
+<style>
+    #network {
+        width: 100%;
+        height: 650px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .network-controls {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid #dee2e6;
+    }
+
+    .legend-item {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 20px;
+        padding: 5px 10px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .legend-color {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        margin-right: 6px;
+    }
+
+    .node-info {
+        position: absolute;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: none;
+        z-index: 1000;
+        max-width: 320px;
+        font-size: 0.9rem;
+    }
+
+    .network-stats {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .stat-card {
+        padding: 15px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .vis-network {
+        outline: none;
+    }
+
+    .badge {
+        padding: 8px 12px;
+        font-weight: 500;
+    }
+
+    h1 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .lead {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0.75rem 0;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        position: relative;
+        min-height: 650px;
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1rem 1.5rem;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255,255,255,0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        border-radius: 8px;
+    }
+
+    .loading-content {
+        text-align: center;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    .loading-progress {
+        width: 300px;
+        height: 6px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        margin-top: 15px;
+        overflow: hidden;
+    }
+
+    .loading-progress-bar {
+        height: 100%;
+        background: #3498db;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .stat-badge {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        margin: 5px;
+        background: #f8f9fa;
+        border-radius: 30px;
+        display: inline-block;
+    }
+
+    .stat-badge i {
+        margin-right: 8px;
+        color: #3498db;
+    }
+
+    .filter-panel {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .filter-section {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .filter-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .filter-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .filter-checkbox {
+        margin-right: 15px;
+        margin-bottom: 8px;
+    }
+
+    .filter-checkbox label {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+
+    .filter-checkbox input[type="checkbox"] {
+        cursor: pointer;
+    }
+
+    .filter-actions {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .node-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .node-list-item {
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .node-list-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .node-list-item.selected {
+        background-color: #e3f2fd;
+    }
+
+    .badge-filter {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .badge-filter:hover {
+        transform: scale(1.05);
+    }
+
+    .badge-filter.active {
+        border: 2px solid #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Заголовок -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>
+                <i class="fas fa-project-diagram text-primary me-2"></i>
+                Граф связей
+            </h1>
+            <p class="lead text-muted mb-0">
+                Визуализация связей между объектами, системами и участниками рынка
+            </p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary me-2" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i> Обновить
+            </button>
+            <button class="btn btn-outline-secondary" onclick="fitGraph()">
+                <i class="fas fa-expand-arrows-alt"></i> Подогнать
+            </button>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    {% with stats=graph_data.nodes|graph_stats:graph_data.edges %}
+    <div class="network-stats mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-cube fa-2x text-primary mb-2"></i>
+                    <h3 class="text-black">{{ stats.total_nodes }}</h3>
+                    <p class="text-muted mb-0">Всего узлов</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-industry fa-2x text-danger mb-2"></i>
+                     <h3 class="text-black">{{ stats.objects }}</h3>
+                    <p class="text-muted mb-0">Объектов</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-users fa-2x text-success mb-2"></i>
+                     <h3 class="text-black">{{ stats.vendors|add:stats.integrators|add:stats.suppliers }}</h3>
+                    <p class="text-muted mb-0">Участников</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-database fa-2x text-warning mb-2"></i>
+                     <h3 class="text-black">{{ stats.systems }}</h3>
+                    <p class="text-muted mb-0">Систем</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель фильтрации -->
+    <div class="filter-panel">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="filter-section">
+                    <div class="filter-title">
+                        <i class="fas fa-filter me-2"></i>Типы узлов
+                    </div>
+                    <div class="d-flex flex-wrap">
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterObjects" checked onchange="applyFilters()">
+                            <label for="filterObjects">
+                                <span class="legend-color" style="background: #3498DB;"></span>
+                                Объекты ({{ stats.objects }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterVendors" checked onchange="applyFilters()">
+                            <label for="filterVendors">
+                                <span class="legend-color" style="background: #2ECC71;"></span>
+                                Вендоры ({{ stats.vendors }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterIntegrators" checked onchange="applyFilters()">
+                            <label for="filterIntegrators">
+                                <span class="legend-color" style="background: #9B59B6;"></span>
+                                Интеграторы ({{ stats.integrators }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterSystems" checked onchange="applyFilters()">
+                            <label for="filterSystems">
+                                <span class="legend-color" style="background: #F1C40F;"></span>
+                                Системы ({{ stats.systems }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterSuppliers" checked onchange="applyFilters()">
+                            <label for="filterSuppliers">
+                                <span class="legend-color" style="background: #7F8C8D;"></span>
+                                Поставщики ({{ stats.suppliers }})
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title">
+                        <i class="fas fa-layer-group me-2"></i>Уровни объектов
+                    </div>
+                    <div class="d-flex flex-wrap">
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterLevel1" checked onchange="applyFilters()">
+                            <label for="filterLevel1">
+                                <span class="legend-color" style="background: #E74C3C;"></span>
+                                Предприятия (уровень 1)
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterLevel2" checked onchange="applyFilters()">
+                            <label for="filterLevel2">
+                                <span class="legend-color" style="background: #F39C12;"></span>
+                                Цеха (уровень 2)
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterLevel3" checked onchange="applyFilters()">
+                            <label for="filterLevel3">
+                                <span class="legend-color" style="background: #3498DB;"></span>
+                                Установки (уровень 3)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="filter-section">
+                    <div class="filter-title">
+                        <i class="fas fa-link me-2"></i>Типы связей
+                    </div>
+                    <div class="d-flex flex-wrap">
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterHierarchy" checked onchange="applyFilters()">
+                            <label for="filterHierarchy">
+                                <span class="legend-color" style="background: #95A5A6;"></span>
+                                Иерархия ({{ stats.hierarchy_edges }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterVendorEdges" checked onchange="applyFilters()">
+                            <label for="filterVendorEdges">
+                                <span class="legend-color" style="background: #2ECC71;"></span>
+                                Вендор → Система ({{ stats.vendor_edges }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterSystemEdges" checked onchange="applyFilters()">
+                            <label for="filterSystemEdges">
+                                <span class="legend-color" style="background: #F1C40F;"></span>
+                                Система → Объект ({{ stats.system_edges }})
+                            </label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="filterIntegratorEdges" checked onchange="applyFilters()">
+                            <label for="filterIntegratorEdges">
+                                <span class="legend-color" style="background: #9B59B6;"></span>
+                                Интегратор → Система ({{ stats.integrator_edges }})
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title">
+                        <i class="fas fa-search me-2"></i>Поиск
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="searchNode" placeholder="Введите название узла...">
+                        <button class="btn btn-outline-primary" type="button" onclick="searchNodes()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="searchResults" class="node-list" style="display: none; max-height: 200px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-actions">
+            <button class="btn btn-sm btn-success me-2" onclick="selectAll()">
+                <i class="fas fa-check-double"></i> Выбрать все
+            </button>
+            <button class="btn btn-sm btn-secondary me-2" onclick="deselectAll()">
+                <i class="fas fa-times"></i> Сбросить все
+            </button>
+            <button class="btn btn-sm btn-danger me-2" onclick="showOnlyObjects()">
+                <i class="fas fa-industry"></i> Только объекты
+            </button>
+            <button class="btn btn-sm btn-warning me-2" onclick="showOnlySystems()">
+                <i class="fas fa-database"></i> Только системы
+            </button>
+            <button class="btn btn-sm btn-success me-2" onclick="showOnlyParticipants()">
+                <i class="fas fa-users"></i> Только участники
+            </button>
+            <span class="float-end" id="filterStats"></span>
+        </div>
+    </div>
+    {% endwith %}
+
+    <!-- Легенда -->
+    <div class="network-controls">
+        <div class="d-flex flex-wrap align-items-center">
+            <span class="me-3 fw-bold text-secondary">Легенда:</span>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #E74C3C;"></span>
+                Предприятия (уровень 1)
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #F39C12;"></span>
+                Цеха (уровень 2)
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #3498DB;"></span>
+                Установки (уровень 3)
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #2ECC71;"></span>
+                Вендоры
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #9B59B6;"></span>
+                Интеграторы
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #F1C40F;"></span>
+                Системы
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #7F8C8D;"></span>
+                Поставщики
+            </div>
+        </div>
+    </div>
+
+    <!-- Карточка с графом -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-share-alt me-2"></i>Визуализация связей</span>
+            <span>
+                <span class="badge bg-secondary me-2" id="visibleNodesCount">{{ graph_data.nodes|length }}</span>
+                <span class="badge bg-secondary" id="visibleEdgesCount">{{ graph_data.edges|length }}</span>
+            </span>
+        </div>
+        <div class="card-body p-0 position-relative">
+            <!-- Оверлей загрузки -->
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <h5 id="loadingText">Загрузка графа... 0%</h5>
+                    <p class="text-muted">Пожалуйста, подождите</p>
+                    <div class="loading-progress">
+                        <div id="loadingProgress" class="loading-progress-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Контейнер для графа -->
+            <div id="network"></div>
+        </div>
+    </div>
+
+    <!-- Детальная информация -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="network-stats">
+                <h5><i class="fas fa-chart-pie me-2"></i>Детальная статистика</h5>
+                {% with stats=graph_data.nodes|graph_stats:graph_data.edges %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Всего узлов:</td>
+                                <td><span class="badge bg-primary">{{ stats.total_nodes }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Объекты:</td>
+                                <td><span class="badge bg-primary">{{ stats.objects }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Вендоры:</td>
+                                <td><span class="badge bg-success">{{ stats.vendors }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Интеграторы:</td>
+                                <td><span class="badge bg-info">{{ stats.integrators }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Системы:</td>
+                                <td><span class="badge bg-warning">{{ stats.systems }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Поставщики:</td>
+                                <td><span class="badge bg-secondary">{{ stats.suppliers }}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Всего связей:</td>
+                                <td><span class="badge bg-primary">{{ stats.total_edges }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Иерархические связи:</td>
+                                <td><span class="badge bg-secondary">{{ stats.hierarchy_edges }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Вендор → Система:</td>
+                                <td><span class="badge bg-success">{{ stats.vendor_edges }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Система → Объект:</td>
+                                <td><span class="badge bg-warning">{{ stats.system_edges }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Интегратор → Система:</td>
+                                <td><span class="badge bg-info">{{ stats.integrator_edges }}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="network-stats">
+                <h5><i class="fas fa-clock me-2"></i>О графе</h5>
+                <p class="text-muted">
+                    Граф показывает связи между промышленными объектами, автоматизированными системами и участниками рынка.
+                </p>
+                <p class="small text-muted mb-0">
+                    Время генерации: {{ statistics.debug_time|default:"—" }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Информационная панель для узлов -->
+<div id="nodeInfo" class="node-info">
+    <div id="nodeInfoContent"></div>
+</div>
+
+<!-- Данные для JavaScript -->
+<script>
+    var INITIAL_GRAPH_DATA = {{ graph_data|jsonify|safe }};
+    var INITIAL_STATISTICS = {{ statistics|jsonify|safe }};
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<script>
+    console.log('📊 INITIAL_GRAPH_DATA:', INITIAL_GRAPH_DATA);
+    console.log('📊 INITIAL_STATISTICS:', INITIAL_STATISTICS);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 DOM загружен, начинаем инициализацию...');
+
+        try {
+            if (!INITIAL_GRAPH_DATA) {
+                throw new Error('INITIAL_GRAPH_DATA пуст или не определен');
+            }
+
+            if (!INITIAL_GRAPH_DATA.nodes || !INITIAL_GRAPH_DATA.edges) {
+                throw new Error('INITIAL_GRAPH_DATA не содержит nodes или edges');
+            }
+
+            console.log('✅ Данные получены:', {
+                nodesCount: INITIAL_GRAPH_DATA.nodes.length,
+                edgesCount: INITIAL_GRAPH_DATA.edges.length
+            });
+
+            if (INITIAL_GRAPH_DATA.nodes.length === 0) {
+                document.getElementById('loadingText').innerHTML = 'Нет данных для отображения';
+                return;
+            }
+
+            const nodes = new vis.DataSet(INITIAL_GRAPH_DATA.nodes);
+            const edges = new vis.DataSet(INITIAL_GRAPH_DATA.edges);
+            const container = document.getElementById('network');
+
+            const data = {
+                nodes: nodes,
+                edges: edges
+            };
+
+            const options = {
+    nodes: {
+        font: {
+            size: 12,
+            color: '#2c3e50',
+            face: 'Arial'
+        },
+        borderWidth: 2,
+        shadow: {
+            enabled: true,
+            size: 5,
+            x: 2,
+            y: 2
+        },
+        margin: 10
+    },
+    edges: {
+        font: {
+            size: 10,
+            align: 'middle',
+            color: '#7f8c8d',
+            background: 'white'
+        },
+        smooth: {
+            type: 'cubicBezier',
+            forceDirection: 'horizontal',
+            roundness: 0.5
+        },
+        arrows: {
+            to: {
+                enabled: true,
+                scaleFactor: 0.8
+            }
+        },
+        color: {
+            color: '#95a5a6',
+            highlight: '#3498db',
+            hover: '#3498db'
+        },
+        width: 1.5
+    },
+    groups: {
+        object: {
+            shape: 'box',
+            color: '#3498db'
+        },
+        vendor: {
+            shape: 'dot',
+            color: '#2ecc71',
+            size: 20
+        },
+        integrator: {
+            shape: 'dot',
+            color: '#9b59b6',
+            size: 18
+        },
+        system: {
+            shape: 'box',
+            color: '#f1c40f',
+            size: 14
+        },
+        supplier: {
+            shape: 'dot',
+            color: '#7f8c8d',
+            size: 16
+        }
+    },
+    layout: {
+        improvedLayout: true,
+        hierarchical: false,
+        randomSeed: 42
+    },
+    physics: {
+        enabled: true,
+        stabilization: {
+            enabled: true,
+            iterations: 200,        // Увеличено для лучшей стабилизации
+            updateInterval: 50,      // Увеличено для плавности
+            onlyDynamicEdges: false,
+            fit: true
+        },
+        solver: 'forceAtlas2Based',  // Более плавный алгоритм
+        forceAtlas2Based: {
+            gravitationalConstant: -50,
+            centralGravity: 0.01,
+            springLength: 100,
+            springConstant: 0.08,
+            damping: 0.4,
+            avoidOverlap: 0.1
+        },
+        maxVelocity: 50,             // Ограничение скорости
+        minVelocity: 0.1,            // Минимальная скорость
+        timestep: 0.5                // Шаг времени
+    },
+    interaction: {
+        hover: true,
+        tooltipDelay: 200,
+        hideEdgesOnDrag: false,
+        navigationButtons: false,
+        keyboard: true
+    }
+};
+
+            const network = new vis.Network(container, data, options);
+
+            network.on("stabilizationProgress", function(params) {
+                const progress = params.iterations / params.total;
+                const percent = Math.round(progress * 100);
+                const progressBar = document.getElementById('loadingProgress');
+                const loadingText = document.getElementById('loadingText');
+
+                if (progressBar) {
+                    progressBar.style.width = percent + '%';
+                }
+                if (loadingText) {
+                    loadingText.innerHTML = 'Загрузка графа... ' + percent + '%';
+                }
+            });
+
+            network.once("stabilized", function() {
+                console.log('✅ Граф стабилизирован');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            });
+
+            network.on("click", function(params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    showNodeInfo(nodeId);
+                }
+            });
+
+            network.on("hoverNode", function(params) {
+                document.body.style.cursor = 'pointer';
+            });
+
+            network.on("blurNode", function(params) {
+                document.body.style.cursor = 'default';
+            });
+
+            setTimeout(function() {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }, 10000);
+
+            window.network = network;
+            window.graphData = INITIAL_GRAPH_DATA;
+
+            console.log('🎉 Граф создан успешно');
+
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+            document.getElementById('loadingText').innerHTML = 'Ошибка: ' + error.message;
+            setTimeout(() => document.getElementById('loadingOverlay').style.display = 'none', 2000);
+        }
+    });
+
+    function showNodeInfo(nodeId) {
+        const node = window.graphData.nodes.find(n => n.id === nodeId);
+        if (!node) return;
+
+        const infoDiv = document.getElementById('nodeInfo');
+        const contentDiv = document.getElementById('nodeInfoContent');
+
+        let html = `
+            <h6>${node.label || node.id}</h6>
+            <hr class="my-2">
+            <p class="mb-1"><small>ID: ${node.id}</small></p>
+            <p class="mb-1"><small>Тип: ${node.group || 'unknown'}</small></p>
+        `;
+
+        if (node.title) {
+            html += `<p class="mb-1"><small>${node.title}</small></p>`;
+        }
+
+        const connections = window.graphData.edges.filter(e => e.from === nodeId || e.to === nodeId);
+        if (connections.length > 0) {
+            html += '<hr class="my-2"><p class="mb-1"><small>Связи:</small></p><ul class="mb-0 small">';
+            connections.slice(0, 5).forEach(conn => {
+                const targetId = conn.from === nodeId ? conn.to : conn.from;
+                const targetNode = window.graphData.nodes.find(n => n.id === targetId);
+                if (targetNode) {
+                    html += `<li>${conn.label || 'связан'} → ${targetNode.label || targetId}</li>`;
+                }
+            });
+            if (connections.length > 5) {
+                html += `<li>... и еще ${connections.length - 5}</li>`;
+            }
+            html += '</ul>';
+        }
+
+        contentDiv.innerHTML = html;
+        infoDiv.style.display = 'block';
+
+        document.addEventListener('mousemove', function(e) {
+            infoDiv.style.left = (e.pageX + 20) + 'px';
+            infoDiv.style.top = (e.pageY + 20) + 'px';
+        }, { once: true });
+    }
+
+    function fitGraph() {
+        if (window.network) {
+            window.network.fit({ animation: true });
+        }
+    }
+
+    function showOnlyObjects() {
+        if (!window.network || !window.graphData) return;
+
+        const allNodes = window.graphData.nodes;
+        const allEdges = window.graphData.edges;
+
+        const objectIds = allNodes
+            .filter(node => node.id.startsWith('obj_'))
+            .map(node => node.id);
+
+        const relevantEdges = allEdges
+            .filter(edge => objectIds.includes(edge.from) && objectIds.includes(edge.to))
+            .map(edge => edge.id);
+
+        allNodes.forEach(node => {
+            const visible = objectIds.includes(node.id);
+            window.network.body.data.nodes.update({ id: node.id, hidden: !visible });
+        });
+
+        allEdges.forEach(edge => {
+            const visible = relevantEdges.includes(edge.id);
+            window.network.body.data.edges.update({ id: edge.id, hidden: !visible });
+        });
+
+        console.log('📊 Показаны только объекты:', objectIds.length);
+        updateVisibleCounts();
+    }
+
+    function showOnlySystems() {
+        if (!window.network || !window.graphData) return;
+
+        const allNodes = window.graphData.nodes;
+
+        const systemIds = allNodes
+            .filter(node => node.id.startsWith('sys_'))
+            .map(node => node.id);
+
+        allNodes.forEach(node => {
+            const visible = systemIds.includes(node.id);
+            window.network.body.data.nodes.update({ id: node.id, hidden: !visible });
+        });
+
+        window.graphData.edges.forEach(edge => {
+            window.network.body.data.edges.update({ id: edge.id, hidden: true });
+        });
+
+        console.log('📊 Показаны только системы:', systemIds.length);
+        updateVisibleCounts();
+    }
+
+    function showOnlyParticipants() {
+        if (!window.network || !window.graphData) return;
+
+        const allNodes = window.graphData.nodes;
+
+        const participantIds = allNodes
+            .filter(node => node.id.startsWith('part_'))
+            .map(node => node.id);
+
+        allNodes.forEach(node => {
+            const visible = participantIds.includes(node.id);
+            window.network.body.data.nodes.update({ id: node.id, hidden: !visible });
+        });
+
+        window.graphData.edges.forEach(edge => {
+            window.network.body.data.edges.update({ id: edge.id, hidden: true });
+        });
+
+        console.log('📊 Показаны только участники:', participantIds.length);
+        updateVisibleCounts();
+    }
+
+    function applyFilters() {
+        if (!window.network || !window.graphData) return;
+
+        const showObjects = document.getElementById('filterObjects')?.checked ?? true;
+        const showVendors = document.getElementById('filterVendors')?.checked ?? true;
+        const showIntegrators = document.getElementById('filterIntegrators')?.checked ?? true;
+        const showSystems = document.getElementById('filterSystems')?.checked ?? true;
+        const showSuppliers = document.getElementById('filterSuppliers')?.checked ?? true;
+        const showLevel1 = document.getElementById('filterLevel1')?.checked ?? true;
+        const showLevel2 = document.getElementById('filterLevel2')?.checked ?? true;
+        const showLevel3 = document.getElementById('filterLevel3')?.checked ?? true;
+        const showHierarchy = document.getElementById('filterHierarchy')?.checked ?? true;
+        const showVendorEdges = document.getElementById('filterVendorEdges')?.checked ?? true;
+        const showSystemEdges = document.getElementById('filterSystemEdges')?.checked ?? true;
+        const showIntegratorEdges = document.getElementById('filterIntegratorEdges')?.checked ?? true;
+
+        const visibleNodes = window.graphData.nodes.filter(node => {
+            const id = node.id || '';
+
+            if (id.startsWith('obj_')) {
+                if (!showObjects) return false;
+
+                const level = node.hierarchy_level || '';
+                if (level.includes('1') && !showLevel1) return false;
+                if (level.includes('2') && !showLevel2) return false;
+                if (level.includes('3') && !showLevel3) return false;
+                return true;
+            }
+
+            if (id.startsWith('sys_')) return showSystems;
+            if (id.startsWith('part_')) {
+                const group = node.group || '';
+                if (group === 'vendor') return showVendors;
+                if (group === 'integrator') return showIntegrators;
+                return showSuppliers;
+            }
+            return true;
+        }).map(node => node.id);
+
+        window.graphData.nodes.forEach(node => {
+            const visible = visibleNodes.includes(node.id);
+            window.network.body.data.nodes.update({ id: node.id, hidden: !visible });
+        });
+
+        window.graphData.edges.forEach(edge => {
+            let visible = visibleNodes.includes(edge.from) && visibleNodes.includes(edge.to);
+
+            if (visible) {
+                const label = edge.label || '';
+                if (label === 'включает' && !showHierarchy) visible = false;
+                if (label === 'поставляет' && !showVendorEdges) visible = false;
+                if (label === 'установлена' && !showSystemEdges) visible = false;
+                if (label === 'внедряет' && !showIntegratorEdges) visible = false;
+            }
+
+            window.network.body.data.edges.update({ id: edge.id, hidden: !visible });
+        });
+
+        updateVisibleCounts();
+    }
+
+    function updateVisibleCounts() {
+        const nodesSpan = document.getElementById('visibleNodesCount');
+        const edgesSpan = document.getElementById('visibleEdgesCount');
+
+        if (nodesSpan && edgesSpan && window.network) {
+            const visibleNodes = window.graphData.nodes.filter(node => {
+                return !window.network.body.data.nodes.get(node.id).hidden;
+            }).length;
+
+            const visibleEdges = window.graphData.edges.filter(edge => {
+                return !window.network.body.data.edges.get(edge.id).hidden;
+            }).length;
+
+            nodesSpan.textContent = `${visibleNodes}/${window.graphData.nodes.length}`;
+            edgesSpan.textContent = `${visibleEdges}/${window.graphData.edges.length}`;
+        }
+    }
+
+    function searchNodes() {
+        const searchText = document.getElementById('searchNode').value.toLowerCase();
+        if (!searchText) {
+            document.getElementById('searchResults').style.display = 'none';
+            return;
+        }
+
+        const results = window.graphData.nodes.filter(node =>
+            (node.label || '').toLowerCase().includes(searchText) ||
+            (node.title || '').toLowerCase().includes(searchText)
+        ).slice(0, 10);
+
+        const resultsDiv = document.getElementById('searchResults');
+        if (results.length > 0) {
+            let html = '<div class="list-group">';
+            results.forEach(node => {
+                html += `
+                    <a href="#" class="list-group-item list-group-item-action" onclick="highlightNode('${node.id}'); return false;">
+                        <i class="fas fa-circle me-2" style="color: ${node.color || '#999'};"></i>
+                        ${node.label || node.id}
+                        <small class="text-muted d-block">${node.title || ''}</small>
+                    </a>
+                `;
+            });
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        } else {
+            resultsDiv.innerHTML = '<div class="alert alert-info">Ничего не найдено</div>';
+            resultsDiv.style.display = 'block';
+        }
+    }
+
+    function highlightNode(nodeId) {
+        if (window.network) {
+            window.network.setSelection({ nodes: [nodeId], edges: [] });
+            window.network.focus(nodeId, { scale: 1.5, animation: true });
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('searchNode').value = '';
+        }
+    }
+
+    function selectAll() {
+        document.querySelectorAll('.filter-checkbox input').forEach(cb => cb.checked = true);
+        applyFilters();
+    }
+
+    function deselectAll() {
+        document.querySelectorAll('.filter-checkbox input').forEach(cb => cb.checked = false);
+        applyFilters();
+    }
+
+    document.addEventListener('click', function(e) {
+        const infoDiv = document.getElementById('nodeInfo');
+        if (infoDiv && !e.target.closest('#nodeInfo') && !e.target.closest('.vis-network')) {
+            infoDiv.style.display = 'none';
+        }
+
+        const resultsDiv = document.getElementById('searchResults');
+        if (resultsDiv && !e.target.closest('#searchNode') && !e.target.closest('#searchResults') && !e.target.closest('button[onclick="searchNodes()"]')) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
