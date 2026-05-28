@@ -18,7 +18,7 @@ from django.contrib.auth.models import User, Group
 from networkx import nodes, edges
 from django.core.serializers.json import DjangoJSONEncoder
 
-from .audit import AuditManager
+from .mixins import AuditManager
 from .decorators import (
     group_required, editor_required, viewer_required,
     can_edit_object, can_delete_object
@@ -27,20 +27,11 @@ from .forms import (
     ObjectForm, ParticipantForm, AutomatedSystemForm,
     VendorProductForm, ProjectForm
 )
-from .models import (
-    SYSTEM_CLASSES,
-    Address,
-    AutomatedSystem,
-    AutomationLevel,
-    CompanyGroup,
-    LegalEntity,
-    Object,
-    ObjectAutomationLevel,
-    ObjectClass,
-    Participant,
-    Project,
-    VendorProduct,
-)
+
+from apps.objects.models import *
+from apps.automation.models import *
+from apps.registry.models import *
+from apps.participants.models import *
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +45,7 @@ logger = logging.getLogger(__name__)
 def export_data(request):
     """Экспорт данных в CSV/JSON"""
     export_format = request.GET.get('format', 'csv')
-    model_type = request.GET.get('model', 'objects')
+    model_type = request.GET.get('model', 'object')
 
     if export_format == 'json':
         response = HttpResponse(content_type='application/json')
@@ -62,7 +53,7 @@ def export_data(request):
             f'attachment; filename="{model_type}_export.json"'
         )
 
-        if model_type == 'objects':
+        if model_type == 'object':
             objects_data = []
             for obj in Object.objects.all():
                 objects_data.append({
@@ -105,7 +96,7 @@ def export_data(request):
                 })
 
             data = {
-                'objects': objects_data,
+                'object': objects_data,
                 'participants': list(Participant.objects.values(
                     'id', 'name', 'inn', 'participant_type', 'is_partner',
                 )),
@@ -128,7 +119,7 @@ def export_data(request):
         )
         writer = csv.writer(response)
 
-        if model_type == 'objects':
+        if model_type == 'object':
             _export_objects(writer)
         elif model_type == 'participants':
             _export_participants(writer)
@@ -211,7 +202,7 @@ def _export_systems(writer):
 def _export_all_json():
     """Экспорт всех данных в JSON"""
     data = {
-        'objects': list(Object.objects.values(
+        'object': list(Object.objects.values(
             'id', 'name', 'short_name', 'hierarchy_level',
             'technology', 'start_year', 'capacity', 'status',
         )),
@@ -301,8 +292,8 @@ def _process_json_file(json_file):
                         )
 
             # Импортируем объекты
-            if 'objects' in data:
-                for item in data['objects']:
+            if 'object' in data:
+                for item in data['object']:
                     try:
                         import_object_item(item)
                         success += 1
@@ -1583,11 +1574,11 @@ def class_detail_view(request, class_id):
                     if top_parent and top_parent != obj
                     else '-'
                 ),
-                'info_url': f'/objects/{obj.id}/',
+                'info_url': f'/object/{obj.id}/',
             })
 
         tables_data[level_code] = {
-            'objects': table_objects,
+            'object': table_objects,
             'total_count': level_objects.count(),
             'has_more': level_objects.count() > 4,
         }
@@ -2602,7 +2593,7 @@ def legal_entity_detail_view(request, pk):
 
     context = {
         'legal_entity': legal_entity,
-        'objects': objects,
+        'object': objects,
         'total_objects': objects.count(),
     }
 
@@ -2635,7 +2626,7 @@ def level_detail_view(request, level_code):
 
     context = {
         'level': level,
-        'objects': objects_with_level,
+        'object': objects_with_level,
         'participants': participants,
         'class_stats': class_stats,
         'total_objects': objects_with_level.count(),
@@ -2650,7 +2641,7 @@ def api_objects_by_level(request, level_code):
         'id', 'name', 'category', 'technology'
     )[:50]
 
-    return JsonResponse({'objects': list(objects)})
+    return JsonResponse({'object': list(objects)})
 
 
 @login_required
@@ -2658,7 +2649,7 @@ def api_objects_by_level(request, level_code):
 def db_stats(request):
     """Статистика по базе данных"""
     stats_data = {
-        'objects': Object.objects.count(),
+        'object': Object.objects.count(),
         'participants': Participant.objects.count(),
         'systems': AutomatedSystem.objects.count(),
         'by_level': list(Object.objects.values('hierarchy_level').annotate(

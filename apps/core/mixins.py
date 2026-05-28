@@ -1,8 +1,87 @@
 # core/mixins.py
 from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 import threading
-from .audit import AuditLog
+
+
+class AuditLog(models.Model):
+    """Журнал всех изменений в системе"""
+
+    ACTION_TYPES = [
+        ('CREATE', 'Создание'),
+        ('UPDATE', 'Изменение'),
+        ('DELETE', 'Удаление'),
+        ('RESTORE', 'Восстановление'),
+    ]
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Пользователь',
+        related_name='audit_logs',
+    )
+    user_ip = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        verbose_name='IP адрес',
+    )
+    user_agent = models.TextField(
+        blank=True,
+        verbose_name='User Agent',
+    )
+
+    action = models.CharField(
+        max_length=20,
+        choices=ACTION_TYPES,
+        verbose_name='Действие',
+    )
+    timestamp = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Время',
+        db_index=True,
+    )
+
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        verbose_name='Тип модели',
+    )
+    object_id = models.PositiveIntegerField(
+        verbose_name='ID объекта',
+    )
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    object_repr = models.CharField(
+        max_length=255,
+        verbose_name='Представление объекта',
+    )
+    changes = models.JSONField(
+        default=dict,
+        verbose_name='Изменения',
+    )
+    snapshot = models.JSONField(
+        default=dict,
+        verbose_name='Снимок состояния',
+    )
+
+    class Meta:
+        verbose_name = 'Запись аудита'
+        verbose_name_plural = 'Журнал аудита'
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['content_type', 'object_id']),
+            models.Index(fields=['user', '-timestamp']),
+            models.Index(fields=['action', 'timestamp']),
+        ]
+
+    def __str__(self):
+        user_name = self.user.username if self.user else 'Система'
+        return f"[{self.timestamp:%Y-%m-%d %H:%M}] {user_name} - {self.get_action_display()} - {self.object_repr}"
 
 
 class AuditManager:
@@ -21,7 +100,6 @@ class AuditManager:
         """Преобразование модели в словарь для снимка"""
         from django.forms import model_to_dict
         data = model_to_dict(instance)
-        # Преобразуем сложные типы в строки
         for key, value in data.items():
             if hasattr(value, 'pk'):
                 data[key] = value.pk
@@ -40,7 +118,7 @@ class AuditManager:
             user_ip=cls._get_client_ip(request),
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
             action='CREATE',
-            content_type=instance.get_content_type(),
+            content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
             object_repr=str(instance),
             changes={},
@@ -58,7 +136,7 @@ class AuditManager:
             user_ip=cls._get_client_ip(request),
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
             action='UPDATE',
-            content_type=instance.get_content_type(),
+            content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
             object_repr=str(instance),
             changes=changes,
@@ -76,7 +154,7 @@ class AuditManager:
             user_ip=cls._get_client_ip(request),
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
             action='DELETE',
-            content_type=instance.get_content_type(),
+            content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
             object_repr=str(instance),
             changes={},
@@ -87,7 +165,7 @@ class AuditManager:
     def get_history(instance):
         """Получение истории изменений объекта"""
         return AuditLog.objects.filter(
-            content_type=instance.get_content_type(),
+            content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
         ).select_related('user').order_by('-timestamp')
 
@@ -100,13 +178,8 @@ class AuditableMixin(models.Model):
     class Meta:
         abstract = True
 
-    def get_content_type(self):
-        """Получение ContentType для модели"""
-        from django.contrib.contenttypes.models import ContentType
-        return ContentType.objects.get_for_model(self)
-
     def _get_current_request(self):
-        """Получение текущего request (без импорта)"""
+        """Получение текущего request"""
         return getattr(threading.current_thread(), 'current_request', None)
 
     def save(self, *args, **kwargs):
@@ -114,12 +187,10 @@ class AuditableMixin(models.Model):
         request = self._get_current_request()
 
         if not self.pk:
-            # Новая запись
             super().save(*args, **kwargs)
             if request:
                 AuditManager.log_create(request, self)
         else:
-            # Существующая запись
             old = self.__class__.objects.get(pk=self.pk)
             changes = self._get_changes(old)
 

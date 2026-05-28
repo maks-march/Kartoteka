@@ -1,28 +1,14 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User, Group
+from django.db.models import Count
 
-from .audit import AuditLog
-from .models import (
-    Address,
-    LegalEntity,
-    Object,
-    ObjectClass,
-    CompanyGroup,
-    AutomationLevel,
-    ObjectAutomationLevel,
-    AutomatedSystem,
-    Participant,
-    VendorProduct,
-    ClassCharacteristic,
-    ClassAutomationRequirement,
-    ObjectCharacteristicValue,
-    Project,
-    Certificate,
-    Review,
-    TCOAnalysis,
-)
+from .mixins import AuditLog
+from apps.automation.models import *
+from apps.registry.models import *
+from apps.objects.models import *
+from apps.participants.models import *
+
 
 
 # =============================================================================

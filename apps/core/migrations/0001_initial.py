@@ -110,7 +110,7 @@ class Migration(migrations.Migration):
                 ('address', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='core.address', verbose_name='Адрес')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_objects', to=settings.AUTH_USER_MODEL, verbose_name='Создал')),
                 ('legal_entity', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='core.legalentity', verbose_name='Юридическое лицо')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='core.object', verbose_name='Родительский объект')),
+                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='core.objects', verbose_name='Родительский объект')),
             ],
             options={
                 'verbose_name': 'Объект',
@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
                 ('implementation_year', models.IntegerField(blank=True, null=True)),
                 ('notes', models.TextField(blank=True)),
                 ('level', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.automationlevel')),
-                ('object', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='automation_levels', to='core.object')),
+                ('objects', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='automation_levels', to='core.objects')),
             ],
             options={
                 'verbose_name': 'Уровень автоматизации объекта',
@@ -142,12 +142,12 @@ class Migration(migrations.Migration):
                 ('notes', models.TextField(blank=True, verbose_name='Примечания')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
                 ('characteristic', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.classcharacteristic')),
-                ('object', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='characteristic_values', to='core.object')),
+                ('objects', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='characteristic_values', to='core.objects')),
             ],
             options={
                 'verbose_name': 'Значение характеристики объекта',
                 'verbose_name_plural': 'Значения характеристик объектов',
-                'ordering': ['object', 'characteristic'],
+                'ordering': ['objects', 'characteristic'],
             },
         ),
         migrations.CreateModel(
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='object',
+            model_name='objects',
             name='object_class',
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='objects_in_class', to='core.objectclass', verbose_name='Класс объекта'),
         ),
@@ -294,7 +294,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_projects', to=settings.AUTH_USER_MODEL, verbose_name='Создал')),
-                ('object', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='core.object', verbose_name='Объект внедрения')),
+                ('objects', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='core.objects', verbose_name='Объект внедрения')),
                 ('participant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='core.participant', verbose_name='Участник')),
                 ('vendor_product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='projects', to='core.vendorproduct', verbose_name='Вендорский продукт')),
             ],
@@ -342,7 +342,7 @@ class Migration(migrations.Migration):
                 ('notes', models.TextField(blank=True, verbose_name='Примечания')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_systems', to=settings.AUTH_USER_MODEL, verbose_name='Создал')),
                 ('level', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='core.automationlevel', verbose_name='Уровень автоматизации')),
-                ('object', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='automated_systems', to='core.object')),
+                ('objects', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='automated_systems', to='core.objects')),
                 ('implementer', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='automated_systems_implementer', to='core.participant', verbose_name='Внедряющая компания')),
                 ('integrator', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='automated_systems_integrator', to='core.participant', verbose_name='Интегратор (Инжиниринговая компания)')),
                 ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='automated_systems_vendor', to='core.participant', verbose_name='Вендор')),
@@ -389,7 +389,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='objectautomationlevel',
-            index=models.Index(fields=['object', 'status'], name='core_object_object__098d8a_idx'),
+            index=models.Index(fields=['objects', 'status'], name='core_object_object__098d8a_idx'),
         ),
         migrations.AddIndex(
             model_name='objectautomationlevel',
@@ -401,11 +401,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='objectautomationlevel',
-            unique_together={('object', 'level')},
+            unique_together={('objects', 'level')},
         ),
         migrations.AddIndex(
             model_name='objectcharacteristicvalue',
-            index=models.Index(fields=['object', 'characteristic'], name='core_object_object__7bf30f_idx'),
+            index=models.Index(fields=['objects', 'characteristic'], name='core_object_object__7bf30f_idx'),
         ),
         migrations.AddIndex(
             model_name='objectcharacteristicvalue',
@@ -417,7 +417,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='objectcharacteristicvalue',
-            unique_together={('object', 'characteristic')},
+            unique_together={('objects', 'characteristic')},
         ),
         migrations.AddIndex(
             model_name='objectclass',
@@ -432,39 +432,39 @@ class Migration(migrations.Migration):
             index=models.Index(fields=['parent'], name='core_object_parent__08a82f_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['hierarchy_level'], name='core_object_hierarc_ec2adc_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['status'], name='core_object_status_9d532e_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['object_class'], name='core_object_object__04ad7e_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['short_name'], name='core_object_short_n_3a88e9_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['hierarchy_level', 'status'], name='obj_level_status_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['parent_id', 'hierarchy_level'], name='obj_parent_level_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['legal_entity', 'hierarchy_level'], name='obj_legal_level_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['object_class', 'start_year'], name='obj_class_year_idx'),
         ),
         migrations.AddIndex(
-            model_name='object',
+            model_name='objects',
             index=models.Index(fields=['technology'], name='obj_technology_idx'),
         ),
         migrations.AddIndex(
@@ -541,7 +541,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='project',
-            index=models.Index(fields=['object', 'year'], name='project_object_year_idx'),
+            index=models.Index(fields=['objects', 'year'], name='project_object_year_idx'),
         ),
         migrations.AddIndex(
             model_name='certificate',
@@ -569,7 +569,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='automatedsystem',
-            index=models.Index(fields=['object', 'system_class'], name='core_automa_object__e26049_idx'),
+            index=models.Index(fields=['objects', 'system_class'], name='core_automa_object__e26049_idx'),
         ),
         migrations.AddIndex(
             model_name='automatedsystem',

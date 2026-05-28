@@ -1198,7 +1198,7 @@ def graph_stats(nodes, edges):
     stats = {
         'total_nodes': len(nodes) if nodes else 0,
         'total_edges': len(edges) if edges else 0,
-        'objects': count_by_type(nodes, 'object') if nodes else 0,
+        'object': count_by_type(nodes, 'object') if nodes else 0,
         'vendors': count_by_type(nodes, 'vendor') if nodes else 0,
         'integrators': count_by_type(nodes, 'integrator') if nodes else 0,
         'systems': count_by_type(nodes, 'system') if nodes else 0,

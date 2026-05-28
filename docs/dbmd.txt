@@ -1,0 +1,173 @@
+Table OwnerEntity {
+  id integer [primary key]
+  owner_name varchar [note: 'Название юр. лица']
+  inn varchar [unique, note: 'ИНН']
+  owner_id integer [ref: > OwnerEntity.id, note: 'Следующий в иерархии владелец']
+  ultimate_owner_id integer [ref: > OwnerEntity.id, note: 'Корневой владелец.']
+  ownership_percentage decimal [note: 'Доля владения']
+}
+
+Table Address {
+  id integer [primary key]
+  country varchar
+  region varchar
+  city varchar
+  street varchar
+  house varchar [note: 'Адрес производства (уровень 1)']
+  title varchar [note: 'Адрес установки (уровень 3)']
+  fias_code varchar
+}
+
+Enum object_category {
+  main
+  aux
+  infra
+  prep
+  storage
+}
+
+Enum object_status {
+  active
+  in_project
+  reconstruction
+  stopped
+}
+
+Table Object {
+  id integer [primary key]
+  object_name varchar [note: 'Полное название объекта']
+  object_short_name varchar [note: 'Короткое название объекта']
+  object_old_name varchar [note: 'Историческое название объекта']
+  object_law_name varchar [note: 'Юридическое название объекта']
+  hierarchy_level integer [note: 'Уровень в иерархии: производство -> цех -> установка']
+  technology_info varchar
+  category object_category [note: 'Разделение на категории: основное, вспомогательное, инфраструктурное, подготовительное, склад']
+  start_date date [note: 'Дата ввода в эксплуатацию.']
+  is_reconstructed bool [note: 'Была ли реконструкция']
+  capacity varchar [note: 'Мощность / объем производства']
+  status object_status [note: 'Состояние объекта']
+  parent_object_id integer [ref: > Object.id, note: 'Родительский объект на уровень(или 2) выше в иерархии']
+  address_id integer [ref: > Address.id]
+  owner_entity_id integer [ref: > OwnerEntity.id]
+}
+
+Enum system_status {
+  active
+  inactive
+  maintenance
+  upgrade
+}
+
+Table AutomatedSystem {
+  id integer [primary key]
+  autosystem_name varchar [note: 'Полное название системы автоматизации']
+  autosystem__short_name varchar [note: 'Короткое название системы автоматизации']
+  system_class integer [ref: > AutomationClass.id, note: 'Тип системы (уровень и класс)']
+  vendor_id integer [ref: > Participant.id, note: 'Поставщик системы']
+  vendor_product_id integer [ref: > VendorProduct.id, note: 'Продукт']
+  version varchar [note: 'Версия системы']
+  modules json [note: 'Модули системы']
+  interfaces json [note: 'Интерфейсы системы']
+  system_status system_status [note: 'Статус системы.']
+  installation_date date [note: 'Дата получения системы.']
+  notes text [note: 'Дополнительная информация']
+}
+
+Table AutomationClass {
+  id integer [primary key]
+  level integer [note: 'Уровень автоматизации: L0 | L1 | L2 | L3 | L4']
+  system_class varchar [note: 'Класс системы']
+  description text
+}
+
+Enum auto_status {
+  planned
+  in_progress
+  completed
+  partial
+}
+
+Table ObjectSystem {
+  id integer [primary key]
+  object_id integer [ref: > Object.id]
+  system_id integer [ref: > AutomatedSystem.id]
+  status auto_status [note: 'Статус ввода системы в эксплуатацию']
+  implementation_date date [note: 'Дата ввода системы в эксплуатацию']
+  integrator_id integer [ref: > Participant.id, note: 'Интегратор системы']
+  implementer_id integer [ref: > Participant.id, note: 'Внедряющая компания']
+  notes text [note: 'Дополнительные пояснения']
+}
+
+Table ObjectCharacteristic {
+  id integer [primary key]
+  object_id integer [ref: > Object.id]
+  characteristic_name varchar [note: 'Название характеристики']
+  code varchar [note: 'Код характеристики']
+  unit varchar [note: 'Единица измерения']
+  description text [note: 'Описание']
+  is_required boolean [note: 'Обяательная характеристика']
+}
+
+Table ObjectCharacteristicValue {
+  id integer [primary key]
+  characteristic_id integer [ref: > ObjectCharacteristic.id]
+  value double [note: 'Значение']
+  measurement_date date [note: 'Дата измерения']
+  notes text [note: 'Дополнительная информация']
+}
+
+Table AutomationRequirement {
+  id integer [primary key]
+  automation varchar [ref: > ObjectSystem.id]
+  requirement text [note: 'Требование']
+  is_mandatory boolean [note: 'Обязательность']
+  regulation varchar [note: 'Нормативный документ']
+}
+
+Enum participant_type {
+  vendor
+  engineering
+  full_cycle
+  supplier
+}
+
+Table Participant {
+  id integer [primary key]
+  participant_name varchar
+  inn varchar [unique, note: 'ИНН']
+  participant_type participant_type [note: 'Тип участника: вендор, инжиниринговая компания, вендо полного цикла, поставщик']
+  is_partner boolean [note: 'Является ли партнером']
+  registration_date date [note: 'Дата регистрации']
+  website varchar [note: 'Ссылка на сайт']
+  kam_name varchar [note: 'Имя КАМ']
+  kam_phone varchar [note: 'Номер КАМ']
+  contact_person varchar [note: 'Контакт от ЦК ПА']
+  contact_phone varchar [note: 'Телефон от ЦК ПА']
+  presentation_url varchar [note: 'Ссылка на презентацию']
+  profile text [note: 'Профиль компании']
+  industries json [note: 'Отрасли применения']
+  contacts json [note: 'Контактная информация']
+  financial_data json [note: 'Финансовые показатели']
+}
+
+Enum product_type {
+  software
+  hardware
+  service
+}
+
+Table VendorProduct {
+  id integer [primary key]
+  product_name varchar [note: 'Название вендорского продукта']
+  vendor_id integer [ref: > Participant.id, note: 'Вендор']
+  product_type product_type [note: 'Тип продукта']
+  article varchar [unique, note: 'Артикул']
+  description text [note: 'Описание']
+  version varchar [note: 'Версия']
+  technical_specs json [note: 'Технические характеристики']
+  system_types json [note: 'Типы систем']
+  industries json [note: 'Отрасли применения']
+  release_year date [note: 'Дата выпуска']
+  end_of_support date [note: 'Конец поддержки']
+  is_active boolean [note: 'Активен ли продукт']
+}

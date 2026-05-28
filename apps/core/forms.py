@@ -1,9 +1,9 @@
 # core/forms.py
 from django import forms
-from .models import (
-    Object, Participant, AutomatedSystem,
-    VendorProduct, Project, Certificate, Review, TCOAnalysis
-)
+
+from apps.automation.models import *
+from apps.objects.models import *
+from apps.participants.models import *
 
 
 class ObjectForm(forms.ModelForm):
