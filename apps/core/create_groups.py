@@ -1,7 +1,10 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from .models import Object, Participant, AutomatedSystem, Project, VendorProduct
+
+from apps.automation.models import AutomatedSystem
+from apps.objects.models import Object
+from apps.participants.models import Participant, Project, VendorProduct
 
 
 class Command(BaseCommand):
