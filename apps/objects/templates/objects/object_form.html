@@ -1,0 +1,101 @@
+{% extends "core/base.html" %}
+
+{% block title %}{% if object %}Изменить{% else %}Добавить{% endif %} объект{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>{% if object %}Изменить{% else %}Добавить{% endif %} объект</h1>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    <form method="post" id="objectForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="nameInput">Название</label>
+            <input type="text" id="nameInput" name="name"
+                   value="{{ object.name|default:'' }}" required
+                   placeholder="Введите название объекта">
+        </div>
+
+        <div class="form-group">
+            <label for="levelSelect">Уровень</label>
+            <select name="level" id="levelSelect" required>
+                <option value="1"
+                    {% if object.level == 1 %}selected{% endif %}
+                    {% if preset_level and preset_level != 1 %}disabled{% endif %}>
+                    Уровень 1
+                </option>
+                <option value="2"
+                    {% if object.level == 2 %}selected{% endif %}
+                    {% if preset_level and preset_level != 2 %}disabled{% endif %}>
+                    Уровень 2
+                </option>
+                <option value="3"
+                    {% if object.level == 3 %}selected{% endif %}
+                    {% if preset_level and preset_level != 3 %}disabled{% endif %}>
+                    Уровень 3
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group" id="parentGroup"
+             style="{% if preset_level == 1 or not preset_level and not object.level %}display:none{% endif %}">
+            <label for="parentSearch">Родитель</label>
+            <input type="text" id="parentSearch"
+                   placeholder="Поиск по названию...">
+            <select name="parent" id="parentSelect">
+                <option value="">— Нет родителя —</option>
+                {% for p in possible_parents %}
+                <option value="{{ p.pk }}"
+                    {% if object.parent_id == p.pk %}selected{% endif %}
+                    {% if preset_parent == p.pk %}selected{% endif %}
+                    data-name="{{ p.name|lower }}">
+                    {{ p.name }} (Ур.{{ p.level }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{% if object %}{% url 'object-detail' object.pk %}{% else %}{% url 'object-list' %}{% endif %}"
+               class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+<script>
+(function() {
+    const levelSelect = document.getElementById('levelSelect');
+    const parentGroup = document.getElementById('parentGroup');
+    const parentSelect = document.getElementById('parentSelect');
+    const parentSearch = document.getElementById('parentSearch');
+
+    function toggleParent() {
+        const level = parseInt(levelSelect.value, 10);
+        if (level === 1) {
+            parentGroup.style.display = 'none';
+            parentSelect.value = '';
+        } else {
+            parentGroup.style.display = '';
+        }
+    }
+
+    levelSelect.addEventListener('change', toggleParent);
+    toggleParent();
+
+    parentSearch.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        Array.from(parentSelect.options).forEach(function(opt) {
+            const name = opt.getAttribute('data-name') || '';
+            if (!opt.value || name.includes(q)) {
+                opt.style.display = '';
+            } else {
+                opt.style.display = 'none';
+            }
+        });
+    });
+})();
+</script>
+{% endblock %}

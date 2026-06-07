@@ -7,7 +7,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from django.contrib.auth import get_user_model
-from core.models import Category, Object
+from apps.core.models import Category, Object
 
 User = get_user_model()
 

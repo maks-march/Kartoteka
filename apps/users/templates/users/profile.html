@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="card" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px">
+    <div>
+        <h1 style="margin-bottom:5px">{{ user.username }}</h1>
+        <p style="color:#666; margin:0">{{ user.email|default:"Email не указан" }}</p>
+        <p style="color:#888; font-size:12px; margin-top:5px">Дата регистрации: {{ user.date_joined|date:"d.m.Y H:i" }}</p>
+    </div>
+    <div class="actions" style="flex-shrink:0">
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Выйти</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+        <h2 style="margin:0">Мои объекты</h2>
+        <a href="{% url 'object-create' %}" class="btn btn-primary">+ Добавить объект</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Уровень</th>
+                <th>Родитель</th>
+                <th>Дата создания</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in user_objects %}
+            <tr>
+                <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
+                <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
+                <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{{ obj.created_at|date:"d.m.Y H:i" }}</td>
+                <td class="actions">
+                    <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
+                    <a href="{% url 'object-edit' obj.pk %}" class="btn btn-primary">Изменить</a>
+                    <form action="{% url 'object-delete' obj.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="empty">Вы еще не создали объектов</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
 from apps.users.usecases.usecase import AuthUseCase
+from apps.objects.usecases.object_usecase import ObjectUseCase
 
 
 @require_http_methods(["GET", "POST"])
@@ -24,7 +25,7 @@ def login_view(request):
         except Exception as e:
             error = str(e)
 
-    return render(request, "auth_service/login.html", {"error": error})
+    return render(request, "users/login.html", {"error": error})
 
 
 @require_http_methods(["GET", "POST"])
@@ -45,7 +46,7 @@ def register_view(request):
         except Exception as e:
             error = str(e)
 
-    return render(request, "auth_service/register.html", {"error": error})
+    return render(request, "users/register.html", {"error": error})
 
 
 @login_required
@@ -56,4 +57,9 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, "auth_service/profile.html", {"user": request.user})
+    object_usecase = ObjectUseCase()
+    user_objects = object_usecase.list_by_user(request.user)
+    return render(request, "users/profile.html", {
+        "user": request.user,
+        "user_objects": user_objects,
+    })

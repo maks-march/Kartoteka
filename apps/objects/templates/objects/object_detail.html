@@ -1,0 +1,59 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px">
+        <div>
+            <h1 style="margin-bottom:5px">{{ object.name }}</h1>
+            <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
+            {% if object.parent %}
+                <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
+            {% endif %}
+        </div>
+        <div class="actions" style="flex-shrink:0">
+            {% if user.is_authenticated %}
+                {% if object.level < 3 %}
+                    <a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребенка</a>
+                {% endif %}
+                <a href="{% url 'object-edit' object.pk %}" class="btn btn-secondary">Изменить</a>
+                <form action="{% url 'object-delete' object.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if children %}
+<div class="card">
+    <h2>Дети</h2>
+    <table>
+        <thead>
+            <tr><th>Название</th><th>Уровень</th><th>Действия</th></tr>
+        </thead>
+        <tbody>
+            {% for child in children %}
+            <tr>
+                <td><a href="{% url 'object-detail' child.pk %}">{{ child.name }}</a></td>
+                <td><span class="tag tag-{{ child.level }}">Уровень {{ child.level }}</span></td>
+                <td class="actions">
+                    <a href="{% url 'object-detail' child.pk %}" class="btn btn-secondary">Открыть</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <p class="empty">Нет детей</p>
+</div>
+{% endif %}
+
+<div style="margin-top:10px">
+    <a href="{% url 'object-list' %}" class="btn btn-secondary">← Назад к списку</a>
+</div>
+{% endblock %}

@@ -19,9 +19,9 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     # local
-    # "apps.core",
+    "apps.core",
     "apps.users",
-    # "apps.objects",
+    "apps.objects",
 ]
 
 # AUTH_USER_MODEL = "users.CustomUser"
@@ -74,7 +74,6 @@ LANGUAGE_CODE = "ru"
 TIME_ZONE = "Europe/Moscow"
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
@@ -97,3 +96,9 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+STATIC_URL = "static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]

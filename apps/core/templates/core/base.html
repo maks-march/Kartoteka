@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Kartoteka{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'hub' %}">Главная</a>
+            <a href="{% url 'object-list' %}">Объекты</a>
+        </nav>
+        <div class="user-menu">
+            {% if user.is_authenticated %}
+                <span>{{ user.username }}</span>
+                <a href="{% url 'profile' %}" class="btn btn-secondary">Профиль</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+</body>
+</html>
