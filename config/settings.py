@@ -37,11 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'old_apps.core',
-    'old_apps.automation',
-    'old_apps.objects',
-    'old_apps.participants',
-    'old_apps.registry',
 
     # third-party
     "rest_framework",
