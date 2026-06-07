@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends 'core/base.html' %}
 
 {% block title %}{% if object %}Изменить{% else %}Добавить{% endif %} объект{% endblock %}
 
@@ -10,40 +10,23 @@
 
     <form method="post" id="objectForm">
         {% csrf_token %}
-
         <div class="form-group">
-            <label for="nameInput">Название</label>
-            <input type="text" id="nameInput" name="name"
-                   value="{{ object.name|default:'' }}" required
-                   placeholder="Введите название объекта">
+            <label>Название</label>
+            <input type="text" name="name" value="{{ object.name|default:'' }}" required>
         </div>
 
         <div class="form-group">
-            <label for="levelSelect">Уровень</label>
+            <label>Уровень</label>
             <select name="level" id="levelSelect" required>
-                <option value="1"
-                    {% if object.level == 1 %}selected{% endif %}
-                    {% if preset_level and preset_level != 1 %}disabled{% endif %}>
-                    Уровень 1
-                </option>
-                <option value="2"
-                    {% if object.level == 2 %}selected{% endif %}
-                    {% if preset_level and preset_level != 2 %}disabled{% endif %}>
-                    Уровень 2
-                </option>
-                <option value="3"
-                    {% if object.level == 3 %}selected{% endif %}
-                    {% if preset_level and preset_level != 3 %}disabled{% endif %}>
-                    Уровень 3
-                </option>
+                <option value="1" {% if object.level == 1 %}selected{% endif %} {% if preset_level and preset_level != 1 %}disabled{% endif %}>Уровень 1</option>
+                <option value="2" {% if object.level == 2 %}selected{% endif %} {% if preset_level and preset_level != 2 %}disabled{% endif %}>Уровень 2</option>
+                <option value="3" {% if object.level == 3 %}selected{% endif %} {% if preset_level and preset_level != 3 %}disabled{% endif %}>Уровень 3</option>
             </select>
         </div>
 
-        <div class="form-group" id="parentGroup"
-             style="{% if preset_level == 1 or not preset_level and not object.level %}display:none{% endif %}">
-            <label for="parentSearch">Родитель</label>
-            <input type="text" id="parentSearch"
-                   placeholder="Поиск по названию...">
+        <div class="form-group" id="parentGroup" style="{% if preset_level == 1 or not preset_level and not object.level %}display:none{% endif %}">
+            <label>Родитель</label>
+            <input type="text" id="parentSearch" placeholder="Поиск по названию..." style="margin-bottom:5px">
             <select name="parent" id="parentSelect">
                 <option value="">— Нет родителя —</option>
                 {% for p in possible_parents %}
@@ -57,10 +40,23 @@
             </select>
         </div>
 
+        <div class="form-group" id="categoryGroup">
+            <label>Категория</label>
+            <select name="category" id="categorySelect">
+                <option value="">— Без категории —</option>
+                {% for cat in categories %}
+                <option value="{{ cat.pk }}"
+                    {% if object.category_id == cat.pk %}selected{% endif %}
+                    data-level="{{ cat.level }}">
+                    {{ cat.name }} (Ур.{{ cat.level }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Сохранить</button>
-            <a href="{% if object %}{% url 'object-detail' object.pk %}{% else %}{% url 'object-list' %}{% endif %}"
-               class="btn btn-secondary">Отмена</a>
+            <a href="{% if object %}{% url 'object-detail' object.pk %}{% else %}{% url 'object-list' %}{% endif %}" class="btn btn-secondary">Отмена</a>
         </div>
     </form>
 </div>
@@ -71,6 +67,21 @@
     const parentGroup = document.getElementById('parentGroup');
     const parentSelect = document.getElementById('parentSelect');
     const parentSearch = document.getElementById('parentSearch');
+    const categorySelect = document.getElementById('categorySelect');
+
+    function filterCategories() {
+        const level = parseInt(levelSelect.value, 10);
+        Array.from(categorySelect.options).forEach(function(opt) {
+            if (!opt.value) return;
+            const catLevel = parseInt(opt.getAttribute('data-level'), 10);
+            if (catLevel === level) {
+                opt.style.display = '';
+            } else {
+                opt.style.display = 'none';
+                if (opt.selected) opt.selected = false;
+            }
+        });
+    }
 
     function toggleParent() {
         const level = parseInt(levelSelect.value, 10);
@@ -82,8 +93,10 @@
         }
     }
 
-    levelSelect.addEventListener('change', toggleParent);
-    toggleParent();
+    levelSelect.addEventListener('change', function() {
+        toggleParent();
+        filterCategories();
+    });
 
     parentSearch.addEventListener('input', function() {
         const q = this.value.toLowerCase();
@@ -96,6 +109,9 @@
             }
         });
     });
+
+    toggleParent();
+    filterCategories();
 })();
 </script>
 {% endblock %}

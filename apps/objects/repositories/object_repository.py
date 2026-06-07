@@ -1,12 +1,9 @@
-from django.db.models.functions import Lower
-from jedi.settings import case_insensitive_completion
-
 from apps.objects.models import Object
 
 
 class ObjectRepository:
     def get_all(self, level=None, search=None):
-        qs = Object.objects.filter(is_deleted=False).select_related("parent")
+        qs = Object.objects.filter(is_deleted=False).select_related("parent", "category")
         if level is not None:
             qs = qs.filter(level=level)
         if search:
@@ -16,13 +13,13 @@ class ObjectRepository:
     def get_by_id(self, pk):
         return (
             Object.objects.filter(pk=pk, is_deleted=False)
-            .select_related("parent")
+            .select_related("parent", "category")
             .prefetch_related("children")
             .first()
         )
 
     def get_by_creator(self, user, search=None):
-        qs = Object.objects.filter(is_deleted=False, created_by=user).select_related("parent")
+        qs = Object.objects.filter(is_deleted=False, created_by=user).select_related("parent", "category")
         if search:
             qs = qs.filter(name__icontains=search)
         return qs

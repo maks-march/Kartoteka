@@ -19,6 +19,13 @@ class Object(models.Model):
         related_name="children",
         limit_choices_to={"is_deleted": False},
     )
+    category = models.ForeignKey(
+        "categories.Category",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="category_objects",
+    )
     is_deleted = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True

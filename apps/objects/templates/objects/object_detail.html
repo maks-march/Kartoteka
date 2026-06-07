@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends 'core/base.html' %}
 
 {% block title %}{{ object.name }}{% endblock %}
 
@@ -8,6 +8,9 @@
         <div>
             <h1 style="margin-bottom:5px">{{ object.name }}</h1>
             <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
+            {% if object.category %}
+                <span class="tag tag-{{ object.category.level }}" style="margin-left:8px">{{ object.category.name }}</span>
+            {% endif %}
             {% if object.parent %}
                 <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
             {% endif %}
@@ -32,13 +35,14 @@
     <h2>Дети</h2>
     <table>
         <thead>
-            <tr><th>Название</th><th>Уровень</th><th>Действия</th></tr>
+            <tr><th>Название</th><th>Уровень</th><th>Категория</th><th>Действия</th></tr>
         </thead>
         <tbody>
             {% for child in children %}
             <tr>
                 <td><a href="{% url 'object-detail' child.pk %}">{{ child.name }}</a></td>
                 <td><span class="tag tag-{{ child.level }}">Уровень {{ child.level }}</span></td>
+                <td>{% if child.category %}<span class="tag tag-{{ child.category.level }}">{{ child.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td class="actions">
                     <a href="{% url 'object-detail' child.pk %}" class="btn btn-secondary">Открыть</a>
                 </td>

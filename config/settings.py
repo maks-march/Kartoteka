@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.users",
     "apps.objects",
+    "apps.categories"
 ]
 
 # AUTH_USER_MODEL = "users.CustomUser"
@@ -62,6 +63,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = "/"
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

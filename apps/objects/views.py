@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.repositories.object_repository import ObjectRepository
+from apps.categories.usecases.category_usecase import CategoryUseCase
 
 
 @require_http_methods(["GET"])
@@ -28,6 +29,7 @@ def object_detail(request, pk):
 @login_required
 def object_create(request):
     repo = ObjectRepository()
+    cat_usecase = CategoryUseCase()
     error = None
     object_instance = None
 
@@ -39,16 +41,19 @@ def object_create(request):
                 name=request.POST.get("name"),
                 level=int(request.POST.get("level")),
                 parent=request.POST.get("parent") or None,
+                category=request.POST.get("category") or None,
             )
             return redirect("object-list")
         except (ValidationError, Exception) as e:
             error = str(e)
             object_instance = None
 
-    possible_parents = repo.get_all().filter(level__lt=3)  # любой кроме 3 может быть родителем? на самом деле родитель должен быть меньше уровня ребенка, но для выбора покажем всех возможных
+    possible_parents = repo.get_all().filter(level__lt=3)
+    categories = cat_usecase.list()
     return render(request, "objects/object_form.html", {
         "object": object_instance,
         "possible_parents": possible_parents,
+        "categories": categories,
         "error": error,
     })
 
@@ -58,6 +63,7 @@ def object_create(request):
 def object_edit(request, pk):
     repo = ObjectRepository()
     usecase = ObjectUseCase()
+    cat_usecase = CategoryUseCase()
     obj = usecase.get(pk)
     error = None
 
@@ -69,15 +75,18 @@ def object_edit(request, pk):
                 name=request.POST.get("name"),
                 level=int(request.POST.get("level")),
                 parent=request.POST.get("parent") or None,
+                category=request.POST.get("category") or None,
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)
 
     possible_parents = repo.get_all().exclude(pk=pk).filter(level__lt=3)
+    categories = cat_usecase.list()
     return render(request, "objects/object_form.html", {
         "object": obj,
         "possible_parents": possible_parents,
+        "categories": categories,
         "error": error,
     })
 
@@ -95,6 +104,7 @@ def object_delete(request, pk):
 def object_add_child(request, pk):
     repo = ObjectRepository()
     usecase = ObjectUseCase()
+    cat_usecase = CategoryUseCase()
     parent = usecase.get(pk)
     error = None
 
@@ -110,14 +120,17 @@ def object_add_child(request, pk):
                 name=request.POST.get("name"),
                 level=child_level,
                 parent=parent.pk,
+                category=request.POST.get("category") or None,
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)
 
+    categories = cat_usecase.list(level=child_level)
     return render(request, "objects/object_form.html", {
         "object": None,
         "possible_parents": [parent],
+        "categories": categories,
         "preset_parent": parent.pk,
         "preset_level": child_level,
         "error": error,

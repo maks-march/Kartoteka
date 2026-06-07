@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends 'core/base.html' %}
 
 {% block title %}Объекты{% endblock %}
 
@@ -28,6 +28,7 @@
             <tr>
                 <th>Название</th>
                 <th>Уровень</th>
+                <th>Категория</th>
                 <th>Родитель</th>
                 <th>Действия</th>
             </tr>
@@ -37,6 +38,7 @@
             <tr>
                 <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
                 <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
+                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td class="actions">
                     <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
@@ -50,7 +52,7 @@
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" class="empty">Объекты не найдены</td></tr>
+            <tr><td colspan="5" class="empty">Объекты не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>

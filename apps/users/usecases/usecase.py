@@ -10,15 +10,15 @@ class AuthUseCase:
 
     def register(self, username: str, password: str):
         if self.user_repo.get_by_username(username):
-            raise ValidationError("User already exists")
+            raise ValidationError("Пользователь уже существуте")
 
         if len(password) < 4:
-            raise ValidationError("Password too short")
+            raise ValidationError("Пароль слишком короткий")
 
         return self.user_repo.create(username, password)
 
     def login(self, username: str, password: str):
         user = authenticate(username=username, password=password)
         if not user:
-            raise ValidationError("Invalid credentials")
+            raise ValidationError("Неправильный логин или пароль")
         return user

@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 
 from apps.objects.models import Object
+from apps.categories.models import Category
 
 
 class ObjectValidator:
@@ -9,26 +10,40 @@ class ObjectValidator:
             return
 
         if level == 1:
-            raise ValidationError("У первого уровня не может быть родителя")
+            raise ValidationError("Объект первого уровня не может иметь родителя")
 
         try:
             parent = Object.objects.get(pk=parent_id, is_deleted=False)
         except Object.DoesNotExist:
-            raise ValidationError("Родитель не найден")
+            raise ValidationError("Родительский объект не найден")
 
         if parent.level >= level:
             raise ValidationError(
-                "Родитель должен быть на уровень меньше"
+                "Уровень родительского объекта должен быть ниже уровня дочернего объекта"
             )
 
         if instance and parent.pk == instance.pk:
-            raise ValidationError("An object cannot be its own parent")
+            raise ValidationError("Объект не может быть родителем самому себе")
 
         if instance:
             current = parent
             while current.parent:
                 if current.parent.pk == instance.pk:
                     raise ValidationError(
-                        "Cycle detected: cannot set a descendant as parent"
+                        "Обнаружен цикл: нельзя назначить потомка родителем"
                     )
                 current = current.parent
+
+    def validate_category(self, category_id, object_level):
+        if category_id is None:
+            return
+
+        try:
+            category = Category.objects.get(pk=category_id)
+        except Category.DoesNotExist:
+            raise ValidationError("Категория не найдена")
+
+        if category.level != object_level:
+            raise ValidationError(
+                "Уровень категории должен совпадать с уровнем объекта"
+            )
