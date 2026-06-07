@@ -1,0 +1,736 @@
+<!-- core/old_templates/core/participant_detail.html -->
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ participant.name }} - Участник{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'participant_list' %}">Участники</a></li>
+            <li class="breadcrumb-item active">{{ participant.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Заголовок и основная информация -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-3">
+                {% if participant.participant_type == 'VENDOR' %}🏢
+                {% elif participant.participant_type == 'ENGINEERING' %}👷
+                {% elif participant.participant_type == 'FULL_CYCLE' %}🔄
+                {% else %}📦{% endif %}
+                {{ participant.name }}
+            </h1>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="badge bg-primary">{{ participant.get_participant_type_display }}</span>
+                {% if participant.is_partner %}
+                <span class="badge bg-success">Партнёр</span>
+                {% endif %}
+                <span class="badge bg-secondary">ИНН: {{ participant.inn }}</span>
+            </div>
+
+            {% if participant.profile %}
+            <p class="text-muted">{{ participant.profile }}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            <!-- 👇 КНОПКИ С ПРОВЕРКОЙ ПРАВ -->
+            <div class="btn-group" role="group">
+                {% if can_edit %}
+                <a href="{% url 'participant_edit' participant.id %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+                {% endif %}
+
+                {% if can_delete %}
+                <a href="{% url 'participant_delete' participant.id %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Удалить
+                </a>
+                {% endif %}
+
+                <a href="{% url 'participant_history' participant.id %}" class="btn btn-info">
+                    <i class="fas fa-history"></i> История
+                </a>
+
+                <a href="{% url 'participant_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Карточки статистики -->
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ total_objects }}</h3>
+                    <p class="card-text">Объектов внедрения</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ total_clients }}</h3>
+                    <p class="card-text">Заказчиков</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ clients|length }}</h3>
+                    <p class="card-text">Клиентских групп</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ vendor_products.count }}</h3>
+                    <p class="card-text">Вендорских продуктов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- НОВЫЙ БЛОК: СТАТИСТИКА F2 -->
+    <!-- ============================================ -->
+    {% if has_f2_data %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Дополнительная статистика</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3>{{ projects|length }}</h3>
+                            <p class="text-muted">Проектов</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3>{{ certificates|length }}</h3>
+                            <p class="text-muted">Сертификатов</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3>{{ reviews|length }}</h3>
+                            <p class="text-muted">Отзывов</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3>{{ tco_analyses|length }}</h3>
+                            <p class="text-muted">TCO анализов</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Левый столбец: Информация о компании -->
+        <div class="col-md-4">
+            <!-- Блок профиля с классами систем -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-building"></i> Профиль компании</h5>
+                </div>
+                <div class="card-body">
+                    <!-- КЛАССЫ СИСТЕМ -->
+                    <h6 class="mb-3">Работает с классами систем:</h6>
+
+                    {% with all_system_classes=clients|get_all_system_classes %}
+                        {% if all_system_classes %}
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% for class_name in all_system_classes %}
+                                    <span class="badge bg-dark me-1 mb-1"
+                                          style="cursor: help; font-size: 1rem; padding: 0.5rem 1rem;"
+                                          data-bs-toggle="tooltip"
+                                          data-bs-placement="top"
+                                          title="{{ class_name|get_system_class_full_name }}">
+                                        {{ class_name|get_system_class_short }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Не указаны</p>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Отрасли -->
+                    {% if participant.industries %}
+                    <h6 class="mb-3 mt-3">Отрасли:</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for industry in participant.industries %}
+                        <span class="badge bg-light text-dark border">{{ industry }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- БИЗНЕС-ИНФОРМАЦИЯ -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-briefcase"></i> Бизнес-информация</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% if participant.website %}
+                        <li class="mb-3">
+                            <i class="fas fa-globe text-primary"></i>
+                            <strong>Сайт:</strong>
+                            <a href="{{ participant.website }}" target="_blank">
+                                {{ participant.website }}
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if participant.kam_name %}
+                        <li class="mb-3">
+                            <i class="fas fa-user-tie text-primary"></i>
+                            <strong>Ответственный КАМ:</strong> {{ participant.kam_name }}
+                            {% if participant.kam_phone %}
+                            <br><small class="text-muted">тел: {{ participant.kam_phone }}</small>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+
+                        {% if participant.contact_person %}
+                        <li class="mb-3">
+                            <i class="fas fa-user text-primary"></i>
+                            <strong>Контакт от ЦК ПА:</strong> {{ participant.contact_person }}
+                            {% if participant.contact_phone %}
+                            <br><small class="text-muted">тел: {{ participant.contact_phone }}</small>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+
+                        {% if participant.presentation_url %}
+                        <li class="mb-3">
+                            <i class="fas fa-file-powerpoint text-primary"></i>
+                            <strong>Презентация:</strong>
+                            <a href="{{ participant.presentation_url }}" target="_blank">
+                                Скачать презентацию
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if participant.contacts %}
+                        <li class="mt-3 pt-3 border-top">
+                            <h6 class="mb-2">Дополнительные контакты:</h6>
+                            {% if participant.contacts.email %}
+                            <p class="mb-1">
+                                <i class="fas fa-envelope"></i> {{ participant.contacts.email }}
+                            </p>
+                            {% endif %}
+                            {% if participant.contacts.phone %}
+                            <p class="mb-0">
+                                <i class="fas fa-phone"></i> {{ participant.contacts.phone }}
+                            </p>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ФИНАНСОВАЯ ИНФОРМАЦИЯ -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Финансовая информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>ИНН:</strong> {{ participant.inn }}</p>
+                        {% if participant.registration_date %}
+                        <p class="mb-0"><strong>Дата регистрации:</strong> {{ participant.registration_date|date:"d.m.Y" }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% with financial_summary=participant.get_financial_summary %}
+                        {% if financial_summary and financial_summary.has_data %}
+                        <h6 class="mt-3 mb-2">Финансовые показатели:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Год</th>
+                                        <th>Выручка,<br>млн.руб.</th>
+                                        <th>Прибыль,<br>млн.руб.</th>
+                                        <th>Персонал,<br>чел.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for year_data in financial_summary.all_years %}
+                                    <tr>
+                                        <td><strong>{{ year_data.year }}</strong></td>
+                                        <td>{{ year_data.revenue|default:"—" }}</td>
+                                        <td>{{ year_data.profit|default:"—" }}</td>
+                                        <td>{{ year_data.employees|default:"—" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">Финансовые показатели не указаны</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- НОВЫЙ БЛОК: СЕРТИФИКАТЫ -->
+            <!-- ============================================ -->
+            {% if certificates %}
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-certificate me-2"></i>Сертификаты и лицензии</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for cert in certificates %}
+                        <div class="col-12 mb-3">
+                            <div class="card h-100 border-{{ cert.certificate_type|lower }}">
+                                <div class="card-body p-3">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-certificate text-warning me-2"></i>
+                                        {{ cert.name }}
+                                    </h6>
+                                    <p class="mb-1 small">
+                                        <i class="fas fa-building me-1"></i> {{ cert.issued_by }}
+                                    </p>
+                                    <p class="mb-1 small">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Выдан: {{ cert.issued_date|date:"d.m.Y" }}
+                                        {% if cert.expiry_date %}
+                                        <br>до: {{ cert.expiry_date|date:"d.m.Y" }}
+                                        {% endif %}
+                                    </p>
+                                    <span class="badge bg-info">{{ cert.get_certificate_type_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Правый столбец: Заказчики и внедрения -->
+        <div class="col-md-8">
+            <!-- ВНЕДРЕНЧЕСКИЕ СИСТЕМЫ -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-sitemap"></i> Заказчики и объекты внедрения
+                        <small class="text-muted">(сгруппировано по иерархии)</small>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if clients %}
+                    <div class="accordion" id="clientsAccordion">
+                        {% for client in clients %}
+                        <div class="accordion-item mb-2">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#client{{ client.client.id }}">
+                                    <div class="w-100">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong class="text-dark">
+                                                {{ client.client.name }}
+                                            </strong>
+                                            <div>
+                                                <span class="badge bg-info ms-1">{{ client.total_systems }} систем</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- КЛАССЫ СИСТЕМ У ЗАКАЗЧИКА -->
+                                        {% if client.system_classes %}
+                                        <div class="mt-2">
+                                            {% for class in client.system_classes %}
+                                            <span class="badge bg-light text-dark border me-1"
+                                                  style="cursor: help;"
+                                                  data-bs-toggle="tooltip"
+                                                  data-bs-placement="top"
+                                                  title="{{ class|get_system_class_full_name }}">
+                                                {{ class|get_system_class_short }}
+                                            </span>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="client{{ client.client.id }}" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    {% for level1_obj in client.level1_objects %}
+                                    <!-- ОБЪЕКТ УРОВНЯ 1 -->
+                                    <div class="mb-4 p-3 border rounded">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <a href="{% url 'object_detail' level1_obj.object.id %}">
+                                                        {{ level1_obj.object.name }}
+                                                    </a>
+                                                    <small class="text-muted">
+                                                        ({{ level1_obj.object.get_hierarchy_level_display }})
+                                                    </small>
+                                                </h6>
+                                            </div>
+                                        </div>
+
+                                        <!-- ПРЯМЫЕ СИСТЕМЫ НА ЗАВОДЕ -->
+                                        {% if level1_obj.direct_systems %}
+                                        <div class="mb-3">
+                                            <p class="mb-2"><small><strong>Системы на заводе:</strong></small></p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                {% for system in level1_obj.direct_systems %}
+                                                <span class="badge bg-info"
+                                                      style="cursor: help;"
+                                                      data-bs-toggle="tooltip"
+                                                      data-bs-placement="top"
+                                                      title="{{ system.get_system_class_display|get_system_class_full_name }} ({{ system.name }})">
+                                                    {{ system.system_class|get_system_class_short }}
+                                                </span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- ДОЧЕРНИЕ ОБЪЕКТЫ (ЦЕХА) -->
+                                        {% if level1_obj.children %}
+                                        <div class="mt-3">
+                                            <p class="mb-2"><strong>Цеха и установки:</strong></p>
+                                            {% for child in level1_obj.children %}
+                                            <div class="ms-3 mb-3 p-2 border-start border-3 border-success">
+                                                <div class="mb-2">
+                                                    <a href="{% url 'object_detail' child.object.id %}">
+                                                        {{ child.object.name }}
+                                                    </a>
+                                                </div>
+
+                                                <!-- СИСТЕМЫ НА ЦЕХЕ -->
+                                                {% if child.systems %}
+                                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                                    {% for system in child.systems %}
+                                                    <span class="badge bg-warning"
+                                                          style="cursor: help;"
+                                                          data-bs-toggle="tooltip"
+                                                          data-bs-placement="top"
+                                                          title="{{ system.get_system_class_display|get_system_class_full_name }} ({{ system.name }})">
+                                                        {{ system.system_class|get_system_class_short }}
+                                                    </span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+
+                                                <!-- ОБЪЕКТЫ УРОВНЯ 3 (ВНУКИ) -->
+                                                {% if child.children %}
+                                                <div class="mt-2 ms-3">
+                                                    {% for grandchild in child.children %}
+                                                    <div class="mb-2 p-2 border-start border-3 border-info">
+                                                        <div class="mb-1">
+                                                            <a href="{% url 'object_detail' grandchild.object.id %}">
+                                                                {{ grandchild.object.name }}
+                                                            </a>
+                                                        </div>
+
+                                                        <!-- СИСТЕМЫ НА УСТАНОВКЕ -->
+                                                        {% if grandchild.systems %}
+                                                        <div class="d-flex flex-wrap gap-1">
+                                                            {% for system in grandchild.systems %}
+                                                            <span class="badge bg-danger"
+                                                                  style="cursor: help;"
+                                                                  data-bs-toggle="tooltip"
+                                                                  data-bs-placement="top"
+                                                                  title="{{ system.get_system_class_display|get_system_class_full_name }} ({{ system.name }})">
+                                                                {{ system.system_class|get_system_class_short }}
+                                                            </span>
+                                                            {% endfor %}
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Информация о внедренческих системах отсутствует</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ВЕНДОРСКИЕ ПРОДУКТЫ -->
+            {% if vendor_products %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cogs"></i> Вендорские продукты</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for product in vendor_products %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="{% url 'vendor_product_detail' product.id %}">
+                                            {{ product.name }}
+                                        </a>
+                                    </h6>
+                                    <p class="card-text">
+                                        <span class="badge bg-info">{{ product.get_product_type_display }}</span>
+                                        {% if product.release_year %}
+                                        <span class="badge bg-secondary">{{ product.release_year }}</span>
+                                        {% endif %}
+                                    </p>
+                                    {% if product.description %}
+                                    <p class="card-text">
+                                        <small class="text-muted">{{ product.description|truncatechars:100 }}</small>
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ============================================ -->
+            <!-- НОВЫЙ БЛОК: ПРОЕКТЫ И ВНЕДРЕНИЯ -->
+            <!-- ============================================ -->
+            {% if projects %}
+            <div class="card mb-4 mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-rocket me-2"></i>Проекты и внедрения</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Проект</th>
+                                    <th>Объект</th>
+                                    <th>Год</th>
+                                    <th>Статус</th>
+                                    <th>Продукт</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in projects %}
+                                <tr>
+                                    <td>{{ project.name }}</td>
+                                    <td>
+                                        <a href="{% url 'object_detail' project.object.id %}">
+                                            {{ project.object.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ project.year }}</td>
+                                    <td>
+                                        {% if project.successful %}
+                                        <span class="badge bg-success">Успешно</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">В процессе</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if project.vendor_product %}
+                                        <a href="{% url 'vendor_product_detail' project.vendor_product.id %}">
+                                            {{ project.vendor_product.name }}
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ============================================ -->
+            <!-- НОВЫЙ БЛОК: ОТЗЫВЫ -->
+            <!-- ============================================ -->
+            {% if reviews %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Отзывы клиентов</h5>
+                </div>
+                <div class="card-body">
+                    {% for review in reviews %}
+                    <div class="mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <small class="text-muted">{{ review.date|date:"d.m.Y" }}</small>
+                        </div>
+                        <p class="mb-1">"{{ review.text }}"</p>
+                        {% if review.source %}
+                        <small class="text-muted">Источник: {{ review.source }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ============================================ -->
+            <!-- НОВЫЙ БЛОК: TCO АНАЛИЗ -->
+            <!-- ============================================ -->
+            {% if tco_analyses %}
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>TCO анализ</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th class="text-end">CAPEX</th>
+                                    <th class="text-end">OPEX/год</th>
+                                    <th class="text-center">Период</th>
+                                    <th class="text-end">Общий TCO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tco in tco_analyses %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'vendor_product_detail' tco.vendor_product.id %}">
+                                            {{ tco.vendor_product.name }}
+                                        </a>
+                                    </td>
+                                    <td class="text-end">{{ tco.capex|floatformat:2 }}</td>
+                                    <td class="text-end">{{ tco.opex_per_year|floatformat:2 }}</td>
+                                    <td class="text-center">{{ tco.period_years }} лет</td>
+                                    <td class="text-end fw-bold">{{ tco.total|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">
+                        * TCO рассчитан с учетом ставки дисконтирования 10%
+                    </small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.breadcrumb {
+    background-color: #f8f9fc;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid #e3e6f0;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.accordion-item {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.375rem !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #f8f9fc;
+    color: #0d6efd;
+}
+
+.badge.bg-dark {
+    background-color: #2c3e50 !important;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.badge.bg-light.text-dark.border {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #495057 !important;
+    font-weight: 500;
+}
+
+.table-sm th {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.border-start.border-3.border-info {
+    border-left-width: 3px !important;
+    border-left-color: #17a2b8 !important;
+}
+
+.border-start.border-3.border-success {
+    border-left-width: 3px !important;
+    border-left-color: #28a745 !important;
+}
+
+.border-start.border-3.border-warning {
+    border-left-width: 3px !important;
+    border-left-color: #ffc107 !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+</style>
+
+{% block extra_js %}
+<script>
+    // Инициализация Bootstrap tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                delay: { "show": 200, "hide": 100 },
+                placement: 'top'
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

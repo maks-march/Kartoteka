@@ -1,0 +1,215 @@
+<!-- core/old_templates/core/participants_by_type.html -->
+{% extends 'base.html' %}
+
+{% block title %}Участники по типам - Картотека F1-F2{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'overview' %}">Главная</a></li>
+            <li class="breadcrumb-item active">Участники по типам</li>
+        </ol>
+    </nav>
+
+    <h1 class="h3 mb-4">
+        <i class="fas fa-users"></i> Участники рынка (группировка по типам)
+    </h1>
+
+    {% for p_type, p_data in participants_by_type.items %}
+    <div class="card mb-5 border-{% if p_type == 'VENDOR' %}primary{% elif p_type == 'ENGINEERING' %}success{% elif p_type == 'FULL_CYCLE' %}warning{% else %}info{% endif %}">
+        <div class="card-header bg-{% if p_type == 'VENDOR' %}primary{% elif p_type == 'ENGINEERING' %}success{% elif p_type == 'FULL_CYCLE' %}warning{% else %}info{% endif %} text-white d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">
+                    {% if p_type == 'VENDOR' %}
+                    <i class="fas fa-laptop-code"></i>
+                    {% elif p_type == 'ENGINEERING' %}
+                    <i class="fas fa-hard-hat"></i>
+                    {% elif p_type == 'FULL_CYCLE' %}
+                    <i class="fas fa-sync-alt"></i>
+                    {% else %}
+                    <i class="fas fa-truck"></i>
+                    {% endif %}
+                    {{ p_data.label }}
+                    <!-- ИЗМЕНЕНО: Добавил text-dark для темного текста на светлом фоне -->
+                    <span class="badge bg-white text-dark ms-2">{{ p_data.count }}</span>
+                </h4>
+            </div>
+            <small>Всего: {{ p_data.count }} компаний</small>
+        </div>
+
+        <div class="card-body">
+            {% if p_data.participants %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Компания</th>
+                            <th>Отрасли</th>
+                            <th>Флаг партнёра</th>
+                            <th>Типы систем</th>
+                            <th>Заказчиков</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for participant in p_data.participants %}
+                        <tr>
+                            <td>
+                                <strong>
+                                    <a href="{% url 'participant_detail' participant.id %}" class="text-dark text-decoration-none">
+                                        {{ participant.name }}
+                                    </a>
+                                </strong>
+                                <br>
+                                <small class="text-muted">ИНН: {{ participant.inn }}</small>
+                            </td>
+                            <td>
+                                {% if participant.industries %}
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for industry in participant.industries %}
+                                    <span class="badge bg-secondary text-white">
+                                        {{ industry }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if participant.is_partner %}
+                                <span class="badge bg-success text-white">
+                                    <i class="fas fa-check-circle"></i> Партнёр
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary text-white">
+                                    <i class="fas fa-times-circle"></i> Не партнёр
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if participant.system_types %}
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for system_type in participant.system_types %}
+                                    <span class="badge bg-info text-white">
+                                        {{ system_type }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- ИЗМЕНЕНО: Для счетчика клиентов используем темный текст -->
+                                <span class="badge bg-warning text-dark">
+                                    {{ participant.client_count|default:"0" }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'participant_detail' participant.id %}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Подробнее">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Участники этого типа не найдены
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Общая статистика в карточках -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h2 class="card-title display-5">{{ total_vendors }}</h2>
+                    <p class="card-text">Вендоров</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h2 class="card-title display-5">{{ total_engineering }}</h2>
+                    <p class="card-text">Инжиниринговых компаний</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body text-center">
+                    <h2 class="card-title display-5">{{ total_full_cycle }}</h2>
+                    <p class="card-text">Вендоров полного цикла</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <h2 class="card-title display-5">{{ total_suppliers }}</h2>
+                    <p class="card-text">Поставщиков</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Убедимся что все тексты читаемы */
+    .card-header .badge {
+        font-size: 1.1rem;
+        padding: 0.5rem 0.8rem;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    /* Цвета для бейджей в таблице */
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+        color: white !important;
+    }
+
+    .badge.bg-info {
+        background-color: #17a2b8 !important;
+        color: white !important;
+    }
+
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white !important;
+    }
+
+    .badge.bg-warning {
+        background-color: #ffc107 !important;
+        color: #212529 !important; /* Темный текст на желтом фоне */
+    }
+
+    /* Подсветка строк таблицы */
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Заголовки таблиц */
+    .thead-dark {
+        background-color: #343a40 !important;
+    }
+
+    .thead-dark th {
+        color: white !important;
+        border-color: #454d55 !important;
+    }
+</style>
+{% endblock %}
