@@ -1,9 +1,11 @@
 from django.contrib import admin
-from apps.users.domain.models import CustomUser
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+# admin.site.unregister(User)
 
-@admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ("username", "email", "is_staff", "is_active")
-    list_filter = ("is_staff", "is_active")
-    search_fields = ("username", "email")
+# @admin.register(User)
+# class UserAdmin(BaseUserAdmin):
+#     list_display = ["username", "email", "is_staff", "date_joined"]
+#     list_filter = ["is_staff", "is_superuser", "date_joined"]
+#     search_fields = ["username", "email"]

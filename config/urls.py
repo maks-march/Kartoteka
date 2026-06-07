@@ -1,18 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('old_apps.core.urls')),
-
-    # Аутентификация
-    path('login/', auth_views.LoginView.as_view(
-        template_name='core/login.html',
-        next_page='overview'
-    ), name='login'),
-
-    path('logout/', auth_views.LogoutView.as_view(
-        next_page='login'
-    ), name='logout'),
+    # path("admin/", admin.site.urls),
+    path("api/auth/", include("apps.users.api.urls")),
+    path("auth/", include("apps.users.urls")),
 ]
