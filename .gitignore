@@ -36,8 +36,8 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-staticfiles/
-static_collected/
+#staticfiles/
+#static_collected/
 
 # Django migrations (обычно НЕ игнорируют)
 # Раскомментируй, если хочешь игнорировать:
@@ -113,8 +113,8 @@ yarn-error.log*
 # ===========================
 # Static & media (Django collectstatic)
 # ===========================
-/staticfiles/
-/static/
+#/staticfiles/
+#/static/
 /media/
 
 # ===========================
