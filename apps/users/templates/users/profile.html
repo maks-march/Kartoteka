@@ -40,13 +40,15 @@
                 <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
                 <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{{ obj.created_at|date:"d.m.Y H:i" }}</td>
-                <td class="actions">
-                    <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
-                    <a href="{% url 'object-edit' obj.pk %}" class="btn btn-primary">Изменить</a>
-                    <form action="{% url 'object-delete' obj.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Удалить</button>
-                    </form>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
+                        <a href="{% url 'object-edit' obj.pk %}" class="btn btn-primary">Изменить</a>
+                        <form action="{% url 'object-delete' obj.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% empty %}

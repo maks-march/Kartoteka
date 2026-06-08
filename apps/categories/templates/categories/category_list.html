@@ -32,15 +32,17 @@
             <tr>
                 <td><a href="{% url 'category-detail' cat.pk %}">{{ cat.name }}</a></td>
                 <td><span class="tag tag-{{ cat.level }}">Уровень {{ cat.level }}</span></td>
-                <td class="actions">
-                    <a href="{% url 'category-detail' cat.pk %}" class="btn btn-secondary">Открыть</a>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'category-edit' cat.pk %}" class="btn btn-primary">Изменить</a>
-                        <form action="{% url 'category-delete' cat.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить категорию?')">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Удалить</button>
-                        </form>
-                    {% endif %}
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'category-detail' cat.pk %}" class="btn btn-secondary">Открыть</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'category-edit' cat.pk %}" class="btn btn-primary">Изменить</a>
+                            <form action="{% url 'category-delete' cat.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить категорию?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </td>
             </tr>
             {% empty %}

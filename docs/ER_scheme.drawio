@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="Страница-1" id="Oi1spA7Drhw2C1jnLjz4">
-    <mxGraphModel dx="1212" dy="1915" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1084" dy="1836" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -235,6 +235,30 @@
         </mxCell>
         <mxCell id="qcOIrNFE_vaovTJ5nzU6-1" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" value="АСУТП&lt;br&gt;средства измерения&lt;br&gt;управляющие механизмы" vertex="1">
           <mxGeometry height="90" width="130" x="530" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="N-AiVr-2OUHTvDwjcKu2-1" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" value="Категория" vertex="1">
+          <mxGeometry height="60" width="150" x="450" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="N-AiVr-2OUHTvDwjcKu2-2" edge="1" parent="1" source="N-AiVr-2OUHTvDwjcKu2-1" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="ldKT4fArIkcPgk8sxnf5-1" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="670" y="-25" as="sourcePoint" />
+            <mxPoint x="1250" y="-60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N-AiVr-2OUHTvDwjcKu2-3" edge="1" parent="1" source="ldKT4fArIkcPgk8sxnf5-32" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="ldKT4fArIkcPgk8sxnf5-35" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="980" y="540" as="sourcePoint" />
+            <mxPoint x="1750" y="625" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N-AiVr-2OUHTvDwjcKu2-4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" value="Класс системы" vertex="1">
+          <mxGeometry height="60" width="150" x="1490" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="N-AiVr-2OUHTvDwjcKu2-5" edge="1" parent="1" source="N-AiVr-2OUHTvDwjcKu2-4" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ldKT4fArIkcPgk8sxnf5-37" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="1650" y="160" as="sourcePoint" />
+            <mxPoint x="1580" y="160" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
