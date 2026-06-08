@@ -2,12 +2,14 @@ from apps.objects.models import Object
 
 
 class ObjectRepository:
-    def get_all(self, level=None, search=None):
+    def get_all(self, level=None, search=None, category=None):
         qs = Object.objects.filter(is_deleted=False).select_related("parent", "category")
         if level is not None:
             qs = qs.filter(level=level)
         if search:
             qs = qs.filter(name__icontains=search)
+        if category is not None:
+            qs = qs.filter(category_id=category)
         return qs
 
     def get_by_id(self, pk):

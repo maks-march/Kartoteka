@@ -18,6 +18,14 @@
             <option value="2" {% if request.GET.level == "2" %}selected{% endif %}>Уровень 2</option>
             <option value="3" {% if request.GET.level == "3" %}selected{% endif %}>Уровень 3</option>
         </select>
+        <select name="category">
+            <option value="">Все категории</option>
+            {% for cat in all_categories %}
+            <option value="{{ cat.pk }}" {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>
+                {{ cat.name }} (Ур.{{ cat.level }})
+            </option>
+            {% endfor %}
+        </select>
         <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
         <button type="submit" class="btn btn-primary">Применить</button>
         <a href="{% url 'object-list' %}" class="btn btn-secondary">Сбросить</a>

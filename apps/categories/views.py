@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 
 from apps.categories.usecases.category_usecase import CategoryUseCase
+from apps.objects.usecases.object_usecase import ObjectUseCase
 
 
 @require_http_methods(["GET"])
@@ -13,6 +14,18 @@ def category_list(request):
     usecase = CategoryUseCase()
     categories = usecase.list(level=level, search=search)
     return render(request, "categories/category_list.html", {"categories": categories})
+
+
+@require_http_methods(["GET"])
+def category_detail(request, pk):
+    cat_usecase = CategoryUseCase()
+    obj_usecase = ObjectUseCase()
+    category = cat_usecase.get(pk)
+    objects = obj_usecase.list(category=pk)
+    return render(request, "categories/category_detail.html", {
+        "category": category,
+        "objects": objects,
+    })
 
 
 @require_http_methods(["GET", "POST"])

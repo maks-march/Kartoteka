@@ -12,9 +12,12 @@ from apps.categories.usecases.category_usecase import CategoryUseCase
 def object_list(request):
     level = request.GET.get("level") or None
     search = request.GET.get("search") or None
+    category = request.GET.get("category") or None
     usecase = ObjectUseCase()
-    objects = usecase.list(level=level, search=search)
-    return render(request, "objects/object_list.html", {"objects": objects})
+    cat_usecase = CategoryUseCase()
+    objects = usecase.list(level=level, search=search, category=category)
+    all_categories = cat_usecase.list()
+    return render(request, "objects/object_list.html", {"objects": objects, "all_categories": all_categories})
 
 
 @require_http_methods(["GET"])
