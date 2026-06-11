@@ -21,7 +21,7 @@ class ObjectRepository:
         )
 
     def get_by_creator(self, user, search=None):
-        qs = Object.objects.filter(is_deleted=False, created_by=user).select_related("parent", "category")
+        qs = Object.objects.filter(is_deleted=False, creator_id=user).select_related("parent", "category")
         if search:
             qs = qs.filter(name__icontains=search)
         return qs

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class AutomationClass(models.Model):
@@ -44,6 +45,13 @@ class AutomatedSystem(models.Model):
         on_delete=models.PROTECT,
         related_name='systems',
         verbose_name="Класс системы"
+    )
+    creator_id = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Создатель"
     )
 
     class Meta:

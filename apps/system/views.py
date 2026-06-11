@@ -38,6 +38,7 @@ def system_create(request):
         usecase = SystemUseCase()
         try:
             usecase.create(
+                user=request.user,
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
             )

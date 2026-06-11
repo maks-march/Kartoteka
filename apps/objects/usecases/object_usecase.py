@@ -32,7 +32,7 @@ class ObjectUseCase:
             data["parent_id"] = parent_id
         if category_id is not None:
             data["category_id"] = category_id
-        data["created_by"] = user
+        data["creator_id"] = user
         return self.repo.create(**data)
 
     def update(self, pk, user, **data):

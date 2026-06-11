@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 
 from apps.users.usecases.usecase import AuthUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
+from apps.system.usecases.system_usecase import SystemUseCase
 
 
 @require_http_methods(["GET", "POST"])
@@ -58,8 +59,11 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     object_usecase = ObjectUseCase()
+    system_usecase = SystemUseCase()
     user_objects = object_usecase.list_by_user(request.user)
+    user_systems = system_usecase.list_by_user(request.user)
     return render(request, "users/profile.html", {
         "user": request.user,
         "user_objects": user_objects,
+        "user_systems": user_systems,
     })

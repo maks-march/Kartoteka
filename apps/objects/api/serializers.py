@@ -16,8 +16,8 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
     parent_name = serializers.CharField(source="parent.name", read_only=True)
     category_name = serializers.CharField(source="category.name", read_only=True)
     children = serializers.SerializerMethodField()
-    created_by_username = serializers.CharField(
-        source="created_by.username", read_only=True
+    creator_id_username = serializers.CharField(
+        source="creator_id.username", read_only=True
     )
 
     class Meta:
@@ -31,8 +31,8 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
             "category",
             "category_name",
             "children",
-            "created_by",
-            "created_by_username",
+            "creator_id",
+            "creator_id_username",
             "created_at",
             "updated_at",
         ]

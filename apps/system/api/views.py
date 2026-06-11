@@ -41,7 +41,7 @@ class SystemListCreateView(APIView):
         serializer = SystemCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usecase = SystemUseCase()
-        obj = usecase.create(**serializer.validated_data)
+        obj = usecase.create(user=request.user, **serializer.validated_data)
         return Response(
             SystemDetailSerializer(obj).data, status=status.HTTP_201_CREATED
         )

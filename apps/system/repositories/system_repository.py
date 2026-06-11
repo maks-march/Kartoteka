@@ -13,6 +13,12 @@ class SystemRepository:
     def get_by_id(self, pk):
         return AutomatedSystem.objects.filter(pk=pk).select_related("system_class").first()
 
+    def get_by_creator(self, user, search=None):
+        qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class")
+        if search:
+            qs = qs.filter(autosystem_name__icontains=search)
+        return qs
+
     def create(self, **kwargs):
         return AutomatedSystem.objects.create(**kwargs)
 
