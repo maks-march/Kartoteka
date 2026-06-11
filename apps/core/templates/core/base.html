@@ -12,11 +12,16 @@
             <a href="{% url 'hub' %}">Главная</a>
             <a href="{% url 'object-list' %}">Объекты</a>
             <a href="{% url 'category-list' %}">Категории</a>
+            <a href="{% url 'system-list' %}">Системы</a>
         </nav>
         <div class="user-menu">
             {% if user.is_authenticated %}
                 <span>{{ user.username }}</span>
                 <a href="{% url 'profile' %}" class="btn btn-secondary">Профиль</a>
+                <form action="{% url 'logout' %}" method="post" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Выйти</button>
+                </form>
             {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
             {% endif %}

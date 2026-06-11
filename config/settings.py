@@ -22,7 +22,8 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.users",
     "apps.objects",
-    "apps.categories"
+    "apps.categories",
+    "apps.system"
 ]
 
 # AUTH_USER_MODEL = "users.CustomUser"
