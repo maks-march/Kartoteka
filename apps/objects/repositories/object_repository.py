@@ -15,7 +15,7 @@ class ObjectRepository:
     def get_by_id(self, pk):
         return (
             Object.objects.filter(pk=pk, is_deleted=False)
-            .select_related("parent", "category")
+            .select_related("parent", "category", "creator_id")
             .prefetch_related("children")
             .first()
         )

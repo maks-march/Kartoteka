@@ -11,7 +11,7 @@ class SystemRepository:
         return qs
 
     def get_by_id(self, pk):
-        return AutomatedSystem.objects.filter(pk=pk).select_related("system_class").first()
+        return AutomatedSystem.objects.filter(pk=pk).select_related("system_class", "creator_id").first()
 
     def get_by_creator(self, user, search=None):
         qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class")

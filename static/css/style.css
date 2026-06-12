@@ -112,7 +112,60 @@ h1, h2, h3 {
     background: #545b62;
 }
 
+.btn-reset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fdfdfd;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    color: #dc3545;
+    border-radius: 4px;
+}
+
+.btn-reset:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.icon-trash {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.btn-link {
+    background: none;
+    color: #6c757d;
+    text-decoration: underline;
+}
+
 /* ===== Filters ===== */
+.main-row {
+    width: 100%;
+    gap: 8px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.main-row * {
+    height: 100%;
+}
+
+.advanced-section {
+    display: none;
+    width: 100%;
+    height: 20vh;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+}
+
+.advanced-section.show {
+    display: block;
+}
+
 .filters {
     display: flex;
     gap: 10px;
@@ -144,12 +197,12 @@ h1, h2, h3 {
 }
 
 .filters select {
-    min-width: 150px;
+    width: fit-content;
 }
 
 .filters input[type="text"] {
-    flex: 1;
-    min-width: 200px;
+    flex: 2;
+    width: 50%;
 }
 
 /* ===== Narrow form (login/register) ===== */

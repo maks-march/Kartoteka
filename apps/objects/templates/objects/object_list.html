@@ -11,24 +11,40 @@
         {% endif %}
     </div>
 
-    <form method="get" class="filters">
-        <select name="level">
-            <option value="">Все уровни</option>
-            <option value="1" {% if request.GET.level == "1" %}selected{% endif %}>Уровень 1</option>
-            <option value="2" {% if request.GET.level == "2" %}selected{% endif %}>Уровень 2</option>
-            <option value="3" {% if request.GET.level == "3" %}selected{% endif %}>Уровень 3</option>
-        </select>
-        <select name="category">
-            <option value="">Все категории</option>
-            {% for cat in all_categories %}
-            <option value="{{ cat.pk }}" {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>
-                {{ cat.name }} (Ур.{{ cat.level }})
-            </option>
-            {% endfor %}
-        </select>
-        <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
-        <button type="submit" class="btn btn-primary">Применить</button>
-        <a href="{% url 'object-list' %}" class="btn btn-secondary">Сбросить</a>
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <select name="level">
+                <option value="">Все уровни</option>
+                <option value="1" {% if request.GET.level == "1" %}selected{% endif %}>Уровень 1</option>
+                <option value="2" {% if request.GET.level == "2" %}selected{% endif %}>Уровень 2</option>
+                <option value="3" {% if request.GET.level == "3" %}selected{% endif %}>Уровень 3</option>
+            </select>
+
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+
+            <button type="submit" class="btn btn-primary">Применить</button>
+
+            <a href="{% url 'object-list' %}" class="btn-reset" title="Сбросить все фильтры">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </a>
+
+            <button type="button" class="btn btn-link" onclick="toggleAdvanced(this)">Расширенный поиск ▼</button>
+        </div>
+
+        <div class="advanced-section" id="advancedSearch">
+            <div class="main-row">
+                <select name="category">
+                    <option value="">Все категории</option>
+                    {% for cat in all_categories %}
+                    <option value="{{ cat.pk }}" {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>
+                        {{ cat.name }} (Ур.{{ cat.level }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
     </form>
 
     <table>
@@ -38,7 +54,6 @@
                 <th>Уровень</th>
                 <th>Категория</th>
                 <th>Родитель</th>
-                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -48,21 +63,9 @@
                 <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
                 <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>
-                    <div class="actions">
-                        <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
-                        {% if user.is_authenticated and obj.creator_id == user.id %}
-                            <a href="{% url 'object-edit' obj.pk %}" class="btn btn-primary">Изменить</a>
-                            <form action="{% url 'object-delete' obj.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Удалить</button>
-                            </form>
-                        {% endif %}
-                    </div>
-                </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="empty">Объекты не найдены</td></tr>
+            <tr><td colspan="4" class="empty">Объекты не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>

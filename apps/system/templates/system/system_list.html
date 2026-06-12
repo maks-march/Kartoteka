@@ -11,42 +11,48 @@
         {% endif %}
     </div>
 
-    <form method="get" class="filters">
-        <select name="system_class">
-            <option value="">Все классы</option>
-            {% for cls in classes %}
-            <option value="{{ cls.pk }}" {% if request.GET.system_class == cls.pk|stringformat:"s" %}selected{% endif %}>
-                L{{ cls.level }} - {{ cls.system_class }}
-            </option>
-            {% endfor %}
-        </select>
-        <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
-        <button type="submit" class="btn btn-primary">Применить</button>
-        <a href="{% url 'system-list' %}" class="btn btn-secondary">Сбросить</a>
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <select name="system_class">
+                <option value="">Все классы</option>
+                {% for cls in classes %}
+                <option value="{{ cls.pk }}" {% if request.GET.system_class == cls.pk|stringformat:"s" %}selected{% endif %}>
+                    L{{ cls.level }} - {{ cls.system_class }}
+                </option>
+                {% endfor %}
+            </select>
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+
+            <button type="submit" class="btn btn-primary">Применить</button>
+
+            <a href="{% url 'system-list' %}" class="btn-reset" title="Сбросить все фильтры">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </a>
+
+            <button type="button" class="btn btn-link" onclick="toggleAdvanced(this)">Расширенный поиск ▼</button>
+        </div>
+
+        <div class="advanced-section" id="advancedSearch">
+            <div class="main-row">
+                
+            </div>
+        </div>
     </form>
 
     <table>
         <thead>
-            <tr><th>Название</th><th>Класс</th><th>Действия</th></tr>
+            <tr><th>Название</th><th>Класс</th></tr>
         </thead>
         <tbody>
             {% for s in systems %}
             <tr>
                 <td><a href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
-                <td class="actions">
-                    <a href="{% url 'system-detail' s.pk %}" class="btn btn-secondary">Открыть</a>
-                    {% if user.is_authenticated and s.creator_id == user %}
-                        <a href="{% url 'system-edit' s.pk %}" class="btn btn-primary">Изменить</a>
-                        <form action="{% url 'system-delete' s.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Удалить</button>
-                        </form>
-                    {% endif %}
-                </td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="empty">Системы не найдены</td></tr>
+            <tr><td colspan="2" class="empty">Системы не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>

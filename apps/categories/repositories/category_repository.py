@@ -11,7 +11,7 @@ class CategoryRepository:
         return qs
 
     def get_by_id(self, pk):
-        return Category.objects.filter(pk=pk).first()
+        return Category.objects.filter(pk=pk).select_related("creator_id").first()
 
     def get_by_creator(self, user, search=None):
         qs = Category.objects.filter(creator_id=user)

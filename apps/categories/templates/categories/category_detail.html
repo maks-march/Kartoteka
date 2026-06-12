@@ -9,6 +9,7 @@
             <h1 style="margin-bottom:5px">{{ category.name }}</h1>
             <span class="tag tag-{{ category.level }}">Уровень {{ category.level }}</span>
             <p class="hint" style="display:inline-block; margin:10px 0 0">Категория может быть назначена объектам уровня {{ category.level }}</p>
+            <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if category.creator_id %}{{ category.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
             {% if user.is_authenticated and category.creator_id == user %}
@@ -30,7 +31,7 @@
 
     <table>
         <thead>
-            <tr><th>Название</th><th>Уровень</th><th>Родитель</th><th>Действия</th></tr>
+            <tr><th>Название</th><th>Уровень</th><th>Родитель</th></tr>
         </thead>
         <tbody>
             {% for obj in objects %}
@@ -38,12 +39,9 @@
                 <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
                 <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
                 <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td class="actions">
-                    <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
-                </td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" class="empty">Объектов с этой категорией пока нет</td></tr>
+            <tr><td colspan="3" class="empty">Объектов с этой категорией пока нет</td></tr>
             {% endfor %}
         </tbody>
     </table>

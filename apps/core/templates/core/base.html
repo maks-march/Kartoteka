@@ -5,14 +5,15 @@
     <meta charset="UTF-8">
     <title>{% block title %}Kartoteka{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/app.js' %}" defer></script>
 </head>
 <body>
     <header>
         <nav>
             <a href="{% url 'hub' %}">Главная</a>
             <a href="{% url 'object-list' %}">Объекты</a>
-            <a href="{% url 'category-list' %}">Категории</a>
             <a href="{% url 'system-list' %}">Системы</a>
+            <a href="{% url 'category-list' %}">Категории</a>
         </nav>
         <div class="user-menu">
             {% if user.is_authenticated %}

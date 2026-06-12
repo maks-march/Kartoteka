@@ -31,10 +31,16 @@
         <a href="{% url 'category-create' %}" class="btn btn-primary">+ Добавить категорию</a>
     </div>
 
-    <form method="get" class="filters" style="padding:10px; margin-bottom:10px">
-        <input type="text" name="search" placeholder="Поиск по названию..." value="{{ search }}" style="flex:1; min-width:200px">
-        <button type="submit" class="btn btn-primary">Применить</button>
-        <a href="{% url 'profile-categories' %}" class="btn btn-secondary">Сбросить</a>
+    <form class="filters" method="get" id="filterForm">
+            <div class="main-row">
+                <input type="text" name="search" placeholder="Поиск по названию..." value="{{ search }}">
+                <button type="submit" class="btn btn-primary">Применить</button>
+                <a href="{% url 'profile-categories' %}" class="btn-reset" title="Сбросить фильтр">
+                    <svg class="icon-trash" viewBox="0 0 24 24">
+                        <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                    </svg>
+                </a>
+            </div>
     </form>
 
     <table>
@@ -52,7 +58,6 @@
                 <td><span class="tag tag-{{ cat.level }}">Уровень {{ cat.level }}</span></td>
                 <td>
                     <div class="actions">
-                        <a href="{% url 'category-detail' cat.pk %}" class="btn btn-secondary">Открыть</a>
                         <a href="{% url 'category-edit' cat.pk %}" class="btn btn-primary">Изменить</a>
                         <form action="{% url 'category-delete' cat.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить категорию?')">
                             {% csrf_token %}

@@ -14,6 +14,7 @@
             {% if object.parent %}
                 <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
             {% endif %}
+            <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
             {% if user.is_authenticated and object.creator_id == user %}
@@ -35,7 +36,7 @@
     <h2>Дети</h2>
     <table>
         <thead>
-            <tr><th>Название</th><th>Уровень</th><th>Категория</th><th>Действия</th></tr>
+            <tr><th>Название</th><th>Уровень</th><th>Категория</th></tr>
         </thead>
         <tbody>
             {% for child in children %}
@@ -43,9 +44,6 @@
                 <td><a href="{% url 'object-detail' child.pk %}">{{ child.name }}</a></td>
                 <td><span class="tag tag-{{ child.level }}">Уровень {{ child.level }}</span></td>
                 <td>{% if child.category %}<span class="tag tag-{{ child.category.level }}">{{ child.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td class="actions">
-                    <a href="{% url 'object-detail' child.pk %}" class="btn btn-secondary">Открыть</a>
-                </td>
             </tr>
             {% endfor %}
         </tbody>

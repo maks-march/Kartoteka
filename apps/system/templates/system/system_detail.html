@@ -11,6 +11,7 @@
             {% if system.system_class.description %}
                 <p style="margin-top:10px; color:#666">{{ system.system_class.description }}</p>
             {% endif %}
+            <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
             {% if user.is_authenticated and system.creator_id == user %}
