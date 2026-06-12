@@ -1,3 +1,5 @@
+import re
+
 from apps.system.models import AutomatedSystem
 
 
@@ -7,7 +9,9 @@ class SystemRepository:
         if system_class is not None:
             qs = qs.filter(system_class_id=system_class)
         if search:
-            qs = qs.filter(autosystem_name__icontains=search)
+            # iregex вместо icontains: на SQLite icontains не игнорирует
+            # регистр для не-ASCII символов (кириллицы)
+            qs = qs.filter(autosystem_name__iregex=re.escape(search))
         return qs
 
     def get_by_id(self, pk):
@@ -16,7 +20,7 @@ class SystemRepository:
     def get_by_creator(self, user, search=None):
         qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class")
         if search:
-            qs = qs.filter(autosystem_name__icontains=search)
+            qs = qs.filter(autosystem_name__iregex=re.escape(search))
         return qs
 
     def create(self, **kwargs):

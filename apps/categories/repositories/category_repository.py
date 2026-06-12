@@ -1,3 +1,5 @@
+import re
+
 from apps.categories.models import Category
 
 
@@ -7,7 +9,9 @@ class CategoryRepository:
         if level is not None:
             qs = qs.filter(level=level)
         if search:
-            qs = qs.filter(name__icontains=search)
+            # iregex вместо icontains: на SQLite icontains не игнорирует
+            # регистр для не-ASCII символов (кириллицы)
+            qs = qs.filter(name__iregex=re.escape(search))
         return qs
 
     def get_by_id(self, pk):
@@ -16,7 +20,7 @@ class CategoryRepository:
     def get_by_creator(self, user, search=None):
         qs = Category.objects.filter(creator_id=user)
         if search:
-            qs = qs.filter(name__icontains=search)
+            qs = qs.filter(name__iregex=re.escape(search))
         return qs
 
     def create(self, **kwargs):

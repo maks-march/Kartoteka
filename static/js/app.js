@@ -14,7 +14,7 @@ window.addEventListener('load', function() {
     const advancedSection = document.getElementById('advancedSearch');
     if (!advancedSection) return;
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('category') || urlParams.has('system_class')) {
+    if (urlParams.has('category') || urlParams.has('system_class') || urlParams.has('system')) {
         advancedSection.classList.add('show');
         const btn = document.querySelector('.btn-link[onclick^="toggleAdvanced"]');
         if (btn) btn.textContent = 'Скрыть поиск \u25B2';

@@ -16,11 +16,18 @@ def object_list(request):
     level = request.GET.get("level") or None
     search = request.GET.get("search") or None
     category = request.GET.get("category") or None
+    system = request.GET.get("system") or None
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
-    objects = usecase.list(level=level, search=search, category=category)
+    system_usecase = SystemUseCase()
+    objects = usecase.list(level=level, search=search, category=category, system=system)
     all_categories = cat_usecase.list()
-    return render(request, "objects/object_list.html", {"objects": objects, "all_categories": all_categories})
+    all_systems = system_usecase.list()
+    return render(request, "objects/object_list.html", {
+        "objects": objects,
+        "all_categories": all_categories,
+        "all_systems": all_systems,
+    })
 
 
 @require_http_methods(["GET"])
