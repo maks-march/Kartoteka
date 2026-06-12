@@ -98,7 +98,7 @@ def object_edit(request, pk):
 @login_required
 def object_delete(request, pk):
     usecase = ObjectUseCase()
-    usecase.delete(pk)
+    usecase.delete(pk, request.user)
     return redirect("object-list")
 
 

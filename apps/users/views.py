@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 from apps.users.usecases.usecase import AuthUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.system.usecases.system_usecase import SystemUseCase
+from apps.categories.usecases.category_usecase import CategoryUseCase
 
 
 @require_http_methods(["GET", "POST"])
@@ -57,13 +58,39 @@ def logout_view(request):
 
 
 @login_required
-def profile_view(request):
-    object_usecase = ObjectUseCase()
-    system_usecase = SystemUseCase()
-    user_objects = object_usecase.list_by_user(request.user)
-    user_systems = system_usecase.list_by_user(request.user)
-    return render(request, "users/profile.html", {
+def profile_objects(request):
+    search = request.GET.get("search") or None
+    usecase = ObjectUseCase()
+    objects = usecase.list_by_user(request.user, search=search)
+    return render(request, "users/profile_objects.html", {
         "user": request.user,
-        "user_objects": user_objects,
-        "user_systems": user_systems,
+        "objects": objects,
+        "active_tab": "objects",
+        "search": search or "",
+    })
+
+
+@login_required
+def profile_systems(request):
+    search = request.GET.get("search") or None
+    usecase = SystemUseCase()
+    systems = usecase.list_by_user(request.user, search=search)
+    return render(request, "users/profile_systems.html", {
+        "user": request.user,
+        "systems": systems,
+        "active_tab": "systems",
+        "search": search or "",
+    })
+
+
+@login_required
+def profile_categories(request):
+    search = request.GET.get("search") or None
+    usecase = CategoryUseCase()
+    categories = usecase.list_by_user(request.user, search=search)
+    return render(request, "users/profile_categories.html", {
+        "user": request.user,
+        "categories": categories,
+        "active_tab": "categories",
+        "search": search or "",
     })

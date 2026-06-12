@@ -51,7 +51,7 @@
                 <td>
                     <div class="actions">
                         <a href="{% url 'object-detail' obj.pk %}" class="btn btn-secondary">Открыть</a>
-                        {% if user.is_authenticated %}
+                        {% if user.is_authenticated and obj.creator_id == user.id %}
                             <a href="{% url 'object-edit' obj.pk %}" class="btn btn-primary">Изменить</a>
                             <form action="{% url 'object-delete' obj.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
                                 {% csrf_token %}

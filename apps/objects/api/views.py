@@ -57,5 +57,5 @@ class ObjectDetailView(APIView):
 
     def delete(self, request, pk):
         usecase = ObjectUseCase()
-        usecase.delete(pk)
+        usecase.delete(pk, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)

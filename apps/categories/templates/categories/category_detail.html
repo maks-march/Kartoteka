@@ -11,7 +11,7 @@
             <p class="hint" style="display:inline-block; margin:10px 0 0">Категория может быть назначена объектам уровня {{ category.level }}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and category.creator_id == user %}
                 <a href="{% url 'category-edit' category.pk %}" class="btn btn-primary">Изменить</a>
                 <form action="{% url 'category-delete' category.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить категорию?')">
                     {% csrf_token %}

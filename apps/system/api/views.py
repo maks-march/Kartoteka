@@ -63,10 +63,10 @@ class SystemDetailView(APIView):
         serializer = SystemCreateUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         usecase = SystemUseCase()
-        obj = usecase.update(pk, **serializer.validated_data)
+        obj = usecase.update(pk, request.user, **serializer.validated_data)
         return Response(SystemDetailSerializer(obj).data)
 
     def delete(self, request, pk):
         usecase = SystemUseCase()
-        usecase.delete(pk)
+        usecase.delete(pk, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)

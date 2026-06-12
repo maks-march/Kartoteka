@@ -13,7 +13,7 @@
             {% endif %}
         </div>
         <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and system.creator_id == user %}
                 <a href="{% url 'system-edit' system.pk %}" class="btn btn-primary">Изменить</a>
                 <form action="{% url 'system-delete' system.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
                     {% csrf_token %}

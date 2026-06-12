@@ -13,6 +13,12 @@ class CategoryRepository:
     def get_by_id(self, pk):
         return Category.objects.filter(pk=pk).first()
 
+    def get_by_creator(self, user, search=None):
+        qs = Category.objects.filter(creator_id=user)
+        if search:
+            qs = qs.filter(name__icontains=search)
+        return qs
+
     def create(self, **kwargs):
         return Category.objects.create(**kwargs)
 

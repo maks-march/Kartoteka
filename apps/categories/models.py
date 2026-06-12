@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -10,6 +11,9 @@ class Category(models.Model):
 
     name = models.CharField(max_length=255)
     level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
+    creator_id = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "Category"

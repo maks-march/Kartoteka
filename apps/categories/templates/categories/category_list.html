@@ -35,7 +35,7 @@
                 <td>
                     <div class="actions">
                         <a href="{% url 'category-detail' cat.pk %}" class="btn btn-secondary">Открыть</a>
-                        {% if user.is_authenticated %}
+                        {% if user.is_authenticated and cat.creator_id == user %}
                             <a href="{% url 'category-edit' cat.pk %}" class="btn btn-primary">Изменить</a>
                             <form action="{% url 'category-delete' cat.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить категорию?')">
                                 {% csrf_token %}

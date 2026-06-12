@@ -65,6 +65,7 @@ def system_edit(request, pk):
         try:
             usecase.update(
                 pk=pk,
+                user=request.user,
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
             )
@@ -84,5 +85,5 @@ def system_edit(request, pk):
 @login_required
 def system_delete(request, pk):
     usecase = SystemUseCase()
-    usecase.delete(pk)
+    usecase.delete(pk, request.user)
     return redirect("system-list")

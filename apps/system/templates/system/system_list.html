@@ -36,7 +36,7 @@
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
                 <td class="actions">
                     <a href="{% url 'system-detail' s.pk %}" class="btn btn-secondary">Открыть</a>
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and s.creator_id == user %}
                         <a href="{% url 'system-edit' s.pk %}" class="btn btn-primary">Изменить</a>
                         <form action="{% url 'system-delete' s.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
                             {% csrf_token %}

@@ -1,5 +1,6 @@
 from apps.system.repositories.system_repository import SystemRepository
 from apps.system.repositories.automation_class_repository import AutomationClassRepository
+from common.exceptions import NotFoundException, PermissionDeniedError
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ValidationError
 
@@ -30,14 +31,18 @@ class SystemUseCase:
             data['creator_id'] = user
         return self.repo.create(**data)
 
-    def update(self, pk, **data):
+    def update(self, pk, user, **data):
         obj = self.get(pk)
+        if obj.creator_id != user:
+            raise PermissionDeniedError("Только создатель может редактировать запись")
         class_id = data.get("system_class")
         if class_id is not None and not self.class_repo.get_by_id(class_id):
             raise ValidationError("Automation class not found")
         data['system_class'] = self.class_repo.get_by_id(class_id)
         return self.repo.update(obj, **data)
 
-    def delete(self, pk):
+    def delete(self, pk, user):
         obj = self.get(pk)
+        if obj.creator_id != user:
+            raise PermissionDeniedError("Только создатель может удалить запись")
         return self.repo.delete(obj)

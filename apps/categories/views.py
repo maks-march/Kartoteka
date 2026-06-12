@@ -36,6 +36,7 @@ def category_create(request):
         usecase = CategoryUseCase()
         try:
             usecase.create(
+                user=request.user,
                 name=request.POST.get("name"),
                 level=int(request.POST.get("level")),
             )
@@ -56,6 +57,7 @@ def category_edit(request, pk):
         try:
             usecase.update(
                 pk=pk,
+                user=request.user,
                 name=request.POST.get("name"),
                 level=int(request.POST.get("level")),
             )
@@ -70,5 +72,5 @@ def category_edit(request, pk):
 @login_required
 def category_delete(request, pk):
     usecase = CategoryUseCase()
-    usecase.delete(pk)
+    usecase.delete(pk, request.user)
     return redirect("category-list")

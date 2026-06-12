@@ -16,7 +16,7 @@
             {% endif %}
         </div>
         <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and object.creator_id == user %}
                 {% if object.level < 3 %}
                     <a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребенка</a>
                 {% endif %}
