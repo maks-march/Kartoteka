@@ -1,0 +1,120 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Добавить ребенка — {{ parent.name }}{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>Добавить ребенка</h1>
+    <p style="margin-bottom:15px; color:#666">
+        Родитель: <a href="{% url 'object-detail' parent.pk %}">{{ parent.name }}</a>
+        <span class="tag tag-{{ parent.level }}">Уровень {{ parent.level }}</span>
+    </p>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    <!-- Переключение режима: существующий объект / новый объект -->
+    <div class="mode-toggle">
+        <button type="button" data-mode="existing" {% if active_mode == 'existing' %}class="active"{% endif %}>Выбрать существующий</button>
+        <button type="button" data-mode="create" {% if active_mode == 'create' %}class="active"{% endif %}>Создать новый</button>
+    </div>
+
+    <!-- ===== Режим 1: выбрать существующий объект ===== -->
+    <div class="mode-section" data-mode="existing" {% if active_mode != 'existing' %}style="display:none"{% endif %}>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="existing">
+
+            <div class="picker" data-target="#selectedChildId" data-enable="#existingSubmitBtn">
+                <div class="form-group">
+                    <label>Поиск и выбор объекта</label>
+                    <div class="search-wrapper">
+                        <input type="text" class="picker-search" placeholder="Введите название объекта..." style="margin-bottom:0">
+                        <select class="picker-level-filter">
+                            <option value="">Все доступные уровни</option>
+                            {% for lvl in child_levels %}
+                            <option value="{{ lvl }}">Уровень {{ lvl }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                    </div>
+                    <p class="hint" style="margin-top:5px">Доступны только объекты уровнем ниже родителя (уровень &gt; {{ parent.level }}).</p>
+                </div>
+
+                <div class="system-results-container">
+                    {% for o in possible_children %}
+                    <div class="system-item" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}" data-level="{{ o.level }}">
+                        <span class="system-name">{{ o.name }}</span>
+                        <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}{% if o.parent %} · Родитель: {{ o.parent.name }}{% endif %}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="{% if possible_children %}display:none; {% endif %}padding:20px; text-align:center; color:#999;">
+                        Объекты не найдены
+                    </div>
+                </div>
+
+                <input type="hidden" name="existing_object" id="selectedChildId" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="existingSubmitBtn" disabled>Сделать ребенком</button>
+                <a href="{% url 'object-detail' parent.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== Режим 2: создать новый объект (как старая форма, без выбора родителя) ===== -->
+    <div class="mode-section" data-mode="create" {% if active_mode != 'create' %}style="display:none"{% endif %}>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="create">
+
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Уровень</label>
+                <select name="level" id="childLevelSelect" required>
+                    {% for lvl in child_levels %}
+                    <option value="{{ lvl }}">Уровень {{ lvl }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Подпоиск категории, фильтруется выбранным уровнем -->
+            <div class="picker" data-target="#selectedCategoryId" data-level-source="#childLevelSelect">
+                <div class="form-group">
+                    <label>Категория</label>
+                    <div class="search-wrapper">
+                        <input type="text" class="picker-search" placeholder="Введите название категории..." style="margin-bottom:0">
+                        <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                    </div>
+                </div>
+
+                <div class="system-results-container">
+                    <div class="system-item selected" data-id="" data-keep>
+                        <span class="system-name">— Без категории —</span>
+                    </div>
+                    {% for cat in categories %}
+                    <div class="system-item" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}" data-level="{{ cat.level }}">
+                        <span class="system-name">{{ cat.name }}</span>
+                        <span class="system-info">Уровень {{ cat.level }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                        Категории не найдены
+                    </div>
+                </div>
+
+                <input type="hidden" name="category" id="selectedCategoryId">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Создать</button>
+                <a href="{% url 'object-detail' parent.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

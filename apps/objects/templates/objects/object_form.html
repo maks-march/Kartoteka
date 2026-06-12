@@ -18,13 +18,13 @@
         <div class="form-group">
             <label>Уровень</label>
             <select name="level" id="levelSelect" required>
-                <option value="1" {% if object.level == 1 %}selected{% endif %} {% if preset_level and preset_level != 1 %}disabled{% endif %}>Уровень 1</option>
-                <option value="2" {% if object.level == 2 %}selected{% endif %} {% if preset_level and preset_level != 2 %}disabled{% endif %}>Уровень 2</option>
-                <option value="3" {% if object.level == 3 %}selected{% endif %} {% if preset_level and preset_level != 3 %}disabled{% endif %}>Уровень 3</option>
+                <option value="1" {% if object.level == 1 %}selected{% endif %}>Уровень 1</option>
+                <option value="2" {% if object.level == 2 %}selected{% endif %}>Уровень 2</option>
+                <option value="3" {% if object.level == 3 %}selected{% endif %}>Уровень 3</option>
             </select>
         </div>
 
-        <div class="form-group" id="parentGroup" style="{% if preset_level == 1 or not preset_level and not object.level %}display:none{% endif %}">
+        <div class="form-group" id="parentGroup" style="{% if not object.level or object.level == 1 %}display:none{% endif %}">
             <label>Родитель</label>
             <input type="text" id="parentSearch" placeholder="Поиск по названию..." style="margin-bottom:5px">
             <select name="parent" id="parentSelect">
@@ -32,7 +32,6 @@
                 {% for p in possible_parents %}
                 <option value="{{ p.pk }}"
                     {% if object.parent_id == p.pk %}selected{% endif %}
-                    {% if preset_parent == p.pk %}selected{% endif %}
                     data-name="{{ p.name|lower }}">
                     {{ p.name }} (Ур.{{ p.level }})
                 </option>
@@ -40,18 +39,32 @@
             </select>
         </div>
 
-        <div class="form-group" id="categoryGroup">
-            <label>Категория</label>
-            <select name="category" id="categorySelect">
-                <option value="">— Без категории —</option>
+        <!-- Подпоиск категории, фильтруется выбранным уровнем -->
+        <div class="picker" data-target="#selectedCategoryId" data-level-source="#levelSelect">
+            <div class="form-group">
+                <label>Категория</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название категории..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+            </div>
+
+            <div class="system-results-container">
+                <div class="system-item {% if not object.category_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Без категории —</span>
+                </div>
                 {% for cat in categories %}
-                <option value="{{ cat.pk }}"
-                    {% if object.category_id == cat.pk %}selected{% endif %}
-                    data-level="{{ cat.level }}">
-                    {{ cat.name }} (Ур.{{ cat.level }})
-                </option>
+                <div class="system-item {% if object.category_id == cat.pk %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}" data-level="{{ cat.level }}">
+                    <span class="system-name">{{ cat.name }}</span>
+                    <span class="system-info">Уровень {{ cat.level }}</span>
+                </div>
                 {% endfor %}
-            </select>
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Категории не найдены
+                </div>
+            </div>
+
+            <input type="hidden" name="category" id="selectedCategoryId" value="{{ object.category_id|default:'' }}">
         </div>
 
         <div class="form-actions">
@@ -67,21 +80,6 @@
     const parentGroup = document.getElementById('parentGroup');
     const parentSelect = document.getElementById('parentSelect');
     const parentSearch = document.getElementById('parentSearch');
-    const categorySelect = document.getElementById('categorySelect');
-
-    function filterCategories() {
-        const level = parseInt(levelSelect.value, 10);
-        Array.from(categorySelect.options).forEach(function(opt) {
-            if (!opt.value) return;
-            const catLevel = parseInt(opt.getAttribute('data-level'), 10);
-            if (catLevel === level) {
-                opt.style.display = '';
-            } else {
-                opt.style.display = 'none';
-                if (opt.selected) opt.selected = false;
-            }
-        });
-    }
 
     function toggleParent() {
         const level = parseInt(levelSelect.value, 10);
@@ -93,10 +91,7 @@
         }
     }
 
-    levelSelect.addEventListener('change', function() {
-        toggleParent();
-        filterCategories();
-    });
+    levelSelect.addEventListener('change', toggleParent);
 
     parentSearch.addEventListener('input', function() {
         const q = this.value.toLowerCase();
@@ -111,7 +106,6 @@
     });
 
     toggleParent();
-    filterCategories();
 })();
 </script>
 {% endblock %}

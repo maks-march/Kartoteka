@@ -119,32 +119,55 @@ def object_add_child(request, pk):
     cat_usecase = CategoryUseCase()
     parent = usecase.get(pk)
     error = None
+    active_mode = "existing"
 
     if parent.level >= 3:
         return redirect("object-detail", pk=pk)
 
-    child_level = parent.level + 1
-
     if request.method == "POST":
+        active_mode = request.POST.get("mode") or "existing"
         try:
-            usecase.create(
-                user=request.user,
-                name=request.POST.get("name"),
-                level=child_level,
-                parent=parent.pk,
-                category=request.POST.get("category") or None,
-            )
+            if active_mode == "existing":
+                child_pk = request.POST.get("existing_object")
+                if not child_pk:
+                    raise ValidationError("Необходимо выбрать объект")
+                usecase.update(pk=int(child_pk), user=request.user, parent=parent.pk)
+            else:
+                usecase.create(
+                    user=request.user,
+                    name=request.POST.get("name"),
+                    level=int(request.POST.get("level")),
+                    parent=parent.pk,
+                    category=request.POST.get("category") or None,
+                )
             return redirect("object-detail", pk=pk)
-        except (ValidationError, Exception) as e:
+        except (ValidationError, ValueError, TypeError) as e:
             error = str(e)
 
-    categories = cat_usecase.list(level=child_level)
-    return render(request, "objects/object_form.html", {
-        "object": None,
-        "possible_parents": [parent],
+    # Объекты, которые можно сделать ребенком: только уровнем ниже родителя,
+    # исключая самого родителя, его текущих детей и его предков (защита от цикла)
+    ancestor_ids = []
+    current = parent
+    while current.parent_id:
+        ancestor_ids.append(current.parent_id)
+        current = current.parent
+
+    possible_children = (
+        repo.get_all()
+        .filter(level__gt=parent.level)
+        .exclude(pk=parent.pk)
+        .exclude(parent_id=parent.pk)
+        .exclude(pk__in=ancestor_ids)
+    )
+
+    child_levels = [lvl for lvl in (1, 2, 3) if lvl > parent.level]
+    categories = cat_usecase.list()
+    return render(request, "objects/object_add_child_form.html", {
+        "parent": parent,
+        "possible_children": possible_children,
+        "child_levels": child_levels,
         "categories": categories,
-        "preset_parent": parent.pk,
-        "preset_level": child_level,
+        "active_mode": active_mode,
         "error": error,
     })
 

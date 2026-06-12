@@ -17,30 +17,32 @@
         {% csrf_token %}
         {% if link %}<input type="hidden" name="next" value="{{ next_page }}">{% endif %}
 
-        <!-- Поисковая строка с кнопкой -->
-        <div class="form-group">
-            <label>Поиск и выбор системы</label>
-            <div class="search-wrapper">
-                <input type="text" id="systemSearchInput" placeholder="Введите название системы..." style="margin-bottom:0">
-                <button type="button" id="searchBtn" class="btn btn-secondary">Найти</button>
+        <div class="picker" data-target="#selectedSystemId" data-enable="#submitBtn">
+            <!-- Поисковая строка с кнопкой -->
+            <div class="form-group">
+                <label>Поиск и выбор системы</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название системы..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Ограниченный блок со списком систем -->
-        <div class="system-results-container" id="systemList">
-            {% for s in systems %}
-            <div class="system-item {% if link.system_id == s.pk %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
-                <span class="system-name">{{ s.autosystem_name }}</span>
-                <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
+            <!-- Ограниченный блок со списком систем -->
+            <div class="system-results-container">
+                {% for s in systems %}
+                <div class="system-item {% if link.system_id == s.pk %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
+                    <span class="system-name">{{ s.autosystem_name }}</span>
+                    <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Системы не найдены
+                </div>
             </div>
-            {% endfor %}
-            <div id="noResults" style="display:none; padding:20px; text-align:center; color:#999;">
-                Системы не найдены
-            </div>
-        </div>
 
-        <!-- Скрытое поле для передачи ID выбранной системы -->
-        <input type="hidden" name="system" id="selectedSystemId" value="{{ link.system_id|default:'' }}" required>
+            <!-- Скрытое поле для передачи ID выбранной системы -->
+            <input type="hidden" name="system" id="selectedSystemId" value="{{ link.system_id|default:'' }}" required>
+        </div>
 
         <div class="form-group">
             <label>Статус</label>

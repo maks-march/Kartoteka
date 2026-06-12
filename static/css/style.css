@@ -437,6 +437,7 @@ td a:hover {
     gap: 5px;
     margin-bottom: 5px;
 }
+
 .system-results-container {
     max-height: 250px; /* Ограничение по высоте */
     overflow-y: auto;  /* Прокрутка */
@@ -445,6 +446,7 @@ td a:hover {
     background: #fff;
     margin-bottom: 15px;
 }
+
 .system-item {
     padding: 10px 12px;
     cursor: pointer;
@@ -453,15 +455,71 @@ td a:hover {
     display: flex;
     flex-direction: column;
 }
+
 .system-item:last-child { border-bottom: none; }
 .system-item:hover { background: #f8f9fa; }
+
 .system-item.selected {
     background: #e7f3ff;
     border-left: 4px solid #007bff;
     padding-left: 8px;
 }
+
 .system-item .system-info { font-size: 0.85em; color: #666; }
 .system-item .system-name { font-weight: 500; }
 
 /* Скрываем штатный select, но оставляем hidden input для формы */
 #selectedSystemId { display: none; }
+
+/* ===== Маленькие кнопки для таблиц ===== */
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+/* ===== Подсказка в формах ===== */
+.hint {
+    font-size: 13px;
+    color: #888;
+}
+
+/* ===== Переключатель режимов (существующий / новый) ===== */
+.mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.mode-toggle button {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background: #f8f9fa;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.mode-toggle button:hover {
+    background: #e9ecef;
+}
+
+.mode-toggle button.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+/* ===== Фильтр по уровню внутри подпоиска ===== */
+.picker-level-filter {
+    flex-shrink: 0;
+    width: auto !important;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 14px;
+}

@@ -21,25 +21,51 @@ window.addEventListener('load', function() {
     }
 });
 
-/* ===== Форма привязки (объект <-> система): поиск и выбор из списка ===== */
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('systemSearchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const systemItems = document.querySelectorAll('.system-item');
-    const hiddenInput = document.getElementById('selectedSystemId');
-    const submitBtn = document.getElementById('submitBtn');
-    const noResults = document.getElementById('noResults');
+/* ===== Универсальный подпоиск-выбор из списка (.picker) =====
+   Атрибуты контейнера .picker:
+   - data-target       — селектор скрытого input, куда пишется id выбранного элемента
+   - data-enable       — селектор кнопки submit, активируемой после выбора (опционально)
+   - data-level-source — селектор внешнего <select> уровня, фильтрующего список (опционально)
+   Внутри: .picker-search, .picker-search-btn, .picker-level-filter (опционально),
+   .picker-list со строками .system-item (data-id, data-name, data-level, data-keep)
+   и заглушкой .picker-no-results */
+function initPicker(picker) {
+    const hiddenInput = document.querySelector(picker.getAttribute('data-target') || '');
+    if (!hiddenInput) return;
 
-    if (!searchInput || !hiddenInput) return;
+    const submitBtn = picker.getAttribute('data-enable')
+        ? document.querySelector(picker.getAttribute('data-enable')) : null;
+    const levelSource = picker.getAttribute('data-level-source')
+        ? document.querySelector(picker.getAttribute('data-level-source')) : null;
+    const searchInput = picker.querySelector('.picker-search');
+    const searchBtn = picker.querySelector('.picker-search-btn');
+    const levelFilter = picker.querySelector('.picker-level-filter');
+    const items = Array.from(picker.querySelectorAll('.system-item'));
+    const noResults = picker.querySelector('.picker-no-results');
 
-    // Функция фильтрации
-    function filterSystems() {
-        const query = searchInput.value.toLowerCase().trim();
+    function currentLevel() {
+        if (levelFilter && levelFilter.value) return levelFilter.value;
+        if (levelSource && levelSource.value) return levelSource.value;
+        return '';
+    }
+
+    // Функция фильтрации (по названию и, если задан, по уровню)
+    function applyFilter() {
+        const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const lvl = currentLevel();
         let hasVisible = false;
 
-        systemItems.forEach(item => {
-            const name = item.getAttribute('data-name');
-            if (name.includes(query)) {
+        items.forEach(function(item) {
+            // data-keep — элемент всегда видим (например, «Без категории»)
+            if (item.hasAttribute('data-keep')) {
+                item.style.display = 'flex';
+                hasVisible = true;
+                return;
+            }
+            const name = item.getAttribute('data-name') || '';
+            const okName = name.includes(q);
+            const okLevel = !lvl || item.getAttribute('data-level') === lvl;
+            if (okName && okLevel) {
                 item.style.display = 'flex';
                 hasVisible = true;
             } else {
@@ -50,28 +76,67 @@ document.addEventListener('DOMContentLoaded', function() {
         if (noResults) noResults.style.display = hasVisible ? 'none' : 'block';
     }
 
+    function clearSelection() {
+        items.forEach(function(i) { i.classList.remove('selected'); });
+        hiddenInput.value = '';
+        const keepItem = items.find(function(i) { return i.getAttribute('data-id') === ''; });
+        if (keepItem) keepItem.classList.add('selected');
+    }
+
     // Поиск по нажатию кнопки
-    if (searchBtn) searchBtn.addEventListener('click', filterSystems);
+    if (searchBtn) searchBtn.addEventListener('click', applyFilter);
 
     // Поиск по Enter в поле ввода
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            filterSystems();
-        }
-    });
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyFilter();
+            }
+        });
+    }
+
+    // Фильтр по уровню внутри пикера — сразу при смене
+    if (levelFilter) levelFilter.addEventListener('change', applyFilter);
+
+    // Внешний select уровня: фильтрует список и сбрасывает выбор, если он стал недоступен
+    if (levelSource) {
+        levelSource.addEventListener('change', function() {
+            applyFilter();
+            const sel = items.find(function(i) { return i.classList.contains('selected'); });
+            if (sel && sel.style.display === 'none') clearSelection();
+        });
+    }
 
     // Выбор элемента из списка
-    systemItems.forEach(item => {
+    items.forEach(function(item) {
         item.addEventListener('click', function() {
-            // Убираем выделение у всех
-            systemItems.forEach(i => i.classList.remove('selected'));
-            // Выделяем текущий
+            items.forEach(function(i) { i.classList.remove('selected'); });
             this.classList.add('selected');
-            // Записываем ID в скрытое поле
             hiddenInput.value = this.getAttribute('data-id');
-            // Активируем кнопку отправки
             if (submitBtn) submitBtn.disabled = false;
         });
     });
+
+    applyFilter();
+}
+
+/* ===== Переключатель режимов (выбрать существующий / создать новый) ===== */
+function initModeToggle(toggle) {
+    const btns = Array.from(toggle.querySelectorAll('[data-mode]'));
+    btns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            btns.forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            const mode = this.getAttribute('data-mode');
+            document.querySelectorAll('.mode-section').forEach(function(sec) {
+                sec.style.display = sec.getAttribute('data-mode') === mode ? '' : 'none';
+            });
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.picker').forEach(initPicker);
+    document.querySelectorAll('.mode-toggle').forEach(initModeToggle);
 });

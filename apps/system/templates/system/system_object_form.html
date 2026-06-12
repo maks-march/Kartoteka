@@ -17,30 +17,38 @@
         {% csrf_token %}
         {% if link %}<input type="hidden" name="next" value="{{ next_page }}">{% endif %}
 
-        <!-- Поисковая строка с кнопкой -->
-        <div class="form-group">
-            <label>Поиск и выбор объекта</label>
-            <div class="search-wrapper">
-                <input type="text" id="systemSearchInput" placeholder="Введите название объекта..." style="margin-bottom:0">
-                <button type="button" id="searchBtn" class="btn btn-secondary">Найти</button>
+        <div class="picker" data-target="#selectedObjectId" data-enable="#submitBtn">
+            <!-- Поисковая строка с кнопкой и фильтром по уровню -->
+            <div class="form-group">
+                <label>Поиск и выбор объекта</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название объекта..." style="margin-bottom:0">
+                    <select class="picker-level-filter">
+                        <option value="">Все уровни</option>
+                        <option value="1">Уровень 1</option>
+                        <option value="2">Уровень 2</option>
+                        <option value="3">Уровень 3</option>
+                    </select>
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Ограниченный блок со списком объектов -->
-        <div class="system-results-container" id="systemList">
-            {% for o in objects %}
-            <div class="system-item {% if link.object_id == o.pk %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}">
-                <span class="system-name">{{ o.name }}</span>
-                <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
+            <!-- Ограниченный блок со списком объектов -->
+            <div class="system-results-container">
+                {% for o in objects %}
+                <div class="system-item {% if link.object_id == o.pk %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}" data-level="{{ o.level }}">
+                    <span class="system-name">{{ o.name }}</span>
+                    <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Объекты не найдены
+                </div>
             </div>
-            {% endfor %}
-            <div id="noResults" style="display:none; padding:20px; text-align:center; color:#999;">
-                Объекты не найдены
-            </div>
-        </div>
 
-        <!-- Скрытое поле для передачи ID выбранного объекта -->
-        <input type="hidden" name="object" id="selectedSystemId" value="{{ link.object_id|default:'' }}" required>
+            <!-- Скрытое поле для передачи ID выбранного объекта -->
+            <input type="hidden" name="object" id="selectedObjectId" value="{{ link.object_id|default:'' }}" required>
+        </div>
 
         <div class="form-group">
             <label>Статус</label>
