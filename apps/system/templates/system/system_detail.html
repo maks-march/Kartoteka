@@ -14,8 +14,9 @@
             <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated and system.creator_id == user %}
-                <a href="{% url 'system-edit' system.pk %}" class="btn btn-primary">Изменить</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>
+                <a href="{% url 'system-edit' system.pk %}" class="btn btn-secondary">Изменить</a>
                 <form action="{% url 'system-delete' system.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Удалить</button>
@@ -23,6 +24,41 @@
             {% endif %}
         </div>
     </div>
+</div>
+
+<div class="card">
+    <h2>Подключенные объекты</h2>
+    {% if system_objects %}
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Уровень</th><th>Статус</th><th>Дата ввода</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+        </thead>
+        <tbody>
+            {% for os in system_objects %}
+            <tr>
+                <td><a href="{% url 'object-detail' os.object.pk %}">{{ os.object.name }}</a></td>
+                <td><span class="tag tag-{{ os.object.level }}">Уровень {{ os.object.level }}</span></td>
+                <td>{{ os.get_status_display }}</td>
+                <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
+                {% if user.is_authenticated %}
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'object-system-edit' os.pk %}?next=system" class="btn btn-secondary btn-sm">Изменить</a>
+                        <form action="{% url 'object-system-delete' os.pk %}" method="post" style="display:inline" onsubmit="return confirm('Отвязать объект от системы?')">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="system">
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Нет подключенных объектов</p>
+    {% endif %}
 </div>
 
 <div style="margin-top:10px">

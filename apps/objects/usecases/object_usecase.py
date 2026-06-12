@@ -1,6 +1,6 @@
 from apps.objects.repositories.object_repository import ObjectRepository
 from apps.objects.usecases.validators import ObjectValidator
-from common.exceptions import NotFoundException, PermissionDeniedError
+from common.exceptions import NotFoundException
 from rest_framework.exceptions import NotFound
 
 
@@ -38,8 +38,6 @@ class ObjectUseCase:
 
     def update(self, pk, user, **data):
         obj = self.get(pk)
-        if obj.creator_id != user:
-            raise PermissionDeniedError("Только создатель может редактировать запись")
         parent_id = data.pop("parent", "__missing__")
         category_id = data.pop("category", "__missing__")
         level = data.get("level", obj.level)
@@ -64,6 +62,4 @@ class ObjectUseCase:
 
     def delete(self, pk, user):
         obj = self.get(pk)
-        if obj.creator_id != user:
-            raise PermissionDeniedError("Только создатель может удалить запись")
         return self.repo.soft_delete(obj)

@@ -359,6 +359,7 @@ td a:hover {
 }
 
 .form-group input[type="text"],
+.form-group input[type="date"],
 .form-group select {
     display: block;
     width: 100%;
@@ -373,6 +374,7 @@ td a:hover {
 }
 
 .form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
 .form-group select:focus {
     border-color: #007bff;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
@@ -380,6 +382,10 @@ td a:hover {
 
 .form-group select {
     min-height: 42px;
+}
+
+.form-group input[type="date"] {
+    width: 20%;
 }
 
 .form-actions {
@@ -424,3 +430,38 @@ td a:hover {
     color: #666;
     margin: 0;
 }
+
+/* == Form with Search == */
+.search-wrapper {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+.system-results-container {
+    max-height: 250px; /* Ограничение по высоте */
+    overflow-y: auto;  /* Прокрутка */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: #fff;
+    margin-bottom: 15px;
+}
+.system-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+.system-item:last-child { border-bottom: none; }
+.system-item:hover { background: #f8f9fa; }
+.system-item.selected {
+    background: #e7f3ff;
+    border-left: 4px solid #007bff;
+    padding-left: 8px;
+}
+.system-item .system-info { font-size: 0.85em; color: #666; }
+.system-item .system-name { font-weight: 500; }
+
+/* Скрываем штатный select, но оставляем hidden input для формы */
+#selectedSystemId { display: none; }

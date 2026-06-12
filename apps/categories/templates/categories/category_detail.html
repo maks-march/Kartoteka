@@ -12,7 +12,7 @@
             <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if category.creator_id %}{{ category.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated and category.creator_id == user %}
+            {% if user.is_authenticated %}
                 <a href="{% url 'category-edit' category.pk %}" class="btn btn-primary">Изменить</a>
                 <form action="{% url 'category-delete' category.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить категорию?')">
                     {% csrf_token %}

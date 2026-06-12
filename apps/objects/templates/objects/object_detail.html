@@ -17,7 +17,8 @@
             <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
         </div>
         <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated and object.creator_id == user %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'object-attach-system' object.pk %}" class="btn btn-primary">+ Привязать систему</a>
                 {% if object.level < 3 %}
                     <a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребенка</a>
                 {% endif %}
@@ -29,6 +30,41 @@
             {% endif %}
         </div>
     </div>
+</div>
+
+<div class="card">
+    <h2>Подключенные системы</h2>
+    {% if object_systems %}
+    <table>
+        <thead>
+            <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+        </thead>
+        <tbody>
+            {% for os in object_systems %}
+            <tr>
+                <td><a href="{% url 'system-detail' os.system.pk %}">{{ os.system.autosystem_name }}</a></td>
+                <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
+                <td>{{ os.get_status_display }}</td>
+                <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
+                {% if user.is_authenticated %}
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'object-system-edit' os.pk %}?next=object" class="btn btn-secondary btn-sm">Изменить</a>
+                        <form action="{% url 'object-system-delete' os.pk %}" method="post" style="display:inline" onsubmit="return confirm('Отвязать систему от объекта?')">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="object">
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Нет подключенных систем</p>
+    {% endif %}
 </div>
 
 {% if children %}

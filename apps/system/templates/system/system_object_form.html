@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if link %}Изменить привязку{% else %}Привязать объект{% endif %} — {{ system.autosystem_name }}{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>{% if link %}Изменить привязку{% else %}Привязать объект{% endif %}</h1>
+    <p style="margin-bottom:15px; color:#666">
+        Система: <a href="{% url 'system-detail' system.pk %}">{{ system.autosystem_name }}</a>
+        <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
+    </p>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    {% if objects %}
+    <form method="post" id="linkSystemForm">
+        {% csrf_token %}
+        {% if link %}<input type="hidden" name="next" value="{{ next_page }}">{% endif %}
+
+        <!-- Поисковая строка с кнопкой -->
+        <div class="form-group">
+            <label>Поиск и выбор объекта</label>
+            <div class="search-wrapper">
+                <input type="text" id="systemSearchInput" placeholder="Введите название объекта..." style="margin-bottom:0">
+                <button type="button" id="searchBtn" class="btn btn-secondary">Найти</button>
+            </div>
+        </div>
+
+        <!-- Ограниченный блок со списком объектов -->
+        <div class="system-results-container" id="systemList">
+            {% for o in objects %}
+            <div class="system-item {% if link.object_id == o.pk %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}">
+                <span class="system-name">{{ o.name }}</span>
+                <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
+            </div>
+            {% endfor %}
+            <div id="noResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                Объекты не найдены
+            </div>
+        </div>
+
+        <!-- Скрытое поле для передачи ID выбранного объекта -->
+        <input type="hidden" name="object" id="selectedSystemId" value="{{ link.object_id|default:'' }}" required>
+
+        <div class="form-group">
+            <label>Статус</label>
+            <select name="status">
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if link.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Дата ввода в эксплуатацию</label>
+            <input type="date" name="implementation_date" value="{{ link.implementation_date|date:'Y-m-d' }}">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn" {% if not link %}disabled{% endif %}>{% if link %}Сохранить{% else %}Привязать{% endif %}</button>
+            {% if link and next_page != 'system' %}
+                <a href="{% url 'object-detail' link.object.pk %}" class="btn btn-secondary">Отмена</a>
+            {% else %}
+                <a href="{% url 'system-detail' system.pk %}" class="btn btn-secondary">Отмена</a>
+            {% endif %}
+        </div>
+    </form>
+    {% else %}
+    <p class="empty">Нет доступных объектов для привязки.</p>
+    <div class="form-actions">
+        <a href="{% url 'object-create' %}" class="btn btn-primary">Создать объект</a>
+        <a href="{% url 'system-detail' system.pk %}" class="btn btn-secondary">Назад</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

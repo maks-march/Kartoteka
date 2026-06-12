@@ -5,6 +5,9 @@ from django.core.exceptions import ValidationError
 
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
+from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
+from apps.objects.usecases.object_usecase import ObjectUseCase
+from apps.objects.models import ObjectSystem
 
 
 @require_http_methods(["GET"])
@@ -24,8 +27,13 @@ def system_list(request):
 @require_http_methods(["GET"])
 def system_detail(request, pk):
     usecase = SystemUseCase()
+    os_usecase = ObjectSystemUseCase()
     obj = usecase.get(pk)
-    return render(request, "system/system_detail.html", {"system": obj})
+    system_objects = os_usecase.list_for_system(obj)
+    return render(request, "system/system_detail.html", {
+        "system": obj,
+        "system_objects": system_objects,
+    })
 
 
 @require_http_methods(["GET", "POST"])
@@ -87,3 +95,34 @@ def system_delete(request, pk):
     usecase = SystemUseCase()
     usecase.delete(pk, request.user)
     return redirect("system-list")
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def system_attach_object(request, pk):
+    usecase = SystemUseCase()
+    os_usecase = ObjectSystemUseCase()
+    object_usecase = ObjectUseCase()
+    system = usecase.get(pk)
+    error = None
+
+    if request.method == "POST":
+        try:
+            os_usecase.attach(
+                object_pk=int(request.POST.get("object")),
+                system_pk=pk,
+                status=request.POST.get("status") or "planned",
+                implementation_date=request.POST.get("implementation_date") or None,
+            )
+            return redirect("system-detail", pk=pk)
+        except (ValidationError, ValueError, TypeError) as e:
+            error = str(e)
+
+    attached_ids = os_usecase.list_for_system(system).values_list("object_id", flat=True)
+    objects = object_usecase.list().exclude(pk__in=attached_ids)
+    return render(request, "system/system_object_form.html", {
+        "system": system,
+        "objects": objects,
+        "status_choices": ObjectSystem.STATUS_CHOICES,
+        "error": error,
+    })
