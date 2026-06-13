@@ -24,11 +24,11 @@
 
             <button type="submit" class="btn btn-primary">Применить</button>
 
-            <a href="{% url 'object-list' %}" class="btn-reset" title="Сбросить все фильтры">
+            <button type="button" class="btn-reset" onclick="clearFilters(this)" title="Очистить поля поиска">
                 <svg class="icon-trash" viewBox="0 0 24 24">
                     <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
                 </svg>
-            </a>
+            </button>
 
             <button type="button" class="btn btn-link" onclick="toggleAdvanced(this)">Расширенный поиск ▼</button>
         </div>
@@ -42,11 +42,11 @@
                     <button type="button" id="categoryFilterBtn" class="btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container" id="categoryFilterList" style="max-height:160px">
-                    <div class="system-item {% if not request.GET.category %}selected{% endif %}" data-id="">
+                    <div class="system-item {% if not selected_categories %}selected{% endif %}" data-id="">
                         <span class="system-name">— Все категории —</span>
                     </div>
                     {% for cat in all_categories %}
-                    <div class="system-item {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}">
+                    <div class="system-item {% if cat.pk|stringformat:"s" in selected_categories %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}">
                         <span class="system-name">{{ cat.name }}</span>
                         <span class="system-info">Уровень {{ cat.level }}</span>
                     </div>
@@ -55,7 +55,11 @@
                         Категории не найдены
                     </div>
                 </div>
-                <input type="hidden" name="category" id="categoryFilterId" value="{{ request.GET.category|default:'' }}">
+                <div id="categoryFilterInputs" data-name="category">
+                    {% for cid in selected_categories %}
+                    <input type="hidden" name="category" value="{{ cid }}">
+                    {% endfor %}
+                </div>
             </div>
 
             <!-- Подпоиск привязанной системы: показываются только объекты, к которым она подключена -->
@@ -66,11 +70,11 @@
                     <button type="button" id="systemFilterBtn" class="btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container" id="systemFilterList" style="max-height:160px">
-                    <div class="system-item {% if not request.GET.system %}selected{% endif %}" data-id="">
+                    <div class="system-item {% if not selected_systems %}selected{% endif %}" data-id="">
                         <span class="system-name">— Все системы —</span>
                     </div>
                     {% for s in all_systems %}
-                    <div class="system-item {% if request.GET.system == s.pk|stringformat:"s" %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
+                    <div class="system-item {% if s.pk|stringformat:"s" in selected_systems %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
                         <span class="system-name">{{ s.autosystem_name }}</span>
                         <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
                     </div>
@@ -79,7 +83,11 @@
                         Системы не найдены
                     </div>
                 </div>
-                <input type="hidden" name="system" id="systemFilterId" value="{{ request.GET.system|default:'' }}">
+                <div id="systemFilterInputs" data-name="system">
+                    {% for sid in selected_systems %}
+                    <input type="hidden" name="system" value="{{ sid }}">
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </form>
@@ -110,62 +118,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Тот же механизм, что в форме привязки системы к объекту
-    function setupFilterPicker(searchId, btnId, listId, hiddenId, noResultsId) {
-        const searchInput = document.getElementById(searchId);
-        const searchBtn = document.getElementById(btnId);
-        const list = document.getElementById(listId);
-        const hiddenInput = document.getElementById(hiddenId);
-        const noResults = document.getElementById(noResultsId);
-        if (!searchInput || !list || !hiddenInput) return;
-
-        const items = list.querySelectorAll('.system-item');
-
-        // Функция фильтрации
-        function filterItems() {
-            const query = searchInput.value.toLowerCase().trim();
-            let hasVisible = false;
-
-            items.forEach(item => {
-                const name = item.getAttribute('data-name');
-                // пункт "Все ..." (без data-name) показываем всегда
-                if (name === null || name.includes(query)) {
-                    item.style.display = 'flex';
-                    hasVisible = true;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            if (noResults) noResults.style.display = hasVisible ? 'none' : 'block';
-        }
-
-        // Поиск по нажатию кнопки
-        if (searchBtn) searchBtn.addEventListener('click', filterItems);
-
-        // Поиск по Enter в поле ввода
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                filterItems();
-            }
-        });
-
-        // Выбор из списка
-        items.forEach(item => {
-            item.addEventListener('click', function() {
-                // Убираем выделение у всех
-                items.forEach(i => i.classList.remove('selected'));
-                // Выделяем текущий
-                this.classList.add('selected');
-                // Записываем ID в скрытое поле
-                hiddenInput.value = this.getAttribute('data-id');
-            });
-        });
-    }
-
-    setupFilterPicker('categoryFilterSearch', 'categoryFilterBtn', 'categoryFilterList', 'categoryFilterId', 'categoryFilterNoResults');
-    setupFilterPicker('systemFilterSearch', 'systemFilterBtn', 'systemFilterList', 'systemFilterId', 'systemFilterNoResults');
+    setupMultiFilterPicker('categoryFilterSearch', 'categoryFilterBtn', 'categoryFilterList', 'categoryFilterInputs', 'categoryFilterNoResults');
+    setupMultiFilterPicker('systemFilterSearch', 'systemFilterBtn', 'systemFilterList', 'systemFilterInputs', 'systemFilterNoResults');
 });
 </script>
 {% endblock %}

@@ -21,8 +21,8 @@ class ObjectListCreateView(APIView):
     def get(self, request):
         level = request.query_params.get("level") or None
         search = request.query_params.get("search") or None
-        category = request.query_params.get("category") or None
-        system = request.query_params.get("system") or None
+        category = request.query_params.getlist("category") or None
+        system = request.query_params.getlist("system") or None
         usecase = ObjectUseCase()
         objects = usecase.list(level=level, search=search, category=category, system=system)
         serializer = ObjectListSerializer(objects, many=True)

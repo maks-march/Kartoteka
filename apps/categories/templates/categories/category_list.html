@@ -24,11 +24,11 @@
 
             <button type="submit" class="btn btn-primary">Применить</button>
 
-            <a href="{% url 'category-list' %}" class="btn-reset" title="Сбросить все фильтры">
+            <button type="button" class="btn-reset" onclick="clearFilters(this)" title="Очистить поля поиска">
                 <svg class="icon-trash" viewBox="0 0 24 24">
                     <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
                 </svg>
-            </a>
+            </button>
         </div>
     </form>
 

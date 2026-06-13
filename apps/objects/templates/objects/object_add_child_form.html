@@ -28,13 +28,13 @@
                 <div class="form-group">
                     <label>Поиск и выбор объекта</label>
                     <div class="search-wrapper">
-                        <input type="text" class="picker-search" placeholder="Введите название объекта..." style="margin-bottom:0">
                         <select class="picker-level-filter">
-                            <option value="">Все доступные уровни</option>
+                            <option value="">Все уровни</option>
                             {% for lvl in child_levels %}
                             <option value="{{ lvl }}">Уровень {{ lvl }}</option>
                             {% endfor %}
                         </select>
+                        <input type="text" class="picker-search" placeholder="Введите название объекта..." style="margin-bottom:0">
                         <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                     </div>
                     <p class="hint" style="margin-top:5px">Доступны только объекты уровнем ниже родителя (уровень &gt; {{ parent.level }}).</p>

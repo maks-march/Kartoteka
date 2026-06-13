@@ -15,11 +15,13 @@ from apps.objects.models import ObjectSystem
 def object_list(request):
     level = request.GET.get("level") or None
     search = request.GET.get("search") or None
-    category = request.GET.get("category") or None
-    system = request.GET.get("system") or None
+    category = request.GET.getlist("category") or None
+    system = request.GET.getlist("system") or None
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
     system_usecase = SystemUseCase()
+    print(category)
+    print()
     objects = usecase.list(level=level, search=search, category=category, system=system)
     all_categories = cat_usecase.list()
     all_systems = system_usecase.list()
@@ -27,6 +29,8 @@ def object_list(request):
         "objects": objects,
         "all_categories": all_categories,
         "all_systems": all_systems,
+        "selected_categories": category or [],
+        "selected_systems": system or [],
     })
 
 

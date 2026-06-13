@@ -3,6 +3,17 @@ import re
 from apps.objects.models import Object
 
 
+def _as_id_list(value):
+    """Нормализует одиночное значение или список в список непустых id."""
+    if value is None:
+        return []
+    if isinstance(value, (list, tuple, set)):
+        values = list(value)
+    else:
+        values = [value]
+    return [v for v in values if v not in (None, "", "None")]
+
+
 class ObjectRepository:
     def get_all(self, level=None, search=None, category=None, system=None):
         qs = Object.objects.filter(is_deleted=False).select_related("parent", "category")
@@ -12,11 +23,14 @@ class ObjectRepository:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
             qs = qs.filter(name__iregex=re.escape(search))
-        if category is not None:
-            qs = qs.filter(category_id=category)
-        if system is not None:
-            # только объекты, к которым привязана указанная система
-            qs = qs.filter(objectsystem__system_id=system)
+        category_ids = _as_id_list(category)
+        if category_ids:
+            # ИЛИ: объекты с любой из выбранных категорий
+            qs = qs.filter(category_id__in=category_ids)
+        system_ids = _as_id_list(system)
+        if system_ids:
+            # ИЛИ: объекты, к которым привязана любая из выбранных систем
+            qs = qs.filter(objectsystem__system_id__in=system_ids).distinct()
         return qs
 
     def get_by_id(self, pk):

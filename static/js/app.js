@@ -14,7 +14,7 @@ window.addEventListener('load', function() {
     const advancedSection = document.getElementById('advancedSearch');
     if (!advancedSection) return;
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('category') || urlParams.has('system_class') || urlParams.has('system')) {
+    if (urlParams.has('category') || urlParams.has('system_class') || urlParams.has('system') || urlParams.has('object')) {
         advancedSection.classList.add('show');
         const btn = document.querySelector('.btn-link[onclick^="toggleAdvanced"]');
         if (btn) btn.textContent = 'Скрыть поиск \u25B2';
@@ -140,3 +140,81 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.picker').forEach(initPicker);
     document.querySelectorAll('.mode-toggle').forEach(initModeToggle);
 });
+
+/* ===== Множественный выбор в фильтрах-пикерах =====
+   Позволяет выбрать несколько пунктов списка. Для каждого выбранного
+   элемента в контейнере inputsContainer создаётся <input type="hidden">
+   с именем inputsContainer.dataset.name и значением data-id пункта.
+   Пункт «Все ...» (data-id="") сбрасывает выбор. */
+function setupMultiFilterPicker(searchId, btnId, listId, inputsContainerId, noResultsId) {
+    const searchInput = document.getElementById(searchId);
+    const searchBtn = document.getElementById(btnId);
+    const list = document.getElementById(listId);
+    const inputsContainer = document.getElementById(inputsContainerId);
+    const noResults = document.getElementById(noResultsId);
+    if (!searchInput || !list || !inputsContainer) return;
+
+    const fieldName = inputsContainer.getAttribute('data-name');
+    const items = Array.from(list.querySelectorAll('.system-item'));
+    const allItem = items.find(i => i.getAttribute('data-id') === '');
+
+    // Перестраиваем скрытые input'ы по выделенным пунктам
+    function syncInputs() {
+        inputsContainer.innerHTML = '';
+        items.forEach(item => {
+            const id = item.getAttribute('data-id');
+            if (id && item.classList.contains('selected')) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = fieldName;
+                input.value = id;
+                inputsContainer.appendChild(input);
+            }
+        });
+    }
+
+    // Подсветка пункта «Все ...» когда ничего конкретного не выбрано
+    function syncAllItem() {
+        if (!allItem) return;
+        const anySelected = items.some(i => i.getAttribute('data-id') && i.classList.contains('selected'));
+        allItem.classList.toggle('selected', !anySelected);
+    }
+
+    function filterItems() {
+        const query = searchInput.value.toLowerCase().trim();
+        let hasVisible = false;
+        items.forEach(item => {
+            const name = item.getAttribute('data-name');
+            // пункт "Все ..." (без data-name) показываем всегда
+            if (name === null || name.includes(query)) {
+                item.style.display = 'flex';
+                hasVisible = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        if (noResults) noResults.style.display = hasVisible ? 'none' : 'block';
+    }
+
+    if (searchBtn) searchBtn.addEventListener('click', filterItems);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); filterItems(); }
+    });
+
+    items.forEach(item => {
+        item.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            if (id === '') {
+                // «Все ...» — снимаем все выделения
+                items.forEach(i => i.classList.remove('selected'));
+            } else {
+                this.classList.toggle('selected');
+            }
+            syncAllItem();
+            syncInputs();
+        });
+    });
+
+    syncAllItem();
+    syncInputs();
+}

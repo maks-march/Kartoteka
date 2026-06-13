@@ -14,7 +14,7 @@ from apps.objects.models import ObjectSystem
 def system_list(request):
     system_class = request.GET.get("system_class") or None
     search = request.GET.get("search") or None
-    obj = request.GET.get("object") or None
+    obj = request.GET.getlist("object") or None
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
     object_usecase = ObjectUseCase()
@@ -25,6 +25,7 @@ def system_list(request):
         "systems": systems,
         "classes": classes,
         "all_objects": all_objects,
+        "selected_objects": obj or [],
     })
 
 
