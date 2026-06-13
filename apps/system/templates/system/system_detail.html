@@ -4,26 +4,24 @@
 
 {% block content %}
 <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px">
-        <div>
-            <h1 style="margin-bottom:5px">{{ system.autosystem_name }}</h1>
-            <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
-            {% if system.system_class.description %}
-                <p style="margin-top:10px; color:#666">{{ system.system_class.description }}</p>
-            {% endif %}
-            <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
-        </div>
-        <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated %}
-                <a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>
-                <a href="{% url 'system-edit' system.pk %}" class="btn btn-secondary">Изменить</a>
-                <form action="{% url 'system-delete' system.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Удалить</button>
-                </form>
-            {% endif %}
-        </div>
+    <div>
+        <h1 style="margin-bottom:5px">{{ system.autosystem_name }}</h1>
+        <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
+        {% if system.system_class.description %}
+            <p style="margin-top:10px; color:#666">{{ system.system_class.description }}</p>
+        {% endif %}
+        <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
     </div>
+    {% if user.is_authenticated %}
+    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef; flex-wrap:wrap">
+        <a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>
+        <a href="{% url 'system-edit' system.pk %}" class="btn btn-secondary">Изменить</a>
+        <form action="{% url 'system-delete' system.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+    </div>
+    {% endif %}
 </div>
 
 <div class="card">

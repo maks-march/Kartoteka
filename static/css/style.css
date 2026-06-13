@@ -285,6 +285,11 @@ h1, h2, h3 {
     white-space: nowrap;
 }
 
+.tag-0 {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
 .tag-1 {
     background: #e3f2fd;
     color: #1565c0;
@@ -300,6 +305,10 @@ h1, h2, h3 {
     color: #ef6c00;
 }
 
+.tag-4 {
+    background: #ffebee;
+    color: #c62828;
+}
 /* ===== Table ===== */
 table {
     width: 100%;

@@ -4,32 +4,30 @@
 
 {% block content %}
 <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px">
-        <div>
-            <h1 style="margin-bottom:5px">{{ object.name }}</h1>
-            <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
-            {% if object.category %}
-                <span class="tag tag-{{ object.category.level }}" style="margin-left:8px">{{ object.category.name }}</span>
-            {% endif %}
-            {% if object.parent %}
-                <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
-            {% endif %}
-            <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
-        </div>
-        <div class="actions" style="flex-shrink:0">
-            {% if user.is_authenticated %}
-                <a href="{% url 'object-attach-system' object.pk %}" class="btn btn-primary">+ Привязать систему</a>
-                {% if object.level < 3 %}
-                    <a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребенка</a>
-                {% endif %}
-                <a href="{% url 'object-edit' object.pk %}" class="btn btn-secondary">Изменить</a>
-                <form action="{% url 'object-delete' object.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Удалить</button>
-                </form>
-            {% endif %}
-        </div>
+    <div>
+        <h1 style="margin-bottom:5px">{{ object.name }}</h1>
+        <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
+        {% if object.category %}
+            <span class="tag tag-{{ object.category.level }}" style="margin-left:8px">{{ object.category.name }}</span>
+        {% endif %}
+        {% if object.parent %}
+            <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
+        {% endif %}
+        <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
     </div>
+    {% if user.is_authenticated %}
+    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef; flex-wrap:wrap">
+        <a href="{% url 'object-attach-system' object.pk %}" class="btn btn-primary">+ Привязать систему</a>
+        {% if object.level < 3 %}
+            <a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребенка</a>
+        {% endif %}
+        <a href="{% url 'object-edit' object.pk %}" class="btn btn-secondary">Изменить</a>
+        <form action="{% url 'object-delete' object.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+    </div>
+    {% endif %}
 </div>
 
 <div class="card">
