@@ -10,8 +10,8 @@ class SystemUseCase:
         self.repo = repo or SystemRepository()
         self.class_repo = class_repo or AutomationClassRepository()
 
-    def list(self, system_class=None, search=None):
-        return self.repo.get_all(system_class=system_class, search=search)
+    def list(self, system_class=None, search=None, obj=None):
+        return self.repo.get_all(system_class=system_class, search=search, obj=obj)
 
     def list_by_user(self, user, search=None):
         return self.repo.get_by_creator(user, search=search)

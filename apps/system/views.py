@@ -14,13 +14,17 @@ from apps.objects.models import ObjectSystem
 def system_list(request):
     system_class = request.GET.get("system_class") or None
     search = request.GET.get("search") or None
+    obj = request.GET.get("object") or None
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
-    systems = usecase.list(system_class=system_class, search=search)
+    object_usecase = ObjectUseCase()
+    systems = usecase.list(system_class=system_class, search=search, obj=obj)
     classes = class_usecase.list()
+    all_objects = object_usecase.list()
     return render(request, "system/system_list.html", {
         "systems": systems,
         "classes": classes,
+        "all_objects": all_objects,
     })
 
 

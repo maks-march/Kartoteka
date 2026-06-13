@@ -32,8 +32,9 @@ class SystemListCreateView(APIView):
     def get(self, request):
         system_class = request.query_params.get("system_class")
         search = request.query_params.get("search")
+        obj = request.query_params.get("object")
         usecase = SystemUseCase()
-        systems = usecase.list(system_class=system_class, search=search)
+        systems = usecase.list(system_class=system_class, search=search, obj=obj)
         serializer = SystemListSerializer(systems, many=True)
         return Response(serializer.data)
 

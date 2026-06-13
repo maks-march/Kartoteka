@@ -4,7 +4,7 @@ from apps.system.models import AutomatedSystem
 
 
 class SystemRepository:
-    def get_all(self, system_class=None, search=None):
+    def get_all(self, system_class=None, search=None, obj=None):
         qs = AutomatedSystem.objects.all().select_related("system_class")
         if system_class is not None:
             qs = qs.filter(system_class_id=system_class)
@@ -12,6 +12,9 @@ class SystemRepository:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
             qs = qs.filter(autosystem_name__iregex=re.escape(search))
+        if obj is not None:
+            # только системы, привязанные к указанному объекту
+            qs = qs.filter(objectsystem__object_id=obj)
         return qs
 
     def get_by_id(self, pk):
