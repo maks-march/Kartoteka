@@ -13,28 +13,37 @@
 
     <form class="filters" method="get" id="filterForm">
         <div class="main-row">
-            <select name="system_class">
-                <option value="">Все классы</option>
-                {% for cls in classes %}
-                <option value="{{ cls.pk }}" {% if request.GET.system_class == cls.pk|stringformat:"s" %}selected{% endif %}>
-                    L{{ cls.level }} - {{ cls.system_class }}
-                </option>
-                {% endfor %}
-            </select>
             <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
 
             <button type="submit" class="btn btn-primary">Применить</button>
 
-            <button type="button" class="btn-reset" onclick="clearFilters(this)" title="Очистить поля поиска">
+            <a href="{% url 'system-list' %}" class="btn-reset" title="Сбросить все фильтры">
                 <svg class="icon-trash" viewBox="0 0 24 24">
                     <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
                 </svg>
-            </button>
+            </a>
 
             <button type="button" class="btn btn-link" onclick="toggleAdvanced(this)">Расширенный поиск ▼</button>
         </div>
 
         <div class="advanced-section" id="advancedSearch" style="height:auto">
+            <!-- Подпоиск по классу -->
+            <div class="form-group">
+                <label>Класс системы</label>
+                <div class="system-results-container" id="classFilterPicker" style="max-height:160px">
+                    <div class="system-item {% if not request.GET.system_class %}selected{% endif %}" data-id="" data-name="">
+                        <span class="system-name">— Все классы —</span>
+                    </div>
+                    {% for cls in classes %}
+                    <div class="system-item {% if request.GET.system_class == cls.pk|stringformat:"s" %}selected{% endif %}" data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }}">
+                        <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
+                        <span class="system-info">Уровень {{ cls.level }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="system_class" id="selectedClassFilter" value="{{ request.GET.system_class|default:'' }}">
+            </div>
+
             <!-- Подпоиск по объекту: показываются только системы, подключенные к нему -->
             <div class="form-group">
                 <label>Подключена к объекту</label>
@@ -84,6 +93,21 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Class picker (single select)
+    const classContainer = document.getElementById('classFilterPicker');
+    const classHidden = document.getElementById('selectedClassFilter');
+    if (classContainer && classHidden) {
+        classContainer.querySelectorAll('.system-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                classContainer.querySelectorAll('.system-item').forEach(function(el) {
+                    el.classList.remove('selected');
+                });
+                item.classList.add('selected');
+                classHidden.value = item.getAttribute('data-id') || '';
+            });
+        });
+    }
+
     setupMultiFilterPicker('objectFilterSearch', 'objectFilterBtn', 'objectFilterList', 'objectFilterInputs', 'objectFilterNoResults');
 });
 </script>

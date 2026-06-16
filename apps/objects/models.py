@@ -37,7 +37,8 @@ class Object(models.Model):
 
     class Meta:
         ordering = ["level", "name"]
-
+        verbose_name = "Объект производства"
+        verbose_name_plural = "Объекты производства"
     def __str__(self):
         return f"{self.name} (L{self.level})"
 

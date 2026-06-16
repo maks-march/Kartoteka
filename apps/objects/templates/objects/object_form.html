@@ -26,17 +26,29 @@
 
         <div class="form-group" id="parentGroup" style="{% if not object.level or object.level == 1 %}display:none{% endif %}">
             <label>Родитель</label>
-            <input type="text" id="parentSearch" placeholder="Поиск по названию..." style="margin-bottom:5px">
-            <select name="parent" id="parentSelect">
-                <option value="">— Нет родителя —</option>
-                {% for p in possible_parents %}
-                <option value="{{ p.pk }}"
-                    {% if object.parent_id == p.pk %}selected{% endif %}
-                    data-name="{{ p.name|lower }}">
-                    {{ p.name }} (Ур.{{ p.level }})
-                </option>
-                {% endfor %}
-            </select>
+            <div class="picker" data-target="#selectedParentId">
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название родителя...">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+
+                <div class="system-results-container" id="parentPicker">
+                    <div class="system-item {% if not object.parent_id %}selected{% endif %}" data-id="" data-keep data-name="">
+                        <span class="system-name">— Нет родителя —</span>
+                    </div>
+                    {% for p in possible_parents %}
+                    <div class="system-item {% if object.parent_id == p.pk %}selected{% endif %}" data-id="{{ p.pk }}" data-name="{{ p.name|lower }}" data-level="{{ p.level }}">
+                        <span class="system-name">{{ p.name }}</span>
+                        <span class="system-info">Уровень {{ p.level }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="display:none">
+                        Родители не найдены
+                    </div>
+                </div>
+
+                <input type="hidden" name="parent" id="selectedParentId" value="{{ object.parent_id|default:'' }}">
+            </div>
         </div>
 
         <!-- Подпоиск категории, фильтруется выбранным уровнем -->
@@ -50,7 +62,7 @@
             </div>
 
             <div class="system-results-container">
-                <div class="system-item {% if not object.category_id %}selected{% endif %}" data-id="" data-keep>
+                <div class="system-item {% if not object.category_id %}selected{% endif %}" data-id="" data-keep data-name="">
                     <span class="system-name">— Без категории —</span>
                 </div>
                 {% for cat in categories %}
@@ -78,33 +90,18 @@
 (function() {
     const levelSelect = document.getElementById('levelSelect');
     const parentGroup = document.getElementById('parentGroup');
-    const parentSelect = document.getElementById('parentSelect');
-    const parentSearch = document.getElementById('parentSearch');
 
     function toggleParent() {
         const level = parseInt(levelSelect.value, 10);
         if (level === 1) {
             parentGroup.style.display = 'none';
-            parentSelect.value = '';
+            document.getElementById('selectedParentId').value = '';
         } else {
             parentGroup.style.display = '';
         }
     }
 
     levelSelect.addEventListener('change', toggleParent);
-
-    parentSearch.addEventListener('input', function() {
-        const q = this.value.toLowerCase();
-        Array.from(parentSelect.options).forEach(function(opt) {
-            const name = opt.getAttribute('data-name') || '';
-            if (!opt.value || name.includes(q)) {
-                opt.style.display = '';
-            } else {
-                opt.style.display = 'none';
-            }
-        });
-    });
-
     toggleParent();
 })();
 </script>

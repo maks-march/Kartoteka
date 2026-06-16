@@ -16,8 +16,8 @@ class Category(models.Model):
     )
 
     class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
+        verbose_name = "Категория объекта"
+        verbose_name_plural = "Категории"
         ordering = ["level", "name"]
 
     def __str__(self):

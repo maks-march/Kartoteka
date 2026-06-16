@@ -1,0 +1,334 @@
+<mxfile host="Electron">
+  <diagram name="ER Schema" id="er1">
+    <mxGraphModel dx="1873" dy="1153" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="oe" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="OwnerEntity" vertex="1">
+          <mxGeometry height="170" width="260" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oe1" parent="oe" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="260" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="oe2" parent="oe" style="text;align=left;" value="owner_name : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="oe3" parent="oe" style="text;align=left;" value="inn : varchar (UNIQUE)" vertex="1">
+          <mxGeometry height="22" width="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="oe4" parent="oe" style="text;align=left;" value="owner_id → OwnerEntity.id" vertex="1">
+          <mxGeometry height="22" width="260" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="oe5" parent="oe" style="text;align=left;" value="ultimate_owner_id → OwnerEntity.id" vertex="1">
+          <mxGeometry height="22" width="260" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="oe6" parent="oe" style="text;align=left;" value="ownership_percentage : decimal" vertex="1">
+          <mxGeometry height="22" width="260" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="ad" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#d5e8d4;strokeColor=#82b366;" value="Address" vertex="1">
+          <mxGeometry height="200" width="260" x="40" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="ad1" parent="ad" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="260" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ad2" parent="ad" style="text;align=left;" value="country : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="ad3" parent="ad" style="text;align=left;" value="region : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ad4" parent="ad" style="text;align=left;" value="city : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="ad5" parent="ad" style="text;align=left;" value="street : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="ad6" parent="ad" style="text;align=left;" value="house : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="ad7" parent="ad" style="text;align=left;" value="title : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="ad8" parent="ad" style="text;align=left;" value="fias_code : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ob" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#fff2cc;strokeColor=#d6b656;" value="Object" vertex="1">
+          <mxGeometry height="360" width="320" x="380" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ob1" parent="ob" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ob2" parent="ob" style="text;align=left;" value="object_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="ob3" parent="ob" style="text;align=left;" value="object_short_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ob4" parent="ob" style="text;align=left;" value="object_old_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="ob5" parent="ob" style="text;align=left;" value="object_law_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="ob6" parent="ob" style="text;align=left;" value="hierarchy_level : integer" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="ob7" parent="ob" style="text;align=left;" value="technology_info : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="ob8" parent="ob" style="text;align=left;" value="category : ENUM(main, aux, infra, prep, storage)" vertex="1">
+          <mxGeometry height="22" width="320" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ob9" parent="ob" style="text;align=left;" value="start_date : date" vertex="1">
+          <mxGeometry height="22" width="320" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="ob10" parent="ob" style="text;align=left;" value="is_reconstructed : bool" vertex="1">
+          <mxGeometry height="22" width="320" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="ob11" parent="ob" style="text;align=left;" value="capacity : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="ob12" parent="ob" style="text;align=left;" value="status : ENUM(active, in_project, reconstruction, stopped)" vertex="1">
+          <mxGeometry height="22" width="320" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="ob13" parent="ob" style="text;align=left;" value="parent_object_id → Object.id" vertex="1">
+          <mxGeometry height="22" width="320" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="ob14" parent="ob" style="text;align=left;" value="address_id → Address.id" vertex="1">
+          <mxGeometry height="22" width="320" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="ob15" parent="ob" style="text;align=left;" value="owner_entity_id → OwnerEntity.id" vertex="1">
+          <mxGeometry height="22" width="320" y="334" as="geometry" />
+        </mxCell>
+        <mxCell id="as" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;" value="AutomatedSystem" vertex="1">
+          <mxGeometry height="300" width="320" x="780" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="as1" parent="as" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="as2" parent="as" style="text;align=left;" value="autosystem_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="as3" parent="as" style="text;align=left;" value="autosystem__short_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="as4" parent="as" style="text;align=left;" value="system_class → AutomationClass.id" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="as5" parent="as" style="text;align=left;" value="vendor_id → Participant.id" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="as6" parent="as" style="text;align=left;" value="vendor_product_id → VendorProduct.id" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="as7" parent="as" style="text;align=left;" value="version : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="as8" parent="as" style="text;align=left;" value="modules : json" vertex="1">
+          <mxGeometry height="22" width="320" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="as9" parent="as" style="text;align=left;" value="interfaces : json" vertex="1">
+          <mxGeometry height="22" width="320" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="as10" parent="as" style="text;align=left;" value="system_status : ENUM(active, inactive, maintenance, upgrade)" vertex="1">
+          <mxGeometry height="22" width="320" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="as11" parent="as" style="text;align=left;" value="installation_date : date" vertex="1">
+          <mxGeometry height="22" width="320" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="as12" parent="as" style="text;align=left;" value="notes : text" vertex="1">
+          <mxGeometry height="22" width="320" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="ac" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#e1d5e7;strokeColor=#9673a6;" value="AutomationClass" vertex="1">
+          <mxGeometry height="130" width="260" x="1180" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ac1" parent="ac" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="260" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ac2" parent="ac" style="text;align=left;" value="level : integer (L0..L4)" vertex="1">
+          <mxGeometry height="22" width="260" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="ac3" parent="ac" style="text;align=left;" value="system_class : varchar" vertex="1">
+          <mxGeometry height="22" width="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ac4" parent="ac" style="text;align=left;" value="description : text" vertex="1">
+          <mxGeometry height="22" width="260" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="os" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#ffe6cc;strokeColor=#d79b00;" value="ObjectSystem" vertex="1">
+          <mxGeometry height="200" width="320" x="780" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="os1" parent="os" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="os2" parent="os" style="text;align=left;" value="object_id → Object.id" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="os3" parent="os" style="text;align=left;" value="system_id → AutomatedSystem.id" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="os4" parent="os" style="text;align=left;" value="status : ENUM(planned, in_progress, completed, partial)" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="os5" parent="os" style="text;align=left;" value="implementation_date : date" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="os6" parent="os" style="text;align=left;" value="integrator_id → Participant.id" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="os7" parent="os" style="text;align=left;" value="implementer_id → Participant.id" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="oc" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#d5e8d4;strokeColor=#82b366;" value="ObjectCharacteristic" vertex="1">
+          <mxGeometry height="180" width="320" x="380" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="oc1" parent="oc" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="oc2" parent="oc" style="text;align=left;" value="object_id → Object.id" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="oc3" parent="oc" style="text;align=left;" value="characteristic_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="oc4" parent="oc" style="text;align=left;" value="code : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="oc5" parent="oc" style="text;align=left;" value="unit : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="oc6" parent="oc" style="text;align=left;" value="description : text" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="oc7" parent="oc" style="text;align=left;" value="is_required : boolean" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="ocv" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#d5e8d4;strokeColor=#82b366;" value="ObjectCharacteristicValue" vertex="1">
+          <mxGeometry height="150" width="320" x="380" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="ocv1" parent="ocv" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ocv2" parent="ocv" style="text;align=left;" value="characteristic_id → ObjectCharacteristic.id" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="ocv3" parent="ocv" style="text;align=left;" value="value : double" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ocv4" parent="ocv" style="text;align=left;" value="measurement_date : date" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="ocv5" parent="ocv" style="text;align=left;" value="notes : text" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="car" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#e1d5e7;strokeColor=#9673a6;" value="ClassAutomationRequirement" vertex="1">
+          <mxGeometry height="150" width="320" x="780" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="car1" parent="car" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="car2" parent="car" style="text;align=left;" value="level_code → ObjectSystem.id" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="car3" parent="car" style="text;align=left;" value="requirement : text" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="car4" parent="car" style="text;align=left;" value="is_mandatory : boolean" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="car5" parent="car" style="text;align=left;" value="regulation : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="pa" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Participant" vertex="1">
+          <mxGeometry height="340" width="360" x="1180" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="pa1" parent="pa" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pa2" parent="pa" style="text;align=left;" value="participant_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="pa3" parent="pa" style="text;align=left;" value="inn : varchar (UNIQUE)" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pa4" parent="pa" style="text;align=left;" value="participant_type : ENUM(vendor, engineering, full_cycle, supplier)" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="pa5" parent="pa" style="text;align=left;" value="is_partner : boolean" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="pa6" parent="pa" style="text;align=left;" value="registration_date : date" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="pa7" parent="pa" style="text;align=left;" value="website : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="pa8" parent="pa" style="text;align=left;" value="kam_name / kam_phone" vertex="1">
+          <mxGeometry height="22" width="320" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pa9" parent="pa" style="text;align=left;" value="contact_person / contact_phone" vertex="1">
+          <mxGeometry height="22" width="320" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="pa10" parent="pa" style="text;align=left;" value="presentation_url : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="pa11" parent="pa" style="text;align=left;" value="profile : text" vertex="1">
+          <mxGeometry height="22" width="320" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="pa12" parent="pa" style="text;align=left;" value="industries : json" vertex="1">
+          <mxGeometry height="22" width="320" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="pa13" parent="pa" style="text;align=left;" value="contacts : json" vertex="1">
+          <mxGeometry height="22" width="320" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="pa14" parent="pa" style="text;align=left;" value="financial_data : json" vertex="1">
+          <mxGeometry height="22" width="320" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="vp" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;" value="VendorProduct" vertex="1">
+          <mxGeometry height="290" width="320" x="1180" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="vp1" parent="vp" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="vp2" parent="vp" style="text;align=left;" value="product_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="vp3" parent="vp" style="text;align=left;" value="vendor_id → Participant.id" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="vp4" parent="vp" style="text;align=left;" value="product_type : ENUM(software, hardware, service)" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="vp5" parent="vp" style="text;align=left;" value="article : varchar (UNIQUE)" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="vp6" parent="vp" style="text;align=left;" value="description : text" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="vp7" parent="vp" style="text;align=left;" value="version : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="vp8" parent="vp" style="text;align=left;" value="technical_specs : json" vertex="1">
+          <mxGeometry height="22" width="320" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="vp9" parent="vp" style="text;align=left;" value="system_types : json" vertex="1">
+          <mxGeometry height="22" width="320" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="vp10" parent="vp" style="text;align=left;" value="industries : json" vertex="1">
+          <mxGeometry height="22" width="320" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="vp11" parent="vp" style="text;align=left;" value="release_year : date" vertex="1">
+          <mxGeometry height="22" width="320" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="vp12" parent="vp" style="text;align=left;" value="end_of_support : date / is_active : boolean" vertex="1">
+          <mxGeometry height="22" width="320" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="oe" style="endArrow=open;dashed=1;" target="oe">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="ob" style="endArrow=open;dashed=1;" target="ob">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
