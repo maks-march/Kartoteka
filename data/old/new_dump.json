@@ -1,0 +1,228 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$uZJodywj5Du37fQQA7Fcpb$bzApJMDLu+RxZXi3AkpZns78zpmuSovR4OnT0ISim+4=",
+    "is_superuser": true,
+    "username": "admin",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-01-01T00:00:00Z"
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 1,
+  "fields": { "level": 0, "system_class": "КИПиА", "description": "Датчики и исполнительные механизмы" }
+},
+{
+  "model": "system.automationclass",
+  "pk": 2,
+  "fields": { "level": 1, "system_class": "ПЛК", "description": "Контроллеры и логика" }
+},
+{
+  "model": "system.automationclass",
+  "pk": 3,
+  "fields": { "level": 2, "system_class": "SCADA/DCS", "description": "Визуализация и управление" }
+},
+{
+  "model": "system.automationclass",
+  "pk": 4,
+  "fields": { "level": 3, "system_class": "MES", "description": "Управление производством" }
+},
+{
+  "model": "system.automationclass",
+  "pk": 5,
+  "fields": { "level": 4, "system_class": "ERP", "description": "Бизнес-планирование" }
+},
+{ "model": "categories.category", "pk": 1, "fields": { "name": "Нефтепереработка", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 2, "fields": { "name": "Нефтехимия", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 3, "fields": { "name": "Газопереработка", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 4, "fields": { "name": "Газохимия", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 5, "fields": { "name": "Химия", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 6, "fields": { "name": "Химия-удобрение", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 7, "fields": { "name": "Добыча нефти", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 8, "fields": { "name": "Добыча газа", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 9, "fields": { "name": "Добыча руды", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 10, "fields": { "name": "Транспорт", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 11, "fields": { "name": "Пищевая", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 12, "fields": { "name": "Фарма", "level": 1, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 13, "fields": { "name": "Основные", "level": 2, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 14, "fields": { "name": "Вспомогательные", "level": 2, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 15, "fields": { "name": "Общие", "level": 2, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 16, "fields": { "name": "Сырьевые", "level": 2, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 17, "fields": { "name": "Товарные", "level": 2, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 18, "fields": { "name": "Атмосферное разделение", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 19, "fields": { "name": "Вакуумное разделение", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 20, "fields": { "name": "Крекинг каталитический", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 21, "fields": { "name": "Крекинг гидро", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 22, "fields": { "name": "Реформинг", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 23, "fields": { "name": "Полимеризация", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 24, "fields": { "name": "Гидроочистка", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 25, "fields": { "name": "Мокрый катализ", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 26, "fields": { "name": "Грануляция", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 27, "fields": { "name": "Фильтрация", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 28, "fields": { "name": "Электролиз", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 29, "fields": { "name": "Абсорбция", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 30, "fields": { "name": "Стабилизация", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 31, "fields": { "name": "КЦА", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 32, "fields": { "name": "Дробление", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 33, "fields": { "name": "Транспорт (техн)", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 34, "fields": { "name": "Измельчение", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 35, "fields": { "name": "Флотация", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 36, "fields": { "name": "Фильтрация руды", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 37, "fields": { "name": "Катание", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 38, "fields": { "name": "Ковка", "level": 3, "creator_id": 1 } },
+{ "model": "categories.category", "pk": 39, "fields": { "name": "Штамповка", "level": 3, "creator_id": 1 } },
+{
+  "model": "system.automatedsystem",
+  "pk": 1,
+  "fields": { "autosystem_name": "Siemens PCS7", "system_class": 3, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 2,
+  "fields": { "autosystem_name": "Honeywell Experion", "system_class": 3, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 3,
+  "fields": { "autosystem_name": "SAP S/4HANA", "system_class": 5, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 4,
+  "fields": { "autosystem_name": "Aspen InfoPlus.21", "system_class": 4, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 5,
+  "fields": { "autosystem_name": "1C:ERP Производство", "system_class": 5, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 6,
+  "fields": { "autosystem_name": "Schneider EcoStruxure", "system_class": 3, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 7,
+  "fields": { "autosystem_name": "Wonderware System Platform", "system_class": 3, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 8,
+  "fields": { "autosystem_name": "OSIsoft PI System", "system_class": 4, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 9,
+  "fields": { "autosystem_name": "Emerson DeltaV", "system_class": 3, "creator_id": 1 }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 10,
+  "fields": { "autosystem_name": "Yokogawa CENTUM VP", "system_class": 3, "creator_id": 1 }
+},
+{
+  "model": "objects.object",
+  "pk": 1,
+  "fields": { "name": "Омский НПЗ", "level": 1, "parent": null, "category": 1, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T10:00:00Z", "updated_at": "2026-01-01T10:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 2,
+  "fields": { "name": "Тобольск-Полимер", "level": 1, "parent": null, "category": 2, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T10:00:00Z", "updated_at": "2026-01-01T10:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 3,
+  "fields": { "name": "Ямал СПГ", "level": 1, "parent": null, "category": 3, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T10:00:00Z", "updated_at": "2026-01-01T10:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 4,
+  "fields": { "name": "Цех №10 (АВТ)", "level": 2, "parent": 1, "category": 13, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 5,
+  "fields": { "name": "Установка Пиролиза", "level": 2, "parent": 2, "category": 13, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 6,
+  "fields": { "name": "Линия сжижения газа №1", "level": 2, "parent": 3, "category": 13, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 7,
+  "fields": { "name": "Резервуарный парк", "level": 2, "parent": 1, "category": 17, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 8,
+  "fields": { "name": "Колонна К-101", "level": 3, "parent": 4, "category": 18, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T12:00:00Z", "updated_at": "2026-01-01T12:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 9,
+  "fields": { "name": "Реактор Р-201", "level": 3, "parent": 5, "category": 23, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T12:00:00Z", "updated_at": "2026-01-01T12:00:00Z" }
+},
+{
+  "model": "objects.object",
+  "pk": 10,
+  "fields": { "name": "Компрессорный агрегат", "level": 3, "parent": 6, "category": 33, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T12:00:00Z", "updated_at": "2026-01-01T12:00:00Z" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 1,
+  "fields": { "object": 1, "system": 3, "status": "active", "implementation_date": "2024-01-01" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 2,
+  "fields": { "object": 2, "system": 5, "status": "active", "implementation_date": "2024-02-01" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 3,
+  "fields": { "object": 4, "system": 1, "status": "active", "implementation_date": "2025-05-10" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 4,
+  "fields": { "object": 5, "system": 2, "status": "active", "implementation_date": "2025-06-15" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 5,
+  "fields": { "object": 6, "system": 10, "status": "active", "implementation_date": "2025-08-20" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 6,
+  "fields": { "object": 4, "system": 8, "status": "active", "implementation_date": "2025-09-01" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 7,
+  "fields": { "object": 8, "system": 9, "status": "active", "implementation_date": "2025-10-10" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 8,
+  "fields": { "object": 10, "system": 6, "status": "planned", "implementation_date": "2026-12-01" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 9,
+  "fields": { "object": 7, "system": 7, "status": "maintenance", "implementation_date": "2023-11-11" }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 10,
+  "fields": { "object": 9, "system": 4, "status": "active", "implementation_date": "2025-12-30" }
+}
+]

@@ -1,228 +1,1158 @@
 [
-{
-  "model": "auth.user",
-  "pk": 1,
-  "fields": {
-    "password": "pbkdf2_sha256$1200000$uZJodywj5Du37fQQA7Fcpb$bzApJMDLu+RxZXi3AkpZns78zpmuSovR4OnT0ISim+4=",
-    "is_superuser": true,
-    "username": "admin",
-    "is_staff": true,
-    "is_active": true,
-    "date_joined": "2026-01-01T00:00:00Z"
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$uZJodywj5Du37fQQA7Fcpb$bzApJMDLu+RxZXi3AkpZns78zpmuSovR4OnT0ISim+4=",
+      "last_login": "2026-06-22T05:46:43.481Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-01-01T00:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 1,
+    "fields": {
+      "participant_name": "ООО \"Автоматика\""
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 2,
+    "fields": {
+      "participant_name": "Siemens AG"
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 3,
+    "fields": {
+      "participant_name": "Honeywell International Inc."
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 4,
+    "fields": {
+      "participant_name": "SAP SE"
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 5,
+    "fields": {
+      "participant_name": "Aspen Technology, Inc."
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 6,
+    "fields": {
+      "participant_name": "ООО \"1С\""
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 7,
+    "fields": {
+      "participant_name": "Schneider Electric SE"
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 8,
+    "fields": {
+      "participant_name": "AVEVA Group plc"
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 9,
+    "fields": {
+      "participant_name": "OSIsoft LLC"
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 10,
+    "fields": {
+      "participant_name": "Emerson Electric Co."
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 11,
+    "fields": {
+      "participant_name": "Yokogawa Electric Corporation"
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 12,
+    "fields": {
+      "participant_name": "ООО \"ИндаСофт\""
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 13,
+    "fields": {
+      "participant_name": "АО \"КРОК инкорпорейтед\""
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 14,
+    "fields": {
+      "participant_name": "ООО \"СИБУР Диджитал\""
+    }
+  },
+  {
+    "model": "participants.participant",
+    "pk": 15,
+    "fields": {
+      "participant_name": "ООО \"Газпромнефть ИТО\""
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 1,
+    "fields": {
+      "owner_name": "ПАО \"Газпром\"",
+      "owner": null,
+      "ultimate_owner": null
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 2,
+    "fields": {
+      "owner_name": "ПАО \"Газпром нефть\"",
+      "owner": 1,
+      "ultimate_owner": 1
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 3,
+    "fields": {
+      "owner_name": "АО \"Газпромнефть-Омский НПЗ\"",
+      "owner": 2,
+      "ultimate_owner": 1
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 4,
+    "fields": {
+      "owner_name": "ПАО \"СИБУР Холдинг\"",
+      "owner": null,
+      "ultimate_owner": null
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 5,
+    "fields": {
+      "owner_name": "ООО \"СИБУР Тобольск\"",
+      "owner": 4,
+      "ultimate_owner": 4
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 6,
+    "fields": {
+      "owner_name": "ПАО \"НОВАТЭК\"",
+      "owner": null,
+      "ultimate_owner": null
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 7,
+    "fields": {
+      "owner_name": "ОАО \"Ямал СПГ\"",
+      "owner": 6,
+      "ultimate_owner": 6
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 8,
+    "fields": {
+      "owner_name": "ПАО \"НК Роснефть\"",
+      "owner": null,
+      "ultimate_owner": null
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 9,
+    "fields": {
+      "owner_name": "ООО \"РН-Коммерция\"",
+      "owner": 8,
+      "ultimate_owner": 8
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 10,
+    "fields": {
+      "owner_name": "АО \"Сызранский НПЗ\"",
+      "owner": 9,
+      "ultimate_owner": 8
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 1,
+    "fields": {
+      "name": "Нефтепереработка",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 2,
+    "fields": {
+      "name": "Нефтехимия",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 3,
+    "fields": {
+      "name": "Газопереработка",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 4,
+    "fields": {
+      "name": "Газохимия",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 5,
+    "fields": {
+      "name": "Химия",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 6,
+    "fields": {
+      "name": "Химия-удобрение",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 7,
+    "fields": {
+      "name": "Добыча нефти",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 8,
+    "fields": {
+      "name": "Добыча газа",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 9,
+    "fields": {
+      "name": "Добыча руды",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 10,
+    "fields": {
+      "name": "Транспорт",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 11,
+    "fields": {
+      "name": "Пищевая",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 12,
+    "fields": {
+      "name": "Фарма",
+      "level": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 13,
+    "fields": {
+      "name": "Основные",
+      "level": 2,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 14,
+    "fields": {
+      "name": "Вспомогательные",
+      "level": 2,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 15,
+    "fields": {
+      "name": "Общие",
+      "level": 2,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 16,
+    "fields": {
+      "name": "Сырьевые",
+      "level": 2,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 17,
+    "fields": {
+      "name": "Товарные",
+      "level": 2,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 18,
+    "fields": {
+      "name": "Атмосферное разделение",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 19,
+    "fields": {
+      "name": "Вакуумное разделение",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 20,
+    "fields": {
+      "name": "Крекинг каталитический",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 21,
+    "fields": {
+      "name": "Крекинг гидро",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 22,
+    "fields": {
+      "name": "Реформинг",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 23,
+    "fields": {
+      "name": "Полимеризация",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 24,
+    "fields": {
+      "name": "Гидроочистка",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 25,
+    "fields": {
+      "name": "Мокрый катализ",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 26,
+    "fields": {
+      "name": "Грануляция",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 27,
+    "fields": {
+      "name": "Фильтрация",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 28,
+    "fields": {
+      "name": "Электролиз",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 29,
+    "fields": {
+      "name": "Абсорбция",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 30,
+    "fields": {
+      "name": "Стабилизация",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 31,
+    "fields": {
+      "name": "КЦА",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 32,
+    "fields": {
+      "name": "Дробление",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 33,
+    "fields": {
+      "name": "Транспорт (техн)",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 34,
+    "fields": {
+      "name": "Измельчение",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 35,
+    "fields": {
+      "name": "Флотация",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 36,
+    "fields": {
+      "name": "Фильтрация руды",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 37,
+    "fields": {
+      "name": "Катание",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 38,
+    "fields": {
+      "name": "Ковка",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 39,
+    "fields": {
+      "name": "Штамповка",
+      "level": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 1,
+    "fields": {
+      "level": 0,
+      "system_class": "КИПиА",
+      "description": "Датчики и исполнительные механизмы"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 2,
+    "fields": {
+      "level": 1,
+      "system_class": "ПЛК",
+      "description": "Контроллеры и логика"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 3,
+    "fields": {
+      "level": 2,
+      "system_class": "SCADA/DCS",
+      "description": "Визуализация и управление"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 4,
+    "fields": {
+      "level": 3,
+      "system_class": "MES",
+      "description": "Управление производством"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 5,
+    "fields": {
+      "level": 4,
+      "system_class": "ERP",
+      "description": "Бизнес-планирование"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 6,
+    "fields": {
+      "level": 2,
+      "system_class": "АСУТП",
+      "description": "Управление технологическим процессом"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 7,
+    "fields": {
+      "level": 2,
+      "system_class": "СУУТП",
+      "description": "Усовершенствованное управление технологическим процессом"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 8,
+    "fields": {
+      "level": 3,
+      "system_class": "APS",
+      "description": "Планирование производства"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 9,
+    "fields": {
+      "level": 3,
+      "system_class": "ТОИР",
+      "description": "Техобслуживание и ремонт"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 10,
+    "fields": {
+      "level": 3,
+      "system_class": "BMS",
+      "description": "Автоматизация зданий"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 11,
+    "fields": {
+      "level": 3,
+      "system_class": "WMS",
+      "description": "Автоматизация складов и терминалов"
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 12,
+    "fields": {
+      "level": 3,
+      "system_class": "PLM",
+      "description": "Система управления жизненным циклом продукта"
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 1,
+    "fields": {
+      "autosystem_name": "Siemens PCS7",
+      "system_class": 3,
+      "vendor": 2,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 2,
+    "fields": {
+      "autosystem_name": "Honeywell Experion",
+      "system_class": 3,
+      "vendor": 3,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 3,
+    "fields": {
+      "autosystem_name": "SAP S/4HANA",
+      "system_class": 5,
+      "vendor": 4,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 4,
+    "fields": {
+      "autosystem_name": "Aspen InfoPlus.21",
+      "system_class": 4,
+      "vendor": 5,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 5,
+    "fields": {
+      "autosystem_name": "1C:ERP Производство",
+      "system_class": 5,
+      "vendor": 6,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 6,
+    "fields": {
+      "autosystem_name": "Schneider EcoStruxure",
+      "system_class": 3,
+      "vendor": 7,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 7,
+    "fields": {
+      "autosystem_name": "Wonderware System Platform",
+      "system_class": 3,
+      "vendor": 8,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 8,
+    "fields": {
+      "autosystem_name": "OSIsoft PI System",
+      "system_class": 4,
+      "vendor": 9,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 9,
+    "fields": {
+      "autosystem_name": "Emerson DeltaV",
+      "system_class": 3,
+      "vendor": 10,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 10,
+    "fields": {
+      "autosystem_name": "Yokogawa CENTUM VP",
+      "system_class": 3,
+      "vendor": 11,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 11,
+    "fields": {
+      "autosystem_name": "Датчик №123432",
+      "system_class": 1,
+      "vendor": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 12,
+    "fields": {
+      "autosystem_name": "Контроллер №4132",
+      "system_class": 2,
+      "vendor": 1,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "system.automatedsystem",
+    "pk": 13,
+    "fields": {
+      "autosystem_name": "АСУТП Emerson DeltaV",
+      "system_class": 6,
+      "vendor": 10,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 1,
+    "fields": {
+      "name": "Омский НПЗ",
+      "level": 1,
+      "parent": null,
+      "category": 1,
+      "owner_entity": 3,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 2,
+    "fields": {
+      "name": "Тобольск-Полимер",
+      "level": 1,
+      "parent": null,
+      "category": 2,
+      "owner_entity": 5,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 3,
+    "fields": {
+      "name": "Ямал СПГ",
+      "level": 1,
+      "parent": null,
+      "category": 3,
+      "owner_entity": 7,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 4,
+    "fields": {
+      "name": "Цех №10 (АВТ)",
+      "level": 2,
+      "parent": 1,
+      "category": 13,
+      "owner_entity": 3,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 5,
+    "fields": {
+      "name": "Производство полипропилена",
+      "level": 2,
+      "parent": 2,
+      "category": 13,
+      "owner_entity": 5,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 6,
+    "fields": {
+      "name": "Линия сжижения газа №1",
+      "level": 2,
+      "parent": 3,
+      "category": 13,
+      "owner_entity": 7,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 7,
+    "fields": {
+      "name": "Резервуарный парк",
+      "level": 2,
+      "parent": 1,
+      "category": 17,
+      "owner_entity": 3,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 8,
+    "fields": {
+      "name": "Установка АВТ-10",
+      "level": 3,
+      "parent": 4,
+      "category": 18,
+      "owner_entity": 3,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 9,
+    "fields": {
+      "name": "Установка полимеризации пропилена",
+      "level": 3,
+      "parent": 5,
+      "category": 23,
+      "owner_entity": 5,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 10,
+    "fields": {
+      "name": "Блок компримирования и сжижения",
+      "level": 3,
+      "parent": 6,
+      "category": 33,
+      "owner_entity": 7,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 11,
+    "fields": {
+      "name": "Сызранский НПЗ",
+      "level": 1,
+      "parent": null,
+      "category": 1,
+      "owner_entity": 10,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 12,
+    "fields": {
+      "name": "Цех вторичных процессов",
+      "level": 2,
+      "parent": 11,
+      "category": 13,
+      "owner_entity": 10,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 13,
+    "fields": {
+      "name": "Установка каталитического риформинга",
+      "level": 3,
+      "parent": 12,
+      "category": 22,
+      "owner_entity": 10,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 14,
+    "fields": {
+      "name": "Блок гидроочистки дизельного топлива",
+      "level": 3,
+      "parent": 12,
+      "category": 24,
+      "owner_entity": 10,
+      "is_deleted": false,
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 1,
+    "fields": {
+      "object": 1,
+      "system": 3,
+      "status": "active",
+      "implementation_date": "2024-01-01",
+      "integrator": 13,
+      "implimentor": 15
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 2,
+    "fields": {
+      "object": 2,
+      "system": 5,
+      "status": "active",
+      "implementation_date": "2024-02-01",
+      "integrator": 12,
+      "implimentor": 14
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 3,
+    "fields": {
+      "object": 4,
+      "system": 1,
+      "status": "active",
+      "implementation_date": "2025-05-10",
+      "integrator": 15,
+      "implimentor": 1
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 4,
+    "fields": {
+      "object": 5,
+      "system": 2,
+      "status": "active",
+      "implementation_date": "2025-06-15",
+      "integrator": 12,
+      "implimentor": 1
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 5,
+    "fields": {
+      "object": 6,
+      "system": 10,
+      "status": "active",
+      "implementation_date": "2025-08-20",
+      "integrator": 13,
+      "implimentor": 1
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 6,
+    "fields": {
+      "object": 4,
+      "system": 8,
+      "status": "active",
+      "implementation_date": "2025-09-01",
+      "integrator": 15,
+      "implimentor": 12
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 7,
+    "fields": {
+      "object": 8,
+      "system": 9,
+      "status": "active",
+      "implementation_date": "2025-10-10",
+      "integrator": 1,
+      "implimentor": 10
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 8,
+    "fields": {
+      "object": 10,
+      "system": 6,
+      "status": "planned",
+      "implementation_date": "2026-12-01",
+      "integrator": 13,
+      "implimentor": 7
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 9,
+    "fields": {
+      "object": 7,
+      "system": 7,
+      "status": "maintenance",
+      "implementation_date": "2023-11-11",
+      "integrator": 15,
+      "implimentor": 8
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 10,
+    "fields": {
+      "object": 9,
+      "system": 4,
+      "status": "active",
+      "implementation_date": "2025-12-30",
+      "integrator": 12,
+      "implimentor": 5
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 11,
+    "fields": {
+      "object": 11,
+      "system": 13,
+      "status": "active",
+      "implementation_date": "2025-04-15",
+      "integrator": 1,
+      "implimentor": 10
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 12,
+    "fields": {
+      "object": 13,
+      "system": 9,
+      "status": "active",
+      "implementation_date": "2025-07-01",
+      "integrator": 1,
+      "implimentor": 10
+    }
   }
-},
-{
-  "model": "system.automationclass",
-  "pk": 1,
-  "fields": { "level": 0, "system_class": "КИПиА", "description": "Датчики и исполнительные механизмы" }
-},
-{
-  "model": "system.automationclass",
-  "pk": 2,
-  "fields": { "level": 1, "system_class": "ПЛК", "description": "Контроллеры и логика" }
-},
-{
-  "model": "system.automationclass",
-  "pk": 3,
-  "fields": { "level": 2, "system_class": "SCADA/DCS", "description": "Визуализация и управление" }
-},
-{
-  "model": "system.automationclass",
-  "pk": 4,
-  "fields": { "level": 3, "system_class": "MES", "description": "Управление производством" }
-},
-{
-  "model": "system.automationclass",
-  "pk": 5,
-  "fields": { "level": 4, "system_class": "ERP", "description": "Бизнес-планирование" }
-},
-{ "model": "categories.category", "pk": 1, "fields": { "name": "Нефтепереработка", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 2, "fields": { "name": "Нефтехимия", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 3, "fields": { "name": "Газопереработка", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 4, "fields": { "name": "Газохимия", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 5, "fields": { "name": "Химия", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 6, "fields": { "name": "Химия-удобрение", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 7, "fields": { "name": "Добыча нефти", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 8, "fields": { "name": "Добыча газа", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 9, "fields": { "name": "Добыча руды", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 10, "fields": { "name": "Транспорт", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 11, "fields": { "name": "Пищевая", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 12, "fields": { "name": "Фарма", "level": 1, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 13, "fields": { "name": "Основные", "level": 2, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 14, "fields": { "name": "Вспомогательные", "level": 2, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 15, "fields": { "name": "Общие", "level": 2, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 16, "fields": { "name": "Сырьевые", "level": 2, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 17, "fields": { "name": "Товарные", "level": 2, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 18, "fields": { "name": "Атмосферное разделение", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 19, "fields": { "name": "Вакуумное разделение", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 20, "fields": { "name": "Крекинг каталитический", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 21, "fields": { "name": "Крекинг гидро", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 22, "fields": { "name": "Реформинг", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 23, "fields": { "name": "Полимеризация", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 24, "fields": { "name": "Гидроочистка", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 25, "fields": { "name": "Мокрый катализ", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 26, "fields": { "name": "Грануляция", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 27, "fields": { "name": "Фильтрация", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 28, "fields": { "name": "Электролиз", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 29, "fields": { "name": "Абсорбция", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 30, "fields": { "name": "Стабилизация", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 31, "fields": { "name": "КЦА", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 32, "fields": { "name": "Дробление", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 33, "fields": { "name": "Транспорт (техн)", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 34, "fields": { "name": "Измельчение", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 35, "fields": { "name": "Флотация", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 36, "fields": { "name": "Фильтрация руды", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 37, "fields": { "name": "Катание", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 38, "fields": { "name": "Ковка", "level": 3, "creator_id": 1 } },
-{ "model": "categories.category", "pk": 39, "fields": { "name": "Штамповка", "level": 3, "creator_id": 1 } },
-{
-  "model": "system.automatedsystem",
-  "pk": 1,
-  "fields": { "autosystem_name": "Siemens PCS7", "system_class": 3, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 2,
-  "fields": { "autosystem_name": "Honeywell Experion", "system_class": 3, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 3,
-  "fields": { "autosystem_name": "SAP S/4HANA", "system_class": 5, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 4,
-  "fields": { "autosystem_name": "Aspen InfoPlus.21", "system_class": 4, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 5,
-  "fields": { "autosystem_name": "1C:ERP Производство", "system_class": 5, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 6,
-  "fields": { "autosystem_name": "Schneider EcoStruxure", "system_class": 3, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 7,
-  "fields": { "autosystem_name": "Wonderware System Platform", "system_class": 3, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 8,
-  "fields": { "autosystem_name": "OSIsoft PI System", "system_class": 4, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 9,
-  "fields": { "autosystem_name": "Emerson DeltaV", "system_class": 3, "creator_id": 1 }
-},
-{
-  "model": "system.automatedsystem",
-  "pk": 10,
-  "fields": { "autosystem_name": "Yokogawa CENTUM VP", "system_class": 3, "creator_id": 1 }
-},
-{
-  "model": "objects.object",
-  "pk": 1,
-  "fields": { "name": "Омский НПЗ", "level": 1, "parent": null, "category": 1, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T10:00:00Z", "updated_at": "2026-01-01T10:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 2,
-  "fields": { "name": "Тобольск-Полимер", "level": 1, "parent": null, "category": 2, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T10:00:00Z", "updated_at": "2026-01-01T10:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 3,
-  "fields": { "name": "Ямал СПГ", "level": 1, "parent": null, "category": 3, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T10:00:00Z", "updated_at": "2026-01-01T10:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 4,
-  "fields": { "name": "Цех №10 (АВТ)", "level": 2, "parent": 1, "category": 13, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 5,
-  "fields": { "name": "Установка Пиролиза", "level": 2, "parent": 2, "category": 13, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 6,
-  "fields": { "name": "Линия сжижения газа №1", "level": 2, "parent": 3, "category": 13, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 7,
-  "fields": { "name": "Резервуарный парк", "level": 2, "parent": 1, "category": 17, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T11:00:00Z", "updated_at": "2026-01-01T11:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 8,
-  "fields": { "name": "Колонна К-101", "level": 3, "parent": 4, "category": 18, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T12:00:00Z", "updated_at": "2026-01-01T12:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 9,
-  "fields": { "name": "Реактор Р-201", "level": 3, "parent": 5, "category": 23, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T12:00:00Z", "updated_at": "2026-01-01T12:00:00Z" }
-},
-{
-  "model": "objects.object",
-  "pk": 10,
-  "fields": { "name": "Компрессорный агрегат", "level": 3, "parent": 6, "category": 33, "is_deleted": false, "creator_id": 1, "created_at": "2026-01-01T12:00:00Z", "updated_at": "2026-01-01T12:00:00Z" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 1,
-  "fields": { "object": 1, "system": 3, "status": "active", "implementation_date": "2024-01-01" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 2,
-  "fields": { "object": 2, "system": 5, "status": "active", "implementation_date": "2024-02-01" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 3,
-  "fields": { "object": 4, "system": 1, "status": "active", "implementation_date": "2025-05-10" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 4,
-  "fields": { "object": 5, "system": 2, "status": "active", "implementation_date": "2025-06-15" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 5,
-  "fields": { "object": 6, "system": 10, "status": "active", "implementation_date": "2025-08-20" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 6,
-  "fields": { "object": 4, "system": 8, "status": "active", "implementation_date": "2025-09-01" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 7,
-  "fields": { "object": 8, "system": 9, "status": "active", "implementation_date": "2025-10-10" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 8,
-  "fields": { "object": 10, "system": 6, "status": "planned", "implementation_date": "2026-12-01" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 9,
-  "fields": { "object": 7, "system": 7, "status": "maintenance", "implementation_date": "2023-11-11" }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 10,
-  "fields": { "object": 9, "system": 4, "status": "active", "implementation_date": "2025-12-30" }
-}
 ]

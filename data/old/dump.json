@@ -1,0 +1,1558 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-06-11T19:31:35.588Z",
+    "user": 2,
+    "content_type": 13,
+    "object_id": "1",
+    "object_repr": "L3 - MES",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-06-11T19:31:43.831Z",
+    "user": 2,
+    "content_type": 13,
+    "object_id": "2",
+    "object_repr": "L2 - SCADA",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-06-11T19:31:53.888Z",
+    "user": 2,
+    "content_type": 13,
+    "object_id": "3",
+    "object_repr": "L4 - ERP",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-06-11T19:32:43.082Z",
+    "user": 2,
+    "content_type": 13,
+    "object_id": "4",
+    "object_repr": "L1 - ПЛК",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-06-11T19:32:58.222Z",
+    "user": 2,
+    "content_type": 13,
+    "object_id": "5",
+    "object_repr": "L1 - ПИД",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-06-12T08:26:21.186Z",
+    "user": 2,
+    "content_type": 10,
+    "object_id": "3",
+    "object_repr": "Газопереработка (L1)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Creator id\"]}}]"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 3,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 3,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 3,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 3,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 2,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 2,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 2,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 2,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add user",
+    "content_type": 4,
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change user",
+    "content_type": 4,
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": 4,
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view user",
+    "content_type": 4,
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 5,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 5,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 5,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 5,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 6,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 6,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 6,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 6,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add Outstanding Token",
+    "content_type": 8,
+    "codename": "add_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change Outstanding Token",
+    "content_type": 8,
+    "codename": "change_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete Outstanding Token",
+    "content_type": 8,
+    "codename": "delete_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view Outstanding Token",
+    "content_type": 8,
+    "codename": "view_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add Blacklisted Token",
+    "content_type": 7,
+    "codename": "add_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change Blacklisted Token",
+    "content_type": 7,
+    "codename": "change_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete Blacklisted Token",
+    "content_type": 7,
+    "codename": "delete_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view Blacklisted Token",
+    "content_type": 7,
+    "codename": "view_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add object",
+    "content_type": 9,
+    "codename": "add_object"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change object",
+    "content_type": 9,
+    "codename": "change_object"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete object",
+    "content_type": 9,
+    "codename": "delete_object"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view object",
+    "content_type": 9,
+    "codename": "view_object"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add Category",
+    "content_type": 10,
+    "codename": "add_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change Category",
+    "content_type": 10,
+    "codename": "change_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete Category",
+    "content_type": 10,
+    "codename": "delete_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view Category",
+    "content_type": 10,
+    "codename": "view_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add Система на объекте",
+    "content_type": 11,
+    "codename": "add_objectsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change Система на объекте",
+    "content_type": 11,
+    "codename": "change_objectsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete Система на объекте",
+    "content_type": 11,
+    "codename": "delete_objectsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view Система на объекте",
+    "content_type": 11,
+    "codename": "view_objectsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add Класс автоматизации",
+    "content_type": 13,
+    "codename": "add_automationclass"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change Класс автоматизации",
+    "content_type": 13,
+    "codename": "change_automationclass"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete Класс автоматизации",
+    "content_type": 13,
+    "codename": "delete_automationclass"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view Класс автоматизации",
+    "content_type": 13,
+    "codename": "view_automationclass"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add Автоматизированная система",
+    "content_type": 12,
+    "codename": "add_automatedsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change Автоматизированная система",
+    "content_type": 12,
+    "codename": "change_automatedsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete Автоматизированная система",
+    "content_type": 12,
+    "codename": "delete_automatedsystem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view Автоматизированная система",
+    "content_type": 12,
+    "codename": "view_automatedsystem"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$et0LZxcQVvsg3bEDmFvrjU$Xzrx+ul6NTXPKVrIIyYaVftHnEUWVNKjQp1PlLpbD+U=",
+    "last_login": "2026-06-11T19:46:55.893Z",
+    "is_superuser": false,
+    "username": "march123",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-07T21:32:23.082Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$uZJodywj5Du37fQQA7Fcpb$bzApJMDLu+RxZXi3AkpZns78zpmuSovR4OnT0ISim+4=",
+    "last_login": "2026-06-13T15:56:45.474Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-06-08T06:21:40.732Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "token_blacklist",
+    "model": "blacklistedtoken"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "token_blacklist",
+    "model": "outstandingtoken"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "objects",
+    "model": "object"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "categories",
+    "model": "category"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "objects",
+    "model": "objectsystem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "system",
+    "model": "automatedsystem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "system",
+    "model": "automationclass"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "6gj8xhihtotuzjsyi8na4fbgqkzrlcju",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSHlUQZduvcbyMAMUjWQlHZl_HfbpAvd3nPOfYuA61LC2nkOE4mL0OL0u0VMT647oAfWe5Op1WWeotwVedAub434dT3cv4OCvWy1GV1iVtYCROUHldhBphQps9I-elAc1YDk0dEZjB0hWwN609ATeRCfL-_oOEM:1wXmi7:1LooUsuIeT8Ec-mCQmiTRF7r1rUu1JGCk_hjvmxhmtE",
+    "expire_date": "2026-06-25T21:13:11.261Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "i2nhl6pbukg73xx9u66l0epq349l7xs3",
+  "fields": {
+    "session_data": ".eJxVjEsOwjAMBe-SNYpsN3UoS_acoXJiQwsokfpZIe4OlbqA7ZuZ93K9rMvQr7NN_aju5NAdfrck-WFlA3qXcqs-17JMY_Kb4nc6-0tVe5539-9gkHn41k1sQ0JjQOAcIUUSCpZbUhQCYFOOQEyNKhJoYKCOUbVr8JqOnbj3B7NdNrs:1wWUnb:nFFgqHpUkJ-YUk4BfdmcfYFpDjpyyFGR56Re86O4eo0",
+    "expire_date": "2026-06-22T07:53:31.759Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "r8fuvueiwxohqttn3xqr21ls0ix00atk",
+  "fields": {
+    "session_data": ".eJxVjEsOwjAMBe-SNYpsN3UoS_acoXJiQwsokfpZIe4OlbqA7ZuZ93K9rMvQr7NN_aju5NAdfrck-WFlA3qXcqs-17JMY_Kb4nc6-0tVe5539-9gkHn41k1sQ0JjQOAcIUUSCpZbUhQCYFOOQEyNKhJoYKCOUbVr8JqOnbj3B7NdNrs:1wWVJK:XSm_Z3hftJ1zBs6YJs_ZsKU4-jjW84q2VHYss8YyJ6s",
+    "expire_date": "2026-06-22T08:26:18.812Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "sguq1xhi1zhqrnam7gtiws6got4ixab3",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSHlUQZduvcbyMAMUjWQlHZl_HfbpAvd3nPOfYuA61LC2nkOE4mL0OL0u0VMT647oAfWe5Op1WWeotwVedAub434dT3cv4OCvWy1GV1iVtYCROUHldhBphQps9I-elAc1YDk0dEZjB0hWwN609ATeRCfL-_oOEM:1wYQiz:zS3IwEnWgIlybxW605tagrupRrRX5ruGz0KFhqPfLOU",
+    "expire_date": "2026-06-27T15:56:45.479Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 1,
+  "fields": {
+    "name": "СНПЗ",
+    "level": 1,
+    "parent": null,
+    "category": 1,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-07T21:33:18.997Z",
+    "updated_at": "2026-06-07T21:51:47.517Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 2,
+  "fields": {
+    "name": "Цех №1",
+    "level": 2,
+    "parent": 1,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-07T21:52:10.174Z",
+    "updated_at": "2026-06-07T21:53:41.651Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 3,
+  "fields": {
+    "name": "ГОК Р-2329",
+    "level": 1,
+    "parent": null,
+    "category": 2,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T06:15:58.215Z",
+    "updated_at": "2026-06-08T06:15:58.215Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 4,
+  "fields": {
+    "name": "Омский НПЗ",
+    "level": 1,
+    "parent": null,
+    "category": 1,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:00:00Z",
+    "updated_at": "2026-06-08T07:00:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 5,
+  "fields": {
+    "name": "Ангарский НХК",
+    "level": 1,
+    "parent": null,
+    "category": 2,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:01:00Z",
+    "updated_at": "2026-06-08T07:01:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 6,
+  "fields": {
+    "name": "Оренбургский ГПЗ",
+    "level": 1,
+    "parent": null,
+    "category": 3,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:02:00Z",
+    "updated_at": "2026-06-08T07:02:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 7,
+  "fields": {
+    "name": "Астраханский ГПЗ",
+    "level": 1,
+    "parent": null,
+    "category": 3,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:03:00Z",
+    "updated_at": "2026-06-08T07:03:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 8,
+  "fields": {
+    "name": "Казанский завод синтетического каучука",
+    "level": 1,
+    "parent": null,
+    "category": 4,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:04:00Z",
+    "updated_at": "2026-06-08T07:04:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 9,
+  "fields": {
+    "name": "Щёкиноазот",
+    "level": 1,
+    "parent": null,
+    "category": 5,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:05:00Z",
+    "updated_at": "2026-06-08T07:05:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 10,
+  "fields": {
+    "name": "Невинномысский Азот",
+    "level": 1,
+    "parent": null,
+    "category": 6,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:06:00Z",
+    "updated_at": "2026-06-08T07:06:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 11,
+  "fields": {
+    "name": "Тольяттиазот",
+    "level": 1,
+    "parent": null,
+    "category": 6,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:07:00Z",
+    "updated_at": "2026-06-08T07:07:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 12,
+  "fields": {
+    "name": "Установка первичной переработки ЭЛОУ-АВТ-6",
+    "level": 2,
+    "parent": 4,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:10:00Z",
+    "updated_at": "2026-06-08T07:10:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 13,
+  "fields": {
+    "name": "Установка каталитического крекинга Г-43-107",
+    "level": 2,
+    "parent": 4,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:11:00Z",
+    "updated_at": "2026-06-08T07:11:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 14,
+  "fields": {
+    "name": "Блок оборотного водоснабжения",
+    "level": 2,
+    "parent": 5,
+    "category": 8,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:12:00Z",
+    "updated_at": "2026-06-12T19:15:35.108Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 15,
+  "fields": {
+    "name": "Котельная №3",
+    "level": 2,
+    "parent": 4,
+    "category": 8,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:13:00Z",
+    "updated_at": "2026-06-08T07:13:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 16,
+  "fields": {
+    "name": "Резервуарный парк сырой нефти",
+    "level": 2,
+    "parent": 1,
+    "category": 10,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:14:00Z",
+    "updated_at": "2026-06-08T07:14:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 17,
+  "fields": {
+    "name": "Товарно-сырьевая база",
+    "level": 2,
+    "parent": 1,
+    "category": 11,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:15:00Z",
+    "updated_at": "2026-06-08T07:15:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 18,
+  "fields": {
+    "name": "Цех пиролиза",
+    "level": 2,
+    "parent": 5,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:16:00Z",
+    "updated_at": "2026-06-08T07:16:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 19,
+  "fields": {
+    "name": "Установка полимеризации этилена",
+    "level": 2,
+    "parent": 5,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:17:00Z",
+    "updated_at": "2026-06-08T07:17:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 20,
+  "fields": {
+    "name": "Компрессорная станция",
+    "level": 2,
+    "parent": 6,
+    "category": 9,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:18:00Z",
+    "updated_at": "2026-06-08T07:18:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 21,
+  "fields": {
+    "name": "Установка сероочистки",
+    "level": 2,
+    "parent": 6,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:19:00Z",
+    "updated_at": "2026-06-08T07:19:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 22,
+  "fields": {
+    "name": "Цех синтеза аммиака",
+    "level": 2,
+    "parent": 9,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:20:00Z",
+    "updated_at": "2026-06-08T07:20:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 23,
+  "fields": {
+    "name": "Склад минеральных удобрений",
+    "level": 2,
+    "parent": 10,
+    "category": 11,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:21:00Z",
+    "updated_at": "2026-06-08T07:21:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 24,
+  "fields": {
+    "name": "Цех грануляции карбамида",
+    "level": 2,
+    "parent": 11,
+    "category": 7,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:22:00Z",
+    "updated_at": "2026-06-08T07:22:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 25,
+  "fields": {
+    "name": "Колонна атмосферной перегонки К-1",
+    "level": 3,
+    "parent": 12,
+    "category": 12,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:30:00Z",
+    "updated_at": "2026-06-08T07:30:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 26,
+  "fields": {
+    "name": "Колонна атмосферной перегонки К-2",
+    "level": 3,
+    "parent": 12,
+    "category": 12,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:31:00Z",
+    "updated_at": "2026-06-08T07:31:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 27,
+  "fields": {
+    "name": "Вакуумная колонна КВ-1",
+    "level": 3,
+    "parent": 12,
+    "category": 13,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:32:00Z",
+    "updated_at": "2026-06-08T07:32:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 28,
+  "fields": {
+    "name": "Реактор каталитического крекинга Р-101",
+    "level": 3,
+    "parent": 13,
+    "category": 14,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:33:00Z",
+    "updated_at": "2026-06-08T07:33:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 29,
+  "fields": {
+    "name": "Регенератор катализатора РГ-101",
+    "level": 3,
+    "parent": 13,
+    "category": 14,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:34:00Z",
+    "updated_at": "2026-06-08T07:34:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 30,
+  "fields": {
+    "name": "Реактор гидрокрекинга Р-201",
+    "level": 3,
+    "parent": 2,
+    "category": 15,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:35:00Z",
+    "updated_at": "2026-06-08T07:35:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 31,
+  "fields": {
+    "name": "Реактор каталитического реформинга Р-301",
+    "level": 3,
+    "parent": 2,
+    "category": 16,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:36:00Z",
+    "updated_at": "2026-06-08T07:36:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 32,
+  "fields": {
+    "name": "Реактор полимеризации ПЭ-1",
+    "level": 3,
+    "parent": 19,
+    "category": 17,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:37:00Z",
+    "updated_at": "2026-06-08T07:37:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 33,
+  "fields": {
+    "name": "Экструдер полимерной линии ЭК-3",
+    "level": 3,
+    "parent": 19,
+    "category": 17,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:38:00Z",
+    "updated_at": "2026-06-08T07:38:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 34,
+  "fields": {
+    "name": "Печь пиролиза ПП-5",
+    "level": 3,
+    "parent": 18,
+    "category": 14,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:39:00Z",
+    "updated_at": "2026-06-08T07:39:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 35,
+  "fields": {
+    "name": "Колонна разделения пирогаза КР-2",
+    "level": 3,
+    "parent": 18,
+    "category": 12,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:40:00Z",
+    "updated_at": "2026-06-08T07:40:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 36,
+  "fields": {
+    "name": "Абсорбер сероочистки А-1",
+    "level": 3,
+    "parent": 21,
+    "category": 13,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:41:00Z",
+    "updated_at": "2026-06-08T07:41:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 37,
+  "fields": {
+    "name": "Реактор синтеза аммиака РС-4",
+    "level": 3,
+    "parent": 22,
+    "category": 16,
+    "is_deleted": false,
+    "creator_id": 2,
+    "created_at": "2026-06-08T07:42:00Z",
+    "updated_at": "2026-06-08T07:42:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 38,
+  "fields": {
+    "name": "Гранулятор карбамида ГК-2",
+    "level": 3,
+    "parent": 24,
+    "category": 17,
+    "is_deleted": false,
+    "creator_id": 1,
+    "created_at": "2026-06-08T07:43:00Z",
+    "updated_at": "2026-06-08T07:43:00Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 39,
+  "fields": {
+    "name": "Цех №1",
+    "level": 2,
+    "parent": null,
+    "category": 8,
+    "is_deleted": true,
+    "creator_id": 1,
+    "created_at": "2026-06-08T08:26:43.799Z",
+    "updated_at": "2026-06-08T08:27:03.466Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 40,
+  "fields": {
+    "name": "тест",
+    "level": 1,
+    "parent": null,
+    "category": 3,
+    "is_deleted": true,
+    "creator_id": 1,
+    "created_at": "2026-06-11T21:12:55.649Z",
+    "updated_at": "2026-06-13T13:59:36.853Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 41,
+  "fields": {
+    "name": "Max",
+    "level": 3,
+    "parent": 5,
+    "category": 12,
+    "is_deleted": true,
+    "creator_id": 2,
+    "created_at": "2026-06-12T19:15:45.870Z",
+    "updated_at": "2026-06-13T13:59:30.870Z"
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 1,
+  "fields": {
+    "object": 7,
+    "system": 4,
+    "status": "planned",
+    "implementation_date": "2026-06-02"
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 2,
+  "fields": {
+    "object": 3,
+    "system": 5,
+    "status": "active",
+    "implementation_date": null
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 3,
+  "fields": {
+    "object": 7,
+    "system": 5,
+    "status": "planned",
+    "implementation_date": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 1,
+  "fields": {
+    "name": "Нефтепереработка",
+    "level": 1,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 2,
+  "fields": {
+    "name": "Нефтехимия",
+    "level": 1,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 3,
+  "fields": {
+    "name": "Газопереработка",
+    "level": 1,
+    "creator_id": 2
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 4,
+  "fields": {
+    "name": "Газохимия",
+    "level": 1,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 5,
+  "fields": {
+    "name": "Химия",
+    "level": 1,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 6,
+  "fields": {
+    "name": "Химия-удобрение",
+    "level": 1,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 7,
+  "fields": {
+    "name": "Основные",
+    "level": 2,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 8,
+  "fields": {
+    "name": "Вспомогательные",
+    "level": 2,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 9,
+  "fields": {
+    "name": "Общие",
+    "level": 2,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 10,
+  "fields": {
+    "name": "Сырьевые",
+    "level": 2,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 11,
+  "fields": {
+    "name": "Товарные",
+    "level": 2,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 12,
+  "fields": {
+    "name": "Атмосферное разделение",
+    "level": 3,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 13,
+  "fields": {
+    "name": "Вакуумное разделение",
+    "level": 3,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 14,
+  "fields": {
+    "name": "Крекинг каталитический",
+    "level": 3,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 15,
+  "fields": {
+    "name": "Крекинг гидро",
+    "level": 3,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 16,
+  "fields": {
+    "name": "Реформинг",
+    "level": 3,
+    "creator_id": null
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 17,
+  "fields": {
+    "name": "Полимеризация",
+    "level": 3,
+    "creator_id": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 1,
+  "fields": {
+    "level": 3,
+    "system_class": "MES",
+    "description": ""
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 2,
+  "fields": {
+    "level": 2,
+    "system_class": "SCADA",
+    "description": ""
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 3,
+  "fields": {
+    "level": 4,
+    "system_class": "ERP",
+    "description": ""
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 4,
+  "fields": {
+    "level": 1,
+    "system_class": "ПЛК",
+    "description": ""
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 5,
+  "fields": {
+    "level": 1,
+    "system_class": "ПИД",
+    "description": ""
+  }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 1,
+  "fields": {
+    "autosystem_name": "Какая то АСУТП",
+    "system_class": 2,
+    "creator_id": null
+  }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 2,
+  "fields": {
+    "autosystem_name": "MES система",
+    "system_class": 1,
+    "creator_id": 2
+  }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 4,
+  "fields": {
+    "autosystem_name": "2",
+    "system_class": 5,
+    "creator_id": 2
+  }
+},
+{
+  "model": "system.automatedsystem",
+  "pk": 5,
+  "fields": {
+    "autosystem_name": "3",
+    "system_class": 5,
+    "creator_id": 2
+  }
+}
+]
