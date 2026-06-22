@@ -8,6 +8,7 @@ from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
 from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
+from apps.participants.usecases.participant_usecase import ParticipantUseCase
 
 
 @require_http_methods(["GET"])
@@ -45,6 +46,7 @@ def system_detail(request, pk):
 @login_required
 def system_create(request):
     class_usecase = AutomationClassUseCase()
+    participant_usecase = ParticipantUseCase()
     error = None
 
     if request.method == "POST":
@@ -54,14 +56,17 @@ def system_create(request):
                 user=request.user,
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
+                vendor=request.POST.get("vendor") or None,
             )
             return redirect("system-list")
         except (ValidationError, Exception) as e:
             error = str(e)
 
     classes = class_usecase.list()
+    participants = participant_usecase.list()
     return render(request, "system/system_form.html", {
         "classes": classes,
+        "participants": participants,
         "error": error,
     })
 
@@ -71,6 +76,7 @@ def system_create(request):
 def system_edit(request, pk):
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
+    participant_usecase = ParticipantUseCase()
     obj = usecase.get(pk)
     error = None
 
@@ -81,15 +87,18 @@ def system_edit(request, pk):
                 user=request.user,
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
+                vendor=request.POST.get("vendor") or None,
             )
             return redirect("system-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)
 
     classes = class_usecase.list()
+    participants = participant_usecase.list()
     return render(request, "system/system_form.html", {
         "system": obj,
         "classes": classes,
+        "participants": participants,
         "error": error,
     })
 
@@ -108,6 +117,7 @@ def system_attach_object(request, pk):
     usecase = SystemUseCase()
     os_usecase = ObjectSystemUseCase()
     object_usecase = ObjectUseCase()
+    participant_usecase = ParticipantUseCase()
     system = usecase.get(pk)
     error = None
 
@@ -118,6 +128,8 @@ def system_attach_object(request, pk):
                 system_pk=pk,
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
+                integrator=request.POST.get("integrator") or None,
+                implimentor=request.POST.get("implimentor") or None,
             )
             return redirect("system-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -125,9 +137,11 @@ def system_attach_object(request, pk):
 
     attached_ids = os_usecase.list_for_system(system).values_list("object_id", flat=True)
     objects = object_usecase.list().exclude(pk__in=attached_ids)
+    participants = participant_usecase.list()
     return render(request, "system/system_object_form.html", {
         "system": system,
         "objects": objects,
+        "participants": participants,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "error": error,
     })

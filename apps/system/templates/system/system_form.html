@@ -28,6 +28,32 @@
             <input type="hidden" name="system_class" id="selectedClassId" value="{{ system.system_class_id|default:'' }}" required>
         </div>
 
+        <div class="picker" data-target="#selectedVendorId">
+            <div class="form-group">
+                <label>Вендор</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название участника рынка..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+            </div>
+
+            <div class="system-results-container">
+                <div class="system-item {% if not system.vendor_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Вендор не указан —</span>
+                </div>
+                {% for participant in participants %}
+                <div class="system-item {% if system.vendor_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
+                    <span class="system-name">{{ participant.participant_name }}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Участники рынка не найдены
+                </div>
+            </div>
+
+            <input type="hidden" name="vendor" id="selectedVendorId" value="{{ system.vendor_id|default:'' }}">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Сохранить</button>
             <a href="{% if system %}{% url 'system-detail' system.pk %}{% else %}{% url 'system-list' %}{% endif %}" class="btn btn-secondary">Отмена</a>

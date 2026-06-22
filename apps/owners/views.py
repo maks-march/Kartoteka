@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
+from apps.objects.usecases.object_usecase import ObjectUseCase
 
 
 @require_http_methods(["GET"])
@@ -81,6 +82,36 @@ def owner_entity_edit(request, pk):
         "owner_entity": owner_entity,
         "possible_owners": possible_owners,
         "possible_ultimate_owners": usecase.list(),
+        "error": error,
+    })
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def owner_entity_attach_object(request, pk):
+    owner_usecase = OwnerEntityUseCase()
+    object_usecase = ObjectUseCase()
+    owner_entity = owner_usecase.get(pk)
+    error = None
+
+    if request.method == "POST":
+        try:
+            object_pk = request.POST.get("object")
+            if not object_pk:
+                raise ValidationError("Необходимо выбрать объект")
+            object_usecase.update(
+                pk=int(object_pk),
+                user=request.user,
+                owner_entity=owner_entity.pk,
+            )
+            return redirect("owner-entity-detail", pk=pk)
+        except (ValidationError, ValueError, TypeError) as e:
+            error = str(e)
+
+    objects = object_usecase.list().exclude(owner_entity_id=owner_entity.pk)
+    return render(request, "owners/owner_entity_object_form.html", {
+        "owner_entity": owner_entity,
+        "objects": objects,
         "error": error,
     })
 

@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ participant.participant_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div>
+        <h1 style="margin-bottom:5px">{{ participant.participant_name }}</h1>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef">
+        <a href="{% url 'participant-edit' participant.pk %}" class="btn btn-primary">Изменить</a>
+        <form action="{% url 'participant-delete' participant.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить участника рынка? Связи с системами и объектами будут очищены.')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Системы, где участник является вендором</h2>
+    <table>
+        <thead>
+            <tr><th>Система</th><th>Класс</th></tr>
+        </thead>
+        <tbody>
+            {% for system in vendor_systems %}
+            <tr>
+                <td><a href="{% url 'system-detail' system.pk %}">{{ system.autosystem_name }}</a></td>
+                <td><span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="empty">Нет систем</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Связи, где участник является интегратором</h2>
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+            {% for link in integrated_links %}
+            <tr>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.name }}</a></td>
+                <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
+                <td>{{ link.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Нет связей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Связи, где участник является исполнителем внедрения</h2>
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+            {% for link in implemented_links %}
+            <tr>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.name }}</a></td>
+                <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
+                <td>{{ link.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Нет связей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:10px">
+    <a href="{% url 'participant-list' %}" class="btn btn-secondary">← Назад к списку</a>
+</div>
+{% endblock %}

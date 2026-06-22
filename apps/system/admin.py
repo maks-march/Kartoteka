@@ -12,7 +12,7 @@ class AutomationClassAdmin(admin.ModelAdmin):
 
 @admin.register(AutomatedSystem)
 class AutomatedSystemAdmin(admin.ModelAdmin):
-    list_display = ["autosystem_name", "system_class"]
+    list_display = ["autosystem_name", "system_class", "vendor"]
     list_filter = ["system_class__level"]
     search_fields = ["autosystem_name"]
-    raw_id_fields = ["system_class"]
+    raw_id_fields = ["system_class", "vendor"]

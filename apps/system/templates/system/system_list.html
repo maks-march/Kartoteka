@@ -76,16 +76,17 @@
 
     <table>
         <thead>
-            <tr><th>Название</th><th>Класс</th></tr>
+            <tr><th>Название</th><th>Класс</th><th>Вендор</th></tr>
         </thead>
         <tbody>
             {% for s in systems %}
             <tr>
                 <td><a href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
+                <td>{% if s.vendor %}<a href="{% url 'participant-detail' s.vendor.pk %}">{{ s.vendor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="2" class="empty">Системы не найдены</td></tr>
+            <tr><td colspan="3" class="empty">Системы не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>

@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Привязать объект — {{ owner_entity.owner_name }}{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>Привязать объект</h1>
+    <p style="margin-bottom:15px; color:#666">
+        Юридическое лицо: <a href="{% url 'owner-entity-detail' owner_entity.pk %}">{{ owner_entity.owner_name }}</a>
+    </p>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    {% if objects %}
+    <form method="post" id="linkOwnerEntityForm">
+        {% csrf_token %}
+
+        <div class="picker" data-target="#selectedObjectId" data-enable="#submitBtn">
+            <div class="form-group">
+                <label>Поиск и выбор объекта</label>
+                <div class="search-wrapper">
+                    <select class="picker-level-filter">
+                        <option value="">Все уровни</option>
+                        <option value="1">Уровень 1</option>
+                        <option value="2">Уровень 2</option>
+                        <option value="3">Уровень 3</option>
+                    </select>
+                    <input type="text" class="picker-search" placeholder="Введите название объекта..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+                <p class="hint" style="margin-top:5px">Можно выбрать объект без юр. лица или переназначить объект от другого юр. лица.</p>
+            </div>
+
+            <div class="system-results-container">
+                {% for obj in objects %}
+                <div class="system-item" data-id="{{ obj.pk }}" data-name="{{ obj.name|lower }}" data-level="{{ obj.level }}">
+                    <span class="system-name">{{ obj.name }}</span>
+                    <span class="system-info">
+                        Уровень {{ obj.level }}
+                        {% if obj.category %} · {{ obj.category.name }}{% endif %}
+                        {% if obj.owner_entity %} · Сейчас: {{ obj.owner_entity.owner_name }}{% else %} · Без юр. лица{% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Объекты не найдены
+                </div>
+            </div>
+
+            <input type="hidden" name="object" id="selectedObjectId" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Привязать</button>
+            <a href="{% url 'owner-entity-detail' owner_entity.pk %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+    {% else %}
+    <p class="empty">Нет доступных объектов для привязки.</p>
+    <div class="form-actions">
+        <a href="{% url 'object-create' %}" class="btn btn-primary">Создать объект</a>
+        <a href="{% url 'owner-entity-detail' owner_entity.pk %}" class="btn btn-secondary">Назад</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

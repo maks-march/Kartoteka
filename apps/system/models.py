@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from apps.participants.models import Participant
+
 
 class AutomationClass(models.Model):
 
@@ -45,6 +47,14 @@ class AutomatedSystem(models.Model):
         on_delete=models.PROTECT,
         related_name='systems',
         verbose_name="Класс системы"
+    )
+    vendor = models.ForeignKey(
+        Participant,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="vendor_systems",
+        verbose_name="Вендор",
     )
     creator_id = models.ForeignKey(
         User,

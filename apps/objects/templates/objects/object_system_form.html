@@ -32,7 +32,7 @@
                 {% for s in systems %}
                 <div class="system-item {% if link.system_id == s.pk %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
                     <span class="system-name">{{ s.autosystem_name }}</span>
-                    <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
+                    <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}{% if s.vendor %} · Вендор: {{ s.vendor.participant_name }}{% endif %}</span>
                 </div>
                 {% endfor %}
                 <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
@@ -56,6 +56,54 @@
         <div class="form-group">
             <label>Дата ввода в эксплуатацию</label>
             <input type="date" name="implementation_date" value="{{ link.implementation_date|date:'Y-m-d' }}">
+        </div>
+
+        <div class="picker" data-target="#selectedIntegratorId">
+            <div class="form-group">
+                <label>Интегратор</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название участника рынка..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+            </div>
+            <div class="system-results-container">
+                <div class="system-item {% if not link.integrator_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Интегратор не указан —</span>
+                </div>
+                {% for participant in participants %}
+                <div class="system-item {% if link.integrator_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
+                    <span class="system-name">{{ participant.participant_name }}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Участники рынка не найдены
+                </div>
+            </div>
+            <input type="hidden" name="integrator" id="selectedIntegratorId" value="{{ link.integrator_id|default:'' }}">
+        </div>
+
+        <div class="picker" data-target="#selectedImplimentorId">
+            <div class="form-group">
+                <label>Исполнитель внедрения</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название участника рынка..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+            </div>
+            <div class="system-results-container">
+                <div class="system-item {% if not link.implimentor_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Исполнитель не указан —</span>
+                </div>
+                {% for participant in participants %}
+                <div class="system-item {% if link.implimentor_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
+                    <span class="system-name">{{ participant.participant_name }}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Участники рынка не найдены
+                </div>
+            </div>
+            <input type="hidden" name="implimentor" id="selectedImplimentorId" value="{{ link.implimentor_id|default:'' }}">
         </div>
 
         <div class="form-actions">

@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.users",
     "apps.owners",
+    "apps.participants",
     "apps.objects",
     "apps.categories",
     "apps.system"

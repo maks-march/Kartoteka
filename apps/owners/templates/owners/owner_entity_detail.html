@@ -25,7 +25,8 @@
     </div>
     {% if user.is_authenticated %}
     <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef">
-        <a href="{% url 'owner-entity-edit' owner_entity.pk %}" class="btn btn-primary">Изменить</a>
+        <a href="{% url 'owner-entity-attach-object' owner_entity.pk %}" class="btn btn-primary">+ Привязать объект</a>
+        <a href="{% url 'owner-entity-edit' owner_entity.pk %}" class="btn btn-secondary">Изменить</a>
         <form action="{% url 'owner-entity-delete' owner_entity.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить юридическое лицо? Связи с объектами будут очищены.')">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Удалить</button>

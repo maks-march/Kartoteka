@@ -46,6 +46,29 @@ class OwnersWebEndpointTests(OwnersEndpointTestMixin, TestCase):
         response = self.client.get("/owners/create/")
         self.assertEqual(response.status_code, 302)
 
+    def test_owner_entity_attach_object_page_requires_authentication(self):
+        response = self.client.get(f"/owners/{self.owner.pk}/attach-object/")
+        self.assertEqual(response.status_code, 302)
+
+    def test_authenticated_owner_entity_attach_object_endpoint(self):
+        self.client.force_login(self.user)
+        unassigned_object = Object.objects.create(
+            name="Непривязанный объект",
+            level=1,
+            category=self.category,
+            creator_id=self.user,
+        )
+
+        response = self.client.get(f"/owners/{self.owner.pk}/attach-object/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(f"/owners/{self.owner.pk}/attach-object/", {
+            "object": str(unassigned_object.pk),
+        })
+        self.assertEqual(response.status_code, 302)
+        unassigned_object.refresh_from_db()
+        self.assertEqual(unassigned_object.owner_entity_id, self.owner.pk)
+
     def test_authenticated_owner_entity_crud_endpoints(self):
         self.client.force_login(self.user)
 

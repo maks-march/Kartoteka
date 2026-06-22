@@ -43,7 +43,7 @@
     {% if object_systems %}
     <table>
         <thead>
-            <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+            <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Интегратор</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
         </thead>
         <tbody>
             {% for os in object_systems %}
@@ -52,6 +52,8 @@
                 <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
                 <td>{{ os.get_status_display }}</td>
                 <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if os.integrator %}<a href="{% url 'participant-detail' os.integrator.pk %}">{{ os.integrator.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if os.implimentor %}<a href="{% url 'participant-detail' os.implimentor.pk %}">{{ os.implimentor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 {% if user.is_authenticated %}
                 <td>
                     <div class="actions">

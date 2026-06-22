@@ -5,14 +5,14 @@ class ObjectSystemRepository:
     def get_for_object(self, obj):
         return (
             ObjectSystem.objects.filter(object=obj)
-            .select_related("system", "system__system_class")
+            .select_related("system", "system__system_class", "system__vendor", "integrator", "implimentor")
             .order_by("system__autosystem_name")
         )
 
     def get_for_system(self, system):
         return (
             ObjectSystem.objects.filter(system=system, object__is_deleted=False)
-            .select_related("object", "object__category")
+            .select_related("object", "object__category", "integrator", "implimentor")
             .order_by("object__level", "object__name")
         )
 
@@ -25,7 +25,7 @@ class ObjectSystemRepository:
     def get_by_id(self, pk):
         return (
             ObjectSystem.objects.filter(pk=pk)
-            .select_related("object", "system", "system__system_class")
+            .select_related("object", "system", "system__system_class", "system__vendor", "integrator", "implimentor")
             .first()
         )
 

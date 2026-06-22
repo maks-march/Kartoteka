@@ -9,6 +9,7 @@ from apps.objects.repositories.object_repository import ObjectRepository
 from apps.categories.usecases.category_usecase import CategoryUseCase
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
+from apps.participants.usecases.participant_usecase import ParticipantUseCase
 from apps.objects.models import ObjectSystem
 
 
@@ -211,6 +212,7 @@ def object_attach_system(request, pk):
     usecase = ObjectUseCase()
     os_usecase = ObjectSystemUseCase()
     system_usecase = SystemUseCase()
+    participant_usecase = ParticipantUseCase()
     obj = usecase.get(pk)
     error = None
 
@@ -221,6 +223,8 @@ def object_attach_system(request, pk):
                 system=int(request.POST.get("system")),
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
+                integrator=request.POST.get("integrator") or None,
+                implimentor=request.POST.get("implimentor") or None,
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -228,9 +232,11 @@ def object_attach_system(request, pk):
 
     attached_ids = os_usecase.list_for_object(obj).values_list("system_id", flat=True)
     systems = system_usecase.list().exclude(pk__in=attached_ids)
+    participants = participant_usecase.list()
     return render(request, "objects/object_system_form.html", {
         "object": obj,
         "systems": systems,
+        "participants": participants,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "error": error,
     })
@@ -248,6 +254,7 @@ def object_system_edit(request, pk):
     os_usecase = ObjectSystemUseCase()
     system_usecase = SystemUseCase()
     object_usecase = ObjectUseCase()
+    participant_usecase = ParticipantUseCase()
     link = os_usecase.get(pk)
     next_page = request.POST.get("next") or request.GET.get("next") or "object"
     error = None
@@ -260,10 +267,14 @@ def object_system_edit(request, pk):
                 system_pk=int(request.POST.get("system")) if request.POST.get("system") else None,
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
+                integrator=request.POST.get("integrator") or None,
+                implimentor=request.POST.get("implimentor") or None,
             )
             return _object_system_redirect(link, next_page)
         except (ValidationError, ValueError, TypeError) as e:
             error = str(e)
+
+    participants = participant_usecase.list()
 
     if next_page == "system":
         # Форма как при создании со стороны системы: выбираем объект
@@ -272,6 +283,7 @@ def object_system_edit(request, pk):
         return render(request, "system/system_object_form.html", {
             "system": link.system,
             "objects": objects.distinct(),
+            "participants": participants,
             "status_choices": ObjectSystem.STATUS_CHOICES,
             "link": link,
             "next_page": next_page,
@@ -284,6 +296,7 @@ def object_system_edit(request, pk):
     return render(request, "objects/object_system_form.html", {
         "object": link.object,
         "systems": systems.distinct(),
+        "participants": participants,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "link": link,
         "next_page": next_page,

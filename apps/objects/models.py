@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from apps.system.models import AutomatedSystem
 from apps.owners.models import OwnerEntity
+from apps.participants.models import Participant
 
 
 class Object(models.Model):
@@ -73,6 +74,22 @@ class ObjectSystem(models.Model):
         null=True,
         blank=True,
         verbose_name="Дата ввода в эксплуатацию"
+    )
+    integrator = models.ForeignKey(
+        Participant,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="integrated_object_systems",
+        verbose_name="Интегратор",
+    )
+    implimentor = models.ForeignKey(
+        Participant,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="implemented_object_systems",
+        verbose_name="Исполнитель внедрения",
     )
 
     class Meta:
