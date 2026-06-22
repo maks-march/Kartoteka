@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.system.models import AutomatedSystem
+from apps.owners.models import OwnerEntity
 
 
 class Object(models.Model):
@@ -27,6 +28,14 @@ class Object(models.Model):
         null=True,
         blank=True,
         related_name="category_objects",
+    )
+    owner_entity = models.ForeignKey(
+        OwnerEntity,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="owned_objects",
+        verbose_name="Юридическое лицо",
     )
     is_deleted = models.BooleanField(default=False)
     creator_id = models.ForeignKey(

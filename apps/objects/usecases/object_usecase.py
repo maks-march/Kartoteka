@@ -9,8 +9,14 @@ class ObjectUseCase:
         self.repo = repo or ObjectRepository()
         self.validator = ObjectValidator()
 
-    def list(self, level=None, search=None, category=None, system=None):
-        return self.repo.get_all(level=level, search=search, category=category, system=system)
+    def list(self, level=None, search=None, category=None, system=None, owner_entity=None):
+        return self.repo.get_all(
+            level=level,
+            search=search,
+            category=category,
+            system=system,
+            owner_entity=owner_entity,
+        )
 
     def get(self, pk):
         obj = self.repo.get_by_id(pk)
@@ -24,15 +30,19 @@ class ObjectUseCase:
     def create(self, user, **data):
         parent_id = data.pop("parent", None)
         category_id = data.pop("category", None)
+        owner_entity_id = data.pop("owner_entity", None)
         level = data.get("level")
 
         self.validator.validate_parent(parent_id, level)
         self.validator.validate_category(category_id, level)
+        self.validator.validate_owner_entity(owner_entity_id)
 
         if parent_id is not None:
             data["parent_id"] = parent_id
         if category_id is not None:
             data["category_id"] = category_id
+        if owner_entity_id is not None:
+            data["owner_entity_id"] = owner_entity_id
         data["creator_id"] = user
         return self.repo.create(**data)
 
@@ -40,6 +50,7 @@ class ObjectUseCase:
         obj = self.get(pk)
         parent_id = data.pop("parent", "__missing__")
         category_id = data.pop("category", "__missing__")
+        owner_entity_id = data.pop("owner_entity", "__missing__")
         level = data.get("level", obj.level)
 
         if parent_id != "__missing__":
@@ -48,6 +59,9 @@ class ObjectUseCase:
         if category_id != "__missing__":
             self.validator.validate_category(category_id, level)
             data["category_id"] = category_id
+        if owner_entity_id != "__missing__":
+            self.validator.validate_owner_entity(owner_entity_id)
+            data["owner_entity_id"] = owner_entity_id
 
         if "level" in data and data["level"] != obj.level:
             # При смене уровня перепроверяем текущего родителя и категорию

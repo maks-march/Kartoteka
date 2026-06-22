@@ -15,8 +15,8 @@ def _as_id_list(value):
 
 
 class ObjectRepository:
-    def get_all(self, level=None, search=None, category=None, system=None):
-        qs = Object.objects.filter(is_deleted=False).select_related("parent", "category")
+    def get_all(self, level=None, search=None, category=None, system=None, owner_entity=None):
+        qs = Object.objects.filter(is_deleted=False).select_related("parent", "category", "owner_entity")
         if level is not None:
             qs = qs.filter(level=level)
         if search:
@@ -31,18 +31,22 @@ class ObjectRepository:
         if system_ids:
             # ИЛИ: объекты, к которым привязана любая из выбранных систем
             qs = qs.filter(objectsystem__system_id__in=system_ids).distinct()
+        owner_entity_ids = _as_id_list(owner_entity)
+        if owner_entity_ids:
+            # ИЛИ: объекты, принадлежащие любому из выбранных юр. лиц
+            qs = qs.filter(owner_entity_id__in=owner_entity_ids)
         return qs
 
     def get_by_id(self, pk):
         return (
             Object.objects.filter(pk=pk, is_deleted=False)
-            .select_related("parent", "category", "creator_id")
+            .select_related("parent", "category", "owner_entity", "creator_id")
             .prefetch_related("children")
             .first()
         )
 
     def get_by_creator(self, user, search=None):
-        qs = Object.objects.filter(is_deleted=False, creator_id=user).select_related("parent", "category")
+        qs = Object.objects.filter(is_deleted=False, creator_id=user).select_related("parent", "category", "owner_entity")
         if search:
             qs = qs.filter(name__iregex=re.escape(search))
         return qs

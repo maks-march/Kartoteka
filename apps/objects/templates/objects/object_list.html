@@ -62,6 +62,34 @@
                 </div>
             </div>
 
+            <!-- Подпоиск юридического лица -->
+            <div class="form-group" style="margin-bottom:10px">
+                <label>Юридическое лицо</label>
+                <div class="search-wrapper">
+                    <input type="text" id="ownerEntityFilterSearch" placeholder="Введите название юр. лица..." style="margin-bottom:0">
+                    <button type="button" id="ownerEntityFilterBtn" class="btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container" id="ownerEntityFilterList" style="max-height:160px">
+                    <div class="system-item {% if not selected_owner_entities %}selected{% endif %}" data-id="">
+                        <span class="system-name">— Все юридические лица —</span>
+                    </div>
+                    {% for owner in all_owner_entities %}
+                    <div class="system-item {% if owner.pk|stringformat:"s" in selected_owner_entities %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
+                        <span class="system-name">{{ owner.owner_name }}</span>
+                        <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
+                    </div>
+                    {% endfor %}
+                    <div id="ownerEntityFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                        Юридические лица не найдены
+                    </div>
+                </div>
+                <div id="ownerEntityFilterInputs" data-name="owner_entity">
+                    {% for oid in selected_owner_entities %}
+                    <input type="hidden" name="owner_entity" value="{{ oid }}">
+                    {% endfor %}
+                </div>
+            </div>
+
             <!-- Подпоиск привязанной системы: показываются только объекты, к которым она подключена -->
             <div class="form-group">
                 <label>Привязанная система</label>
@@ -98,6 +126,7 @@
                 <th>Название</th>
                 <th>Уровень</th>
                 <th>Категория</th>
+                <th>Юр. лицо</th>
                 <th>Родитель</th>
             </tr>
         </thead>
@@ -107,10 +136,11 @@
                 <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
                 <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
                 <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if obj.owner_entity %}<a href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" class="empty">Объекты не найдены</td></tr>
+            <tr><td colspan="5" class="empty">Объекты не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -119,6 +149,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     setupMultiFilterPicker('categoryFilterSearch', 'categoryFilterBtn', 'categoryFilterList', 'categoryFilterInputs', 'categoryFilterNoResults');
+    setupMultiFilterPicker('ownerEntityFilterSearch', 'ownerEntityFilterBtn', 'ownerEntityFilterList', 'ownerEntityFilterInputs', 'ownerEntityFilterNoResults');
     setupMultiFilterPicker('systemFilterSearch', 'systemFilterBtn', 'systemFilterList', 'systemFilterInputs', 'systemFilterNoResults');
 });
 </script>

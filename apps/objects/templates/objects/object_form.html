@@ -79,6 +79,33 @@
             <input type="hidden" name="category" id="selectedCategoryId" value="{{ object.category_id|default:'' }}">
         </div>
 
+        <div class="picker" data-target="#selectedOwnerEntityId">
+            <div class="form-group">
+                <label>Юридическое лицо</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название юр. лица..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+            </div>
+
+            <div class="system-results-container">
+                <div class="system-item {% if not object.owner_entity_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Без юр. лица —</span>
+                </div>
+                {% for owner in owner_entities %}
+                <div class="system-item {% if object.owner_entity_id == owner.pk %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
+                    <span class="system-name">{{ owner.owner_name }}</span>
+                    <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                    Юридические лица не найдены
+                </div>
+            </div>
+
+            <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Сохранить</button>
             <a href="{% if object %}{% url 'object-detail' object.pk %}{% else %}{% url 'object-list' %}{% endif %}" class="btn btn-secondary">Отмена</a>

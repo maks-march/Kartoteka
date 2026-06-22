@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     # local
     "apps.core",
     "apps.users",
+    "apps.owners",
     "apps.objects",
     "apps.categories",
     "apps.system"

@@ -8,6 +8,7 @@ from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.repositories.object_repository import ObjectRepository
 from apps.categories.usecases.category_usecase import CategoryUseCase
 from apps.system.usecases.system_usecase import SystemUseCase
+from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
 from apps.objects.models import ObjectSystem
 
 
@@ -17,20 +18,29 @@ def object_list(request):
     search = request.GET.get("search") or None
     category = request.GET.getlist("category") or None
     system = request.GET.getlist("system") or None
+    owner_entity = request.GET.getlist("owner_entity") or None
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
     system_usecase = SystemUseCase()
-    print(category)
-    print()
-    objects = usecase.list(level=level, search=search, category=category, system=system)
+    owner_usecase = OwnerEntityUseCase()
+    objects = usecase.list(
+        level=level,
+        search=search,
+        category=category,
+        system=system,
+        owner_entity=owner_entity,
+    )
     all_categories = cat_usecase.list()
     all_systems = system_usecase.list()
+    all_owner_entities = owner_usecase.list()
     return render(request, "objects/object_list.html", {
         "objects": objects,
         "all_categories": all_categories,
         "all_systems": all_systems,
+        "all_owner_entities": all_owner_entities,
         "selected_categories": category or [],
         "selected_systems": system or [],
+        "selected_owner_entities": owner_entity or [],
     })
 
 
@@ -53,6 +63,7 @@ def object_detail(request, pk):
 def object_create(request):
     repo = ObjectRepository()
     cat_usecase = CategoryUseCase()
+    owner_usecase = OwnerEntityUseCase()
     error = None
     object_instance = None
 
@@ -65,6 +76,7 @@ def object_create(request):
                 level=int(request.POST.get("level")),
                 parent=request.POST.get("parent") or None,
                 category=request.POST.get("category") or None,
+                owner_entity=request.POST.get("owner_entity") or None,
             )
             return redirect("object-list")
         except (ValidationError, Exception) as e:
@@ -73,10 +85,12 @@ def object_create(request):
 
     possible_parents = repo.get_all().filter(level__lt=3)
     categories = cat_usecase.list()
+    owner_entities = owner_usecase.list()
     return render(request, "objects/object_form.html", {
         "object": object_instance,
         "possible_parents": possible_parents,
         "categories": categories,
+        "owner_entities": owner_entities,
         "error": error,
     })
 
@@ -87,6 +101,7 @@ def object_edit(request, pk):
     repo = ObjectRepository()
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
+    owner_usecase = OwnerEntityUseCase()
     obj = usecase.get(pk)
     error = None
 
@@ -99,6 +114,7 @@ def object_edit(request, pk):
                 level=int(request.POST.get("level")),
                 parent=request.POST.get("parent") or None,
                 category=request.POST.get("category") or None,
+                owner_entity=request.POST.get("owner_entity") or None,
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, Exception) as e:
@@ -106,10 +122,12 @@ def object_edit(request, pk):
 
     possible_parents = repo.get_all().exclude(pk=pk).filter(level__lt=3)
     categories = cat_usecase.list()
+    owner_entities = owner_usecase.list()
     return render(request, "objects/object_form.html", {
         "object": obj,
         "possible_parents": possible_parents,
         "categories": categories,
+        "owner_entities": owner_entities,
         "error": error,
     })
 
@@ -128,6 +146,7 @@ def object_add_child(request, pk):
     repo = ObjectRepository()
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
+    owner_usecase = OwnerEntityUseCase()
     parent = usecase.get(pk)
     error = None
     active_mode = "existing"
@@ -150,6 +169,7 @@ def object_add_child(request, pk):
                     level=int(request.POST.get("level")),
                     parent=parent.pk,
                     category=request.POST.get("category") or None,
+                    owner_entity=request.POST.get("owner_entity") or None,
                 )
             return redirect("object-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -173,11 +193,13 @@ def object_add_child(request, pk):
 
     child_levels = [lvl for lvl in (1, 2, 3) if lvl > parent.level]
     categories = cat_usecase.list()
+    owner_entities = owner_usecase.list()
     return render(request, "objects/object_add_child_form.html", {
         "parent": parent,
         "possible_children": possible_children,
         "child_levels": child_levels,
         "categories": categories,
+        "owner_entities": owner_entities,
         "active_mode": active_mode,
         "error": error,
     })

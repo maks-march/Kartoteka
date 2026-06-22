@@ -13,6 +13,14 @@
         {% if object.parent %}
             <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
         {% endif %}
+        <p style="margin-top:5px; color:#666">
+            Юридическое лицо:
+            {% if object.owner_entity %}
+                <a href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>
+            {% else %}
+                <span class="empty">—</span>
+            {% endif %}
+        </p>
         <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
     </div>
     {% if user.is_authenticated %}

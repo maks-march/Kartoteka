@@ -49,6 +49,7 @@
                 <th>Название</th>
                 <th>Уровень</th>
                 <th>Родитель</th>
+                <th>Юр. лицо</th>
                 <th>Дата создания</th>
                 <th>Действия</th>
             </tr>
@@ -59,6 +60,7 @@
                 <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
                 <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
                 <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if obj.owner_entity %}<a href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{{ obj.created_at|date:"d.m.Y H:i" }}</td>
                 <td>
                     <div class="actions">
@@ -71,7 +73,7 @@
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="empty">Вы еще не создали объектов</td></tr>
+            <tr><td colspan="6" class="empty">Вы еще не создали объектов</td></tr>
             {% endfor %}
         </tbody>
     </table>

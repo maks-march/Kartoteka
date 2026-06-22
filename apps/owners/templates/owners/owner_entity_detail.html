@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ owner_entity.owner_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div>
+        <h1 style="margin-bottom:5px">{{ owner_entity.owner_name }}</h1>
+        <p style="margin-top:10px; color:#666">
+            Следующий владелец:
+            {% if owner_entity.owner %}
+                <a href="{% url 'owner-entity-detail' owner_entity.owner.pk %}">{{ owner_entity.owner.owner_name }}</a>
+            {% else %}
+                <span class="empty">—</span>
+            {% endif %}
+        </p>
+        <p style="margin-top:5px; color:#666">
+            Корневой владелец:
+            {% if owner_entity.ultimate_owner %}
+                <a href="{% url 'owner-entity-detail' owner_entity.ultimate_owner.pk %}">{{ owner_entity.ultimate_owner.owner_name }}</a>
+            {% else %}
+                <span class="empty">—</span>
+            {% endif %}
+        </p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef">
+        <a href="{% url 'owner-entity-edit' owner_entity.pk %}" class="btn btn-primary">Изменить</a>
+        <form action="{% url 'owner-entity-delete' owner_entity.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить юридическое лицо? Связи с объектами будут очищены.')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Дочерние юридические лица</h2>
+    <table>
+        <thead>
+            <tr><th>Название</th><th>Корневой владелец</th></tr>
+        </thead>
+        <tbody>
+            {% for child in child_entities %}
+            <tr>
+                <td><a href="{% url 'owner-entity-detail' child.pk %}">{{ child.owner_name }}</a></td>
+                <td>{% if child.ultimate_owner %}<a href="{% url 'owner-entity-detail' child.ultimate_owner.pk %}">{{ child.ultimate_owner.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="empty">Дочерних юридических лиц нет</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+        <h2 style="margin:0">Объекты этого юр. лица</h2>
+        <a href="{% url 'object-list' %}?owner_entity={{ owner_entity.pk }}" class="btn btn-secondary">Все в списке</a>
+    </div>
+    <table>
+        <thead>
+            <tr><th>Название</th><th>Уровень</th><th>Категория</th><th>Родитель</th></tr>
+        </thead>
+        <tbody>
+            {% for obj in objects %}
+            <tr>
+                <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
+                <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
+                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="empty">Объектов у этого юр. лица пока нет</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:10px">
+    <a href="{% url 'owner-entity-list' %}" class="btn btn-secondary">← Назад к списку</a>
+</div>
+{% endblock %}

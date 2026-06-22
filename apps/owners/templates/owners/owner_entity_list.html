@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Юридические лица{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+        <h1 style="margin:0">Юридические лица</h1>
+        {% if user.is_authenticated %}
+            <a href="{% url 'owner-entity-create' %}" class="btn btn-primary">+ Добавить юр. лицо</a>
+        {% endif %}
+    </div>
+
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <button type="button" class="btn-reset" onclick="clearFilters(this)" title="Очистить поле поиска">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Следующий владелец</th>
+                <th>Корневой владелец</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for owner in owner_entities %}
+            <tr>
+                <td><a href="{% url 'owner-entity-detail' owner.pk %}">{{ owner.owner_name }}</a></td>
+                <td>{% if owner.owner %}<a href="{% url 'owner-entity-detail' owner.owner.pk %}">{{ owner.owner.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if owner.ultimate_owner %}<a href="{% url 'owner-entity-detail' owner.ultimate_owner.pk %}">{{ owner.ultimate_owner.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Юридические лица не найдены</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

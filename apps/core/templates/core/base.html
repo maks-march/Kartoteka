@@ -14,6 +14,7 @@
             <a href="{% url 'object-list' %}">Объекты</a>
             <a href="{% url 'system-list' %}">Системы</a>
             <a href="{% url 'category-list' %}">Категории</a>
+            <a href="{% url 'owner-entity-list' %}">Юр. лица</a>
         </nav>
         <div class="user-menu">
             {% if user.is_authenticated %}

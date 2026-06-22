@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 
 from apps.objects.models import Object
 from apps.categories.models import Category
+from apps.owners.models import OwnerEntity
 
 
 class ObjectValidator:
@@ -47,3 +48,10 @@ class ObjectValidator:
             raise ValidationError(
                 "Уровень категории должен совпадать с уровнем объекта"
             )
+
+    def validate_owner_entity(self, owner_entity_id):
+        if owner_entity_id is None:
+            return
+
+        if not OwnerEntity.objects.filter(pk=owner_entity_id).exists():
+            raise ValidationError("Юридическое лицо не найдено")
