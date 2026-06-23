@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Системы wide — test</title>
+    <link rel="stylesheet" href="{% static 'css/styles_test.css' %}">
+</head>
+<body class="test-wide">
+<header>
+    <nav>
+        <a href="/test">Тестовый стенд</a>
+    </nav>
+    <span class="test-badge">UI mockup</span>
+</header>
+
+<div class="card">
+    <div class="page-title-row">
+        <h1 style="margin:0">Системы автоматизации</h1>
+        <div class="actions">
+            <button class="btn btn-light">Экспорт</button>
+            <a href="/test/system-wide/create/" class="btn btn-primary">+ Добавить</a>
+        </div>
+    </div>
+
+    <form class="filters">
+        <input type="text" placeholder="Поиск по названию, short name, версии, вендору...">
+        <select><option>Все классы</option><option>L2 — SCADA/DCS</option><option>L3 — MES</option><option>L4 — ERP</option></select>
+        <select><option>Все вендоры</option><option>Siemens AG</option><option>SAP SE</option><option>Emerson Electric Co.</option></select>
+        <select><option>Все статусы</option><option>В эксплуатации</option><option>Внедряется</option><option>Планируется</option></select>
+        <select><option>Все продукты</option><option>Коммерческий</option><option>Собственная разработка</option><option>Заказная разработка</option></select>
+        <input type="date" value="2020-01-01">
+        <input type="date" value="2035-12-31">
+        <button type="button" class="btn btn-primary">Применить</button>
+        <button type="button" class="btn btn-light">Сброс</button>
+    </form>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Полное название</th>
+                    <th>Short</th>
+                    <th>Класс</th>
+                    <th>Вендор</th>
+                    <th>Версия</th>
+                    <th>Статус</th>
+                    <th>Тип продукта</th>
+                    <th>Выпуск</th>
+                    <th>Поддержка</th>
+                    <th>Примечание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><a href="/test/system-wide/1/">Siemens SIMATIC PCS 7 Process Control System</a></td>
+                    <td><b>PCS 7</b></td>
+                    <td><span class="tag tag-2">L2 SCADA/DCS</span></td>
+                    <td>Siemens AG</td>
+                    <td>V9.1 SP2</td>
+                    <td><span class="tag tag-ok">В эксплуатации</span></td>
+                    <td>Коммерческий</td>
+                    <td>20.05.2021</td>
+                    <td>31.12.2030</td>
+                    <td>Основная DCS-платформа АВТ.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><a href="/test/system-wide/1/">Honeywell Experion Process Knowledge System</a></td>
+                    <td><b>Experion PKS</b></td>
+                    <td><span class="tag tag-2">L2 SCADA/DCS</span></td>
+                    <td>Honeywell International Inc.</td>
+                    <td>R520</td>
+                    <td><span class="tag tag-ok">В эксплуатации</span></td>
+                    <td>Коммерческий</td>
+                    <td>14.03.2020</td>
+                    <td>30.06.2029</td>
+                    <td>Контур пиролиза и архив.</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><a href="/test/system-wide/1/">SAP S/4HANA Enterprise Management</a></td>
+                    <td><b>S/4HANA</b></td>
+                    <td><span class="tag tag-4">L4 ERP</span></td>
+                    <td>SAP SE</td>
+                    <td>2023 FPS01</td>
+                    <td><span class="tag tag-warn">Внедряется</span></td>
+                    <td>Коммерческий</td>
+                    <td>11.10.2023</td>
+                    <td>31.12.2040</td>
+                    <td>Миграция с ERP ECC.</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td><a href="/test/system-wide/1/">Внутренняя MES-платформа производства</a></td>
+                    <td><b>MES-Core</b></td>
+                    <td><span class="tag tag-3">L3 MES</span></td>
+                    <td>ООО «СИБУР Диджитал»</td>
+                    <td>2.8.4</td>
+                    <td><span class="tag tag-ok">В эксплуатации</span></td>
+                    <td>Собственная</td>
+                    <td>01.02.2022</td>
+                    <td>бессрочно</td>
+                    <td>План-факт, сменные задания.</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td><a href="/test/system-wide/1/">АСУТП Emerson DeltaV</a></td>
+                    <td><b>DeltaV</b></td>
+                    <td><span class="tag tag-2">L2 АСУТП</span></td>
+                    <td>Emerson Electric Co.</td>
+                    <td>v15</td>
+                    <td><span class="tag tag-blue">Планируется</span></td>
+                    <td>Коммерческий</td>
+                    <td>05.05.2024</td>
+                    <td>—</td>
+                    <td>Проект расширения.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тестовые страницы интерфейса</title>
+    <link rel="stylesheet" href="{% static 'css/styles_test.css' %}">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="/test">Тестовый стенд</a>
+    </nav>
+    <span class="test-badge">UI mockup</span>
+</header>
+
+<div class="card" style="text-align:center">
+    <h1>Тестовые страницы интерфейса системы</h1>
+    <p style="color:#666">Статичная верстка без бизнес-логики. Ссылки сделаны в формате <b>localhost/test/{обычный адрес}</b>.</p>
+</div>
+
+<div class="menu-grid">
+    <a class="menu-card" href="/test/system/">
+        <h3>Вариант 1: список систем</h3>
+        <p>Текущие размеры контейнеров, стандартные таблицы и фильтры.</p>
+    </a>
+    <a class="menu-card" href="/test/system/create/">
+        <h3>Вариант 1: создание системы</h3>
+        <p>Форма с новыми полями AutomatedSystem в текущем размере.</p>
+    </a>
+    <a class="menu-card" href="/test/system/1/">
+        <h3>Вариант 1: карточка системы</h3>
+        <p>Полная информация о системе автоматизации.</p>
+    </a>
+</div>
+
+<div class="menu-grid" style="margin-top:20px">
+    <a class="menu-card" href="/test/system-wide/">
+        <h3>Вариант 2: широкий список</h3>
+        <p>Расширенная область, компактные строки, больше колонок на экране.</p>
+    </a>
+    <a class="menu-card" href="/test/system-wide/create/">
+        <h3>Вариант 2: широкая форма</h3>
+        <p>Много колонок, компактные поля, меньше вертикального скролла.</p>
+    </a>
+    <a class="menu-card" href="/test/system-wide/1/">
+        <h3>Вариант 2: широкая карточка</h3>
+        <p>Плотное отображение атрибутов и связанных объектов.</p>
+    </a>
+</div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить систему — test</title>
+    <link rel="stylesheet" href="{% static 'css/styles_test.css' %}">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="/test">Тестовый стенд</a>
+    </nav>
+    <span class="test-badge">UI mockup</span>
+</header>
+
+<div class="card form-card">
+    <h1>Добавить систему автоматизации</h1>
+    <p class="hint" style="margin-bottom:18px">Макет формы под расширенную модель AutomatedSystem. Поля статичны, сохранение не выполняется.</p>
+
+    <form>
+        <div class="form-section">
+            <h2>Основная информация</h2>
+            <div class="form-group">
+                <label>Полное название системы автоматизации</label>
+                <input type="text" value="Siemens SIMATIC PCS 7 Process Control System">
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Короткое название</label>
+                    <input type="text" value="PCS 7">
+                </div>
+                <div class="form-group">
+                    <label>Версия системы</label>
+                    <input type="text" value="V9.1 SP2">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Классификация и участники</h2>
+            <div class="form-group">
+                <label>Тип системы — уровень и класс</label>
+                <select>
+                    <option>L0 — КИПиА</option>
+                    <option>L1 — ПЛК</option>
+                    <option selected>L2 — SCADA/DCS</option>
+                    <option>L3 — MES</option>
+                    <option>L4 — ERP</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Поставщик системы / вендор</label>
+                <select>
+                    <option>— Не указан —</option>
+                    <option selected>Siemens AG</option>
+                    <option>Honeywell International Inc.</option>
+                    <option>Emerson Electric Co.</option>
+                    <option>Yokogawa Electric Corporation</option>
+                    <option>ООО «1С»</option>
+                    <option>ООО «СИБУР Диджитал»</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Состояние продукта</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Статус системы</label>
+                    <select>
+                        <option selected>В эксплуатации</option>
+                        <option>Внедряется</option>
+                        <option>Планируется</option>
+                        <option>Пилот</option>
+                        <option>Не поддерживается</option>
+                        <option>Выведена из эксплуатации</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тип продукта</label>
+                    <select>
+                        <option selected>Коммерческий продукт</option>
+                        <option>Собственная разработка</option>
+                        <option>Заказная разработка</option>
+                        <option>Open-source</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Дата выпуска</label>
+                    <input type="date" value="2021-05-20">
+                </div>
+                <div class="form-group">
+                    <label>Конец поддержки</label>
+                    <input type="date" value="2030-12-31">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Дополнительная информация</h2>
+            <div class="form-group">
+                <label>Примечания</label>
+                <textarea>Используется как DCS/SCADA-платформа для технологических установок. Требует проверки совместимости с текущей версией инженерной станции.</textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary">Сохранить</button>
+            <a href="/test/system/" class="btn btn-secondary">Отмена</a>
+            <a href="/test/system/1/" class="btn btn-light">Посмотреть карточку</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

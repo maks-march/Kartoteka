@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>PCS 7 wide — test</title>
+    <link rel="stylesheet" href="{% static 'css/styles_test.css' %}">
+</head>
+<body class="test-wide">
+<header>
+    <nav>
+        <a href="/test">Тестовый стенд</a>
+    </nav>
+    <span class="test-badge">UI mockup</span>
+</header>
+
+<div class="card">
+    <div class="page-title-row">
+        <div>
+            <h1 style="margin-bottom:4px">Siemens SIMATIC PCS 7 Process Control System</h1>
+            <span class="tag tag-2">L2 SCADA/DCS</span>
+            <span class="tag tag-ok">В эксплуатации</span>
+            <span class="tag tag-muted">Коммерческий продукт</span>
+        </div>
+        <div class="actions">
+            <a href="/test/system-wide/create/" class="btn btn-secondary">Изменить</a>
+            <button class="btn btn-light">История</button>
+            <button class="btn btn-danger">Удалить</button>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="info-tile"><span class="info-label">ID</span><span class="info-value">1</span></div>
+        <div class="info-tile"><span class="info-label">Short name</span><span class="info-value">PCS 7</span></div>
+        <div class="info-tile"><span class="info-label">Версия</span><span class="info-value">V9.1 SP2</span></div>
+        <div class="info-tile"><span class="info-label">Вендор</span><span class="info-value"><a class="link" href="http://localhost/test/participants/2/">Siemens AG</a></span></div>
+        <div class="info-tile"><span class="info-label">Дата выпуска</span><span class="info-value">20.05.2021</span></div>
+        <div class="info-tile"><span class="info-label">Конец поддержки</span><span class="info-value">31.12.2030</span></div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Дополнительная информация</h2>
+    <p class="notes-box">Платформа распределенного управления технологическими процессами. Используется для визуализации, управления, архивирования технологических параметров и интеграции с уровнем MES.</p>
+</div>
+
+<div class="card">
+    <div class="card-title-row">
+        <h2 style="margin:0">Подключенные объекты</h2>
+        <a href="/test/system-wide/1/attach-object/" class="btn btn-primary">+ Привязать объект</a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID связи</th>
+                    <th>Объект</th>
+                    <th>Уровень</th>
+                    <th>Категория</th>
+                    <th>Статус внедрения</th>
+                    <th>Дата ввода</th>
+                    <th>Интегратор</th>
+                    <th>Исполнитель</th>
+                    <th>Примечание</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>3</td>
+                    <td><a href="#">Цех №10 (АВТ)</a></td>
+                    <td><span class="tag tag-2">L2</span></td>
+                    <td>Основные</td>
+                    <td><span class="tag tag-ok">В эксплуатации</span></td>
+                    <td>10.05.2025</td>
+                    <td>ООО «Газпромнефть ИТО»</td>
+                    <td>ООО «Автоматика»</td>
+                    <td>Основной контур управления</td>
+                    <td><a class="btn btn-secondary btn-sm" href="#">Изменить</a></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td><a href="#">Установка АВТ-10</a></td>
+                    <td><span class="tag tag-3">L3</span></td>
+                    <td>Атмосферное разделение</td>
+                    <td><span class="tag tag-ok">В эксплуатации</span></td>
+                    <td>10.10.2025</td>
+                    <td>ООО «Автоматика»</td>
+                    <td>Emerson Electric Co.</td>
+                    <td>Расширенный архив событий</td>
+                    <td><a class="btn btn-secondary btn-sm" href="#">Изменить</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
