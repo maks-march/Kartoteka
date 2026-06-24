@@ -11,7 +11,6 @@
     <nav>
         <a href="/test">Тестовый стенд</a>
     </nav>
-    <span class="test-badge">UI mockup</span>
 </header>
 
 <div class="card">
@@ -21,28 +20,70 @@
     </div>
 
     <form class="filters">
-        <input type="text" value="" placeholder="Поиск по названию, короткому имени, вендору...">
-        <select>
-            <option>Все классы</option>
-            <option>L2 — SCADA/DCS</option>
-            <option>L3 — MES</option>
-            <option>L4 — ERP</option>
-        </select>
-        <select>
-            <option>Все статусы</option>
-            <option>В эксплуатации</option>
-            <option>Внедряется</option>
-            <option>Планируется</option>
-            <option>Не поддерживается</option>
-        </select>
-        <select>
-            <option>Все типы продукта</option>
-            <option>Коммерческий продукт</option>
-            <option>Собственная разработка</option>
-            <option>Заказная разработка</option>
-        </select>
-        <button type="button" class="btn btn-primary">Применить</button>
-        <button type="button" class="btn btn-light">Сбросить</button>
+        <div class="main-row">
+            <input type="text" value="" placeholder="Поиск по названию системы...">
+            <button type="button" class="btn btn-primary">Применить</button>
+            <a href="/test/system/" class="btn-reset" title="Сбросить все фильтры">
+                <svg class="icon-trash" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/></svg>
+            </a>
+        </div>
+        <div class="test-filter-grid">
+            <div class="form-group">
+                <label>Подключенные объекты</label>
+                <div class="search-wrapper">
+                    <input type="text" placeholder="Введите название объекта...">
+                    <button type="button" class="btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container">
+                    <div class="system-item selected"><span class="system-name">— Все объекты —</span></div>
+                    <div class="system-item"><span class="system-name">Цех №10 (АВТ)</span></div>
+                    <div class="system-item"><span class="system-name">Установка АВТ-10</span></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Вендор</label>
+                <div class="search-wrapper">
+                    <input type="text" placeholder="Введите название вендора...">
+                    <button type="button" class="btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container">
+                    <div class="system-item selected"><span class="system-name">— Все вендоры —</span></div>
+                    <div class="system-item"><span class="system-name">Siemens AG</span></div>
+                    <div class="system-item"><span class="system-name">Honeywell International Inc.</span></div>
+                    <div class="system-item"><span class="system-name">SAP SE</span></div>
+                    <div class="system-item"><span class="system-name">Emerson Electric Co.</span></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Класс системы</label>
+                <div class="system-results-container">
+                    <div class="system-item selected" data-id=""><span class="system-name">— Все классы —</span></div>
+                    <div class="system-item"><span class="system-name">L2 - SCADA/DCS</span><span class="system-info">Уровень 2</span></div>
+                    <div class="system-item"><span class="system-name">L3 - MES</span><span class="system-info">Уровень 3</span></div>
+                    <div class="system-item"><span class="system-name">L4 - ERP</span><span class="system-info">Уровень 4</span></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Статус системы</label>
+                <div class="system-results-container">
+                    <div class="system-item selected"><span class="system-name">— Все статусы —</span></div>
+                    <div class="system-item"><span class="system-name">В эксплуатации</span></div>
+                    <div class="system-item"><span class="system-name">Внедряется</span></div>
+                    <div class="system-item"><span class="system-name">Планируется</span></div>
+                    <div class="system-item"><span class="system-name">Не поддерживается</span></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Тип продукта</label>
+                <div class="system-results-container">
+                    <div class="system-item selected"><span class="system-name">— Все типы —</span></div>
+                    <div class="system-item"><span class="system-name">Программное обеспечение</span></div>
+                    <div class="system-item"><span class="system-name">Оборудование</span></div>
+                    <div class="system-item"><span class="system-name">Сервис</span></div>
+                </div>
+            </div>
+        </div>
     </form>
 
     <div class="table-wrap">
@@ -74,7 +115,7 @@
                     <td><a href="/test/system/1/">Honeywell Experion Process Knowledge System</a></td>
                     <td><b>Experion PKS</b></td>
                     <td><span class="tag tag-2">L2 — SCADA/DCS</span></td>
-                    <td>Honeywell International Inc.</td>
+                    <td><a href="/test/participants/3/">Honeywell International Inc.</a></td>
                     <td>R520</td>
                     <td><span class="tag tag-ok">В эксплуатации</span></td>
                     <td>Коммерческий продукт</td>
@@ -84,7 +125,7 @@
                     <td><a href="/test/system/1/">SAP S/4HANA Enterprise Management</a></td>
                     <td><b>S/4HANA</b></td>
                     <td><span class="tag tag-4">L4 — ERP</span></td>
-                    <td>SAP SE</td>
+                    <td><a href="/test/participants/4/">SAP SE</a></td>
                     <td>2023 FPS01</td>
                     <td><span class="tag tag-warn">Внедряется</span></td>
                     <td>Коммерческий продукт</td>
@@ -94,7 +135,7 @@
                     <td><a href="/test/system/1/">АСУТП Emerson DeltaV</a></td>
                     <td><b>DeltaV</b></td>
                     <td><span class="tag tag-2">L2 — АСУТП</span></td>
-                    <td>Emerson Electric Co.</td>
+                    <td><a href="/test/participants/10/">Emerson Electric Co.</a></td>
                     <td>v15</td>
                     <td><span class="tag tag-blue">Планируется</span></td>
                     <td>Коммерческий продукт</td>
@@ -104,7 +145,7 @@
                     <td><a href="/test/system/1/">Внутренняя MES-платформа производства</a></td>
                     <td><b>MES-Core</b></td>
                     <td><span class="tag tag-3">L3 — MES</span></td>
-                    <td>ООО «СИБУР Диджитал»</td>
+                    <td><a href="/test/participants/14/">ООО «СИБУР Диджитал»</a></td>
                     <td>2.8.4</td>
                     <td><span class="tag tag-ok">В эксплуатации</span></td>
                     <td>Собственная разработка</td>

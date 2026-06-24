@@ -11,7 +11,6 @@
     <nav>
         <a href="/test">Тестовый стенд</a>
     </nav>
-    <span class="test-badge">UI mockup</span>
 </header>
 
 <div class="card">
@@ -20,7 +19,7 @@
             <h1 style="margin-bottom:6px">Siemens SIMATIC PCS 7 Process Control System</h1>
             <span class="tag tag-2">L2 — SCADA/DCS</span>
             <span class="tag tag-ok" style="margin-left:6px">В эксплуатации</span>
-            <span class="tag tag-muted" style="margin-left:6px">Коммерческий продукт</span>
+            <span class="tag tag-muted" style="margin-left:6px">Сервис</span>
         </div>
         <div class="actions">
             <a href="/test/system/create/" class="btn btn-secondary">Изменить</a>
@@ -31,7 +30,7 @@
     <div class="detail-grid">
         <div class="info-tile"><span class="info-label">Короткое название</span><span class="info-value">PCS 7</span></div>
         <div class="info-tile"><span class="info-label">Версия</span><span class="info-value">V9.1 SP2</span></div>
-        <div class="info-tile"><span class="info-label">Вендор</span><span class="info-value"><a class="link" href="http://localhost/test/participants/2/">Siemens AG</a></span></div>
+        <div class="info-tile"><span class="info-label">Вендор</span><span class="info-value"><a class="link" href="/test/participants/2/">Siemens AG</a></span></div>
         <div class="info-tile"><span class="info-label">Дата выпуска</span><span class="info-value">20.05.2021</span></div>
         <div class="info-tile"><span class="info-label">Конец поддержки</span><span class="info-value">31.12.2030</span></div>
         <div class="info-tile"><span class="info-label">Автор карточки</span><span class="info-value">admin</span></div>
@@ -46,7 +45,7 @@
 <div class="card">
     <div class="card-title-row">
         <h2 style="margin:0">Подключенные объекты</h2>
-        <a href="#" class="btn btn-primary">+ Привязать объект</a>
+        <a href="/test/system/1/attach-object/" class="btn btn-primary">+ Привязать объект</a>
     </div>
     <div class="table-wrap">
         <table>
@@ -58,24 +57,33 @@
                     <th>Дата ввода</th>
                     <th>Интегратор</th>
                     <th>Исполнитель</th>
+                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><a href="#">Цех №10 (АВТ)</a></td>
+                    <td><a href="/test/objects/4/">Цех №10 (АВТ)</a></td>
                     <td><span class="tag tag-2">Уровень 2</span></td>
                     <td>В эксплуатации</td>
                     <td>10.05.2025</td>
-                    <td>ООО «Газпромнефть ИТО»</td>
-                    <td>ООО «Автоматика»</td>
+                    <td><a href="/test/participants/15/">ООО «Газпромнефть ИТО»</a></td>
+                    <td><a href="/test/participants/1/">ООО «Автоматика»</a></td>
+                    <td>
+                        <a class="btn btn-secondary btn-sm" href="/test/objects/system-link/7/edit/">Изменить</a>
+                        <a class="btn btn-danger btn-sm">Удалить</a>
+                    </td>
                 </tr>
                 <tr>
-                    <td><a href="#">Установка АВТ-10</a></td>
+                    <td><a href="/test/objects/8/">Установка АВТ-10</a></td>
                     <td><span class="tag tag-3">Уровень 3</span></td>
                     <td>В эксплуатации</td>
                     <td>10.10.2025</td>
-                    <td>ООО «Автоматика»</td>
-                    <td>Emerson Electric Co.</td>
+                    <td><a href="/test/participants/1/">ООО «Автоматика»</a></td>
+                    <td><a href="/test/participants/10/">Emerson Electric Co.</a></td>
+                    <td>
+                        <a class="btn btn-secondary btn-sm" href="/test/objects/system-link/7/edit/">Изменить</a>
+                        <a class="btn btn-danger btn-sm">Удалить</a>
+                    </td>
                 </tr>
             </tbody>
         </table>

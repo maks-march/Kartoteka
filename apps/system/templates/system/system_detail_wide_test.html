@@ -11,7 +11,6 @@
     <nav>
         <a href="/test">Тестовый стенд</a>
     </nav>
-    <span class="test-badge">UI mockup</span>
 </header>
 
 <div class="card">
@@ -20,11 +19,10 @@
             <h1 style="margin-bottom:4px">Siemens SIMATIC PCS 7 Process Control System</h1>
             <span class="tag tag-2">L2 SCADA/DCS</span>
             <span class="tag tag-ok">В эксплуатации</span>
-            <span class="tag tag-muted">Коммерческий продукт</span>
+            <span class="tag tag-muted">Сервис</span>
         </div>
         <div class="actions">
             <a href="/test/system-wide/create/" class="btn btn-secondary">Изменить</a>
-            <button class="btn btn-light">История</button>
             <button class="btn btn-danger">Удалить</button>
         </div>
     </div>
@@ -33,7 +31,7 @@
         <div class="info-tile"><span class="info-label">ID</span><span class="info-value">1</span></div>
         <div class="info-tile"><span class="info-label">Short name</span><span class="info-value">PCS 7</span></div>
         <div class="info-tile"><span class="info-label">Версия</span><span class="info-value">V9.1 SP2</span></div>
-        <div class="info-tile"><span class="info-label">Вендор</span><span class="info-value"><a class="link" href="http://localhost/test/participants/2/">Siemens AG</a></span></div>
+        <div class="info-tile"><span class="info-label">Вендор</span><span class="info-value"><a class="link" href="/test/participants/2/">Siemens AG</a></span></div>
         <div class="info-tile"><span class="info-label">Дата выпуска</span><span class="info-value">20.05.2021</span></div>
         <div class="info-tile"><span class="info-label">Конец поддержки</span><span class="info-value">31.12.2030</span></div>
     </div>
@@ -68,31 +66,37 @@
             <tbody>
                 <tr>
                     <td>3</td>
-                    <td><a href="#">Цех №10 (АВТ)</a></td>
+                    <td><a href="/test/objects/4/">Цех №10 (АВТ)</a></td>
                     <td><span class="tag tag-2">L2</span></td>
                     <td>Основные</td>
                     <td><span class="tag tag-ok">В эксплуатации</span></td>
                     <td>10.05.2025</td>
-                    <td>ООО «Газпромнефть ИТО»</td>
-                    <td>ООО «Автоматика»</td>
+                    <td><a href="/test/participants/15/">ООО «Газпромнефть ИТО»</a></td>
+                    <td><a href="/test/participants/1/">ООО «Автоматика»</a></td>
                     <td>Основной контур управления</td>
-                    <td><a class="btn btn-secondary btn-sm" href="#">Изменить</a></td>
+                    <td><a class="btn btn-secondary btn-sm" href="/test/objects/system-link/3/edit/">Изменить</a></td>
+                    <td><button class="btn btn-danger">Удалить</button></td>
                 </tr>
                 <tr>
                     <td>7</td>
-                    <td><a href="#">Установка АВТ-10</a></td>
+                    <td><a href="/test/objects/8/">Установка АВТ-10</a></td>
                     <td><span class="tag tag-3">L3</span></td>
                     <td>Атмосферное разделение</td>
                     <td><span class="tag tag-ok">В эксплуатации</span></td>
                     <td>10.10.2025</td>
-                    <td>ООО «Автоматика»</td>
-                    <td>Emerson Electric Co.</td>
+                    <td><a href="/test/participants/1/">ООО «Автоматика»</a></td>
+                    <td><a href="/test/participants/10/">Emerson Electric Co.</a></td>
                     <td>Расширенный архив событий</td>
-                    <td><a class="btn btn-secondary btn-sm" href="#">Изменить</a></td>
+                    <td><a class="btn btn-secondary btn-sm" href="/test/objects/system-link/7/edit/">Изменить</a></td>
+                    <td><button class="btn btn-danger">Удалить</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
+</div>
+
+<div style="margin-top:10px">
+    <a href="/test/system-wide/" class="btn btn-secondary">← Назад к списку</a>
 </div>
 </body>
 </html>
