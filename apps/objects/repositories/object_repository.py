@@ -33,7 +33,17 @@ class ObjectRepository:
             qs = qs.filter(objectsystem__system_id__in=system_ids).distinct()
         owner_entity_ids = _as_id_list(owner_entity)
         if owner_entity_ids:
-            # ИЛИ: объекты, принадлежащие любому из выбранных юр. лиц
+            # Иерархический фильтр: к выбранным юр. лицам добавляем все их
+            # дочерние юр. лица (на любую глубину), чтобы в выборку попадали и
+            # объекты, которыми владеют потомки указанного владельца.
+            from apps.owners.repositories.owner_entity_repository import (
+                OwnerEntityRepository,
+            )
+
+            owner_entity_ids = OwnerEntityRepository().get_descendant_ids(
+                owner_entity_ids
+            )
+            # ИЛИ: объекты, принадлежащие любому из выбранных юр. лиц или их потомкам
             qs = qs.filter(owner_entity_id__in=owner_entity_ids)
         return qs
 

@@ -6,8 +6,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.owners.api.serializers import (
     OwnerEntitySerializer,
     OwnerEntityCreateUpdateSerializer,
+    OwnerEntityAttachObjectSerializer,
 )
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
+from apps.objects.usecases.object_usecase import ObjectUseCase
+from apps.objects.api.serializers import ObjectListSerializer
 
 
 class OwnerEntityListCreateView(APIView):
@@ -53,3 +56,24 @@ class OwnerEntityDetailView(APIView):
         usecase = OwnerEntityUseCase()
         usecase.delete(pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OwnerEntityAttachObjectView(APIView):
+    """Привязать существующий объект к юридическому лицу."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        owner_usecase = OwnerEntityUseCase()
+        owner_entity = owner_usecase.get(pk)
+
+        serializer = OwnerEntityAttachObjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        object_usecase = ObjectUseCase()
+        obj = object_usecase.update(
+            pk=serializer.validated_data["object"],
+            user=request.user,
+            owner_entity=owner_entity.pk,
+        )
+        return Response(ObjectListSerializer(obj).data, status=status.HTTP_200_OK)

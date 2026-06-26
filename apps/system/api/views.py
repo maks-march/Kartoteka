@@ -7,10 +7,13 @@ from apps.system.api.serializers import (
     SystemListSerializer,
     SystemDetailSerializer,
     SystemCreateUpdateSerializer,
+    SystemAttachObjectSerializer,
     AutomationClassSerializer,
 )
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
+from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
+from apps.objects.api.serializers import ObjectSystemSerializer
 
 
 class AutomationClassListView(APIView):
@@ -71,3 +74,27 @@ class SystemDetailView(APIView):
         usecase = SystemUseCase()
         usecase.delete(pk, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SystemAttachObjectView(APIView):
+    """Привязать существующий объект к системе (создать связь ObjectSystem)."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        system_usecase = SystemUseCase()
+        system = system_usecase.get(pk)
+
+        serializer = SystemAttachObjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        os_usecase = ObjectSystemUseCase()
+        link = os_usecase.attach(
+            object_pk=data.pop("object"),
+            system_pk=system.pk,
+            **data,
+        )
+        return Response(
+            ObjectSystemSerializer(link).data, status=status.HTTP_201_CREATED
+        )

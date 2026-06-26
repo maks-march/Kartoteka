@@ -20,6 +20,26 @@ class OwnerEntityRepository:
             .first()
         )
 
+    def get_descendant_ids(self, ids):
+        """Возвращает id переданных юр. лиц вместе со всеми их потомками.
+
+        Потомок — это юр. лицо, у которого поле ``owner`` (ближайший владелец)
+        прямо или транзитивно указывает на одного из переданных id.
+        Обход выполняется вниз по дереву ``subsidiaries`` с защитой от циклов.
+        """
+        seen = set()
+        frontier = {int(i) for i in ids if i not in (None, "", "None")}
+
+        while frontier:
+            seen |= frontier
+            children = OwnerEntity.objects.filter(owner_id__in=frontier).values_list(
+                "id", flat=True
+            )
+            # В следующую волну берём только ещё не обойдённых (защита от циклов).
+            frontier = set(children) - seen
+
+        return seen
+
     def create(self, **kwargs):
         return OwnerEntity.objects.create(**kwargs)
 

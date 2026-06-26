@@ -138,3 +138,49 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         response = self.api_client.delete(f"/api/system/{system_id}/")
         self.assertEqual(response.status_code, 204)
         self.assertFalse(AutomatedSystem.objects.filter(pk=system_id).exists())
+
+    def test_system_api_attach_object_requires_authentication(self):
+        response = self.api_client.post(
+            f"/api/system/{self.system.pk}/attach-object/",
+            {"object": self.object.pk},
+            format="json",
+        )
+        self.assertIn(response.status_code, (401, 403))
+
+    def test_authenticated_system_api_attach_object(self):
+        self.api_client.force_authenticate(user=self.user)
+        response = self.api_client.post(
+            f"/api/system/{self.system.pk}/attach-object/",
+            {
+                "object": self.object.pk,
+                "status": "active",
+                "implementation_date": "2026-01-01",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["object"], self.object.pk)
+        self.assertEqual(response.data["system"], self.system.pk)
+        self.assertEqual(response.data["status"], "active")
+        self.assertTrue(
+            ObjectSystem.objects.filter(object=self.object, system=self.system).exists()
+        )
+
+    def test_system_api_attach_object_duplicate_is_rejected(self):
+        self.api_client.force_authenticate(user=self.user)
+        ObjectSystem.objects.create(object=self.object, system=self.system, status="planned")
+        response = self.api_client.post(
+            f"/api/system/{self.system.pk}/attach-object/",
+            {"object": self.object.pk},
+            format="json",
+        )
+        self.assertIn(response.status_code, (400, 422))
+
+    def test_system_api_attach_object_unknown_system_returns_404(self):
+        self.api_client.force_authenticate(user=self.user)
+        response = self.api_client.post(
+            "/api/system/999999/attach-object/",
+            {"object": self.object.pk},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 404)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.system.models import AutomatedSystem, AutomationClass
+from apps.objects.models import ObjectSystem
 
 
 class AutomationClassSerializer(serializers.ModelSerializer):
@@ -32,3 +33,13 @@ class SystemCreateUpdateSerializer(serializers.Serializer):
     autosystem_name = serializers.CharField(max_length=255)
     system_class = serializers.IntegerField()
     vendor = serializers.IntegerField(required=False, allow_null=True)
+
+
+class SystemAttachObjectSerializer(serializers.Serializer):
+    object = serializers.IntegerField()
+    status = serializers.ChoiceField(
+        choices=ObjectSystem.STATUS_CHOICES, required=False, default="planned"
+    )
+    implementation_date = serializers.DateField(required=False, allow_null=True)
+    integrator = serializers.IntegerField(required=False, allow_null=True)
+    implimentor = serializers.IntegerField(required=False, allow_null=True)

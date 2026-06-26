@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.views import exception_handler
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,11 +31,34 @@ _ERROR_MAP = {
 }
 
 
-def drf_exception_handler(exc, context):
-    response = exception_handler(exc, context)
+def _django_validation_message(exc) -> str:
+    if hasattr(exc, "message_dict"):
+        return exc.message_dict
+    messages = getattr(exc, "messages", None)
+    if messages:
+        return messages[0] if len(messages) == 1 else messages
+    return str(exc)
 
+
+def drf_exception_handler(exc, context):
+    # Доменные исключения с явным маппингом на HTTP-коды.
     status_code = _ERROR_MAP.get(type(exc))
     if status_code is not None:
         return Response(_build_response(exc), status=status_code)
 
-    return response
+    # Бизнес-логика (use cases) местами бросает django.core.exceptions.ValidationError.
+    # DRF её не понимает и без обработки она превращается в 500.
+    # Приводим к единому формату ответа и коду 422.
+    if isinstance(exc, DjangoValidationError):
+        return Response(
+            {
+                "error": {
+                    "type": "ValidationError",
+                    "message": _django_validation_message(exc),
+                    "details": "",
+                }
+            },
+            status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+    return exception_handler(exc, context)

@@ -149,3 +149,83 @@ class OwnersApiEndpointTests(OwnersEndpointTestMixin, TestCase):
         response = self.api_client.delete(f"/api/owners/{owner_id}/")
         self.assertEqual(response.status_code, 204)
         self.assertFalse(OwnerEntity.objects.filter(pk=owner_id).exists())
+
+    def test_owner_entity_api_attach_object_requires_authentication(self):
+        unassigned_object = Object.objects.create(
+            name="Непривязанный объект",
+            level=1,
+            category=self.category,
+            creator_id=self.user,
+        )
+        response = self.api_client.post(
+            f"/api/owners/{self.owner.pk}/attach-object/",
+            {"object": unassigned_object.pk},
+            format="json",
+        )
+        self.assertIn(response.status_code, (401, 403))
+
+    def test_authenticated_owner_entity_api_attach_object(self):
+        self.api_client.force_authenticate(user=self.user)
+        unassigned_object = Object.objects.create(
+            name="Непривязанный объект",
+            level=1,
+            category=self.category,
+            creator_id=self.user,
+        )
+
+        response = self.api_client.post(
+            f"/api/owners/{self.owner.pk}/attach-object/",
+            {"object": unassigned_object.pk},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["owner_entity"], self.owner.pk)
+        unassigned_object.refresh_from_db()
+        self.assertEqual(unassigned_object.owner_entity_id, self.owner.pk)
+
+    def test_owner_entity_api_attach_object_unknown_owner_returns_404(self):
+        self.api_client.force_authenticate(user=self.user)
+        response = self.api_client.post(
+            "/api/owners/999999/attach-object/",
+            {"object": self.object.pk},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 404)
+
+
+class OwnerEntityDescendantsTests(TestCase):
+    def setUp(self):
+        self.repo = __import__(
+            "apps.owners.repositories.owner_entity_repository",
+            fromlist=["OwnerEntityRepository"],
+        ).OwnerEntityRepository()
+        self.root = OwnerEntity.objects.create(owner_name="Корень")
+        self.child_a = OwnerEntity.objects.create(owner_name="Дочка A", owner=self.root)
+        self.child_b = OwnerEntity.objects.create(owner_name="Дочка B", owner=self.root)
+        self.grandchild = OwnerEntity.objects.create(owner_name="Внучка", owner=self.child_a)
+        self.unrelated = OwnerEntity.objects.create(owner_name="Несвязанный")
+
+    def test_descendants_of_root_include_whole_tree(self):
+        ids = self.repo.get_descendant_ids([self.root.pk])
+        self.assertEqual(
+            ids,
+            {self.root.pk, self.child_a.pk, self.child_b.pk, self.grandchild.pk},
+        )
+
+    def test_descendants_of_leaf_is_itself(self):
+        ids = self.repo.get_descendant_ids([self.grandchild.pk])
+        self.assertEqual(ids, {self.grandchild.pk})
+
+    def test_descendants_handles_multiple_roots_and_ignores_empty(self):
+        ids = self.repo.get_descendant_ids([self.child_a.pk, self.unrelated.pk, "", None])
+        self.assertEqual(ids, {self.child_a.pk, self.grandchild.pk, self.unrelated.pk})
+
+    def test_descendants_resilient_to_cycle(self):
+        # цикл: корень -> дочка A -> внучка -> корень
+        self.root.owner = self.grandchild
+        self.root.save()
+        ids = self.repo.get_descendant_ids([self.root.pk])
+        self.assertEqual(
+            ids,
+            {self.root.pk, self.child_a.pk, self.child_b.pk, self.grandchild.pk},
+        )

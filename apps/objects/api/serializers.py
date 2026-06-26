@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.objects.models import Object
+from apps.objects.models import Object, ObjectSystem
 
 
 class ObjectListSerializer(serializers.ModelSerializer):
@@ -71,3 +71,48 @@ class ObjectUpdateSerializer(serializers.Serializer):
     parent = serializers.IntegerField(required=False, allow_null=True)
     category = serializers.IntegerField(required=False, allow_null=True)
     owner_entity = serializers.IntegerField(required=False, allow_null=True)
+
+
+class ObjectSystemSerializer(serializers.ModelSerializer):
+    object_name = serializers.CharField(source="object.name", read_only=True)
+    system_name = serializers.CharField(source="system.autosystem_name", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    integrator_name = serializers.CharField(source="integrator.participant_name", read_only=True)
+    implimentor_name = serializers.CharField(source="implimentor.participant_name", read_only=True)
+
+    class Meta:
+        model = ObjectSystem
+        fields = [
+            "id",
+            "object",
+            "object_name",
+            "system",
+            "system_name",
+            "status",
+            "status_display",
+            "implementation_date",
+            "integrator",
+            "integrator_name",
+            "implimentor",
+            "implimentor_name",
+        ]
+
+
+class ObjectSystemCreateSerializer(serializers.Serializer):
+    object = serializers.IntegerField()
+    system = serializers.IntegerField()
+    status = serializers.ChoiceField(
+        choices=ObjectSystem.STATUS_CHOICES, required=False, default="planned"
+    )
+    implementation_date = serializers.DateField(required=False, allow_null=True)
+    integrator = serializers.IntegerField(required=False, allow_null=True)
+    implimentor = serializers.IntegerField(required=False, allow_null=True)
+
+
+class ObjectSystemUpdateSerializer(serializers.Serializer):
+    object = serializers.IntegerField(required=False)
+    system = serializers.IntegerField(required=False)
+    status = serializers.ChoiceField(choices=ObjectSystem.STATUS_CHOICES, required=False)
+    implementation_date = serializers.DateField(required=False, allow_null=True)
+    integrator = serializers.IntegerField(required=False, allow_null=True)
+    implimentor = serializers.IntegerField(required=False, allow_null=True)

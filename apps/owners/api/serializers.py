@@ -23,3 +23,7 @@ class OwnerEntityCreateUpdateSerializer(serializers.Serializer):
     owner_name = serializers.CharField(max_length=255)
     owner = serializers.IntegerField(required=False, allow_null=True)
     ultimate_owner = serializers.IntegerField(required=False, allow_null=True)
+
+
+class OwnerEntityAttachObjectSerializer(serializers.Serializer):
+    object = serializers.IntegerField()
