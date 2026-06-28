@@ -15,6 +15,10 @@
             {% if object.object_class %}
                 <span class="tag tag-muted" style="margin-left:6px">{{ object.object_class }}</span>
             {% endif %}
+
+            <div class="detail-meta">
+                <p>Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+            </div>
         </div>
         {% if user.is_authenticated %}
         <div class="actions">
@@ -27,89 +31,82 @@
         {% endif %}
     </div>
 
-    <div class="detail-grid">
-        <div class="info-tile">
-            <span class="info-label">Родитель</span>
-            <span class="info-value">
-                {% if object.parent %}
-                    <a class="link" href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a>
-                {% else %}—{% endif %}
-            </span>
+    <!-- ===== Названия ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Названия</h3>
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Короткое название</span>
+                <span class="info-value">{{ object.object_short_name|default:'—' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Историческое название</span>
+                <span class="info-value">{{ object.object_old_name|default:'—' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Юридическое название</span>
+                <span class="info-value">{{ object.object_law_name|default:'—' }}</span>
+            </div>
         </div>
-        <div class="info-tile">
-            <span class="info-label">Юридическое лицо</span>
-            <span class="info-value">
-                {% if object.owner_entity %}
-                <a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>
-                {% else %}—{% endif %}
-            </span>
+    </div>
+
+    <!-- ===== Принадлежность ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Принадлежность</h3>
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Юридическое лицо</span>
+                <span class="info-value">
+                    {% if object.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>{% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Родительский объект</span>
+                <span class="info-value">
+                    {% if object.parent %}<a class="link" href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a>{% else %}—{% endif %}
+                </span>
+            </div>
         </div>
-        <div class="info-tile">
-            <span class="info-label">Короткое название</span>
-            <span class="info-value">
-                {% if object.object_short_name %}
-                    {{ object.object_short_name }}
-                {% else %}—{% endif %}
-            </span>
-        </div>
-        <div class="info-tile">
-            <span class="info-label">Историческое название</span>
-            <span class="info-value">
-                {% if object.object_old_name %}
-                    {{ object.object_old_name }}
-                {% else %}—{% endif %}
-            </span>
-        </div>
-        <div class="info-tile">
-            <span class="info-label">Юридическое название</span>
-            <span class="info-value">
-                {% if object.object_law_name %}
-                    {{ object.object_law_name }}
-                {% else %}—{% endif %}
-            </span>
-        </div>
-        <div class="info-tile">
-            <span class="info-label">Дата ввода</span>
-            <span class="info-value">
-                {% if object.start_date %}
-                    {{ object.start_date|date:"d.m.Y" }}
-                {% else %}—{% endif %}
-            </span>
-        </div>
-        <div class="info-tile">
-            <span class="info-label">Реконструкция</span>
-            <span class="info-value">
-                {% if object.is_reconstructed %}Да{% else %}Нет{% endif %}
-            </span>
-        </div>
-        <div class="info-tile">
-            <span class="info-label">Мощность</span>
-            <span class="info-value">
-                {{ object.capacity|default:'—' }}
-            </span>
-        </div>
-        <div class="info-tile">
-            <span class="info-label">Автор карточки</span>
-            <span class="info-value">
-                {% if object.creator_id %}{{ object.creator_id.username }}{% else %}—{% endif %}
-            </span>
+    </div>
+
+    <!-- ===== Характеристики ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Характеристики</h3>
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Дата ввода</span>
+                <span class="info-value">{% if object.start_date %}{{ object.start_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Реконструкция</span>
+                <span class="info-value">{% if object.is_reconstructed %}Да{% else %}Нет{% endif %}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Мощность</span>
+                <span class="info-value">{{ object.capacity|default:'—' }}</span>
+            </div>
+
+            <div class="info-card full">
+                <span class="info-label">Адрес</span>
+
+                    {% if object.address_line %}
+                        <span class="info-value desc-text">{{ object.address_line }}{% if object.fias_code %}(ФИАС: {{ object.fias_code }}){% endif %}</span>
+                    {% else %}
+                        <span class="empty">— не указан —</span>
+                    {% endif %}
+
+
+
+            </div>
+
+            <!-- Широкая карточка описания под характеристиками -->
+            <div class="info-card full">
+                <span class="info-label">Описание</span>
+                <span class="info-value desc-text">{% if object.notes %}{{ object.notes }}{% else %}—{% endif %}</span>
+            </div>
         </div>
     </div>
 </div>
-
-<div class="card">
-    <h2>Адрес</h2>
-    <p class="notes-box">{% if object.address_line %}{{ object.address_line }}{% else %}— адрес не указан —{% endif %}{% if object.fias_code %}
-
-ФИАС: {{ object.fias_code }}{% endif %}</p>
-</div>
-
-{% if object.notes %}
-<div class="card">
-    <h2>Примечания</h2>
-    <p class="notes-box">{{ object.notes }}</p>
-</div>
-{% endif %}
 
 <div class="card">
     <div class="card-title-row">

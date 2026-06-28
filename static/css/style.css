@@ -689,3 +689,69 @@ td a:hover {
     background: #ffebee;
     color: #c62828;
 }
+
+/* ===== Detail: секции карточек с информацией (ширина 60%) ===== */
+.info-block {
+    width: 60%;
+    min-width: 320px;
+}
+.info-block + .info-block {
+    margin-top: 18px;
+}
+.info-block > .info-block-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #6b7280;
+    margin: 0 0 10px;
+}
+/* Сетка карточек внутри блока: до 3 в ряд, адаптивно */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+/* Отдельная карточка-плитка */
+.info-card {
+    background: #f8f9fb;
+    border: 1px solid #eef0f4;
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.info-card .info-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #8a909a;
+}
+.info-card .info-value {
+    font-size: 14px;
+    color: #222;
+    font-weight: 500;
+    word-break: break-word;
+}
+/* Широкая карточка описания под характеристиками */
+.info-card.full {
+    margin-top: 12px;
+    grid-column: 1 / -1;
+}
+.info-card .desc-text {
+    font-weight: 400;
+    line-height: 1.5;
+    color: #444;
+    white-space: pre-line;
+}
+/* Метаданные (автор/адрес) после тегов в шапке */
+.detail-meta {
+    margin-top: 10px;
+    color: #555;
+    font-size: 13px;
+}
+.detail-meta p { margin: 4px 0; }
+
+@media (max-width: 900px) {
+    .info-block { width: 100%; }
+}
