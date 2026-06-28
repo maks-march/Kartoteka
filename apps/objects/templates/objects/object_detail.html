@@ -23,6 +23,40 @@
         </p>
         <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
     </div>
+
+    <!-- ===== Названия ===== -->
+    {% if object.object_short_name or object.object_old_name or object.object_law_name or object.object_class %}
+    <div class="detail-section">
+        <h3>Названия и классификация</h3>
+        <div class="info-grid">
+            {% if object.object_class %}<div class="info-item"><span class="info-label">Классификация</span><span class="info-value">{{ object.object_class }}</span></div>{% endif %}
+            {% if object.object_short_name %}<div class="info-item"><span class="info-label">Короткое</span><span class="info-value">{{ object.object_short_name }}</span></div>{% endif %}
+            {% if object.object_old_name %}<div class="info-item"><span class="info-label">Историческое</span><span class="info-value">{{ object.object_old_name }}</span></div>{% endif %}
+            {% if object.object_law_name %}<div class="info-item"><span class="info-label">Юридическое</span><span class="info-value">{{ object.object_law_name }}</span></div>{% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===== Характеристики ===== -->
+    <div class="detail-section">
+        <h3>Характеристики</h3>
+        <div class="info-grid">
+            <div class="info-item"><span class="info-label">Состояние</span><span class="info-value">{{ object.get_status_display }}</span></div>
+            <div class="info-item"><span class="info-label">Дата ввода</span><span class="info-value">{% if object.start_date %}{{ object.start_date|date:"d.m.Y" }}{% else %}—{% endif %}</span></div>
+            <div class="info-item"><span class="info-label">Мощность</span><span class="info-value">{{ object.capacity|default:'—' }}</span></div>
+            <div class="info-item"><span class="info-label">Реконструкция</span><span class="info-value">{% if object.is_reconstructed %}Да{% else %}Нет{% endif %}</span></div>
+        </div>
+        {% if object.notes %}<p style="margin-top:10px; color:#555; font-size:13px">{{ object.notes }}</p>{% endif %}
+    </div>
+
+    <!-- ===== Адрес (одной строкой) ===== -->
+    <div class="detail-section">
+        <h3>Адрес</h3>
+        <p class="address-line">
+            {% if object.address_line %}{{ object.address_line }}{% else %}<span class="empty">— адрес не указан —</span>{% endif %}
+        </p>
+        {% if object.fias_code %}<p style="font-size:12px; color:#999; margin-top:4px">ФИАС: {{ object.fias_code }}</p>{% endif %}
+    </div>
     {% if user.is_authenticated %}
     <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef; flex-wrap:wrap">
         <a href="{% url 'object-attach-system' object.pk %}" class="btn btn-primary">+ Привязать систему</a>

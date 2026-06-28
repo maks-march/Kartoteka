@@ -11,8 +11,28 @@
     <form method="post" id="objectForm">
         {% csrf_token %}
         <div class="form-group">
-            <label>Название</label>
+            <label>Полное название</label>
             <input type="text" name="name" value="{{ object.name|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Короткое название</label>
+            <input type="text" name="object_short_name" value="{{ object.object_short_name|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Историческое название</label>
+            <input type="text" name="object_old_name" value="{{ object.object_old_name|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Юридическое название</label>
+            <input type="text" name="object_law_name" value="{{ object.object_law_name|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Классификация объекта</label>
+            <input type="text" name="object_class" value="{{ object.object_class|default:'' }}" placeholder="завод, цех, очередь, установка">
         </div>
 
         <div class="form-group">
@@ -106,6 +126,77 @@
             <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">
         </div>
 
+        <!-- ===== Характеристики ===== -->
+        <h2 style="margin-top:20px">Характеристики</h2>
+
+        <div class="form-group">
+            <label>Состояние объекта</label>
+            <select name="status">
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if object.status == value %}selected{% elif not object and value == 'active' %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Дата ввода в эксплуатацию</label>
+            <input type="date" name="start_date" value="{{ object.start_date|date:'Y-m-d'|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Мощность / объём производства</label>
+            <input type="text" name="capacity" value="{{ object.capacity|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_reconstructed" value="on" {% if object.is_reconstructed %}checked{% endif %}>
+                Была реконструкция
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label>Дополнительная информация</label>
+            <textarea name="notes" rows="3">{{ object.notes|default:'' }}</textarea>
+        </div>
+
+        <!-- ===== Адрес ===== -->
+        <h2 style="margin-top:20px">Адрес</h2>
+        <p class="empty" style="font-size:12px; margin-top:-8px">
+            При выборе родителя адресные поля подставляются из него; их можно изменить.
+        </p>
+
+        <div class="form-group">
+            <label>Страна</label>
+            <input type="text" name="country" class="addr-field" data-addr="country" value="{{ object.country|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Регион</label>
+            <input type="text" name="region" class="addr-field" data-addr="region" value="{{ object.region|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Город</label>
+            <input type="text" name="city" class="addr-field" data-addr="city" value="{{ object.city|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Улица</label>
+            <input type="text" name="street" class="addr-field" data-addr="street" value="{{ object.street|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Дом</label>
+            <input type="text" name="house" class="addr-field" data-addr="house" value="{{ object.house|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Код ФИАС</label>
+            <input type="text" name="fias_code" class="addr-field" data-addr="fias_code" value="{{ object.fias_code|default:'' }}">
+        </div>
+
+        <!-- title (кодовое расположение) — только для 3-го уровня -->
+        <div class="form-group" id="titleGroup" style="{% if object.level != 3 %}display:none{% endif %}">
+            <label>Кодовое расположение (только уровень 3)</label>
+            <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Сохранить</button>
             <a href="{% if object %}{% url 'object-detail' object.pk %}{% else %}{% url 'object-list' %}{% endif %}" class="btn btn-secondary">Отмена</a>
@@ -113,23 +204,77 @@
     </form>
 </div>
 
+<script id="parentAddresses" type="application/json">{{ parent_addresses|default:'{}'|safe }}</script>
 <script>
 (function() {
     const levelSelect = document.getElementById('levelSelect');
     const parentGroup = document.getElementById('parentGroup');
+    const parentInput = document.getElementById('selectedParentId');
+    const titleGroup = document.getElementById('titleGroup');
+    const titleInput = document.getElementById('titleInput');
+
+    let parentAddresses = {};
+    try {
+        parentAddresses = JSON.parse(document.getElementById('parentAddresses').textContent || '{}');
+    } catch (e) { parentAddresses = {}; }
 
     function toggleParent() {
         const level = parseInt(levelSelect.value, 10);
         if (level === 1) {
             parentGroup.style.display = 'none';
-            document.getElementById('selectedParentId').value = '';
+            parentInput.value = '';
         } else {
             parentGroup.style.display = '';
         }
     }
 
-    levelSelect.addEventListener('change', toggleParent);
+    // title редактируется только на 3-м уровне.
+    function toggleTitle() {
+        const level = parseInt(levelSelect.value, 10);
+        if (titleGroup) {
+            if (level === 3) {
+                titleGroup.style.display = '';
+                if (titleInput) titleInput.disabled = false;
+            } else {
+                titleGroup.style.display = 'none';
+                if (titleInput) {
+                    titleInput.value = '';
+                    titleInput.disabled = true;  // не отправляется на сервер
+                }
+            }
+        }
+    }
+
+    // Подстановка адреса родителя в пустые поля (с возможностью правок).
+    function applyParentAddress() {
+        const pid = parentInput.value;
+        const addr = parentAddresses[pid];
+        if (!addr) return;
+        document.querySelectorAll('.addr-field').forEach(function(field) {
+            const key = field.getAttribute('data-addr');
+            // Заполняем только если поле пустое, чтобы не затирать ручной ввод.
+            if (!field.value && addr[key]) {
+                field.value = addr[key];
+            }
+        });
+    }
+
+    levelSelect.addEventListener('change', function() {
+        toggleParent();
+        toggleTitle();
+    });
+
+    // Picker не шлёт change на hidden input, поэтому отслеживаем клики по списку родителей.
+    const parentPicker = document.getElementById('parentPicker');
+    if (parentPicker) {
+        parentPicker.addEventListener('click', function() {
+            // даём пикеру обновить hidden input, затем применяем адрес
+            setTimeout(applyParentAddress, 0);
+        });
+    }
+
     toggleParent();
+    toggleTitle();
 })();
 </script>
 {% endblock %}

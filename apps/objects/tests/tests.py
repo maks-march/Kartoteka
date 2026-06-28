@@ -398,3 +398,214 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         self.assertEqual(
             names, {"Объект холдинга", "Объект дочки", "Объект внучки"}
         )
+
+
+class ObjectNewFieldsTests(TestCase):
+    """Новые поля объекта: описательные, характеристики, адрес, наследование
+    адреса от родителя и ограничение title только 3-м уровнем."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="user", password="password")
+        self.cat1 = Category.objects.create(name="Площадка", level=1, creator_id=self.user)
+        self.cat2 = Category.objects.create(name="Цех", level=2, creator_id=self.user)
+        self.cat3 = Category.objects.create(name="Установка", level=3, creator_id=self.user)
+        self.api_client = APIClient()
+
+    # ---------- usecase: создание с новыми полями ----------
+    def test_usecase_create_persists_new_fields(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        obj = ObjectUseCase().create(
+            user=self.user,
+            name="Завод №1",
+            level=1,
+            category=self.cat1.pk,
+            object_short_name="З1",
+            object_class="завод",
+            status="in_project",
+            capacity="100 т/год",
+            is_reconstructed=True,
+            country="Россия",
+            city="Москва",
+        )
+        obj.refresh_from_db()
+        self.assertEqual(obj.object_short_name, "З1")
+        self.assertEqual(obj.object_class, "завод")
+        self.assertEqual(obj.status, "in_project")
+        self.assertEqual(obj.capacity, "100 т/год")
+        self.assertTrue(obj.is_reconstructed)
+        self.assertEqual(obj.country, "Россия")
+        self.assertEqual(obj.city, "Москва")
+
+    def test_status_defaults_to_active(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        obj = ObjectUseCase().create(user=self.user, name="Без статуса", level=1)
+        self.assertEqual(obj.status, "active")
+
+    # ---------- наследование адреса от родителя ----------
+    def test_create_inherits_address_from_parent_when_not_provided(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        uc = ObjectUseCase()
+        parent = uc.create(
+            user=self.user, name="Завод", level=1, category=self.cat1.pk,
+            country="Россия", region="МО", city="Подольск", street="Ленина",
+            house="1", fias_code="ABC", title="",
+        )
+        child = uc.create(
+            user=self.user, name="Цех 1", level=2, parent=parent.pk, category=self.cat2.pk,
+        )
+        child.refresh_from_db()
+        self.assertEqual(child.country, "Россия")
+        self.assertEqual(child.city, "Подольск")
+        self.assertEqual(child.house, "1")
+        self.assertEqual(child.fias_code, "ABC")
+
+    def test_create_does_not_override_explicit_address(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        uc = ObjectUseCase()
+        parent = uc.create(
+            user=self.user, name="Завод", level=1, category=self.cat1.pk, city="Подольск",
+        )
+        child = uc.create(
+            user=self.user, name="Цех 1", level=2, parent=parent.pk,
+            category=self.cat2.pk, city="Климовск",
+        )
+        child.refresh_from_db()
+        self.assertEqual(child.city, "Климовск")
+
+    def test_get_parent_address_defaults_excludes_title(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        uc = ObjectUseCase()
+        parent = uc.create(
+            user=self.user, name="Установка", level=3, parent=None,
+            category=self.cat3.pk, city="Тула", title="Цех-А-стойка-3",
+        )
+        defaults = uc.get_parent_address_defaults(parent.pk)
+        self.assertIn("city", defaults)
+        self.assertNotIn("title", defaults)
+
+    # ---------- ограничение title только уровнем 3 ----------
+    def test_title_rejected_for_non_level_3_on_create(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        with self.assertRaises(DjangoValidationError):
+            ObjectUseCase().create(
+                user=self.user, name="Цех", level=2, category=self.cat2.pk,
+                title="недопустимо",
+            )
+
+    def test_title_allowed_for_level_3_on_create(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        obj = ObjectUseCase().create(
+            user=self.user, name="Установка", level=3, category=self.cat3.pk,
+            title="Цех-А-стойка-3",
+        )
+        self.assertEqual(obj.title, "Цех-А-стойка-3")
+
+    def test_title_rejected_on_update_for_non_level_3(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        uc = ObjectUseCase()
+        obj = uc.create(user=self.user, name="Цех", level=2, category=self.cat2.pk)
+        with self.assertRaises(DjangoValidationError):
+            uc.update(pk=obj.pk, user=self.user, title="нельзя")
+
+    # ---------- HTML формы ----------
+    def test_web_create_with_new_fields_and_title_level3(self):
+        self.client.force_login(self.user)
+        response = self.client.post("/objects/create/", {
+            "name": "Установка X",
+            "level": "3",
+            "category": str(self.cat3.pk),
+            "object_class": "установка",
+            "status": "active",
+            "city": "Самара",
+            "title": "Цех-Б-3",
+        })
+        self.assertEqual(response.status_code, 302)
+        obj = Object.objects.get(name="Установка X")
+        self.assertEqual(obj.object_class, "установка")
+        self.assertEqual(obj.city, "Самара")
+        self.assertEqual(obj.title, "Цех-Б-3")
+
+    def test_web_create_ignores_title_for_non_level3(self):
+        self.client.force_login(self.user)
+        # title в POST есть, но уровень не 3 -> view не должен его сохранять (и не падать)
+        response = self.client.post("/objects/create/", {
+            "name": "Цех Y",
+            "level": "2",
+            "category": str(self.cat2.pk),
+            "title": "проигнорируется",
+        })
+        self.assertEqual(response.status_code, 302)
+        obj = Object.objects.get(name="Цех Y")
+        self.assertEqual(obj.title, "")
+
+    # ---------- API ----------
+    def test_api_create_with_new_fields(self):
+        self.api_client.force_authenticate(user=self.user)
+        response = self.api_client.post("/api/objects/objects/", {
+            "name": "API Установка",
+            "level": 3,
+            "category": self.cat3.pk,
+            "object_class": "установка",
+            "status": "stopped",
+            "city": "Казань",
+            "title": "Цех-В-7",
+        }, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["object_class"], "установка")
+        self.assertEqual(response.data["status"], "stopped")
+        self.assertEqual(response.data["city"], "Казань")
+        self.assertEqual(response.data["title"], "Цех-В-7")
+
+    def test_api_create_title_rejected_for_non_level3(self):
+        self.api_client.force_authenticate(user=self.user)
+        response = self.api_client.post("/api/objects/objects/", {
+            "name": "API Цех",
+            "level": 2,
+            "category": self.cat2.pk,
+            "title": "недопустимо",
+        }, format="json")
+        self.assertIn(response.status_code, (400, 422))
+
+    def test_api_create_inherits_parent_address(self):
+        self.api_client.force_authenticate(user=self.user)
+        parent_resp = self.api_client.post("/api/objects/objects/", {
+            "name": "API Завод", "level": 1, "category": self.cat1.pk,
+            "city": "Уфа", "country": "Россия",
+        }, format="json")
+        self.assertEqual(parent_resp.status_code, 201)
+        parent_id = parent_resp.data["id"]
+
+        child_resp = self.api_client.post("/api/objects/objects/", {
+            "name": "API Цех", "level": 2, "parent": parent_id, "category": self.cat2.pk,
+        }, format="json")
+        self.assertEqual(child_resp.status_code, 201)
+        self.assertEqual(child_resp.data["city"], "Уфа")
+        self.assertEqual(child_resp.data["country"], "Россия")
+
+
+class ObjectAddressLineTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="u2", password="pw")
+
+    def test_address_line_joins_nonempty_parts(self):
+        obj = Object.objects.create(
+            name="O", level=1, country="Россия", region="", city="Москва",
+            street="Ленина", house="1", creator_id=self.user,
+        )
+        self.assertEqual(obj.address_line, "Россия, Москва, Ленина, 1")
+
+    def test_address_line_empty_when_no_address(self):
+        obj = Object.objects.create(name="O", level=1, creator_id=self.user)
+        self.assertEqual(obj.address_line, "")
+
+    def test_address_line_appends_title_only_for_level_3(self):
+        l3 = Object.objects.create(
+            name="O3", level=3, city="Казань", title="Цех-А-3", creator_id=self.user,
+        )
+        self.assertEqual(l3.address_line, "Казань, Цех-А-3")
+        # на уровне != 3 title в строку не попадает (даже если каким-то образом задан)
+        l2 = Object.objects.create(name="O2", level=2, city="Казань", creator_id=self.user)
+        l2.title = "не должен показаться"
+        self.assertEqual(l2.address_line, "Казань")

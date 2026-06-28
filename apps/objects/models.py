@@ -13,7 +13,30 @@ class Object(models.Model):
         (3, "Level 3"),
     ]
 
-    name = models.CharField(max_length=255)
+    STATUS_CHOICES = [
+        ("active", "В эксплуатации"),
+        ("in_project", "В проекте"),
+        ("reconstruction", "Реконструкция"),
+        ("stopped", "Остановлен"),
+    ]
+
+    name = models.CharField(max_length=255, verbose_name="Полное название объекта")
+    object_short_name = models.CharField(
+        max_length=255, blank=True, default="", verbose_name="Короткое название объекта"
+    )
+    object_old_name = models.CharField(
+        max_length=255, blank=True, default="", verbose_name="Историческое название объекта"
+    )
+    object_law_name = models.CharField(
+        max_length=255, blank=True, default="", verbose_name="Юридическое название объекта"
+    )
+    object_class = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Классификация объекта",
+        help_text="Завод, цех, очередь, установка",
+    )
     level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
     parent = models.ForeignKey(
         "self",
@@ -38,6 +61,48 @@ class Object(models.Model):
         related_name="owned_objects",
         verbose_name="Юридическое лицо",
     )
+
+    # --- Характеристики ---
+    start_date = models.DateField(
+        null=True, blank=True, verbose_name="Дата ввода в эксплуатацию"
+    )
+    is_reconstructed = models.BooleanField(
+        default=False, verbose_name="Была реконструкция"
+    )
+    capacity = models.CharField(
+        max_length=255, blank=True, default="", verbose_name="Мощность / объём производства"
+    )
+    status = models.CharField(
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default="active",
+        verbose_name="Состояние объекта",
+    )
+    notes = models.TextField(blank=True, default="", verbose_name="Дополнительная информация")
+
+    # --- Адрес (поля прямо в объекте) ---
+    country = models.CharField(max_length=255, blank=True, default="", verbose_name="Страна")
+    region = models.CharField(max_length=255, blank=True, default="", verbose_name="Регион")
+    city = models.CharField(max_length=255, blank=True, default="", verbose_name="Город")
+    street = models.CharField(max_length=255, blank=True, default="", verbose_name="Улица")
+    house = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Дом",
+        help_text="Адрес производства (уровень 1)",
+    )
+    title = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Кодовое расположение",
+        help_text="Адрес/расположение установки внутри цеха (только уровень 3)",
+    )
+    fias_code = models.CharField(
+        max_length=255, blank=True, default="", verbose_name="Код ФИАС"
+    )
+
     is_deleted = models.BooleanField(default=False)
     creator_id = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
@@ -51,6 +116,20 @@ class Object(models.Model):
         verbose_name_plural = "Объекты производства"
     def __str__(self):
         return f"{self.name} (L{self.level})"
+
+    @property
+    def address_line(self):
+        """Адрес одной строкой через запятую (без пустых частей).
+
+        title (кодовое расположение установки, только уровень 3) добавляется
+        в конце, если задан.
+        """
+        parts = [self.country, self.region, self.city, self.street, self.house]
+        line = ", ".join(p.strip() for p in parts if p and p.strip())
+        if self.level == 3 and self.title and self.title.strip():
+            extra = self.title.strip()
+            line = f"{line}, {extra}" if line else extra
+        return line
 
 
 class ObjectSystem(models.Model):

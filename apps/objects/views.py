@@ -10,7 +10,61 @@ from apps.categories.usecases.category_usecase import CategoryUseCase
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
 from apps.participants.usecases.participant_usecase import ParticipantUseCase
-from apps.objects.models import ObjectSystem
+from apps.objects.models import Object, ObjectSystem
+
+
+# Текстовые/прочие поля объекта, считываемые из формы напрямую.
+_OBJECT_TEXT_FIELDS = (
+    "object_short_name",
+    "object_old_name",
+    "object_law_name",
+    "object_class",
+    "capacity",
+    "notes",
+    # адресные поля
+    "country",
+    "region",
+    "city",
+    "street",
+    "house",
+    "title",
+    "fias_code",
+)
+
+
+def _extract_object_fields(post, level):
+    """Собирает дополнительные поля объекта из POST.
+
+    title сохраняем только для 3-го уровня (для остальных уровней поле в форме
+    скрыто/disabled, а на бэкенде дополнительно валидируется).
+    start_date и is_reconstructed/status обрабатываются отдельно.
+    """
+    data = {}
+    for field in _OBJECT_TEXT_FIELDS:
+        if field == "title" and level != 3:
+            # На не-3 уровне title не принимаем во внимание.
+            continue
+        data[field] = post.get(field, "") or ""
+
+    data["status"] = post.get("status") or "active"
+    data["is_reconstructed"] = post.get("is_reconstructed") in ("on", "true", "1", "yes")
+    data["start_date"] = post.get("start_date") or None
+    return data
+
+
+# Адресные поля, наследуемые от родителя (синхронно с ObjectUseCase).
+_INHERITED_ADDRESS_FIELDS = ("country", "region", "city", "street", "house", "fias_code")
+
+
+def _parent_address_map(parents):
+    """JSON-строка {parent_id: {адресные поля}} для авто-подстановки в форме на клиенте."""
+    import json
+
+    mapping = {
+        str(p.pk): {field: getattr(p, field, "") or "" for field in _INHERITED_ADDRESS_FIELDS}
+        for p in parents
+    }
+    return json.dumps(mapping, ensure_ascii=False)
 
 
 @require_http_methods(["GET"])
@@ -71,13 +125,15 @@ def object_create(request):
     if request.method == "POST":
         usecase = ObjectUseCase()
         try:
+            level = int(request.POST.get("level"))
             usecase.create(
                 user=request.user,
                 name=request.POST.get("name"),
-                level=int(request.POST.get("level")),
+                level=level,
                 parent=request.POST.get("parent") or None,
                 category=request.POST.get("category") or None,
                 owner_entity=request.POST.get("owner_entity") or None,
+                **_extract_object_fields(request.POST, level),
             )
             return redirect("object-list")
         except (ValidationError, Exception) as e:
@@ -92,6 +148,8 @@ def object_create(request):
         "possible_parents": possible_parents,
         "categories": categories,
         "owner_entities": owner_entities,
+        "status_choices": Object.STATUS_CHOICES,
+        "parent_addresses": _parent_address_map(possible_parents),
         "error": error,
     })
 
@@ -108,14 +166,16 @@ def object_edit(request, pk):
 
     if request.method == "POST":
         try:
+            level = int(request.POST.get("level"))
             usecase.update(
                 pk=pk,
                 user=request.user,
                 name=request.POST.get("name"),
-                level=int(request.POST.get("level")),
+                level=level,
                 parent=request.POST.get("parent") or None,
                 category=request.POST.get("category") or None,
                 owner_entity=request.POST.get("owner_entity") or None,
+                **_extract_object_fields(request.POST, level),
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, Exception) as e:
@@ -129,6 +189,8 @@ def object_edit(request, pk):
         "possible_parents": possible_parents,
         "categories": categories,
         "owner_entities": owner_entities,
+        "status_choices": Object.STATUS_CHOICES,
+        "parent_addresses": _parent_address_map(possible_parents),
         "error": error,
     })
 
@@ -164,13 +226,15 @@ def object_add_child(request, pk):
                     raise ValidationError("Необходимо выбрать объект")
                 usecase.update(pk=int(child_pk), user=request.user, parent=parent.pk)
             else:
+                level = int(request.POST.get("level"))
                 usecase.create(
                     user=request.user,
                     name=request.POST.get("name"),
-                    level=int(request.POST.get("level")),
+                    level=level,
                     parent=parent.pk,
                     category=request.POST.get("category") or None,
                     owner_entity=request.POST.get("owner_entity") or None,
+                    **_extract_object_fields(request.POST, level),
                 )
             return redirect("object-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -195,12 +259,16 @@ def object_add_child(request, pk):
     child_levels = [lvl for lvl in (1, 2, 3) if lvl > parent.level]
     categories = cat_usecase.list()
     owner_entities = owner_usecase.list()
+    # Предзаполнение адреса наследуемыми полями родителя (с возможностью правок).
+    address_defaults = usecase.get_parent_address_defaults(parent.pk)
     return render(request, "objects/object_add_child_form.html", {
         "parent": parent,
         "possible_children": possible_children,
         "child_levels": child_levels,
         "categories": categories,
         "owner_entities": owner_entities,
+        "status_choices": Object.STATUS_CHOICES,
+        "address_defaults": address_defaults,
         "active_mode": active_mode,
         "error": error,
     })

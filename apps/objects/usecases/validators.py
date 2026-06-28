@@ -55,3 +55,13 @@ class ObjectValidator:
 
         if not OwnerEntity.objects.filter(pk=owner_entity_id).exists():
             raise ValidationError("Юридическое лицо не найдено")
+
+    def validate_title(self, title, level):
+        """Поле title (кодовое расположение установки) допустимо только для
+        объектов 3-го уровня."""
+        if title in (None, ""):
+            return
+        if level != 3:
+            raise ValidationError(
+                "Кодовое расположение (title) можно указывать только для объектов 3-го уровня"
+            )

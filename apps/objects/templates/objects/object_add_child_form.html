@@ -69,8 +69,18 @@
             <input type="hidden" name="mode" value="create">
 
             <div class="form-group">
-                <label>Название</label>
+                <label>Полное название</label>
                 <input type="text" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Короткое название</label>
+                <input type="text" name="object_short_name">
+            </div>
+
+            <div class="form-group">
+                <label>Классификация объекта</label>
+                <input type="text" name="object_class" placeholder="завод, цех, очередь, установка">
             </div>
 
             <div class="form-group">
@@ -137,6 +147,48 @@
                 <input type="hidden" name="owner_entity" id="selectedOwnerEntityId">
             </div>
 
+            <!-- ===== Характеристики ===== -->
+            <h3 style="margin-top:18px">Характеристики</h3>
+            <div class="form-group">
+                <label>Состояние объекта</label>
+                <select name="status">
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if value == 'active' %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Дата ввода в эксплуатацию</label>
+                <input type="date" name="start_date">
+            </div>
+            <div class="form-group">
+                <label>Мощность / объём производства</label>
+                <input type="text" name="capacity">
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" name="is_reconstructed" value="on"> Была реконструкция</label>
+            </div>
+            <div class="form-group">
+                <label>Дополнительная информация</label>
+                <textarea name="notes" rows="3"></textarea>
+            </div>
+
+            <!-- ===== Адрес (предзаполнен из родителя, можно править) ===== -->
+            <h3 style="margin-top:18px">Адрес</h3>
+            <p class="empty" style="font-size:12px; margin-top:-6px">Подставлен из родителя «{{ parent.name }}», можно изменить.</p>
+            <div class="form-group"><label>Страна</label><input type="text" name="country" value="{{ address_defaults.country|default:'' }}"></div>
+            <div class="form-group"><label>Регион</label><input type="text" name="region" value="{{ address_defaults.region|default:'' }}"></div>
+            <div class="form-group"><label>Город</label><input type="text" name="city" value="{{ address_defaults.city|default:'' }}"></div>
+            <div class="form-group"><label>Улица</label><input type="text" name="street" value="{{ address_defaults.street|default:'' }}"></div>
+            <div class="form-group"><label>Дом</label><input type="text" name="house" value="{{ address_defaults.house|default:'' }}"></div>
+            <div class="form-group"><label>Код ФИАС</label><input type="text" name="fias_code" value="{{ address_defaults.fias_code|default:'' }}"></div>
+
+            <!-- title — только для уровня 3 -->
+            <div class="form-group" id="childTitleGroup" style="display:none">
+                <label>Кодовое расположение (только уровень 3)</label>
+                <input type="text" name="title" id="childTitleInput" disabled placeholder="Расположение установки внутри цеха">
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Создать</button>
                 <a href="{% url 'object-detail' parent.pk %}" class="btn btn-secondary">Отмена</a>
@@ -144,4 +196,26 @@
         </form>
     </div>
 </div>
+
+<script>
+(function() {
+    const levelSelect = document.getElementById('childLevelSelect');
+    const titleGroup = document.getElementById('childTitleGroup');
+    const titleInput = document.getElementById('childTitleInput');
+    if (!levelSelect) return;
+
+    function toggleTitle() {
+        const level = parseInt(levelSelect.value, 10);
+        if (level === 3) {
+            titleGroup.style.display = '';
+            if (titleInput) titleInput.disabled = false;
+        } else {
+            titleGroup.style.display = 'none';
+            if (titleInput) { titleInput.value = ''; titleInput.disabled = true; }
+        }
+    }
+    levelSelect.addEventListener('change', toggleTitle);
+    toggleTitle();
+})();
+</script>
 {% endblock %}

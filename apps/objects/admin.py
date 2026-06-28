@@ -5,9 +5,9 @@ from apps.objects.models import Object, ObjectSystem
 
 @admin.register(Object)
 class ObjectAdmin(admin.ModelAdmin):
-    list_display = ["name", "level", "parent", "category", "owner_entity", "is_deleted", "creator_id", "created_at"]
-    list_filter = ["level", "is_deleted", "created_at"]
-    search_fields = ["name"]
+    list_display = ["name", "object_class", "level", "parent", "category", "owner_entity", "status", "city", "is_deleted", "created_at"]
+    list_filter = ["level", "status", "is_reconstructed", "is_deleted", "created_at"]
+    search_fields = ["name", "object_short_name", "object_law_name", "city", "title"]
     raw_id_fields = ["parent", "owner_entity"]
 
 
