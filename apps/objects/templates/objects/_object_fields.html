@@ -1,0 +1,232 @@
+{% comment %}
+Общее тело формы объекта (используется в object_form.html и в режиме "Создать новый"
+формы добавления ребёнка).
+
+Ожидаемый контекст:
+  object           — редактируемый объект или None (для предзаполнения)
+  possible_parents — список возможных родителей (если не hide_parent)
+  categories       — список категорий
+  owner_entities   — список юр. лиц
+  status_choices   — варианты статуса
+  hide_parent      — True, если выбор родителя не нужен (add-child: родитель фиксирован)
+  child_levels     — (опционально) ограниченный список доступных уровней
+  address_defaults — (опционально) словарь предзаполнения адреса из родителя
+{% endcomment %}
+
+<div class="form-section">
+    <h2>Основная информация</h2>
+    <div class="form-group">
+        <label>Полное название</label>
+        <input type="text" name="name" value="{{ object.name|default:'' }}" required>
+    </div>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Короткое название</label>
+            <input type="text" name="object_short_name" value="{{ object.object_short_name|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Классификация объекта</label>
+            <input type="text" name="object_class" value="{{ object.object_class|default:'' }}" placeholder="завод, цех, очередь, установка">
+        </div>
+    </div>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Историческое название</label>
+            <input type="text" name="object_old_name" value="{{ object.object_old_name|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Юридическое название</label>
+            <input type="text" name="object_law_name" value="{{ object.object_law_name|default:'' }}">
+        </div>
+    </div>
+</div>
+
+<div class="form-section">
+    <h2>Классификация и принадлежность</h2>
+
+    <div class="form-group">
+        <label>Уровень</label>
+        <select name="level" id="levelSelect" required>
+            {% if child_levels %}
+                {% for lvl in child_levels %}
+                <option value="{{ lvl }}" {% if object.level == lvl %}selected{% endif %}>Уровень {{ lvl }}</option>
+                {% endfor %}
+            {% else %}
+                <option value="1" {% if object.level == 1 %}selected{% endif %}>Уровень 1</option>
+                <option value="2" {% if object.level == 2 %}selected{% endif %}>Уровень 2</option>
+                <option value="3" {% if object.level == 3 %}selected{% endif %}>Уровень 3</option>
+            {% endif %}
+        </select>
+    </div>
+
+    {% if not hide_parent %}
+    <div class="form-group" id="parentGroup" style="{% if not object.level or object.level == 1 %}display:none{% endif %}">
+        <label>Родитель</label>
+        <div class="picker collapsible {% if object.parent_id %}open{% endif %}" data-target="#selectedParentId" data-empty-text="Не указано">
+            <div class="picker-header">
+                <span class="picker-header-label">Родитель</span>
+                <span class="picker-header-value empty-value">Не указано</span>
+                <span class="picker-caret">▾</span>
+            </div>
+            <div class="picker-body">
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название родителя...">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container" id="parentPicker">
+                    <div class="system-item {% if not object.parent_id %}selected{% endif %}" data-id="" data-keep data-name="">
+                        <span class="system-name">— Нет родителя —</span>
+                    </div>
+                    {% for p in possible_parents %}
+                    <div class="system-item {% if object.parent_id == p.pk %}selected{% endif %}" data-id="{{ p.pk }}" data-name="{{ p.name|lower }}" data-level="{{ p.level }}">
+                        <span class="system-name">{{ p.name }}</span>
+                        <span class="system-info">Уровень {{ p.level }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="display:none">Родители не найдены</div>
+                </div>
+            </div>
+            <input type="hidden" name="parent" id="selectedParentId" value="{{ object.parent_id|default:'' }}">
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Категория -->
+    <div class="form-group">
+        <label>Категория</label>
+        <div class="picker collapsible {% if object.category_id %}open{% endif %}" data-target="#selectedCategoryId" data-level-source="#levelSelect" data-empty-text="Без категории">
+            <div class="picker-header">
+                <span class="picker-header-label">Категория</span>
+                <span class="picker-header-value empty-value">Без категории</span>
+                <span class="picker-caret">▾</span>
+            </div>
+            <div class="picker-body">
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название категории..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container">
+                    <div class="system-item {% if not object.category_id %}selected{% endif %}" data-id="" data-keep data-name="">
+                        <span class="system-name">— Без категории —</span>
+                    </div>
+                    {% for cat in categories %}
+                    <div class="system-item {% if object.category_id == cat.pk %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}" data-level="{{ cat.level }}">
+                        <span class="system-name">{{ cat.name }}</span>
+                        <span class="system-info">Уровень {{ cat.level }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Категории не найдены</div>
+                </div>
+            </div>
+            <input type="hidden" name="category" id="selectedCategoryId" value="{{ object.category_id|default:'' }}">
+        </div>
+    </div>
+
+    <!-- Юридическое лицо -->
+    <div class="form-group">
+        <label>Юридическое лицо</label>
+        <div class="picker collapsible {% if object.owner_entity_id %}open{% endif %}" data-target="#selectedOwnerEntityId" data-empty-text="Без юр. лица">
+            <div class="picker-header">
+                <span class="picker-header-label">Юридическое лицо</span>
+                <span class="picker-header-value empty-value">Без юр. лица</span>
+                <span class="picker-caret">▾</span>
+            </div>
+            <div class="picker-body">
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название юр. лица..." style="margin-bottom:0">
+                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container">
+                    <div class="system-item {% if not object.owner_entity_id %}selected{% endif %}" data-id="" data-keep>
+                        <span class="system-name">— Без юр. лица —</span>
+                    </div>
+                    {% for owner in owner_entities %}
+                    <div class="system-item {% if object.owner_entity_id == owner.pk %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
+                        <span class="system-name">{{ owner.owner_name }}</span>
+                        <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Юридические лица не найдены</div>
+                </div>
+            </div>
+            <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">
+        </div>
+    </div>
+</div>
+
+<div class="form-section">
+    <h2>Характеристики</h2>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Состояние объекта</label>
+            <select name="status">
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if object.status == value %}selected{% elif not object and value == 'active' %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Дата ввода в эксплуатацию</label>
+            <input type="date" name="start_date" value="{{ object.start_date|date:'Y-m-d'|default:'' }}">
+        </div>
+    </div>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Мощность / объём производства</label>
+            <input type="text" name="capacity" value="{{ object.capacity|default:'' }}">
+        </div>
+        <div class="form-group" style="display:flex; align-items:flex-end">
+            <label style="font-weight:normal">
+                <input type="checkbox" name="is_reconstructed" value="on" {% if object.is_reconstructed %}checked{% endif %}>
+                Была реконструкция
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Дополнительная информация</label>
+        <textarea name="notes" rows="4">{{ object.notes|default:'' }}</textarea>
+    </div>
+</div>
+
+<div class="form-section">
+    <h2>Адрес</h2>
+    <p class="hint" style="margin-top:-6px; margin-bottom:12px">
+        При выборе родителя адресные поля подставляются из него; их можно изменить.
+    </p>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Страна</label>
+            <input type="text" name="country" class="addr-field" data-addr="country" value="{{ object.country|default:address_defaults.country|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Регион</label>
+            <input type="text" name="region" class="addr-field" data-addr="region" value="{{ object.region|default:address_defaults.region|default:'' }}">
+        </div>
+    </div>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Город</label>
+            <input type="text" name="city" class="addr-field" data-addr="city" value="{{ object.city|default:address_defaults.city|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Улица</label>
+            <input type="text" name="street" class="addr-field" data-addr="street" value="{{ object.street|default:address_defaults.street|default:'' }}">
+        </div>
+    </div>
+    <div class="form-grid two">
+        <div class="form-group">
+            <label>Дом</label>
+            <input type="text" name="house" class="addr-field" data-addr="house" value="{{ object.house|default:address_defaults.house|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Код ФИАС</label>
+            <input type="text" name="fias_code" class="addr-field" data-addr="fias_code" value="{{ object.fias_code|default:address_defaults.fias_code|default:'' }}">
+        </div>
+    </div>
+
+    <!-- title (кодовое расположение) — только для 3-го уровня -->
+    <div class="form-group" id="titleGroup" style="{% if object.level != 3 %}display:none{% endif %}">
+        <label>Кодовое расположение (только уровень 3)</label>
+        <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
+    </div>
+</div>

@@ -62,132 +62,13 @@
         </form>
     </div>
 
-    <!-- ===== Режим 2: создать новый объект (как старая форма, без выбора родителя) ===== -->
+    <!-- ===== Режим 2: создать новый объект (такая же форма, как обычное добавление) ===== -->
     <div class="mode-section" data-mode="create" {% if active_mode != 'create' %}style="display:none"{% endif %}>
         <form method="post">
             {% csrf_token %}
             <input type="hidden" name="mode" value="create">
 
-            <div class="form-group">
-                <label>Полное название</label>
-                <input type="text" name="name" required>
-            </div>
-
-            <div class="form-group">
-                <label>Короткое название</label>
-                <input type="text" name="object_short_name">
-            </div>
-
-            <div class="form-group">
-                <label>Классификация объекта</label>
-                <input type="text" name="object_class" placeholder="завод, цех, очередь, установка">
-            </div>
-
-            <div class="form-group">
-                <label>Уровень</label>
-                <select name="level" id="childLevelSelect" required>
-                    {% for lvl in child_levels %}
-                    <option value="{{ lvl }}">Уровень {{ lvl }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <!-- Подпоиск категории, фильтруется выбранным уровнем -->
-            <div class="picker" data-target="#selectedCategoryId" data-level-source="#childLevelSelect">
-                <div class="form-group">
-                    <label>Категория</label>
-                    <div class="search-wrapper">
-                        <input type="text" class="picker-search" placeholder="Введите название категории..." style="margin-bottom:0">
-                        <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
-                    </div>
-                </div>
-
-                <div class="system-results-container">
-                    <div class="system-item selected" data-id="" data-keep>
-                        <span class="system-name">— Без категории —</span>
-                    </div>
-                    {% for cat in categories %}
-                    <div class="system-item" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}" data-level="{{ cat.level }}">
-                        <span class="system-name">{{ cat.name }}</span>
-                        <span class="system-info">Уровень {{ cat.level }}</span>
-                    </div>
-                    {% endfor %}
-                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
-                        Категории не найдены
-                    </div>
-                </div>
-
-                <input type="hidden" name="category" id="selectedCategoryId">
-            </div>
-
-            <div class="picker" data-target="#selectedOwnerEntityId">
-                <div class="form-group">
-                    <label>Юридическое лицо</label>
-                    <div class="search-wrapper">
-                        <input type="text" class="picker-search" placeholder="Введите название юр. лица..." style="margin-bottom:0">
-                        <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
-                    </div>
-                </div>
-
-                <div class="system-results-container">
-                    <div class="system-item selected" data-id="" data-keep>
-                        <span class="system-name">— Без юр. лица —</span>
-                    </div>
-                    {% for owner in owner_entities %}
-                    <div class="system-item" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
-                        <span class="system-name">{{ owner.owner_name }}</span>
-                        <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
-                    </div>
-                    {% endfor %}
-                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
-                        Юридические лица не найдены
-                    </div>
-                </div>
-
-                <input type="hidden" name="owner_entity" id="selectedOwnerEntityId">
-            </div>
-
-            <!-- ===== Характеристики ===== -->
-            <h3 style="margin-top:18px">Характеристики</h3>
-            <div class="form-group">
-                <label>Состояние объекта</label>
-                <select name="status">
-                    {% for value, label in status_choices %}
-                    <option value="{{ value }}" {% if value == 'active' %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Дата ввода в эксплуатацию</label>
-                <input type="date" name="start_date">
-            </div>
-            <div class="form-group">
-                <label>Мощность / объём производства</label>
-                <input type="text" name="capacity">
-            </div>
-            <div class="form-group">
-                <label><input type="checkbox" name="is_reconstructed" value="on"> Была реконструкция</label>
-            </div>
-            <div class="form-group">
-                <label>Дополнительная информация</label>
-                <textarea name="notes" rows="3"></textarea>
-            </div>
-
-            <!-- ===== Адрес (предзаполнен из родителя, можно править) ===== -->
-            <h3 style="margin-top:18px">Адрес</h3>
-            <p class="empty" style="font-size:12px; margin-top:-6px">Подставлен из родителя «{{ parent.name }}», можно изменить.</p>
-            <div class="form-group"><label>Страна</label><input type="text" name="country" value="{{ address_defaults.country|default:'' }}"></div>
-            <div class="form-group"><label>Регион</label><input type="text" name="region" value="{{ address_defaults.region|default:'' }}"></div>
-            <div class="form-group"><label>Город</label><input type="text" name="city" value="{{ address_defaults.city|default:'' }}"></div>
-            <div class="form-group"><label>Улица</label><input type="text" name="street" value="{{ address_defaults.street|default:'' }}"></div>
-            <div class="form-group"><label>Дом</label><input type="text" name="house" value="{{ address_defaults.house|default:'' }}"></div>
-            <div class="form-group"><label>Код ФИАС</label><input type="text" name="fias_code" value="{{ address_defaults.fias_code|default:'' }}"></div>
-
-            <!-- title — только для уровня 3 -->
-            <div class="form-group" id="childTitleGroup" style="display:none">
-                <label>Кодовое расположение (только уровень 3)</label>
-                <input type="text" name="title" id="childTitleInput" disabled placeholder="Расположение установки внутри цеха">
-            </div>
+            {% include "objects/_object_fields.html" with hide_parent=True %}
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Создать</button>
@@ -197,25 +78,5 @@
     </div>
 </div>
 
-<script>
-(function() {
-    const levelSelect = document.getElementById('childLevelSelect');
-    const titleGroup = document.getElementById('childTitleGroup');
-    const titleInput = document.getElementById('childTitleInput');
-    if (!levelSelect) return;
-
-    function toggleTitle() {
-        const level = parseInt(levelSelect.value, 10);
-        if (level === 3) {
-            titleGroup.style.display = '';
-            if (titleInput) titleInput.disabled = false;
-        } else {
-            titleGroup.style.display = 'none';
-            if (titleInput) { titleInput.value = ''; titleInput.disabled = true; }
-        }
-    }
-    levelSelect.addEventListener('change', toggleTitle);
-    toggleTitle();
-})();
-</script>
+{% include "objects/_object_form_script.html" %}
 {% endblock %}

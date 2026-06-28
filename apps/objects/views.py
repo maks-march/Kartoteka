@@ -56,6 +56,9 @@ def _extract_object_fields(post, level):
 _INHERITED_ADDRESS_FIELDS = ("country", "region", "city", "street", "house", "fias_code")
 
 
+_EMPTY_ADDRESS_DEFAULTS = {f: "" for f in ("country", "region", "city", "street", "house", "fias_code")}
+
+
 def _parent_address_map(parents):
     """JSON-строка {parent_id: {адресные поля}} для авто-подстановки в форме на клиенте."""
     import json
@@ -150,6 +153,7 @@ def object_create(request):
         "owner_entities": owner_entities,
         "status_choices": Object.STATUS_CHOICES,
         "parent_addresses": _parent_address_map(possible_parents),
+        "address_defaults": _EMPTY_ADDRESS_DEFAULTS,
         "error": error,
     })
 
@@ -191,6 +195,7 @@ def object_edit(request, pk):
         "owner_entities": owner_entities,
         "status_choices": Object.STATUS_CHOICES,
         "parent_addresses": _parent_address_map(possible_parents),
+        "address_defaults": _EMPTY_ADDRESS_DEFAULTS,
         "error": error,
     })
 

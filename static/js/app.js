@@ -108,6 +108,32 @@ function initPicker(picker) {
         });
     }
 
+    // Сворачиваемый режим: заголовок с подписью выбранного значения
+    const headerValue = picker.querySelector('.picker-header-value');
+    const emptyText = (picker.getAttribute('data-empty-text') || 'Не указано');
+
+    function updateHeaderValue(name) {
+        if (!headerValue) return;
+        if (name && name.trim()) {
+            headerValue.textContent = name;
+            headerValue.classList.remove('empty-value');
+        } else {
+            headerValue.textContent = emptyText;
+            headerValue.classList.add('empty-value');
+        }
+    }
+
+    // Инициализация подписи заголовка из уже выбранного пункта
+    if (headerValue) {
+        const preselected = items.find(function(i) { return i.classList.contains('selected'); });
+        let preName = '';
+        if (preselected && preselected.getAttribute('data-id')) {
+            const nameEl = preselected.querySelector('.system-name');
+            preName = nameEl ? nameEl.textContent.trim() : '';
+        }
+        updateHeaderValue(preName);
+    }
+
     // Выбор элемента из списка
     items.forEach(function(item) {
         item.addEventListener('click', function() {
@@ -115,10 +141,29 @@ function initPicker(picker) {
             this.classList.add('selected');
             hiddenInput.value = this.getAttribute('data-id');
             if (submitBtn) submitBtn.disabled = false;
+
+            // Обновляем подпись заголовка и сворачиваем (для пустого пункта — «Не указано»)
+            if (headerValue) {
+                const nameEl = this.querySelector('.system-name');
+                const isEmpty = !this.getAttribute('data-id');
+                updateHeaderValue(isEmpty ? '' : (nameEl ? nameEl.textContent.trim() : ''));
+                if (picker.classList.contains('collapsible')) {
+                    picker.classList.remove('open');
+                }
+            }
         });
     });
 
     applyFilter();
+}
+
+/* ===== Сворачиваемый пикер: клик по заголовку раскрывает/прячет тело ===== */
+function initCollapsiblePicker(picker) {
+    const header = picker.querySelector('.picker-header');
+    if (!header) return;
+    header.addEventListener('click', function() {
+        picker.classList.toggle('open');
+    });
 }
 
 /* ===== Переключатель режимов (выбрать существующий / создать новый) ===== */
@@ -138,6 +183,7 @@ function initModeToggle(toggle) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.picker').forEach(initPicker);
+    document.querySelectorAll('.picker.collapsible').forEach(initCollapsiblePicker);
     document.querySelectorAll('.mode-toggle').forEach(initModeToggle);
 });
 
