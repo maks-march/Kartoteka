@@ -10,30 +10,37 @@
 
     <form method="post" id="objectForm">
         {% csrf_token %}
-        <div class="form-group">
-            <label>Полное название</label>
-            <input type="text" name="name" value="{{ object.name|default:'' }}" required>
+
+        <div class="form-section">
+            <h2>Основная информация</h2>
+            <div class="form-group">
+                <label>Полное название</label>
+                <input type="text" name="name" value="{{ object.name|default:'' }}" required>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Короткое название</label>
+                    <input type="text" name="object_short_name" value="{{ object.object_short_name|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Классификация объекта</label>
+                    <input type="text" name="object_class" value="{{ object.object_class|default:'' }}" placeholder="завод, цех, очередь, установка">
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Историческое название</label>
+                    <input type="text" name="object_old_name" value="{{ object.object_old_name|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Юридическое название</label>
+                    <input type="text" name="object_law_name" value="{{ object.object_law_name|default:'' }}">
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Короткое название</label>
-            <input type="text" name="object_short_name" value="{{ object.object_short_name|default:'' }}">
-        </div>
-
-        <div class="form-group">
-            <label>Историческое название</label>
-            <input type="text" name="object_old_name" value="{{ object.object_old_name|default:'' }}">
-        </div>
-
-        <div class="form-group">
-            <label>Юридическое название</label>
-            <input type="text" name="object_law_name" value="{{ object.object_law_name|default:'' }}">
-        </div>
-
-        <div class="form-group">
-            <label>Классификация объекта</label>
-            <input type="text" name="object_class" value="{{ object.object_class|default:'' }}" placeholder="завод, цех, очередь, установка">
-        </div>
+        <div class="form-section">
+            <h2>Классификация и принадлежность</h2>
 
         <div class="form-group">
             <label>Уровень</label>
@@ -125,76 +132,85 @@
 
             <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">
         </div>
+        </div><!-- /Классификация и принадлежность -->
 
         <!-- ===== Характеристики ===== -->
-        <h2 style="margin-top:20px">Характеристики</h2>
-
-        <div class="form-group">
-            <label>Состояние объекта</label>
-            <select name="status">
-                {% for value, label in status_choices %}
-                <option value="{{ value }}" {% if object.status == value %}selected{% elif not object and value == 'active' %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Дата ввода в эксплуатацию</label>
-            <input type="date" name="start_date" value="{{ object.start_date|date:'Y-m-d'|default:'' }}">
-        </div>
-
-        <div class="form-group">
-            <label>Мощность / объём производства</label>
-            <input type="text" name="capacity" value="{{ object.capacity|default:'' }}">
-        </div>
-
-        <div class="form-group">
-            <label>
-                <input type="checkbox" name="is_reconstructed" value="on" {% if object.is_reconstructed %}checked{% endif %}>
-                Была реконструкция
-            </label>
-        </div>
-
-        <div class="form-group">
-            <label>Дополнительная информация</label>
-            <textarea name="notes" rows="3">{{ object.notes|default:'' }}</textarea>
+        <div class="form-section">
+            <h2>Характеристики</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Состояние объекта</label>
+                    <select name="status">
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if object.status == value %}selected{% elif not object and value == 'active' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Дата ввода в эксплуатацию</label>
+                    <input type="date" name="start_date" value="{{ object.start_date|date:'Y-m-d'|default:'' }}">
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Мощность / объём производства</label>
+                    <input type="text" name="capacity" value="{{ object.capacity|default:'' }}">
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end">
+                    <label style="font-weight:normal">
+                        <input type="checkbox" name="is_reconstructed" value="on" {% if object.is_reconstructed %}checked{% endif %}>
+                        Была реконструкция
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Дополнительная информация</label>
+                <textarea name="notes" rows="3">{{ object.notes|default:'' }}</textarea>
+            </div>
         </div>
 
         <!-- ===== Адрес ===== -->
-        <h2 style="margin-top:20px">Адрес</h2>
-        <p class="empty" style="font-size:12px; margin-top:-8px">
-            При выборе родителя адресные поля подставляются из него; их можно изменить.
-        </p>
+        <div class="form-section">
+            <h2>Адрес</h2>
+            <p class="hint" style="margin-top:-6px; margin-bottom:12px">
+                При выборе родителя адресные поля подставляются из него; их можно изменить.
+            </p>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Страна</label>
+                    <input type="text" name="country" class="addr-field" data-addr="country" value="{{ object.country|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Регион</label>
+                    <input type="text" name="region" class="addr-field" data-addr="region" value="{{ object.region|default:'' }}">
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Город</label>
+                    <input type="text" name="city" class="addr-field" data-addr="city" value="{{ object.city|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Улица</label>
+                    <input type="text" name="street" class="addr-field" data-addr="street" value="{{ object.street|default:'' }}">
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Дом</label>
+                    <input type="text" name="house" class="addr-field" data-addr="house" value="{{ object.house|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Код ФИАС</label>
+                    <input type="text" name="fias_code" class="addr-field" data-addr="fias_code" value="{{ object.fias_code|default:'' }}">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label>Страна</label>
-            <input type="text" name="country" class="addr-field" data-addr="country" value="{{ object.country|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Регион</label>
-            <input type="text" name="region" class="addr-field" data-addr="region" value="{{ object.region|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Город</label>
-            <input type="text" name="city" class="addr-field" data-addr="city" value="{{ object.city|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Улица</label>
-            <input type="text" name="street" class="addr-field" data-addr="street" value="{{ object.street|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Дом</label>
-            <input type="text" name="house" class="addr-field" data-addr="house" value="{{ object.house|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Код ФИАС</label>
-            <input type="text" name="fias_code" class="addr-field" data-addr="fias_code" value="{{ object.fias_code|default:'' }}">
-        </div>
-
-        <!-- title (кодовое расположение) — только для 3-го уровня -->
-        <div class="form-group" id="titleGroup" style="{% if object.level != 3 %}display:none{% endif %}">
-            <label>Кодовое расположение (только уровень 3)</label>
-            <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
+            <!-- title (кодовое расположение) — только для 3-го уровня -->
+            <div class="form-group" id="titleGroup" style="{% if object.level != 3 %}display:none{% endif %}">
+                <label>Кодовое расположение (только уровень 3)</label>
+                <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
+            </div>
         </div>
 
         <div class="form-actions">

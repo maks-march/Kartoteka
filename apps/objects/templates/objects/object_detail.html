@@ -4,134 +4,183 @@
 
 {% block content %}
 <div class="card">
-    <div>
-        <h1 style="margin-bottom:5px">{{ object.name }}</h1>
-        <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
-        {% if object.category %}
-            <span class="tag tag-{{ object.category.level }}" style="margin-left:8px">{{ object.category.name }}</span>
-        {% endif %}
-        {% if object.parent %}
-            <p style="margin-top:10px; color:#666">Родитель: <a href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a></p>
-        {% endif %}
-        <p style="margin-top:5px; color:#666">
-            Юридическое лицо:
-            {% if object.owner_entity %}
-                <a href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>
-            {% else %}
-                <span class="empty">—</span>
+    <div class="page-title-row">
+        <div>
+            <h1 style="margin-bottom:6px">{{ object.name }}</h1>
+            <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
+            <span class="tag {{ object.status_tag_class }}" style="margin-left:6px">{{ object.get_status_display }}</span>
+            {% if object.category %}
+                <span class="tag tag-{{ object.category.level }}" style="margin-left:6px">{{ object.category.name }}</span>
             {% endif %}
-        </p>
-        <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
-    </div>
-
-    <!-- ===== Названия ===== -->
-    {% if object.object_short_name or object.object_old_name or object.object_law_name or object.object_class %}
-    <div class="detail-section">
-        <h3>Названия и классификация</h3>
-        <div class="info-grid">
-            {% if object.object_class %}<div class="info-item"><span class="info-label">Классификация</span><span class="info-value">{{ object.object_class }}</span></div>{% endif %}
-            {% if object.object_short_name %}<div class="info-item"><span class="info-label">Короткое</span><span class="info-value">{{ object.object_short_name }}</span></div>{% endif %}
-            {% if object.object_old_name %}<div class="info-item"><span class="info-label">Историческое</span><span class="info-value">{{ object.object_old_name }}</span></div>{% endif %}
-            {% if object.object_law_name %}<div class="info-item"><span class="info-label">Юридическое</span><span class="info-value">{{ object.object_law_name }}</span></div>{% endif %}
+            {% if object.object_class %}
+                <span class="tag tag-muted" style="margin-left:6px">{{ object.object_class }}</span>
+            {% endif %}
         </div>
-    </div>
-    {% endif %}
-
-    <!-- ===== Характеристики ===== -->
-    <div class="detail-section">
-        <h3>Характеристики</h3>
-        <div class="info-grid">
-            <div class="info-item"><span class="info-label">Состояние</span><span class="info-value">{{ object.get_status_display }}</span></div>
-            <div class="info-item"><span class="info-label">Дата ввода</span><span class="info-value">{% if object.start_date %}{{ object.start_date|date:"d.m.Y" }}{% else %}—{% endif %}</span></div>
-            <div class="info-item"><span class="info-label">Мощность</span><span class="info-value">{{ object.capacity|default:'—' }}</span></div>
-            <div class="info-item"><span class="info-label">Реконструкция</span><span class="info-value">{% if object.is_reconstructed %}Да{% else %}Нет{% endif %}</span></div>
+        {% if user.is_authenticated %}
+        <div class="actions">
+            <a href="{% url 'object-edit' object.pk %}" class="btn btn-secondary">Изменить</a>
+            <form action="{% url 'object-delete' object.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
         </div>
-        {% if object.notes %}<p style="margin-top:10px; color:#555; font-size:13px">{{ object.notes }}</p>{% endif %}
-    </div>
-
-    <!-- ===== Адрес (одной строкой) ===== -->
-    <div class="detail-section">
-        <h3>Адрес</h3>
-        <p class="address-line">
-            {% if object.address_line %}{{ object.address_line }}{% else %}<span class="empty">— адрес не указан —</span>{% endif %}
-        </p>
-        {% if object.fias_code %}<p style="font-size:12px; color:#999; margin-top:4px">ФИАС: {{ object.fias_code }}</p>{% endif %}
-    </div>
-    {% if user.is_authenticated %}
-    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef; flex-wrap:wrap">
-        <a href="{% url 'object-attach-system' object.pk %}" class="btn btn-primary">+ Привязать систему</a>
-        {% if object.level < 3 %}
-            <a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребенка</a>
         {% endif %}
-        <a href="{% url 'object-edit' object.pk %}" class="btn btn-secondary">Изменить</a>
-        <form action="{% url 'object-delete' object.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить объект?')">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Удалить</button>
-        </form>
     </div>
-    {% endif %}
+
+    <div class="detail-grid">
+        <div class="info-tile">
+            <span class="info-label">Родитель</span>
+            <span class="info-value">
+                {% if object.parent %}
+                    <a class="link" href="{% url 'object-detail' object.parent.pk %}">{{ object.parent.name }}</a>
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Юридическое лицо</span>
+            <span class="info-value">
+                {% if object.owner_entity %}
+                <a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Короткое название</span>
+            <span class="info-value">
+                {% if object.object_short_name %}
+                    {{ object.object_short_name }}
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Историческое название</span>
+            <span class="info-value">
+                {% if object.object_old_name %}
+                    {{ object.object_old_name }}
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Юридическое название</span>
+            <span class="info-value">
+                {% if object.object_law_name %}
+                    {{ object.object_law_name }}
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Дата ввода</span>
+            <span class="info-value">
+                {% if object.start_date %}
+                    {{ object.start_date|date:"d.m.Y" }}
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Реконструкция</span>
+            <span class="info-value">
+                {% if object.is_reconstructed %}Да{% else %}Нет{% endif %}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Мощность</span>
+            <span class="info-value">
+                {{ object.capacity|default:'—' }}
+            </span>
+        </div>
+        <div class="info-tile">
+            <span class="info-label">Автор карточки</span>
+            <span class="info-value">
+                {% if object.creator_id %}{{ object.creator_id.username }}{% else %}—{% endif %}
+            </span>
+        </div>
+    </div>
 </div>
 
 <div class="card">
-    <h2>Подключенные системы</h2>
+    <h2>Адрес</h2>
+    <p class="notes-box">{% if object.address_line %}{{ object.address_line }}{% else %}— адрес не указан —{% endif %}{% if object.fias_code %}
+
+ФИАС: {{ object.fias_code }}{% endif %}</p>
+</div>
+
+{% if object.notes %}
+<div class="card">
+    <h2>Примечания</h2>
+    <p class="notes-box">{{ object.notes }}</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-title-row">
+        <h2 style="margin:0">Подключенные системы</h2>
+        {% if user.is_authenticated %}<a href="{% url 'object-attach-system' object.pk %}" class="btn btn-primary">+ Привязать систему</a>{% endif %}
+    </div>
     {% if object_systems %}
-    <table>
-        <thead>
-            <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Интегратор</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
-        </thead>
-        <tbody>
-            {% for os in object_systems %}
-            <tr>
-                <td><a href="{% url 'system-detail' os.system.pk %}">{{ os.system.autosystem_name }}</a></td>
-                <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
-                <td>{{ os.get_status_display }}</td>
-                <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.integrator %}<a href="{% url 'participant-detail' os.integrator.pk %}">{{ os.integrator.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.implimentor %}<a href="{% url 'participant-detail' os.implimentor.pk %}">{{ os.implimentor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                {% if user.is_authenticated %}
-                <td>
-                    <div class="actions">
-                        <a href="{% url 'object-system-edit' os.pk %}?next=object" class="btn btn-secondary btn-sm">Изменить</a>
-                        <form action="{% url 'object-system-delete' os.pk %}" method="post" style="display:inline" onsubmit="return confirm('Отвязать систему от объекта?')">
-                            {% csrf_token %}
-                            <input type="hidden" name="next" value="object">
-                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
-                        </form>
-                    </div>
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Интегратор</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+            </thead>
+            <tbody>
+                {% for os in object_systems %}
+                <tr>
+                    <td><a class="link" href="{% url 'system-detail' os.system.pk %}">{{ os.system.autosystem_name }}</a></td>
+                    <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
+                    <td>{{ os.get_status_display }}</td>
+                    <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if os.integrator %}<a class="link" href="{% url 'participant-detail' os.integrator.pk %}">{{ os.integrator.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if os.implimentor %}<a class="link" href="{% url 'participant-detail' os.implimentor.pk %}">{{ os.implimentor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    {% if user.is_authenticated %}
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'object-system-edit' os.pk %}?next=object" class="btn btn-secondary btn-sm">Изменить</a>
+                            <form action="{% url 'object-system-delete' os.pk %}" method="post" style="display:inline" onsubmit="return confirm('Отвязать систему от объекта?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="object">
+                                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                            </form>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
     <p class="empty">Нет подключенных систем</p>
     {% endif %}
 </div>
 
-{% if children %}
 <div class="card">
-    <h2>Дети</h2>
-    <table>
-        <thead>
-            <tr><th>Название</th><th>Уровень</th><th>Категория</th></tr>
-        </thead>
-        <tbody>
-            {% for child in children %}
-            <tr>
-                <td><a href="{% url 'object-detail' child.pk %}">{{ child.name }}</a></td>
-                <td><span class="tag tag-{{ child.level }}">Уровень {{ child.level }}</span></td>
-                <td>{% if child.category %}<span class="tag tag-{{ child.category.level }}">{{ child.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card-title-row">
+        <h2 style="margin:0">Дочерние объекты</h2>
+        {% if user.is_authenticated and object.level < 3 %}<a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребёнка</a>{% endif %}
+    </div>
+    {% if children %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Название</th><th>Уровень</th><th>Категория</th><th>Статус</th><th>Город</th></tr>
+            </thead>
+            <tbody>
+                {% for child in children %}
+                <tr>
+                    <td><a class="link" href="{% url 'object-detail' child.pk %}">{{ child.name }}</a></td>
+                    <td><span class="tag tag-{{ child.level }}">Уровень {{ child.level }}</span></td>
+                    <td>{% if child.category %}<span class="tag tag-{{ child.category.level }}">{{ child.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td><span class="tag {{ child.status_tag_class }}">{{ child.get_status_display }}</span></td>
+                    <td>{{ child.city|default:'—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">Нет дочерних объектов</p>
+    {% endif %}
 </div>
-{% else %}
-<div class="card">
-    <p class="empty">Нет детей</p>
-</div>
-{% endif %}
 
 <div style="margin-top:10px">
     <a href="{% url 'object-list' %}" class="btn btn-secondary">← Назад к списку</a>

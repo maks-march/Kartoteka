@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+    <div class="page-title-row">
         <h1 style="margin:0">Объекты</h1>
         {% if user.is_authenticated %}
             <a href="{% url 'object-create' %}" class="btn btn-primary">+ Добавить объект</a>
@@ -120,30 +120,36 @@
         </div>
     </form>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Уровень</th>
-                <th>Категория</th>
-                <th>Юр. лицо</th>
-                <th>Родитель</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for obj in objects %}
-            <tr>
-                <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
-                <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
-                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if obj.owner_entity %}<a href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" class="empty">Объекты не найдены</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Уровень</th>
+                    <th>Категория</th>
+                    <th>Владелец</th>
+                    <th>Родитель</th>
+                    <th>Статус</th>
+                    <th>Город</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objects %}
+                <tr>
+                    <td><a class="link" href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
+                    <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
+                    <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if obj.parent %}<a class="link" href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td><span class="tag {{ obj.status_tag_class }}">{{ obj.get_status_display }}</span></td>
+                    <td>{{ obj.city|default:'—' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="empty">Объекты не найдены</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>

@@ -131,6 +131,18 @@ class Object(models.Model):
             line = f"{line}, {extra}" if line else extra
         return line
 
+    # Соответствие статуса объекта css-классу тега (для единообразия в шаблонах).
+    STATUS_TAG_CLASSES = {
+        "active": "tag-ok",
+        "in_project": "tag-blue",
+        "reconstruction": "tag-warn",
+        "stopped": "tag-danger",
+    }
+
+    @property
+    def status_tag_class(self):
+        return self.STATUS_TAG_CLASSES.get(self.status, "tag-muted")
+
 
 class ObjectSystem(models.Model):
     STATUS_CHOICES = [

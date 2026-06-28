@@ -578,3 +578,114 @@ td a:hover {
     background: #fff;
     font-size: 14px;
 }
+
+/* ===== Расширенный интерфейс (стиль макетов) ===== */
+
+/* Шапка карточки/страницы: заголовок + действие в одну строку */
+.page-title-row,
+.card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.card-title-row { margin-bottom: 12px; }
+
+/* Сетка плиток для деталей */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.info-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #f8f9fb;
+    border: 1px solid #eef0f4;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+.info-tile .info-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #8a909a;
+}
+.info-tile .info-value {
+    font-size: 14px;
+    color: #222;
+    font-weight: 500;
+}
+
+/* Блок примечаний */
+.notes-box {
+    background: #f8f9fb;
+    border: 1px solid #eef0f4;
+    border-radius: 8px;
+    padding: 14px 16px;
+    line-height: 1.5;
+    color: #444;
+    white-space: pre-line;
+}
+
+/* Горизонтальный скролл широких таблиц */
+.table-wrap {
+    overflow-x: auto;
+}
+
+/* ===== Секции и сетка форм ===== */
+.form-section {
+    border-top: 1px solid #eef0f4;
+    padding-top: 16px;
+    margin-top: 16px;
+}
+.form-section:first-of-type {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+.form-section > h2 {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 12px;
+}
+.form-grid {
+    display: grid;
+    gap: 0 16px;
+}
+.form-grid.two {
+    grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 560px) {
+    .form-grid.two { grid-template-columns: 1fr; }
+}
+.hint {
+    color: #8a909a;
+    font-size: 13px;
+}
+
+/* ===== Статус-теги ===== */
+.tag-ok {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+.tag-warn {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+.tag-blue {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+.tag-muted {
+    background: #eceff1;
+    color: #607d8b;
+}
+.tag-danger {
+    background: #ffebee;
+    color: #c62828;
+}
