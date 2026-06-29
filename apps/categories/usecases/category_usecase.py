@@ -7,8 +7,8 @@ class CategoryUseCase:
     def __init__(self, repo=None):
         self.repo = repo or CategoryRepository()
 
-    def list(self, level=None, search=None):
-        return self.repo.get_all(level=level, search=search)
+    def list(self, level=None, search=None, ordering=None):
+        return self.repo.get_all(level=level, search=search, ordering=ordering)
 
     def list_by_user(self, user, search=None):
         return self.repo.get_by_creator(user, search=search)

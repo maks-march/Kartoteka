@@ -9,13 +9,15 @@ class ObjectUseCase:
         self.repo = repo or ObjectRepository()
         self.validator = ObjectValidator()
 
-    def list(self, level=None, search=None, category=None, system=None, owner_entity=None):
+    def list(self, level=None, search=None, category=None, system=None,
+             owner_entity=None, ordering=None):
         return self.repo.get_all(
             level=level,
             search=search,
             category=category,
             system=system,
             owner_entity=owner_entity,
+            ordering=ordering,
         )
 
     def get(self, pk):

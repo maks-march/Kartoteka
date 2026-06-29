@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load sorting %}
 
 {% block title %}Участники рынка{% endblock %}
 
@@ -25,7 +26,7 @@
 
     <table>
         <thead>
-            <tr><th>Название</th></tr>
+            <tr><th>{% sort_header "participant_name" "Название" %}</th></tr>
         </thead>
         <tbody>
             {% for participant in participants %}

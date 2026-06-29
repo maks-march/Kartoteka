@@ -18,8 +18,9 @@ class ParticipantListCreateView(APIView):
 
     def get(self, request):
         search = request.query_params.get("search")
+        ordering = request.query_params.getlist("ordering") or None
         usecase = ParticipantUseCase()
-        participants = usecase.list(search=search)
+        participants = usecase.list(search=search, ordering=ordering)
         serializer = ParticipantSerializer(participants, many=True)
         return Response(serializer.data)
 

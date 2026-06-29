@@ -77,6 +77,7 @@ def object_list(request):
     category = request.GET.getlist("category") or None
     system = request.GET.getlist("system") or None
     owner_entity = request.GET.getlist("owner_entity") or None
+    ordering = request.GET.getlist("ordering") or None
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
     system_usecase = SystemUseCase()
@@ -87,6 +88,7 @@ def object_list(request):
         category=category,
         system=system,
         owner_entity=owner_entity,
+        ordering=ordering,
     )
     all_categories = cat_usecase.list()
     all_systems = system_usecase.list()
@@ -99,6 +101,7 @@ def object_list(request):
         "selected_categories": category or [],
         "selected_systems": system or [],
         "selected_owner_entities": owner_entity or [],
+        "ordering": ordering or [],
     })
 
 

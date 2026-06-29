@@ -10,10 +10,12 @@ from apps.objects.usecases.object_usecase import ObjectUseCase
 @require_http_methods(["GET"])
 def owner_entity_list(request):
     search = request.GET.get("search") or None
+    ordering = request.GET.getlist("ordering") or None
     usecase = OwnerEntityUseCase()
-    owner_entities = usecase.list(search=search)
+    owner_entities = usecase.list(search=search, ordering=ordering)
     return render(request, "owners/owner_entity_list.html", {
         "owner_entities": owner_entities,
+        "ordering": ordering or [],
     })
 
 

@@ -9,10 +9,12 @@ from apps.participants.usecases.participant_usecase import ParticipantUseCase
 @require_http_methods(["GET"])
 def participant_list(request):
     search = request.GET.get("search") or None
+    ordering = request.GET.getlist("ordering") or None
     usecase = ParticipantUseCase()
-    participants = usecase.list(search=search)
+    participants = usecase.list(search=search, ordering=ordering)
     return render(request, "participants/participant_list.html", {
         "participants": participants,
+        "ordering": ordering or [],
     })
 
 

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load sorting %}
 
 {% block title %}Юридические лица{% endblock %}
 
@@ -26,7 +27,7 @@
     <table>
         <thead>
             <tr>
-                <th>Название</th>
+                <th>{% sort_header "owner_name" "Название" %}</th>
                 <th>Следующий владелец</th>
                 <th>Корневой владелец</th>
             </tr>

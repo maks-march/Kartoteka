@@ -1,10 +1,14 @@
 import re
 
 from apps.categories.models import Category
+from common.ordering import apply_ordering
 
 
 class CategoryRepository:
-    def get_all(self, level=None, search=None):
+    ORDERING_FIELDS = {"name", "level"}
+    DEFAULT_ORDERING = ("level", "name")
+
+    def get_all(self, level=None, search=None, ordering=None):
         qs = Category.objects.all()
         if level is not None:
             qs = qs.filter(level=level)
@@ -12,7 +16,7 @@ class CategoryRepository:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
             qs = qs.filter(name__iregex=re.escape(search))
-        return qs
+        return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
         return Category.objects.filter(pk=pk).select_related("creator_id").first()

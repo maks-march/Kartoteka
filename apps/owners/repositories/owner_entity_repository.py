@@ -1,16 +1,20 @@
 import re
 
 from apps.owners.models import OwnerEntity
+from common.ordering import apply_ordering
 
 
 class OwnerEntityRepository:
-    def get_all(self, search=None):
+    ORDERING_FIELDS = {"owner_name"}
+    DEFAULT_ORDERING = "owner_name"
+
+    def get_all(self, search=None, ordering=None):
         qs = OwnerEntity.objects.all().select_related("owner", "ultimate_owner")
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
             qs = qs.filter(owner_name__iregex=re.escape(search))
-        return qs
+        return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
         return (

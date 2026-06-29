@@ -1,6 +1,7 @@
 import re
 
 from apps.objects.models import Object
+from common.ordering import apply_ordering
 
 
 def _as_id_list(value):
@@ -15,7 +16,14 @@ def _as_id_list(value):
 
 
 class ObjectRepository:
-    def get_all(self, level=None, search=None, category=None, system=None, owner_entity=None):
+    ORDERING_FIELDS = {
+        "name", "level", "status", "city", "created_at", "start_date",
+        "category__name", "owner_entity__owner_name",
+    }
+    DEFAULT_ORDERING = ("level", "name")
+
+    def get_all(self, level=None, search=None, category=None, system=None,
+                owner_entity=None, ordering=None):
         qs = Object.objects.filter(is_deleted=False).select_related("parent", "category", "owner_entity")
         if level is not None:
             qs = qs.filter(level=level)
@@ -45,7 +53,7 @@ class ObjectRepository:
             )
             # ИЛИ: объекты, принадлежащие любому из выбранных юр. лиц или их потомкам
             qs = qs.filter(owner_entity_id__in=owner_entity_ids)
-        return qs
+        return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
         return (

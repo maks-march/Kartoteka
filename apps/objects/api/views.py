@@ -28,6 +28,7 @@ class ObjectListCreateView(APIView):
         category = request.query_params.getlist("category") or None
         system = request.query_params.getlist("system") or None
         owner_entity = request.query_params.getlist("owner_entity") or None
+        ordering = request.query_params.getlist("ordering") or None
         usecase = ObjectUseCase()
         objects = usecase.list(
             level=level,
@@ -35,6 +36,7 @@ class ObjectListCreateView(APIView):
             category=category,
             system=system,
             owner_entity=owner_entity,
+            ordering=ordering,
         )
         serializer = ObjectListSerializer(objects, many=True)
         return Response(serializer.data)

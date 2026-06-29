@@ -13,7 +13,7 @@ class SystemUseCase:
         self.participant_repo = participant_repo or ParticipantRepository()
 
     def list(self, system_class=None, search=None, obj=None,
-             vendor=None, system_status=None, product_type=None):
+             vendor=None, system_status=None, product_type=None, ordering=None):
         return self.repo.get_all(
             system_class=system_class,
             search=search,
@@ -21,6 +21,7 @@ class SystemUseCase:
             vendor=vendor,
             system_status=system_status,
             product_type=product_type,
+            ordering=ordering,
         )
 
     def list_by_user(self, user, search=None):

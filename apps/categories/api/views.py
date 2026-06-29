@@ -16,8 +16,9 @@ class CategoryListCreateView(APIView):
     def get(self, request):
         level = request.query_params.get("level")
         search = request.query_params.get("search")
+        ordering = request.query_params.getlist("ordering") or None
         usecase = CategoryUseCase()
-        categories = usecase.list(level=level, search=search)
+        categories = usecase.list(level=level, search=search, ordering=ordering)
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 

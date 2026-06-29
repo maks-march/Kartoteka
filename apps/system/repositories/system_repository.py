@@ -1,6 +1,7 @@
 import re
 
 from apps.system.models import AutomatedSystem
+from common.ordering import apply_ordering
 
 
 def _as_id_list(value):
@@ -15,8 +16,16 @@ def _as_id_list(value):
 
 
 class SystemRepository:
+    # Поля, по которым разрешена серверная сортировка.
+    ORDERING_FIELDS = {
+        "autosystem_name", "version", "system_status", "product_type",
+        "release_year", "end_of_support",
+        "system_class__system_class", "vendor__participant_name",
+    }
+    DEFAULT_ORDERING = "autosystem_name"
+
     def get_all(self, system_class=None, search=None, obj=None,
-                vendor=None, system_status=None, product_type=None):
+                vendor=None, system_status=None, product_type=None, ordering=None):
         qs = AutomatedSystem.objects.all().select_related("system_class", "vendor")
         if system_class is not None:
             qs = qs.filter(system_class_id=system_class)
@@ -38,7 +47,7 @@ class SystemRepository:
         product_types = _as_id_list(product_type)
         if product_types:
             qs = qs.filter(product_type__in=product_types)
-        return qs
+        return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
         return AutomatedSystem.objects.filter(pk=pk).select_related("system_class", "vendor", "creator_id").first()

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load sorting %}
 
 {% block title %}Системы{% endblock %}
 
@@ -174,7 +175,7 @@
     <div class="table-wrap">
     <table>
         <thead>
-            <tr><th>Название</th><th>Класс</th><th>Статус</th><th>Тип продукта</th><th>Вендор</th><th>Окончание поддержки</th></tr>
+            <tr><th>{% sort_header "autosystem_name" "Название" %}</th><th>{% sort_header "system_class__system_class" "Класс" %}</th><th>{% sort_header "system_status" "Статус" %}</th><th>{% sort_header "product_type" "Тип продукта" %}</th><th>{% sort_header "vendor__participant_name" "Вендор" %}</th><th>{% sort_header "end_of_support" "Окончание поддержки" %}</th></tr>
         </thead>
         <tbody>
             {% for s in systems %}

@@ -7,8 +7,8 @@ class ParticipantUseCase:
     def __init__(self, repo=None):
         self.repo = repo or ParticipantRepository()
 
-    def list(self, search=None):
-        return self.repo.get_all(search=search)
+    def list(self, search=None, ordering=None):
+        return self.repo.get_all(search=search, ordering=ordering)
 
     def get(self, pk):
         obj = self.repo.get_by_id(pk)

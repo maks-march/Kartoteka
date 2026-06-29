@@ -21,8 +21,9 @@ class OwnerEntityListCreateView(APIView):
 
     def get(self, request):
         search = request.query_params.get("search")
+        ordering = request.query_params.getlist("ordering") or None
         usecase = OwnerEntityUseCase()
-        owner_entities = usecase.list(search=search)
+        owner_entities = usecase.list(search=search, ordering=ordering)
         serializer = OwnerEntitySerializer(owner_entities, many=True)
         return Response(serializer.data)
 

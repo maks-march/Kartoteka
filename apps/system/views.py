@@ -74,6 +74,7 @@ def system_list(request):
     vendor = request.GET.getlist("vendor") or None
     system_status = request.GET.getlist("system_status") or None
     product_type = request.GET.getlist("product_type") or None
+    ordering = request.GET.getlist("ordering") or None
 
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
@@ -87,6 +88,7 @@ def system_list(request):
         vendor=vendor,
         system_status=system_status,
         product_type=product_type,
+        ordering=ordering,
     )
     classes = class_usecase.list()
     all_objects = object_usecase.list()
@@ -102,6 +104,7 @@ def system_list(request):
         "selected_vendors": vendor or [],
         "selected_statuses": system_status or [],
         "selected_product_types": product_type or [],
+        "ordering": ordering or [],
     })
 
 
