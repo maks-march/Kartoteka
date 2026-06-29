@@ -15,7 +15,8 @@ def _as_id_list(value):
 
 
 class SystemRepository:
-    def get_all(self, system_class=None, search=None, obj=None):
+    def get_all(self, system_class=None, search=None, obj=None,
+                vendor=None, system_status=None, product_type=None):
         qs = AutomatedSystem.objects.all().select_related("system_class", "vendor")
         if system_class is not None:
             qs = qs.filter(system_class_id=system_class)
@@ -27,6 +28,16 @@ class SystemRepository:
         if obj_ids:
             # ИЛИ: системы, привязанные к любому из выбранных объектов
             qs = qs.filter(objectsystem__object_id__in=obj_ids).distinct()
+        vendor_ids = _as_id_list(vendor)
+        if vendor_ids:
+            # ИЛИ: системы любого из выбранных вендоров
+            qs = qs.filter(vendor_id__in=vendor_ids)
+        status_values = _as_id_list(system_status)
+        if status_values:
+            qs = qs.filter(system_status__in=status_values)
+        product_types = _as_id_list(product_type)
+        if product_types:
+            qs = qs.filter(product_type__in=product_types)
         return qs
 
     def get_by_id(self, pk):

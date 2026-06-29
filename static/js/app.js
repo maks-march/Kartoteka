@@ -198,7 +198,8 @@ function setupMultiFilterPicker(searchId, btnId, listId, inputsContainerId, noRe
     const list = document.getElementById(listId);
     const inputsContainer = document.getElementById(inputsContainerId);
     const noResults = document.getElementById(noResultsId);
-    if (!searchInput || !list || !inputsContainer) return;
+    // searchInput может отсутствовать — фильтр работает только выбором пунктов.
+    if (!list || !inputsContainer) return;
 
     const fieldName = inputsContainer.getAttribute('data-name');
     const items = Array.from(list.querySelectorAll('.system-item'));
@@ -227,7 +228,7 @@ function setupMultiFilterPicker(searchId, btnId, listId, inputsContainerId, noRe
     }
 
     function filterItems() {
-        const query = searchInput.value.toLowerCase().trim();
+        const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
         let hasVisible = false;
         items.forEach(item => {
             const name = item.getAttribute('data-name');
@@ -243,9 +244,11 @@ function setupMultiFilterPicker(searchId, btnId, listId, inputsContainerId, noRe
     }
 
     if (searchBtn) searchBtn.addEventListener('click', filterItems);
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); filterItems(); }
-    });
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); filterItems(); }
+        });
+    }
 
     items.forEach(item => {
         item.addEventListener('click', function() {
@@ -264,3 +267,22 @@ function setupMultiFilterPicker(searchId, btnId, listId, inputsContainerId, noRe
     syncAllItem();
     syncInputs();
 }
+
+/* ===== Сворачиваемые фильтры в формах поиска =====
+   Структура:
+   <div class="filter-collapse">
+     <div class="filter-collapse-header"> <label/> <значение/> <каретка/> </div>
+     <div class="filter-collapse-body"> ... поиск/список ... </div>
+   </div>
+   По клику на header переключается класс .open на контейнере. */
+function initFilterCollapse(box) {
+    const header = box.querySelector('.filter-collapse-header');
+    if (!header) return;
+    header.addEventListener('click', function() {
+        box.classList.toggle('open');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.filter-collapse').forEach(initFilterCollapse);
+});

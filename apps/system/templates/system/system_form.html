@@ -40,7 +40,7 @@
 
             <div class="form-group">
                 <label>Тип системы — уровень и класс</label>
-                <div class="picker collapsible {% if system.system_class_id %}open{% endif %}" data-target="#selectedClassId" data-empty-text="Не указан">
+                <div class="picker collapsible" data-target="#selectedClassId" data-empty-text="Не указан">
                     <div class="picker-header">
                         <span class="picker-header-label">Класс системы</span>
                         <span class="picker-header-value empty-value">Не указан</span>
@@ -67,7 +67,7 @@
 
             <div class="form-group">
                 <label>Поставщик системы / вендор</label>
-                <div class="picker collapsible {% if system.vendor_id %}open{% endif %}" data-target="#selectedVendorId" data-empty-text="Не указан">
+                <div class="picker collapsible" data-target="#selectedVendorId" data-empty-text="Не указан">
                     <div class="picker-header">
                         <span class="picker-header-label">Вендор</span>
                         <span class="picker-header-value empty-value">Не указан</span>
@@ -131,20 +131,31 @@
         <!-- ===== Технические данные ===== -->
         <div class="form-section">
             <h2>Технические данные</h2>
-            <p class="hint" style="margin-top:-6px; margin-bottom:12px">Поля заполняются в формате JSON (можно оставить пустыми).</p>
+
             <div class="form-group">
-                <label>Технические характеристики (JSON)</label>
-                <textarea name="technical_specs" rows="3" placeholder='{"cpu": "...", "ram": "..."}'>{% if system.technical_specs is not None %}{{ system.technical_specs_json }}{% endif %}</textarea>
+                <label>Модули системы</label>
+                <textarea name="modules" rows="1" class="autoinput" placeholder="Модуль 1, Модуль 2">{{ system.modules_text }}</textarea>
+                <p class="hint" style="margin-top:4px">Перечислите через запятую или точку с запятой.</p>
             </div>
-            <div class="form-grid two">
-                <div class="form-group">
-                    <label>Модули системы (JSON)</label>
-                    <textarea name="modules" rows="3" placeholder='["Модуль 1", "Модуль 2"]'>{% if system.modules is not None %}{{ system.modules_json }}{% endif %}</textarea>
+            <div class="form-group">
+                <label>Интерфейсы системы</label>
+                <textarea name="interfaces" rows="1" class="autoinput" placeholder="OPC UA, Modbus">{{ system.interfaces_text }}</textarea>
+                <p class="hint" style="margin-top:4px">Перечислите через запятую или точку с запятой.</p>
+            </div>
+
+            <div class="form-group">
+                <label>Технические характеристики</label>
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Пары «характеристика — значение».</p>
+                <div id="specsList">
+                    {% for key, value in system.specs_items %}
+                    <div class="kv-row">
+                        <input type="text" name="spec_key" value="{{ key }}" placeholder="Характеристика">
+                        <input type="text" name="spec_value" value="{{ value }}" placeholder="Значение">
+                        <button type="button" class="btn btn-danger btn-sm kv-remove" title="Удалить">−</button>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="form-group">
-                    <label>Интерфейсы системы (JSON)</label>
-                    <textarea name="interfaces" rows="3" placeholder='["OPC UA", "Modbus"]'>{% if system.interfaces is not None %}{{ system.interfaces_json }}{% endif %}</textarea>
-                </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="specsAddBtn">+ Добавить характеристику</button>
             </div>
         </div>
 
@@ -163,4 +174,32 @@
         </div>
     </form>
 </div>
+
+<script>
+(function() {
+    const list = document.getElementById('specsList');
+    const addBtn = document.getElementById('specsAddBtn');
+    if (!list || !addBtn) return;
+
+    function makeRow() {
+        const row = document.createElement('div');
+        row.className = 'kv-row';
+        row.innerHTML =
+            '<input type="text" name="spec_key" placeholder="Характеристика">' +
+            '<input type="text" name="spec_value" placeholder="Значение">' +
+            '<button type="button" class="btn btn-danger btn-sm kv-remove" title="Удалить">\u2212</button>';
+        return row;
+    }
+
+    addBtn.addEventListener('click', function() {
+        list.appendChild(makeRow());
+    });
+
+    // Делегирование: удаление строки
+    list.addEventListener('click', function(e) {
+        const btn = e.target.closest('.kv-remove');
+        if (btn) btn.closest('.kv-row').remove();
+    });
+})();
+</script>
 {% endblock %}

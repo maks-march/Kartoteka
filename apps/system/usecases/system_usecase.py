@@ -12,8 +12,16 @@ class SystemUseCase:
         self.class_repo = class_repo or AutomationClassRepository()
         self.participant_repo = participant_repo or ParticipantRepository()
 
-    def list(self, system_class=None, search=None, obj=None):
-        return self.repo.get_all(system_class=system_class, search=search, obj=obj)
+    def list(self, system_class=None, search=None, obj=None,
+             vendor=None, system_status=None, product_type=None):
+        return self.repo.get_all(
+            system_class=system_class,
+            search=search,
+            obj=obj,
+            vendor=vendor,
+            system_status=system_status,
+            product_type=product_type,
+        )
 
     def list_by_user(self, user, search=None):
         return self.repo.get_by_creator(user, search=search)
@@ -56,10 +64,13 @@ class SystemUseCase:
 
     def update(self, pk, user, **data):
         obj = self.get(pk)
-        class_id = data.get("system_class")
-        if class_id is not None and not self.class_repo.get_by_id(class_id):
-            raise ValidationError("Automation class not found")
-        data['system_class'] = self.class_repo.get_by_id(class_id)
+        # system_class трогаем только если он передан (для частичного обновления).
+        if "system_class" in data:
+            class_id = data.get("system_class")
+            klass = self.class_repo.get_by_id(class_id) if class_id is not None else None
+            if klass is None:
+                raise ValidationError("Automation class not found")
+            data["system_class"] = klass
 
         if "vendor" in data:
             vendor_id = data.pop("vendor")

@@ -308,8 +308,8 @@ h1, h2, h3 {
 }
 
 .tag-4 {
-    background: #ffebee;
-    color: #c62828;
+    background: #efe5dc;
+    color: #6d4c33;
 }
 /* ===== Table ===== */
 table {
@@ -826,3 +826,169 @@ td a:hover {
 .picker.collapsible.open .picker-header .picker-caret {
     transform: rotate(180deg);
 }
+
+/* ===== Технические данные: списки и компактная сетка характеристик ===== */
+
+/* Модули слева, интерфейсы справа */
+.tech-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+@media (max-width: 700px) {
+    .tech-pair { grid-template-columns: 1fr; }
+}
+
+/* Список-значения (модули / интерфейсы) без JSON-структуры, невысокие */
+.json-list {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+.json-list li {
+    background: #eef2f7;
+    border: 1px solid #e1e7ef;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 13px;
+    color: #334;
+    line-height: 1.3;
+}
+
+/* Сетка технических характеристик: 5 в ряд, плитки мельче info-card */
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+}
+@media (max-width: 900px) {
+    .tech-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+    .tech-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.tech-tile {
+    background: #f8f9fb;
+    border: 1px solid #eef0f4;
+    border-radius: 6px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.tech-tile .tech-key {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    color: #8a909a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tech-tile .tech-val {
+    font-size: 13px;
+    color: #222;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* ===== Тонкие скроллбары без стрелок (глобально) ===== */
+* {
+    scrollbar-width: thin;                  /* Firefox: тонкий скролл */
+    scrollbar-color: #c2c8d0 transparent;   /* Firefox: ползунок / трек */
+}
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+    background: #c2c8d0;
+    border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background: #a8b0bb;
+}
+/* Убираем кнопки-стрелки на концах полосы прокрутки */
+*::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* ===== Пары ключ/значение (технические характеристики в форме) ===== */
+.kv-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+.kv-row input[type="text"] {
+    margin-bottom: 0;
+}
+.kv-row .kv-remove {
+    padding: 6px 12px;
+    line-height: 1;
+}
+
+/* Textarea, выглядящая как обычный input (одна строка), но расширяемая */
+.form-group textarea.autoinput {
+    min-height: 0;
+    height: 42px;          /* высота как у обычного input/select */
+    line-height: 1.4;
+    resize: vertical;
+    overflow: auto;
+    white-space: pre-wrap;
+}
+
+/* ===== Сворачиваемые фильтры в формах поиска ===== */
+.filter-collapse {
+    border: 1px solid #e1e7ef;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.filter-collapse-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 14px;
+    background: #f8f9fb;
+    transition: background 0.2s;
+}
+.filter-collapse-header:hover { background: #eef2f7; }
+.filter-collapse-header .fc-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+.filter-collapse-header .fc-hint {
+    flex: 1;
+    text-align: right;
+    font-size: 12px;
+    color: #9aa1ab;
+}
+.filter-collapse-header .fc-caret {
+    color: #999;
+    transition: transform 0.2s;
+}
+.filter-collapse.open .filter-collapse-header .fc-caret { transform: rotate(180deg); }
+.filter-collapse-body {
+    display: none;
+    padding: 12px 14px;
+}
+.filter-collapse.open .filter-collapse-body { display: block; }

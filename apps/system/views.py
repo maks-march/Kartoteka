@@ -22,18 +22,33 @@ _SYSTEM_TEXT_FIELDS = (
     "notes",
 )
 
-# JSON-поля: в форме вводятся как текст (JSON); пустое -> None, иначе парсим.
-_SYSTEM_JSON_FIELDS = ("technical_specs", "modules", "interfaces")
 
+def _parse_list_field(raw):
+    """Список из строки, разделённой запятой или точкой с запятой.
 
-def _parse_json_field(raw, label):
+    Пустая строка -> None. Пустые элементы отбрасываются, пробелы обрезаются.
+    """
     raw = (raw or "").strip()
     if not raw:
         return None
-    try:
-        return json.loads(raw)
-    except (ValueError, TypeError):
-        raise ValidationError(f"Поле «{label}» должно быть корректным JSON")
+    import re
+    parts = [p.strip() for p in re.split(r"[,;]", raw)]
+    parts = [p for p in parts if p]
+    return parts or None
+
+
+def _parse_specs_pairs(post):
+    """Словарь технических характеристик из параллельных массивов
+    spec_key / spec_value. Пустые ключи пропускаются. Пусто -> None."""
+    keys = post.getlist("spec_key")
+    values = post.getlist("spec_value")
+    specs = {}
+    for key, value in zip(keys, values):
+        key = (key or "").strip()
+        if not key:
+            continue
+        specs[key] = (value or "").strip()
+    return specs or None
 
 
 def _extract_system_fields(post):
@@ -44,13 +59,10 @@ def _extract_system_fields(post):
     data["release_year"] = post.get("release_year") or None
     data["end_of_support"] = post.get("end_of_support") or None
 
-    json_labels = {
-        "technical_specs": "Технические характеристики",
-        "modules": "Модули системы",
-        "interfaces": "Интерфейсы системы",
-    }
-    for field in _SYSTEM_JSON_FIELDS:
-        data[field] = _parse_json_field(post.get(field), json_labels[field])
+    # Списки — через запятую/точку с запятой; характеристики — пары ключ/значение.
+    data["modules"] = _parse_list_field(post.get("modules"))
+    data["interfaces"] = _parse_list_field(post.get("interfaces"))
+    data["technical_specs"] = _parse_specs_pairs(post)
     return data
 
 
@@ -59,17 +71,37 @@ def system_list(request):
     system_class = request.GET.get("system_class") or None
     search = request.GET.get("search") or None
     obj = request.GET.getlist("object") or None
+    vendor = request.GET.getlist("vendor") or None
+    system_status = request.GET.getlist("system_status") or None
+    product_type = request.GET.getlist("product_type") or None
+
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
     object_usecase = ObjectUseCase()
-    systems = usecase.list(system_class=system_class, search=search, obj=obj)
+    participant_usecase = ParticipantUseCase()
+
+    systems = usecase.list(
+        system_class=system_class,
+        search=search,
+        obj=obj,
+        vendor=vendor,
+        system_status=system_status,
+        product_type=product_type,
+    )
     classes = class_usecase.list()
     all_objects = object_usecase.list()
+    all_vendors = participant_usecase.list()
     return render(request, "system/system_list.html", {
         "systems": systems,
         "classes": classes,
         "all_objects": all_objects,
+        "all_vendors": all_vendors,
+        "status_choices": AutomatedSystem.STATUS_CHOICES,
+        "product_type_choices": AutomatedSystem.PRODUCT_TYPE_CHOICES,
         "selected_objects": obj or [],
+        "selected_vendors": vendor or [],
+        "selected_statuses": system_status or [],
+        "selected_product_types": product_type or [],
     })
 
 

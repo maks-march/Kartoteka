@@ -93,39 +93,52 @@
         </div>
     </div>
 
-    <!-- ===== Технические данные ===== -->
-    {% if system.technical_specs is not None or system.modules is not None or system.interfaces is not None %}
+    <!-- ===== Модули и интерфейсы (списки) ===== -->
+    {% if system.modules is not None or system.interfaces is not None %}
     <div class="info-block">
-        <h3 class="info-block-title">Технические данные</h3>
-        <div class="info-cards">
-            <div class="info-card full">
-                <span class="info-label">Технические характеристики</span>
-                <span class="info-value desc-text">{% if system.technical_specs is not None %}{{ system.technical_specs_json }}{% else %}—{% endif %}</span>
-            </div>
-            <div class="info-card full">
+        <h3 class="info-block-title">Модули и интерфейсы</h3>
+        <div class="tech-pair">
+            <div class="info-card">
                 <span class="info-label">Модули системы</span>
-                <span class="info-value desc-text">{% if system.modules is not None %}{{ system.modules_json }}{% else %}—{% endif %}</span>
+                {% if system.modules %}
+                <ul class="json-list">
+                    {% for m in system.modules %}<li>{{ m }}</li>{% endfor %}
+                </ul>
+                {% else %}<span class="info-value">—</span>{% endif %}
             </div>
-            <div class="info-card full">
+            <div class="info-card">
                 <span class="info-label">Интерфейсы системы</span>
-                <span class="info-value desc-text">{% if system.interfaces is not None %}{{ system.interfaces_json }}{% else %}—{% endif %}</span>
+                {% if system.interfaces %}
+                <ul class="json-list">
+                    {% for i in system.interfaces %}<li>{{ i }}</li>{% endfor %}
+                </ul>
+                {% else %}<span class="info-value">—</span>{% endif %}
             </div>
         </div>
     </div>
     {% endif %}
 </div>
 
-{% if user.is_authenticated %}
+<!-- ===== Технические характеристики (отдельный блок, плитки по 5 в ряд) ===== -->
+{% if system.technical_specs %}
 <div class="card">
-    <div class="card-title-row">
-        <h2 style="margin:0">Действия</h2>
-        <a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>
+    <h3 class="info-block-title">Технические характеристики</h3>
+    <div class="tech-grid">
+        {% for key, value in system.technical_specs.items %}
+        <div class="tech-tile">
+            <span class="tech-key" title="{{ key }}">{{ key }}</span>
+            <span class="tech-val">{{ value }}</span>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endif %}
 
 <div class="card">
-    <h2>Подключенные объекты</h2>
+    <div class="card-title-row">
+        <h2 style="margin:0">Подключенные объекты</h2>
+        {% if user.is_authenticated %}<a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>{% endif %}
+    </div>
     {% if system_objects %}
     <div class="table-wrap">
     <table>

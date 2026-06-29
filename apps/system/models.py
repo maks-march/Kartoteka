@@ -186,6 +186,30 @@ class AutomatedSystem(models.Model):
     def interfaces_json(self):
         return self._json_to_text(self.interfaces)
 
+    @staticmethod
+    def _list_to_text(value):
+        """Список -> строка через запятую (для предзаполнения текстового поля)."""
+        if not value:
+            return ""
+        if isinstance(value, (list, tuple)):
+            return ", ".join(str(v) for v in value)
+        return str(value)
+
+    @property
+    def modules_text(self):
+        return self._list_to_text(self.modules)
+
+    @property
+    def interfaces_text(self):
+        return self._list_to_text(self.interfaces)
+
+    @property
+    def specs_items(self):
+        """Пары (ключ, значение) технических характеристик для рендера в форме."""
+        if isinstance(self.technical_specs, dict):
+            return list(self.technical_specs.items())
+        return []
+
     @property
     def support_display(self):
         """Текст для колонки «Окончание поддержки».
