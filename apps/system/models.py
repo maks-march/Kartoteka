@@ -38,9 +38,37 @@ class AutomationClass(models.Model):
 
 class AutomatedSystem(models.Model):
 
+    STATUS_CHOICES = [
+        ("active", "В эксплуатации"),
+        ("planned", "Планируется"),
+        ("unsupported", "Не поддерживается"),
+        ("decommissioned", "Выведена из эксплуатации"),
+    ]
+
+    PRODUCT_TYPE_CHOICES = [
+        ("software", "Программное обеспечение"),
+        ("hardware", "Оборудование"),
+        ("service", "Сервис"),
+    ]
+
+    STATUS_TAG_CLASSES = {
+        "active": "tag-ok",
+        "implementing": "tag-warn",
+        "planned": "tag-blue",
+        "pilot": "tag-blue",
+        "unsupported": "tag-danger",
+        "decommissioned": "tag-muted",
+    }
+
     autosystem_name = models.CharField(
         max_length=255,
-        verbose_name="Название системы"
+        verbose_name="Полное название системы автоматизации"
+    )
+    autosystem_short_name = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Короткое название системы автоматизации"
     )
     system_class = models.ForeignKey(
         AutomationClass,
@@ -54,8 +82,72 @@ class AutomatedSystem(models.Model):
         null=True,
         blank=True,
         related_name="vendor_systems",
-        verbose_name="Вендор",
+        verbose_name="Поставщик системы",
     )
+    version = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Версия системы",
+    )
+
+    # --- Состояние продукта ---
+    system_status = models.CharField(
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default="active",
+        verbose_name="Статус системы",
+    )
+    product_type = models.CharField(
+        max_length=50,
+        choices=PRODUCT_TYPE_CHOICES,
+        blank=True,
+        default="software",
+        verbose_name="Тип продукта",
+    )
+
+    notes = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Дополнительная информация",
+    )
+
+    # --- Жизненный цикл ---
+    release_year = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Дата выпуска",
+    )
+    end_of_support = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Конец поддержки",
+    )
+
+    # --- Технические данные ---
+    article = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+        verbose_name="Артикул",
+    )
+    technical_specs = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name="Технические характеристики",
+    )
+    modules = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name="Модули системы",
+    )
+    interfaces = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name="Интерфейсы системы",
+    )
+
     creator_id = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -70,3 +162,45 @@ class AutomatedSystem(models.Model):
 
     def __str__(self):
         return self.autosystem_name
+
+    @property
+    def status_tag_class(self):
+        return self.STATUS_TAG_CLASSES.get(self.system_status, "tag-muted")
+
+    @staticmethod
+    def _json_to_text(value):
+        if value in (None, ""):
+            return ""
+        import json
+        return json.dumps(value, ensure_ascii=False, indent=2)
+
+    @property
+    def technical_specs_json(self):
+        return self._json_to_text(self.technical_specs)
+
+    @property
+    def modules_json(self):
+        return self._json_to_text(self.modules)
+
+    @property
+    def interfaces_json(self):
+        return self._json_to_text(self.interfaces)
+
+    @property
+    def support_display(self):
+        """Текст для колонки «Окончание поддержки».
+
+        Если дата окончания не указана или ещё не наступила — «Поддерживается»,
+        иначе — дата окончания.
+        """
+        from django.utils import timezone
+        if not self.end_of_support:
+            return "Поддерживается"
+        if self.end_of_support >= timezone.localdate():
+            return "Поддерживается"
+        return self.end_of_support.strftime("%d.%m.%Y")
+
+    @property
+    def is_supported(self):
+        from django.utils import timezone
+        return (not self.end_of_support) or (self.end_of_support >= timezone.localdate())

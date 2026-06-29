@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
-        <h1 style="margin:0">Системы</h1>
+    <div class="page-title-row">
+        <h1 style="margin:0">Системы автоматизации</h1>
         {% if user.is_authenticated %}
             <a href="{% url 'system-create' %}" class="btn btn-primary">+ Добавить систему</a>
         {% endif %}
@@ -74,22 +74,27 @@
         </div>
     </form>
 
+    <div class="table-wrap">
     <table>
         <thead>
-            <tr><th>Название</th><th>Класс</th><th>Вендор</th></tr>
+            <tr><th>Название</th><th>Класс</th><th>Статус</th><th>Тип продукта</th><th>Вендор</th><th>Окончание поддержки</th></tr>
         </thead>
         <tbody>
             {% for s in systems %}
             <tr>
-                <td><a href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
+                <td><a class="link" href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
-                <td>{% if s.vendor %}<a href="{% url 'participant-detail' s.vendor.pk %}">{{ s.vendor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td><span class="tag {{ s.status_tag_class }}">{{ s.get_system_status_display }}</span></td>
+                <td>{{ s.get_product_type_display|default:'—' }}</td>
+                <td>{% if s.vendor %}<a class="link" href="{% url 'participant-detail' s.vendor.pk %}">{{ s.vendor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if s.is_supported %}<span class="tag tag-ok">Поддерживается</span>{% else %}<span class="tag tag-danger">{{ s.support_display }}</span>{% endif %}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="empty">Системы не найдены</td></tr>
+            <tr><td colspan="6" class="empty">Системы не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 <script>

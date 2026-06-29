@@ -4,54 +4,157 @@
 
 {% block content %}
 <div class="card form-card">
-    <h1>{% if system %}Изменить{% else %}Добавить{% endif %} систему</h1>
+    <h1>{% if system %}Изменить{% else %}Добавить{% endif %} систему автоматизации</h1>
 
     {% if error %}<p class="error">{{ error }}</p>{% endif %}
 
     <form method="post" id="systemForm">
         {% csrf_token %}
-        <div class="form-group">
-            <label>Название системы</label>
-            <input type="text" name="autosystem_name" value="{{ system.autosystem_name|default:'' }}" required>
-        </div>
 
-        <div class="form-group">
-            <label>Класс системы</label>
-            <div class="system-results-container" id="classPicker">
-                {% for cls in classes %}
-                <div class="system-item {% if system.system_class_id == cls.pk %}selected{% endif %}" data-id="{{ cls.pk }}">
-                    <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
-                    <span class="system-info">Уровень {{ cls.level }}</span>
-                </div>
-                {% endfor %}
-            </div>
-            <input type="hidden" name="system_class" id="selectedClassId" value="{{ system.system_class_id|default:'' }}" required>
-        </div>
-
-        <div class="picker" data-target="#selectedVendorId">
+        <!-- ===== Основная информация ===== -->
+        <div class="form-section">
+            <h2>Основная информация</h2>
             <div class="form-group">
-                <label>Вендор</label>
-                <div class="search-wrapper">
-                    <input type="text" class="picker-search" placeholder="Введите название участника рынка..." style="margin-bottom:0">
-                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                <label>Полное название системы автоматизации</label>
+                <input type="text" name="autosystem_name" value="{{ system.autosystem_name|default:'' }}" required>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Короткое название</label>
+                    <input type="text" name="autosystem_short_name" value="{{ system.autosystem_short_name|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Версия системы</label>
+                    <input type="text" name="version" value="{{ system.version|default:'' }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Артикул</label>
+                <input type="text" name="article" value="{{ system.article|default:'' }}" placeholder="Уникальный артикул (необязательно)">
+            </div>
+        </div>
+
+        <!-- ===== Классификация и участники ===== -->
+        <div class="form-section">
+            <h2>Классификация и участники</h2>
+
+            <div class="form-group">
+                <label>Тип системы — уровень и класс</label>
+                <div class="picker collapsible {% if system.system_class_id %}open{% endif %}" data-target="#selectedClassId" data-empty-text="Не указан">
+                    <div class="picker-header">
+                        <span class="picker-header-label">Класс системы</span>
+                        <span class="picker-header-value empty-value">Не указан</span>
+                        <span class="picker-caret">▾</span>
+                    </div>
+                    <div class="picker-body">
+                        <div class="search-wrapper">
+                            <input type="text" class="picker-search" placeholder="Введите класс системы..." style="margin-bottom:0">
+                            <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                        </div>
+                        <div class="system-results-container">
+                            {% for cls in classes %}
+                            <div class="system-item {% if system.system_class_id == cls.pk %}selected{% endif %}" data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }}" data-level="{{ cls.level }}">
+                                <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
+                                <span class="system-info">Уровень {{ cls.level }}</span>
+                            </div>
+                            {% endfor %}
+                            <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Классы не найдены</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="system_class" id="selectedClassId" value="{{ system.system_class_id|default:'' }}" required>
                 </div>
             </div>
 
-            <div class="system-results-container">
-                <div class="system-item {% if not system.vendor_id %}selected{% endif %}" data-id="" data-keep>
-                    <span class="system-name">— Вендор не указан —</span>
-                </div>
-                {% for participant in participants %}
-                <div class="system-item {% if system.vendor_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
-                    <span class="system-name">{{ participant.participant_name }}</span>
-                </div>
-                {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
-                    Участники рынка не найдены
+            <div class="form-group">
+                <label>Поставщик системы / вендор</label>
+                <div class="picker collapsible {% if system.vendor_id %}open{% endif %}" data-target="#selectedVendorId" data-empty-text="Не указан">
+                    <div class="picker-header">
+                        <span class="picker-header-label">Вендор</span>
+                        <span class="picker-header-value empty-value">Не указан</span>
+                        <span class="picker-caret">▾</span>
+                    </div>
+                    <div class="picker-body">
+                        <div class="search-wrapper">
+                            <input type="text" class="picker-search" placeholder="Введите название участника рынка..." style="margin-bottom:0">
+                            <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                        </div>
+                        <div class="system-results-container">
+                            <div class="system-item {% if not system.vendor_id %}selected{% endif %}" data-id="" data-keep>
+                                <span class="system-name">— Вендор не указан —</span>
+                            </div>
+                            {% for participant in participants %}
+                            <div class="system-item {% if system.vendor_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
+                                <span class="system-name">{{ participant.participant_name }}</span>
+                            </div>
+                            {% endfor %}
+                            <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Участники рынка не найдены</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="vendor" id="selectedVendorId" value="{{ system.vendor_id|default:'' }}">
                 </div>
             </div>
+        </div>
 
-            <input type="hidden" name="vendor" id="selectedVendorId" value="{{ system.vendor_id|default:'' }}">
+        <!-- ===== Состояние продукта ===== -->
+        <div class="form-section">
+            <h2>Состояние продукта</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Статус системы</label>
+                    <select name="system_status">
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if system.system_status == value %}selected{% elif not system and value == 'active' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тип продукта</label>
+                    <select name="product_type">
+                        {% for value, label in product_type_choices %}
+                        <option value="{{ value }}" {% if system.product_type == value %}selected{% elif not system and value == 'software' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Дата выпуска</label>
+                    <input type="date" name="release_year" value="{{ system.release_year|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Конец поддержки</label>
+                    <input type="date" name="end_of_support" value="{{ system.end_of_support|date:'Y-m-d'|default:'' }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Технические данные ===== -->
+        <div class="form-section">
+            <h2>Технические данные</h2>
+            <p class="hint" style="margin-top:-6px; margin-bottom:12px">Поля заполняются в формате JSON (можно оставить пустыми).</p>
+            <div class="form-group">
+                <label>Технические характеристики (JSON)</label>
+                <textarea name="technical_specs" rows="3" placeholder='{"cpu": "...", "ram": "..."}'>{% if system.technical_specs is not None %}{{ system.technical_specs_json }}{% endif %}</textarea>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Модули системы (JSON)</label>
+                    <textarea name="modules" rows="3" placeholder='["Модуль 1", "Модуль 2"]'>{% if system.modules is not None %}{{ system.modules_json }}{% endif %}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Интерфейсы системы (JSON)</label>
+                    <textarea name="interfaces" rows="3" placeholder='["OPC UA", "Modbus"]'>{% if system.interfaces is not None %}{{ system.interfaces_json }}{% endif %}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Дополнительная информация ===== -->
+        <div class="form-section">
+            <h2>Дополнительная информация</h2>
+            <div class="form-group">
+                <label>Примечания</label>
+                <textarea name="notes" rows="4">{{ system.notes|default:'' }}</textarea>
+            </div>
         </div>
 
         <div class="form-actions">
@@ -60,22 +163,4 @@
         </div>
     </form>
 </div>
-
-<script>
-(function() {
-    const container = document.getElementById('classPicker');
-    const hiddenInput = document.getElementById('selectedClassId');
-    if (!container) return;
-
-    container.querySelectorAll('.system-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-            container.querySelectorAll('.system-item').forEach(function(el) {
-                el.classList.remove('selected');
-            });
-            item.classList.add('selected');
-            hiddenInput.value = item.getAttribute('data-id') || '';
-        });
-    });
-})();
-</script>
 {% endblock %}

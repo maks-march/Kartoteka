@@ -32,6 +32,13 @@ class SystemUseCase:
             raise ValidationError(f"{field_name} не найден")
         return participant
 
+    @staticmethod
+    def _normalize_article(data):
+        # Артикул уникален; пустую строку храним как NULL, чтобы несколько систем
+        # без артикула не конфликтовали по unique-ограничению.
+        if "article" in data and not (data["article"] or "").strip():
+            data["article"] = None
+
     def create(self, user=None, **data):
         class_id = data.get("system_class")
         if class_id is not None and not self.class_repo.get_by_id(class_id):
@@ -40,6 +47,8 @@ class SystemUseCase:
 
         vendor_id = data.pop("vendor", None)
         data["vendor"] = self._get_optional_participant(vendor_id, "Вендор")
+
+        self._normalize_article(data)
 
         if user is not None:
             data['creator_id'] = user
@@ -55,6 +64,8 @@ class SystemUseCase:
         if "vendor" in data:
             vendor_id = data.pop("vendor")
             data["vendor"] = self._get_optional_participant(vendor_id, "Вендор")
+
+        self._normalize_article(data)
 
         return self.repo.update(obj, **data)
 

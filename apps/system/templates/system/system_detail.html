@@ -4,33 +4,130 @@
 
 {% block content %}
 <div class="card">
-    <div>
-        <h1 style="margin-bottom:5px">{{ system.autosystem_name }}</h1>
-        <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
-        {% if system.system_class.description %}
-            <p style="margin-top:10px; color:#666">{{ system.system_class.description }}</p>
+    <div class="page-title-row">
+        <div>
+            <h1 style="margin-bottom:6px">{{ system.autosystem_name }}</h1>
+            <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
+            <span class="tag {{ system.status_tag_class }}" style="margin-left:6px">{{ system.get_system_status_display }}</span>
+            {% if system.product_type %}
+                <span class="tag tag-muted" style="margin-left:6px">{{ system.get_product_type_display }}</span>
+            {% endif %}
+
+            <div class="detail-meta">
+                <p>Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+                {% if system.system_class.description %}<p>{{ system.system_class.description }}</p>{% endif %}
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="actions">
+            <a href="{% url 'system-edit' system.pk %}" class="btn btn-secondary">Изменить</a>
+            <form action="{% url 'system-delete' system.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
         {% endif %}
-        <p style="margin-top:10px; color:#666">
-            Вендор:
-            {% if system.vendor %}<a href="{% url 'participant-detail' system.vendor.pk %}">{{ system.vendor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}
-        </p>
-        <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
     </div>
-    {% if user.is_authenticated %}
-    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef; flex-wrap:wrap">
-        <a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>
-        <a href="{% url 'system-edit' system.pk %}" class="btn btn-secondary">Изменить</a>
-        <form action="{% url 'system-delete' system.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить систему?')">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Удалить</button>
-        </form>
+
+    <!-- ===== Идентификация ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Идентификация</h3>
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Короткое название</span>
+                <span class="info-value">{{ system.autosystem_short_name|default:'—' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Версия</span>
+                <span class="info-value">{{ system.version|default:'—' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Артикул</span>
+                <span class="info-value">{{ system.article|default:'—' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Классификация и участники ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Классификация и участники</h3>
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Класс системы</span>
+                <span class="info-value">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Вендор</span>
+                <span class="info-value">
+                    {% if system.vendor %}<a class="link" href="{% url 'participant-detail' system.vendor.pk %}">{{ system.vendor.participant_name }}</a>{% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Тип продукта</span>
+                <span class="info-value">{{ system.get_product_type_display|default:'—' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Жизненный цикл ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Жизненный цикл</h3>
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Статус</span>
+                <span class="info-value">{{ system.get_system_status_display }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Дата выпуска</span>
+                <span class="info-value">{% if system.release_year %}{{ system.release_year|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Конец поддержки</span>
+                <span class="info-value">{% if system.end_of_support %}{{ system.end_of_support|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+            </div>
+
+            <div class="info-card full">
+                <span class="info-label">Описание / примечания</span>
+                <span class="info-value desc-text">{% if system.notes %}{{ system.notes }}{% else %}—{% endif %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Технические данные ===== -->
+    {% if system.technical_specs is not None or system.modules is not None or system.interfaces is not None %}
+    <div class="info-block">
+        <h3 class="info-block-title">Технические данные</h3>
+        <div class="info-cards">
+            <div class="info-card full">
+                <span class="info-label">Технические характеристики</span>
+                <span class="info-value desc-text">{% if system.technical_specs is not None %}{{ system.technical_specs_json }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="info-card full">
+                <span class="info-label">Модули системы</span>
+                <span class="info-value desc-text">{% if system.modules is not None %}{{ system.modules_json }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="info-card full">
+                <span class="info-label">Интерфейсы системы</span>
+                <span class="info-value desc-text">{% if system.interfaces is not None %}{{ system.interfaces_json }}{% else %}—{% endif %}</span>
+            </div>
+        </div>
     </div>
     {% endif %}
 </div>
 
+{% if user.is_authenticated %}
+<div class="card">
+    <div class="card-title-row">
+        <h2 style="margin:0">Действия</h2>
+        <a href="{% url 'system-attach-object' system.pk %}" class="btn btn-primary">+ Привязать объект</a>
+    </div>
+</div>
+{% endif %}
+
 <div class="card">
     <h2>Подключенные объекты</h2>
     {% if system_objects %}
+    <div class="table-wrap">
     <table>
         <thead>
             <tr><th>Объект</th><th>Уровень</th><th>Статус</th><th>Дата ввода</th><th>Интегратор</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
@@ -60,6 +157,7 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
     <p class="empty">Нет подключенных объектов</p>
     {% endif %}

@@ -9,6 +9,49 @@ from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
 from apps.participants.usecases.participant_usecase import ParticipantUseCase
+from apps.system.models import AutomatedSystem
+
+import json
+
+
+# Простые текстовые поля системы, считываемые из формы напрямую.
+_SYSTEM_TEXT_FIELDS = (
+    "autosystem_short_name",
+    "version",
+    "article",
+    "notes",
+)
+
+# JSON-поля: в форме вводятся как текст (JSON); пустое -> None, иначе парсим.
+_SYSTEM_JSON_FIELDS = ("technical_specs", "modules", "interfaces")
+
+
+def _parse_json_field(raw, label):
+    raw = (raw or "").strip()
+    if not raw:
+        return None
+    try:
+        return json.loads(raw)
+    except (ValueError, TypeError):
+        raise ValidationError(f"Поле «{label}» должно быть корректным JSON")
+
+
+def _extract_system_fields(post):
+    """Собирает дополнительные поля системы из POST."""
+    data = {field: post.get(field, "") or "" for field in _SYSTEM_TEXT_FIELDS}
+    data["system_status"] = post.get("system_status") or "active"
+    data["product_type"] = post.get("product_type") or "software"
+    data["release_year"] = post.get("release_year") or None
+    data["end_of_support"] = post.get("end_of_support") or None
+
+    json_labels = {
+        "technical_specs": "Технические характеристики",
+        "modules": "Модули системы",
+        "interfaces": "Интерфейсы системы",
+    }
+    for field in _SYSTEM_JSON_FIELDS:
+        data[field] = _parse_json_field(post.get(field), json_labels[field])
+    return data
 
 
 @require_http_methods(["GET"])
@@ -57,6 +100,7 @@ def system_create(request):
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
                 vendor=request.POST.get("vendor") or None,
+                **_extract_system_fields(request.POST),
             )
             return redirect("system-list")
         except (ValidationError, Exception) as e:
@@ -67,6 +111,8 @@ def system_create(request):
     return render(request, "system/system_form.html", {
         "classes": classes,
         "participants": participants,
+        "status_choices": AutomatedSystem.STATUS_CHOICES,
+        "product_type_choices": AutomatedSystem.PRODUCT_TYPE_CHOICES,
         "error": error,
     })
 
@@ -88,6 +134,7 @@ def system_edit(request, pk):
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
                 vendor=request.POST.get("vendor") or None,
+                **_extract_system_fields(request.POST),
             )
             return redirect("system-detail", pk=pk)
         except (ValidationError, Exception) as e:
@@ -99,6 +146,8 @@ def system_edit(request, pk):
         "system": obj,
         "classes": classes,
         "participants": participants,
+        "status_choices": AutomatedSystem.STATUS_CHOICES,
+        "product_type_choices": AutomatedSystem.PRODUCT_TYPE_CHOICES,
         "error": error,
     })
 
