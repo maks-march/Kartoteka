@@ -14,7 +14,26 @@ window.addEventListener('load', function() {
     const advancedSection = document.getElementById('advancedSearch');
     if (!advancedSection) return;
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('category') || urlParams.has('system_class') || urlParams.has('system') || urlParams.has('object')) {
+
+    // Собираем имена всех фильтров, находящихся ВНУТРИ блока расширенного поиска:
+    // из name у полей и из data-name у контейнеров скрытых input'ов.
+    const names = new Set();
+    advancedSection.querySelectorAll('[name]').forEach(function(el) {
+        const n = el.getAttribute('name');
+        if (n) names.add(n);
+    });
+    advancedSection.querySelectorAll('[data-name]').forEach(function(el) {
+        const n = el.getAttribute('data-name');
+        if (n) names.add(n);
+    });
+
+    // Раскрываем блок, если хотя бы один из этих фильтров задействован в URL.
+    let active = false;
+    names.forEach(function(n) {
+        if (urlParams.getAll(n).some(function(v) { return v !== ''; })) active = true;
+    });
+
+    if (active) {
         advancedSection.classList.add('show');
         const btn = document.querySelector('.btn-link[onclick^="toggleAdvanced"]');
         if (btn) btn.textContent = 'Скрыть поиск \u25B2';
