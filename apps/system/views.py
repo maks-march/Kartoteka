@@ -68,6 +68,15 @@ def _extract_system_fields(post):
 
 @require_http_methods(["GET"])
 def system_list(request):
+    return _system_list_render(request, "system/system_list.html", "table")
+
+
+@require_http_methods(["GET"])
+def system_cards(request):
+    return _system_list_render(request, "system/system_cards.html", "cards")
+
+
+def _system_list_render(request, template, view_mode):
     system_class = request.GET.get("system_class") or None
     search = request.GET.get("search") or None
     obj = request.GET.getlist("object") or None
@@ -93,7 +102,7 @@ def system_list(request):
     classes = class_usecase.list()
     all_objects = object_usecase.list()
     all_vendors = participant_usecase.list()
-    return render(request, "system/system_list.html", {
+    return render(request, template, {
         "systems": systems,
         "classes": classes,
         "all_objects": all_objects,
@@ -105,6 +114,7 @@ def system_list(request):
         "selected_statuses": system_status or [],
         "selected_product_types": product_type or [],
         "ordering": ordering or [],
+        "view_mode": view_mode,
     })
 
 

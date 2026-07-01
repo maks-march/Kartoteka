@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Системы — карточки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-title-row">
+        <h1 style="margin:0">Системы</h1>
+        <div style="display:flex; gap:12px; align-items:center">
+            <div class="view-toggle">
+                <a href="{% url 'system-list' %}">Таблица</a>
+                <a href="{% url 'system-cards' %}" class="active">Карточки</a>
+            </div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'system-create' %}" class="btn btn-primary">+ Добавить систему</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% include "system/_system_filters.html" %}
+
+    <div class="cards-grid">
+        {% for s in systems %}
+        <div class="entity-card" data-href="{% url 'system-detail' s.pk %}">
+            <div class="card-title"><a href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></div>
+            <div class="card-tags">
+                <span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
+                <span class="tag {{ s.status_tag_class }}">{{ s.get_system_status_display }}</span>
+            </div>
+            <div class="card-rows">
+                <div class="card-row"><span class="k">Тип продукта</span><span class="v">{{ s.get_product_type_display|default:'—' }}</span></div>
+                <div class="card-row"><span class="k">Вендор</span><span class="v">{% if s.vendor %}<a class="link" href="{% url 'participant-detail' s.vendor.pk %}">{{ s.vendor.participant_name }}</a>{% else %}—{% endif %}</span></div>
+                <div class="card-row"><span class="k">Поддержка</span><span class="v">{% if s.is_supported %}Поддерживается{% else %}{{ s.support_display }}{% endif %}</span></div>
+                <div class="card-row"><span class="k">Объектов</span><span class="v">{{ s.objects_count }}</span></div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty">Системы не найдены</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% include "system/_system_filters_script.html" %}
+{% endblock %}

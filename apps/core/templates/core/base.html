@@ -11,10 +11,26 @@
     <header>
         <nav>
             <a href="{% url 'hub' %}">Главная</a>
-            <a href="{% url 'object-list' %}">Объекты</a>
-            <a href="{% url 'system-list' %}">Системы</a>
-            <a href="{% url 'category-list' %}">Категории</a>
-            <a href="{% url 'owner-entity-list' %}">Юр. лица</a>
+
+            <div class="nav-item">
+                <a href="{% url 'object-list' %}" class="nav-parent">Объекты ▾</a>
+                <div class="nav-dropdown">
+                    <a href="{% url 'object-list' %}">Табличное представление</a>
+                    <a href="{% url 'object-cards' %}">Карточное представление</a>
+                    <div class="nav-sep"></div>
+                    <a href="{% url 'category-list' %}">Категории</a>
+                    <a href="{% url 'owner-entity-list' %}">Владельцы</a>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="{% url 'system-list' %}" class="nav-parent">Системы ▾</a>
+                <div class="nav-dropdown">
+                    <a href="{% url 'system-list' %}">Табличное представление</a>
+                    <a href="{% url 'system-cards' %}">Карточное представление</a>
+                </div>
+            </div>
+
             <a href="{% url 'participant-list' %}">Участники</a>
         </nav>
         <div class="user-menu">

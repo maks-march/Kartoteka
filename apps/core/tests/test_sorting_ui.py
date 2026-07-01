@@ -122,3 +122,75 @@ class RelatedFieldSortingTests(TestCase):
         sh = self.client.get("/system/").content.decode().replace("&amp;", "&")
         self.assertIn("ordering=-system_class__system_class", sh)
         self.assertIn("ordering=-vendor__participant_name", sh)
+
+
+class ViewModeAndNavTests(TestCase):
+    def setUp(self):
+        from apps.system.models import AutomationClass, AutomatedSystem
+        self.user = User.objects.create_user("vm", "vm@x.x", "pw")
+        Object.objects.create(name="Объект A", level=1, status="active", city="Омск", creator_id=self.user)
+        cls = AutomationClass.objects.create(level=2, system_class="SCADA")
+        AutomatedSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator_id=self.user)
+
+    def test_object_cards_page(self):
+        r = self.client.get("/objects/cards/")
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "cards-grid")
+        self.assertContains(r, "entity-card")
+        self.assertContains(r, "Объект A")
+
+    def test_system_cards_page(self):
+        r = self.client.get("/system/cards/")
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "cards-grid")
+        self.assertContains(r, "Sys A")
+
+    def test_cards_respect_filters(self):
+        Object.objects.create(name="Другой", level=1, status="stopped", creator_id=self.user)
+        r = self.client.get("/objects/cards/?search=Объект")
+        self.assertContains(r, "Объект A")
+        # "Другой" не должен попасть в сетку карточек
+        grid = r.content.decode().split('cards-grid', 1)[1]
+        self.assertNotIn("Другой", grid)
+
+    def test_nav_has_dropdown_and_renamed_owners(self):
+        r = self.client.get("/objects/")
+        self.assertContains(r, "nav-dropdown")
+        self.assertContains(r, "Владельцы")
+        self.assertNotContains(r, "Юр. лица")
+        self.assertContains(r, "Карточное представление")
+
+
+class CardCountsTests(TestCase):
+    def setUp(self):
+        from apps.objects.models import Object, ObjectSystem
+        from apps.system.models import AutomationClass, AutomatedSystem
+        self.user = User.objects.create_user("cc", "cc@x.x", "pw")
+        self.o = Object.objects.create(name="Объект A", level=1, status="active", creator_id=self.user)
+        self.o2 = Object.objects.create(name="Объект B", level=1, status="active", creator_id=self.user)
+        cls = AutomationClass.objects.create(level=2, system_class="SCADA")
+        self.s1 = AutomatedSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)
+        self.s2 = AutomatedSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)
+        ObjectSystem.objects.create(object=self.o, system=self.s1)
+        ObjectSystem.objects.create(object=self.o, system=self.s2)
+        ObjectSystem.objects.create(object=self.o2, system=self.s1)
+
+    def test_object_systems_count(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        counts = {o.name: o.systems_count for o in ObjectUseCase().list()}
+        self.assertEqual(counts["Объект A"], 2)
+        self.assertEqual(counts["Объект B"], 1)
+
+    def test_system_objects_count(self):
+        from apps.system.usecases.system_usecase import SystemUseCase
+        counts = {s.autosystem_name: s.objects_count for s in SystemUseCase().list()}
+        self.assertEqual(counts["S1"], 2)
+        self.assertEqual(counts["S2"], 1)
+
+    def test_cards_render_counts_and_datahref(self):
+        ho = self.client.get("/objects/cards/").content.decode()
+        self.assertIn("data-href=", ho)
+        self.assertRegex(ho, r'Систем</span><span class="v">\d+')
+        hs = self.client.get("/system/cards/").content.decode()
+        self.assertIn("data-href=", hs)
+        self.assertRegex(hs, r'Объектов</span><span class="v">\d+')

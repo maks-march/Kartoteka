@@ -1,0 +1,126 @@
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <select name="level">
+                <option value="">Все уровни</option>
+                <option value="1" {% if request.GET.level == "1" %}selected{% endif %}>Уровень 1</option>
+                <option value="2" {% if request.GET.level == "2" %}selected{% endif %}>Уровень 2</option>
+                <option value="3" {% if request.GET.level == "3" %}selected{% endif %}>Уровень 3</option>
+            </select>
+
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+
+            <button type="submit" class="btn btn-primary">Применить</button>
+
+            <a href="{% url 'object-list' %}" class="btn-reset" title="Сбросить все фильтры">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </a>
+
+            <button type="button" class="btn btn-link" onclick="toggleAdvanced(this)">Расширенный поиск ▼</button>
+        </div>
+
+        <div class="advanced-section" id="advancedSearch" style="height:auto">
+            <!-- Подпоиск категории -->
+            <div class="filter-collapse">
+                <div class="filter-collapse-header">
+                    <span class="fc-label">Категория</span>
+                    <span class="fc-hint">{% if selected_categories %}выбрано: {{ selected_categories|length }}{% else %}все{% endif %}</span>
+                    <span class="fc-caret">▾</span>
+                </div>
+                <div class="filter-collapse-body">
+                    <div class="search-wrapper">
+                        <input type="text" id="categoryFilterSearch" placeholder="Введите название категории..." style="margin-bottom:0">
+                        <button type="button" id="categoryFilterBtn" class="btn btn-secondary">Найти</button>
+                    </div>
+                    <div class="system-results-container" id="categoryFilterList" style="max-height:160px">
+                        <div class="system-item {% if not selected_categories %}selected{% endif %}" data-id="">
+                            <span class="system-name">— Все категории —</span>
+                        </div>
+                        {% for cat in all_categories %}
+                        <div class="system-item {% if cat.pk|stringformat:"s" in selected_categories %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}">
+                            <span class="system-name">{{ cat.name }}</span>
+                            <span class="system-info">Уровень {{ cat.level }}</span>
+                        </div>
+                        {% endfor %}
+                        <div id="categoryFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                            Категории не найдены
+                        </div>
+                    </div>
+                    <div id="categoryFilterInputs" data-name="category">
+                        {% for cid in selected_categories %}
+                        <input type="hidden" name="category" value="{{ cid }}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Подпоиск юридического лица -->
+            <div class="filter-collapse">
+                <div class="filter-collapse-header">
+                    <span class="fc-label">Юридическое лицо</span>
+                    <span class="fc-hint">{% if selected_owner_entities %}выбрано: {{ selected_owner_entities|length }}{% else %}все{% endif %}</span>
+                    <span class="fc-caret">▾</span>
+                </div>
+                <div class="filter-collapse-body">
+                    <div class="search-wrapper">
+                        <input type="text" id="ownerEntityFilterSearch" placeholder="Введите название юр. лица..." style="margin-bottom:0">
+                        <button type="button" id="ownerEntityFilterBtn" class="btn btn-secondary">Найти</button>
+                    </div>
+                    <div class="system-results-container" id="ownerEntityFilterList" style="max-height:160px">
+                        <div class="system-item {% if not selected_owner_entities %}selected{% endif %}" data-id="">
+                            <span class="system-name">— Все юридические лица —</span>
+                        </div>
+                        {% for owner in all_owner_entities %}
+                        <div class="system-item {% if owner.pk|stringformat:"s" in selected_owner_entities %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
+                            <span class="system-name">{{ owner.owner_name }}</span>
+                            <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
+                        </div>
+                        {% endfor %}
+                        <div id="ownerEntityFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                            Юридические лица не найдены
+                        </div>
+                    </div>
+                    <div id="ownerEntityFilterInputs" data-name="owner_entity">
+                        {% for oid in selected_owner_entities %}
+                        <input type="hidden" name="owner_entity" value="{{ oid }}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Подпоиск привязанной системы -->
+            <div class="filter-collapse">
+                <div class="filter-collapse-header">
+                    <span class="fc-label">Привязанная система</span>
+                    <span class="fc-hint">{% if selected_systems %}выбрано: {{ selected_systems|length }}{% else %}все{% endif %}</span>
+                    <span class="fc-caret">▾</span>
+                </div>
+                <div class="filter-collapse-body">
+                    <div class="search-wrapper">
+                        <input type="text" id="systemFilterSearch" placeholder="Введите название системы..." style="margin-bottom:0">
+                        <button type="button" id="systemFilterBtn" class="btn btn-secondary">Найти</button>
+                    </div>
+                    <div class="system-results-container" id="systemFilterList" style="max-height:160px">
+                        <div class="system-item {% if not selected_systems %}selected{% endif %}" data-id="">
+                            <span class="system-name">— Все системы —</span>
+                        </div>
+                        {% for s in all_systems %}
+                        <div class="system-item {% if s.pk|stringformat:"s" in selected_systems %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
+                            <span class="system-name">{{ s.autosystem_name }}</span>
+                            <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
+                        </div>
+                        {% endfor %}
+                        <div id="systemFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                            Системы не найдены
+                        </div>
+                    </div>
+                    <div id="systemFilterInputs" data-name="system">
+                        {% for sid in selected_systems %}
+                        <input type="hidden" name="system" value="{{ sid }}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>

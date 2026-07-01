@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.objects.views import (
     object_list,
+    object_cards,
     object_detail,
     object_create,
     object_edit,
@@ -14,6 +15,7 @@ from apps.objects.views import (
 
 urlpatterns = [
     path("", object_list, name="object-list"),
+    path("cards/", object_cards, name="object-cards"),
     path("create/", object_create, name="object-create"),
     path("<int:pk>/", object_detail, name="object-detail"),
     path("<int:pk>/edit/", object_edit, name="object-edit"),

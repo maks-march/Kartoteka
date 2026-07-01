@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Объекты — карточки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-title-row">
+        <h1 style="margin:0">Объекты</h1>
+        <div style="display:flex; gap:12px; align-items:center">
+            <div class="view-toggle">
+                <a href="{% url 'object-list' %}">Таблица</a>
+                <a href="{% url 'object-cards' %}" class="active">Карточки</a>
+            </div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'object-create' %}" class="btn btn-primary">+ Добавить объект</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% include "objects/_object_filters.html" %}
+
+    <div class="cards-grid">
+        {% for obj in objects %}
+        <div class="entity-card" data-href="{% url 'object-detail' obj.pk %}">
+            <div class="card-title"><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></div>
+            <div class="card-tags">
+                <span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span>
+                <span class="tag {{ obj.status_tag_class }}">{{ obj.get_status_display }}</span>
+                {% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% endif %}
+            </div>
+            <div class="card-rows">
+                <div class="card-row"><span class="k">Владелец</span><span class="v">{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}—{% endif %}</span></div>
+                <div class="card-row"><span class="k">Родитель</span><span class="v">{% if obj.parent %}<a class="link" href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}—{% endif %}</span></div>
+                <div class="card-row"><span class="k">Город</span><span class="v">{{ obj.city|default:'—' }}</span></div>
+                <div class="card-row"><span class="k">Систем</span><span class="v">{{ obj.systems_count }}</span></div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty">Объекты не найдены</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% include "objects/_object_filters_script.html" %}
+{% endblock %}

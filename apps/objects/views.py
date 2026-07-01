@@ -72,6 +72,15 @@ def _parent_address_map(parents):
 
 @require_http_methods(["GET"])
 def object_list(request):
+    return _object_list_render(request, "objects/object_list.html", "table")
+
+
+@require_http_methods(["GET"])
+def object_cards(request):
+    return _object_list_render(request, "objects/object_cards.html", "cards")
+
+
+def _object_list_render(request, template, view_mode):
     level = request.GET.get("level") or None
     search = request.GET.get("search") or None
     category = request.GET.getlist("category") or None
@@ -93,7 +102,7 @@ def object_list(request):
     all_categories = cat_usecase.list()
     all_systems = system_usecase.list()
     all_owner_entities = owner_usecase.list()
-    return render(request, "objects/object_list.html", {
+    return render(request, template, {
         "objects": objects,
         "all_categories": all_categories,
         "all_systems": all_systems,
@@ -102,6 +111,7 @@ def object_list(request):
         "selected_systems": system or [],
         "selected_owner_entities": owner_entity or [],
         "ordering": ordering or [],
+        "view_mode": view_mode,
     })
 
 

@@ -286,3 +286,15 @@ function initFilterCollapse(box) {
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.filter-collapse').forEach(initFilterCollapse);
 });
+
+/* ===== Клик по карточке = переход на её страницу =====
+   Карточка с data-href ведёт на detail. Клик по вложенной ссылке
+   (владелец/вендор и т.п.) работает как обычно и не перехватывается. */
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.entity-card[data-href]').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('a')) return;      // клик по вложенной ссылке — не мешаем
+            window.location.href = card.getAttribute('data-href');
+        });
+    });
+});

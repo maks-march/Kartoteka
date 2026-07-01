@@ -1,5 +1,7 @@
 import re
 
+from django.db.models import Count
+
 from apps.objects.models import Object
 from common.ordering import apply_ordering
 
@@ -53,6 +55,8 @@ class ObjectRepository:
             )
             # ИЛИ: объекты, принадлежащие любому из выбранных юр. лиц или их потомкам
             qs = qs.filter(owner_entity_id__in=owner_entity_ids)
+        # Количество разных подключённых систем (для списков/карточек)
+        qs = qs.annotate(systems_count=Count("objectsystem__system", distinct=True))
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):

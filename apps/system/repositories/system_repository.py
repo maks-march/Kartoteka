@@ -1,5 +1,7 @@
 import re
 
+from django.db.models import Count
+
 from apps.system.models import AutomatedSystem
 from common.ordering import apply_ordering
 
@@ -47,6 +49,8 @@ class SystemRepository:
         product_types = _as_id_list(product_type)
         if product_types:
             qs = qs.filter(product_type__in=product_types)
+        # Количество подключённых объектов (для списков/карточек)
+        qs = qs.annotate(objects_count=Count("objectsystem", distinct=True))
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):

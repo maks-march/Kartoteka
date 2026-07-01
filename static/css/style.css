@@ -1012,3 +1012,98 @@ th a.sort-link.sort-active { color: #007bff; font-weight: 700; }
     color: #007bff;
     margin-left: 1px;
 }
+
+/* ===== Навигация с выпадающим подменю ===== */
+nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.nav-item { position: relative; display: inline-block; }
+.nav-item .nav-parent { display: inline-block; }
+.nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 210px;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+    padding: 6px;
+    display: none;
+    z-index: 50;
+}
+.nav-item:hover .nav-dropdown,
+.nav-item:focus-within .nav-dropdown { display: block; }
+.nav-dropdown a {
+    display: block;
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.nav-dropdown a:hover { background: #f0f6ff; text-decoration: none; }
+.nav-sep { height: 1px; background: #eef0f4; margin: 6px 4px; }
+
+/* ===== Переключатель представления (таблица/карточки) ===== */
+.view-toggle { display: inline-flex; gap: 6px; }
+.view-toggle a {
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #444;
+    font-size: 14px;
+}
+.view-toggle a.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ===== Карточное представление списков (по 8 на экран: 4×2) ===== */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 6px;
+}
+@media (max-width: 1100px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px)  { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px)  { .cards-grid { grid-template-columns: 1fr; } }
+
+.entity-card {
+    background: #fff;
+    border: 1px solid #eef0f4;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s;
+}
+.entity-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    transform: translateY(-1px);
+}
+/* Ссылки в карточке без подчёркивания (подчёркивание только при наведении) */
+.entity-card a { text-decoration: none; }
+.entity-card a:hover { text-decoration: underline; }
+.entity-card .card-title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+.entity-card .card-title a { color: #1a1a1a; text-decoration: none; }
+.entity-card .card-title a:hover { color: #007bff; }
+.entity-card .card-tags { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+.entity-card .card-rows { display: flex; flex-direction: column; gap: 3px; }
+.entity-card .card-row {
+    font-size: 12.5px;
+    color: #555;
+    display: flex;
+    gap: 6px;
+}
+.entity-card .card-row .k { color: #99a; min-width: 78px; }
+.entity-card .card-row .v { color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

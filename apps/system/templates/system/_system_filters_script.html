@@ -1,0 +1,24 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Class picker (single select)
+    const classContainer = document.getElementById('classFilterPicker');
+    const classHidden = document.getElementById('selectedClassFilter');
+    if (classContainer && classHidden) {
+        classContainer.querySelectorAll('.system-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                classContainer.querySelectorAll('.system-item').forEach(function(el) {
+                    el.classList.remove('selected');
+                });
+                item.classList.add('selected');
+                classHidden.value = item.getAttribute('data-id') || '';
+            });
+        });
+    }
+
+    setupMultiFilterPicker('objectFilterSearch', 'objectFilterBtn', 'objectFilterList', 'objectFilterInputs', 'objectFilterNoResults');
+    setupMultiFilterPicker('vendorFilterSearch', 'vendorFilterBtn', 'vendorFilterList', 'vendorFilterInputs', 'vendorFilterNoResults');
+    // Статус и тип продукта — без поля поиска (выбор пунктов)
+    setupMultiFilterPicker(null, null, 'statusFilterList', 'statusFilterInputs', null);
+    setupMultiFilterPicker(null, null, 'ptypeFilterList', 'ptypeFilterInputs', null);
+});
+</script>
