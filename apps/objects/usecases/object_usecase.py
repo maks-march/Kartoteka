@@ -1,10 +1,11 @@
 from apps.objects.repositories.object_repository import ObjectRepository
 from apps.objects.usecases.validators import ObjectValidator
-from common.exceptions import NotFoundException
 from rest_framework.exceptions import NotFound
 
 
 class ObjectUseCase:
+    """Сценарии работы с объектами производства: список с фильтрами/сортировкой,
+    получение, создание, обновление и мягкое удаление с доменной валидацией."""
     def __init__(self, repo=None):
         self.repo = repo or ObjectRepository()
         self.validator = ObjectValidator()

@@ -22,7 +22,7 @@
                     <span class="fc-caret">▾</span>
                 </div>
                 <div class="filter-collapse-body">
-                    <div class="system-results-container" id="classFilterPicker" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="classFilterPicker">
                         <div class="system-item {% if not request.GET.system_class %}selected{% endif %}" data-id="" data-name="">
                             <span class="system-name">— Все классы —</span>
                         </div>
@@ -49,7 +49,7 @@
                         <input type="text" id="objectFilterSearch" placeholder="Введите название объекта..." style="margin-bottom:0">
                         <button type="button" id="objectFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
-                    <div class="system-results-container" id="objectFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="objectFilterList">
                         <div class="system-item {% if not selected_objects %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все объекты —</span>
                         </div>
@@ -59,7 +59,7 @@
                             <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
                         </div>
                         {% endfor %}
-                        <div id="objectFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                        <div id="objectFilterNoResults" class="picker-empty">
                             Объекты не найдены
                         </div>
                     </div>
@@ -83,7 +83,7 @@
                         <input type="text" id="vendorFilterSearch" placeholder="Введите название вендора..." style="margin-bottom:0">
                         <button type="button" id="vendorFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
-                    <div class="system-results-container" id="vendorFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="vendorFilterList">
                         <div class="system-item {% if not selected_vendors %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все вендоры —</span>
                         </div>
@@ -92,7 +92,7 @@
                             <span class="system-name">{{ v.participant_name }}</span>
                         </div>
                         {% endfor %}
-                        <div id="vendorFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                        <div id="vendorFilterNoResults" class="picker-empty">
                             Вендоры не найдены
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                     <span class="fc-caret">▾</span>
                 </div>
                 <div class="filter-collapse-body">
-                    <div class="system-results-container" id="statusFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="statusFilterList">
                         <div class="system-item {% if not selected_statuses %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все статусы —</span>
                         </div>
@@ -138,7 +138,7 @@
                     <span class="fc-caret">▾</span>
                 </div>
                 <div class="filter-collapse-body">
-                    <div class="system-results-container" id="ptypeFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="ptypeFilterList">
                         <div class="system-item {% if not selected_product_types %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все типы —</span>
                         </div>

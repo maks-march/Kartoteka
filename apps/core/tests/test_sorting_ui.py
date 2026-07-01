@@ -64,7 +64,6 @@ class SortHeaderTagTests(TestCase):
         self.assertIn("▲", html)
         # ссылка заголовка "Название" не должна содержать ordering для name
         start = html.find("Название")
-        segment = html[start - 250:start]
         # в сегменте ссылки этого заголовка не должно быть ordering=name / -name
         self.assertNotIn('ordering=name"', html[start - 250:start + 20])
 

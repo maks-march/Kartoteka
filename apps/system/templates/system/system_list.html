@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% load sorting %}
 
 {% block title %}Системы{% endblock %}
@@ -43,5 +44,8 @@
     </div>
 </div>
 
-{% include "system/_system_filters_script.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/system_filters.js' %}" defer></script>
 {% endblock %}

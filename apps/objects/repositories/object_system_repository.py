@@ -2,6 +2,7 @@ from apps.objects.models import ObjectSystem
 
 
 class ObjectSystemRepository:
+    """Доступ к данным связей «система на объекте»."""
     def get_for_object(self, obj):
         return (
             ObjectSystem.objects.filter(object=obj)

@@ -5,6 +5,7 @@ from common.ordering import apply_ordering
 
 
 class ParticipantRepository:
+    """Доступ к данным участников рынка."""
     ORDERING_FIELDS = {"participant_name"}
     DEFAULT_ORDERING = "participant_name"
 

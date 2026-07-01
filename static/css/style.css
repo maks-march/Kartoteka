@@ -1116,3 +1116,14 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
     overflow-wrap: anywhere;
     word-break: break-word;
 }
+
+/* ===== Утилиты (замена повторяющихся inline-стилей) ===== */
+/* Заглушка «ничего не найдено» в списках пикеров/фильтров */
+.picker-empty {
+    display: none;
+    padding: 20px;
+    text-align: center;
+    color: #999;
+}
+/* Ограничение высоты списка результатов фильтра */
+.filter-list-160 { max-height: 160px; }

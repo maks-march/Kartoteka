@@ -1,3 +1,4 @@
+"""Сериализаторы участников рынка для REST API."""
 from rest_framework import serializers
 
 from apps.participants.models import Participant

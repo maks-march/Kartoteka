@@ -1,9 +1,9 @@
 from apps.categories.repositories.category_repository import CategoryRepository
-from common.exceptions import NotFoundException
 from rest_framework.exceptions import NotFound
 
 
 class CategoryUseCase:
+    """Сценарии работы с категориями объектов."""
     def __init__(self, repo=None):
         self.repo = repo or CategoryRepository()
 

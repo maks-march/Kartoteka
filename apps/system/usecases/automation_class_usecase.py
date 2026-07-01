@@ -3,6 +3,7 @@ from rest_framework.exceptions import NotFound
 
 
 class AutomationClassUseCase:
+    """Сценарии работы со справочником классов автоматизации."""
     def __init__(self, repo=None):
         self.repo = repo or AutomationClassRepository()
 

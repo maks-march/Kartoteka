@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}{% if system %}Изменить{% else %}Добавить{% endif %} систему{% endblock %}
 
@@ -58,7 +59,7 @@
                                 <span class="system-info">Уровень {{ cls.level }}</span>
                             </div>
                             {% endfor %}
-                            <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Классы не найдены</div>
+                            <div class="picker-no-results picker-empty">Классы не найдены</div>
                         </div>
                     </div>
                     <input type="hidden" name="system_class" id="selectedClassId" value="{{ system.system_class_id|default:'' }}" required>
@@ -87,7 +88,7 @@
                                 <span class="system-name">{{ participant.participant_name }}</span>
                             </div>
                             {% endfor %}
-                            <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Участники рынка не найдены</div>
+                            <div class="picker-no-results picker-empty">Участники рынка не найдены</div>
                         </div>
                     </div>
                     <input type="hidden" name="vendor" id="selectedVendorId" value="{{ system.vendor_id|default:'' }}">
@@ -174,32 +175,8 @@
         </div>
     </form>
 </div>
+{% endblock %}
 
-<script>
-(function() {
-    const list = document.getElementById('specsList');
-    const addBtn = document.getElementById('specsAddBtn');
-    if (!list || !addBtn) return;
-
-    function makeRow() {
-        const row = document.createElement('div');
-        row.className = 'kv-row';
-        row.innerHTML =
-            '<input type="text" name="spec_key" placeholder="Характеристика">' +
-            '<input type="text" name="spec_value" placeholder="Значение">' +
-            '<button type="button" class="btn btn-danger btn-sm kv-remove" title="Удалить">\u2212</button>';
-        return row;
-    }
-
-    addBtn.addEventListener('click', function() {
-        list.appendChild(makeRow());
-    });
-
-    // Делегирование: удаление строки
-    list.addEventListener('click', function(e) {
-        const btn = e.target.closest('.kv-remove');
-        if (btn) btn.closest('.kv-row').remove();
-    });
-})();
-</script>
+{% block extra_js %}
+<script src="{% static 'js/system_form.js' %}" defer></script>
 {% endblock %}

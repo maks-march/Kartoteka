@@ -4,6 +4,7 @@ from apps.participants.repositories.participant_repository import ParticipantRep
 
 
 class ParticipantUseCase:
+    """Сценарии работы с участниками рынка."""
     def __init__(self, repo=None):
         self.repo = repo or ParticipantRepository()
 

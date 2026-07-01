@@ -18,6 +18,8 @@ def _as_id_list(value):
 
 
 class ObjectRepository:
+    """Доступ к данным объектов: выборки с фильтрами, сортировкой и счётчиком
+    подключённых систем, а также CRUD и мягкое удаление."""
     ORDERING_FIELDS = {
         "name", "level", "status", "city", "created_at", "start_date",
         "category__name", "owner_entity__owner_name",

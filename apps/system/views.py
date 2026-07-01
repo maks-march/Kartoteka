@@ -1,3 +1,4 @@
+"""HTML-представления автоматизированных систем (списки, карточки, формы, детали)."""
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -10,8 +11,6 @@ from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
 from apps.participants.usecases.participant_usecase import ParticipantUseCase
 from apps.system.models import AutomatedSystem
-
-import json
 
 
 # Простые текстовые поля системы, считываемые из формы напрямую.

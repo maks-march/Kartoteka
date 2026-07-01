@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Профиль{% endblock %}
 
@@ -151,42 +152,8 @@
         </table>
     </div>
 </div>
+{% endblock %}
 
-<script>
-function switchTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(function(el) {
-        el.style.display = 'none';
-    });
-    document.getElementById('tab-' + tabName).style.display = 'block';
-    document.querySelectorAll('.tab-btn').forEach(function(btn) {
-        btn.classList.remove('btn-primary', 'active');
-        btn.classList.add('btn-secondary');
-    });
-    var activeBtn = document.querySelector('.tab-btn[data-tab="' + tabName + '"]');
-    if (activeBtn) {
-        activeBtn.classList.remove('btn-secondary');
-        activeBtn.classList.add('btn-primary', 'active');
-    }
-}
-
-document.querySelectorAll('.table-search').forEach(function(input) {
-    input.addEventListener('input', function() {
-        var targetId = this.getAttribute('data-target');
-        var table = document.getElementById(targetId);
-        if (!table) return;
-        var q = this.value.toLowerCase();
-        var rows = table.querySelectorAll('tbody tr');
-        rows.forEach(function(row) {
-            var nameCell = row.querySelector('td:first-child');
-            if (!nameCell) return;
-            var text = nameCell.textContent.toLowerCase();
-            if (text.includes(q)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-});
-</script>
+{% block extra_js %}
+<script src="{% static 'js/profile.js' %}" defer></script>
 {% endblock %}

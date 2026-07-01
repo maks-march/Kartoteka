@@ -8,6 +8,8 @@ _MISSING = "__missing__"
 
 
 class OwnerEntityUseCase:
+    """Сценарии работы с юридическими лицами (владельцами), включая контроль
+    иерархии владения и защиту от циклов."""
     def __init__(self, repo=None):
         self.repo = repo or OwnerEntityRepository()
 

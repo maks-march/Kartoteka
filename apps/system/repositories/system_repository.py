@@ -18,6 +18,8 @@ def _as_id_list(value):
 
 
 class SystemRepository:
+    """Доступ к данным автоматизированных систем: выборки с фильтрами,
+    сортировкой и счётчиком подключённых объектов, а также CRUD."""
     # Поля, по которым разрешена серверная сортировка.
     ORDERING_FIELDS = {
         "autosystem_name", "version", "system_status", "product_type",

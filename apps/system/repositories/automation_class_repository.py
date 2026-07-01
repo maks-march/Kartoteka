@@ -2,6 +2,7 @@ from apps.system.models import AutomationClass
 
 
 class AutomationClassRepository:
+    """Доступ к данным справочника классов автоматизации."""
     def get_all(self):
         return AutomationClass.objects.all().order_by("level", "system_class")
 

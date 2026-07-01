@@ -6,6 +6,8 @@ from apps.owners.models import OwnerEntity
 
 
 class ObjectValidator:
+    """Доменная валидация объектов: корректность родителя (уровни, циклы),
+    соответствие категории уровню и допустимость поля title."""
     def validate_parent(self, parent_id, level, instance=None):
         if parent_id is None:
             return

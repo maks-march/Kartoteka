@@ -41,7 +41,7 @@
                     <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
                 </div>
                 {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                <div class="picker-no-results picker-empty">
                     Объекты не найдены
                 </div>
             </div>
@@ -81,7 +81,7 @@
                     <span class="system-name">{{ participant.participant_name }}</span>
                 </div>
                 {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                <div class="picker-no-results picker-empty">
                     Участники рынка не найдены
                 </div>
             </div>
@@ -105,7 +105,7 @@
                     <span class="system-name">{{ participant.participant_name }}</span>
                 </div>
                 {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                <div class="picker-no-results picker-empty">
                     Участники рынка не найдены
                 </div>
             </div>

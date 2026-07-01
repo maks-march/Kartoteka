@@ -9,6 +9,8 @@ from rest_framework.exceptions import NotFound
 
 
 class ObjectSystemUseCase:
+    """Сценарии управления связью «система на объекте» (привязка, изменение,
+    отвязка) с проверкой участников и уникальности связи."""
     def __init__(self, repo=None, object_repo=None, system_repo=None, participant_repo=None):
         self.repo = repo or ObjectSystemRepository()
         self.object_repo = object_repo or ObjectRepository()

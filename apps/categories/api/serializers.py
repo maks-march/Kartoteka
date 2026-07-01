@@ -1,3 +1,4 @@
+"""Сериализаторы категорий для REST API."""
 from rest_framework import serializers
 
 from apps.categories.models import Category

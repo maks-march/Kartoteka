@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}{% if owner_entity %}Изменить{% else %}Добавить{% endif %} юр. лицо{% endblock %}
 
@@ -52,23 +53,8 @@
         </div>
     </form>
 </div>
+{% endblock %}
 
-<script>
-(function() {
-    function setupSelectSearch(inputId, selectId) {
-        const input = document.getElementById(inputId);
-        const select = document.getElementById(selectId);
-        if (!input || !select) return;
-        input.addEventListener('input', function() {
-            const q = this.value.toLowerCase();
-            Array.from(select.options).forEach(function(opt) {
-                const name = opt.getAttribute('data-name') || '';
-                opt.style.display = (!opt.value || name.includes(q)) ? '' : 'none';
-            });
-        });
-    }
-    setupSelectSearch('ownerSearch', 'ownerSelect');
-    setupSelectSearch('ultimateOwnerSearch', 'ultimateOwnerSelect');
-})();
-</script>
+{% block extra_js %}
+<script src="{% static 'js/owner_form.js' %}" defer></script>
 {% endblock %}

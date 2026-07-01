@@ -1,12 +1,13 @@
 from apps.system.repositories.system_repository import SystemRepository
 from apps.system.repositories.automation_class_repository import AutomationClassRepository
 from apps.participants.repositories.participant_repository import ParticipantRepository
-from common.exceptions import NotFoundException
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ValidationError
 
 
 class SystemUseCase:
+    """Сценарии работы с автоматизированными системами: список с фильтрами и
+    сортировкой, CRUD, разбор JSON-полей и связанных участников."""
     def __init__(self, repo=None, class_repo=None, participant_repo=None):
         self.repo = repo or SystemRepository()
         self.class_repo = class_repo or AutomationClassRepository()

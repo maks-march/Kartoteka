@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}{% if object %}Изменить{% else %}Добавить{% endif %} объект{% endblock %}
 
@@ -20,5 +21,9 @@
     </form>
 </div>
 
-{% include "objects/_object_form_script.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script id="parentAddresses" type="application/json">{{ parent_addresses|default:'{}'|safe }}</script>
+<script src="{% static 'js/object_form.js' %}" defer></script>
 {% endblock %}

@@ -115,7 +115,7 @@
                         <span class="system-info">Уровень {{ cat.level }}</span>
                     </div>
                     {% endfor %}
-                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Категории не найдены</div>
+                    <div class="picker-no-results picker-empty">Категории не найдены</div>
                 </div>
             </div>
             <input type="hidden" name="category" id="selectedCategoryId" value="{{ object.category_id|default:'' }}">
@@ -146,7 +146,7 @@
                         <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
                     </div>
                     {% endfor %}
-                    <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">Юридические лица не найдены</div>
+                    <div class="picker-no-results picker-empty">Юридические лица не найдены</div>
                 </div>
             </div>
             <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">

@@ -35,7 +35,7 @@
                     <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}{% if s.vendor %} · Вендор: {{ s.vendor.participant_name }}{% endif %}</span>
                 </div>
                 {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                <div class="picker-no-results picker-empty">
                     Системы не найдены
                 </div>
             </div>
@@ -75,7 +75,7 @@
                     <span class="system-name">{{ participant.participant_name }}</span>
                 </div>
                 {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                <div class="picker-no-results picker-empty">
                     Участники рынка не найдены
                 </div>
             </div>
@@ -99,7 +99,7 @@
                     <span class="system-name">{{ participant.participant_name }}</span>
                 </div>
                 {% endfor %}
-                <div class="picker-no-results" style="display:none; padding:20px; text-align:center; color:#999;">
+                <div class="picker-no-results picker-empty">
                     Участники рынка не найдены
                 </div>
             </div>

@@ -1,3 +1,4 @@
+"""Сериализаторы юридических лиц для REST API."""
 from rest_framework import serializers
 
 from apps.owners.models import OwnerEntity

@@ -33,7 +33,7 @@
                         <input type="text" id="categoryFilterSearch" placeholder="Введите название категории..." style="margin-bottom:0">
                         <button type="button" id="categoryFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
-                    <div class="system-results-container" id="categoryFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="categoryFilterList">
                         <div class="system-item {% if not selected_categories %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все категории —</span>
                         </div>
@@ -43,7 +43,7 @@
                             <span class="system-info">Уровень {{ cat.level }}</span>
                         </div>
                         {% endfor %}
-                        <div id="categoryFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                        <div id="categoryFilterNoResults" class="picker-empty">
                             Категории не найдены
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                         <input type="text" id="ownerEntityFilterSearch" placeholder="Введите название юр. лица..." style="margin-bottom:0">
                         <button type="button" id="ownerEntityFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
-                    <div class="system-results-container" id="ownerEntityFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="ownerEntityFilterList">
                         <div class="system-item {% if not selected_owner_entities %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все юридические лица —</span>
                         </div>
@@ -77,7 +77,7 @@
                             <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
                         </div>
                         {% endfor %}
-                        <div id="ownerEntityFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                        <div id="ownerEntityFilterNoResults" class="picker-empty">
                             Юридические лица не найдены
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                         <input type="text" id="systemFilterSearch" placeholder="Введите название системы..." style="margin-bottom:0">
                         <button type="button" id="systemFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
-                    <div class="system-results-container" id="systemFilterList" style="max-height:160px">
+                    <div class="system-results-container filter-list-160" id="systemFilterList">
                         <div class="system-item {% if not selected_systems %}selected{% endif %}" data-id="">
                             <span class="system-name">— Все системы —</span>
                         </div>
@@ -111,7 +111,7 @@
                             <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span>
                         </div>
                         {% endfor %}
-                        <div id="systemFilterNoResults" style="display:none; padding:20px; text-align:center; color:#999;">
+                        <div id="systemFilterNoResults" class="picker-empty">
                             Системы не найдены
                         </div>
                     </div>

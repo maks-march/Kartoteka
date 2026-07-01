@@ -1,3 +1,4 @@
+"""Сериализаторы объектов и связей «система на объекте» для REST API."""
 from rest_framework import serializers
 
 from apps.objects.models import Object, ObjectSystem

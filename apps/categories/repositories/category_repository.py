@@ -5,6 +5,7 @@ from common.ordering import apply_ordering
 
 
 class CategoryRepository:
+    """Доступ к данным категорий объектов."""
     ORDERING_FIELDS = {"name", "level"}
     DEFAULT_ORDERING = ("level", "name")
 

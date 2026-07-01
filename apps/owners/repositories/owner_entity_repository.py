@@ -5,6 +5,7 @@ from common.ordering import apply_ordering
 
 
 class OwnerEntityRepository:
+    """Доступ к данным юридических лиц, включая обход дерева владения."""
     ORDERING_FIELDS = {"owner_name"}
     DEFAULT_ORDERING = "owner_name"
 

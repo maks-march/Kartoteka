@@ -5,6 +5,7 @@ from apps.users.repositories.user_repository import UserRepository
 
 
 class AuthUseCase:
+    """Сценарии аутентификации: регистрация и вход пользователя."""
     def __init__(self, user_repo: UserRepository = None):
         self.user_repo = user_repo or UserRepository()
 

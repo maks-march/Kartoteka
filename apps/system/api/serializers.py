@@ -1,3 +1,4 @@
+"""Сериализаторы систем и классов автоматизации для REST API."""
 from rest_framework import serializers
 
 from apps.system.models import AutomatedSystem, AutomationClass

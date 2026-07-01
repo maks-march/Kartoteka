@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Объекты — карточки{% endblock %}
 
@@ -41,5 +42,8 @@
     </div>
 </div>
 
-{% include "objects/_object_filters_script.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/object_filters.js' %}" defer></script>
 {% endblock %}
