@@ -193,3 +193,42 @@ class CardCountsTests(TestCase):
         hs = self.client.get("/system/cards/").content.decode()
         self.assertIn("data-href=", hs)
         self.assertRegex(hs, r'Объектов</span><span class="v">\d+')
+
+
+class CountSortingTests(TestCase):
+    """Сортировка по количеству подключённых сущностей (systems_count / objects_count)."""
+
+    def setUp(self):
+        from apps.objects.models import Object, ObjectSystem
+        from apps.system.models import AutomationClass, AutomatedSystem
+        self.user = User.objects.create_user("cnt", "cnt@x.x", "pw")
+        cls = AutomationClass.objects.create(level=2, system_class="SCADA")
+        self.a = Object.objects.create(name="A", level=1, status="active", creator_id=self.user)  # 0 систем
+        self.b = Object.objects.create(name="B", level=1, status="active", creator_id=self.user)  # 2
+        self.c = Object.objects.create(name="C", level=1, status="active", creator_id=self.user)  # 1
+        self.s1 = AutomatedSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)  # 2 объекта
+        self.s2 = AutomatedSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)  # 1 объект
+        ObjectSystem.objects.create(object=self.b, system=self.s1)
+        ObjectSystem.objects.create(object=self.b, system=self.s2)
+        ObjectSystem.objects.create(object=self.c, system=self.s1)
+
+    def _objs(self, url):
+        return [o.name for o in self.client.get(url).context["objects"]]
+
+    def _syss(self, url):
+        return [s.autosystem_name for s in self.client.get(url).context["systems"]]
+
+    def test_objects_sort_by_systems_count_asc(self):
+        self.assertEqual(self._objs("/objects/?ordering=systems_count"), ["A", "C", "B"])
+
+    def test_objects_sort_by_systems_count_desc(self):
+        self.assertEqual(self._objs("/objects/?ordering=-systems_count"), ["B", "C", "A"])
+
+    def test_systems_sort_by_objects_count_desc(self):
+        self.assertEqual(self._syss("/system/?ordering=-objects_count"), ["S1", "S2"])
+
+    def test_count_headers_are_clickable(self):
+        ho = self.client.get("/objects/").content.decode().replace("&amp;", "&")
+        self.assertIn("ordering=-systems_count", ho)
+        hs = self.client.get("/system/").content.decode().replace("&amp;", "&")
+        self.assertIn("ordering=-objects_count", hs)

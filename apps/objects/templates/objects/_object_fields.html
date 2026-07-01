@@ -19,25 +19,17 @@
         <label>Полное название</label>
         <input type="text" name="name" value="{{ object.name|default:'' }}" required>
     </div>
-    <div class="form-grid two">
-        <div class="form-group">
-            <label>Короткое название</label>
-            <input type="text" name="object_short_name" value="{{ object.object_short_name|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Классификация объекта</label>
-            <input type="text" name="object_class" value="{{ object.object_class|default:'' }}" placeholder="завод, цех, очередь, установка">
-        </div>
+    <div class="form-group">
+        <label>Короткое название</label>
+        <input type="text" name="object_short_name" value="{{ object.object_short_name|default:'' }}">
     </div>
-    <div class="form-grid two">
-        <div class="form-group">
-            <label>Историческое название</label>
-            <input type="text" name="object_old_name" value="{{ object.object_old_name|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Юридическое название</label>
-            <input type="text" name="object_law_name" value="{{ object.object_law_name|default:'' }}">
-        </div>
+    <div class="form-group">
+        <label>Историческое название</label>
+        <input type="text" name="object_old_name" value="{{ object.object_old_name|default:'' }}">
+    </div>
+    <div class="form-group">
+        <label>Юридическое название</label>
+        <input type="text" name="object_law_name" value="{{ object.object_law_name|default:'' }}">
     </div>
 </div>
 

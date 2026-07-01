@@ -23,6 +23,8 @@ class ObjectRepository:
     ORDERING_FIELDS = {
         "name", "level", "status", "city", "created_at", "start_date",
         "category__name", "owner_entity__owner_name",
+        # Аннотированное поле (Count) — количество подключённых систем.
+        "systems_count",
     }
     DEFAULT_ORDERING = ("level", "name")
 

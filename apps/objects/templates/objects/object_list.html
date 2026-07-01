@@ -31,7 +31,7 @@
                     <th>{% sort_header "owner_entity__owner_name" "Владелец" %}</th>
                     <th>Родитель</th>
                     <th>{% sort_header "status" "Статус" %}</th>
-                    <th>{% sort_header "city" "Город" %}</th>
+                    <th>{% sort_header "systems_count" "Системы" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,7 +43,7 @@
                     <td>{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                     <td>{% if obj.parent %}<a class="link" href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                     <td><span class="tag {{ obj.status_tag_class }}">{{ obj.get_status_display }}</span></td>
-                    <td>{{ obj.city|default:'—' }}</td>
+                    <td>{{ obj.systems_count }}</td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="7" class="empty">Объекты не найдены</td></tr>

@@ -12,9 +12,7 @@
             {% if object.category %}
                 <span class="tag tag-{{ object.category.level }}" style="margin-left:6px">{{ object.category.name }}</span>
             {% endif %}
-            {% if object.object_class %}
-                <span class="tag tag-muted" style="margin-left:6px">{{ object.object_class }}</span>
-            {% endif %}
+
 
             <div class="detail-meta">
                 <p>Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>

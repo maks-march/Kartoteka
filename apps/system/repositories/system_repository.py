@@ -25,6 +25,8 @@ class SystemRepository:
         "autosystem_name", "version", "system_status", "product_type",
         "release_year", "end_of_support",
         "system_class__system_class", "vendor__participant_name",
+        # Аннотированное поле (Count) — количество подключённых объектов.
+        "objects_count",
     }
     DEFAULT_ORDERING = "autosystem_name"
 
