@@ -88,7 +88,7 @@
                 <span class="info-label">Адрес</span>
 
                     {% if object.address_line %}
-                        <span class="info-value desc-text">{{ object.address_line }}{% if object.fias_code %}(ФИАС: {{ object.fias_code }}){% endif %}</span>
+                        <span class="info-value desc-text">{{ object.address_line }}{% if object.fias_code %}<br>(ФИАС: {{ object.fias_code }}){% endif %}</span>
                     {% else %}
                         <span class="empty">— не указан —</span>
                     {% endif %}
