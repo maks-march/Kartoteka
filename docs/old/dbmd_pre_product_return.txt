@@ -1,0 +1,226 @@
+Table OwnerEntity {
+  id integer [primary key]
+  owner_name varchar [note: 'Название юр. лица']
+  inn varchar [unique, note: 'ИНН']
+  owner_id integer [ref: > OwnerEntity.id, note: 'Следующий в иерархии владелец']
+  ultimate_owner_id integer [ref: > OwnerEntity.id, note: 'Корневой владелец.']
+  ownership_percentage decimal [note: 'Доля владения']
+}
+
+
+Table Category {
+  id integer [primary key]
+  object_level integer [note: 'Уровень объекта']
+  category_name varchar [note: 'Значение категории']
+}
+
+Table Address {
+  id integer [primary key]
+  country varchar
+  region varchar
+  city varchar
+  street varchar
+  house varchar [note: 'Адрес производства (уровень 1)']
+  title varchar [note: 'Адрес установки (уровень 3)']
+  fias_code varchar
+}
+
+Enum object_status {
+  active
+  in_project
+  reconstruction
+  stopped
+}
+
+Table Object {
+  id integer [primary key]
+  object_name varchar [note: 'Полное название объекта']
+  object_short_name varchar [note: 'Короткое название объекта']
+  object_old_name varchar [note: 'Историческое название объекта']
+  object_law_name varchar [note: 'Юридическое название объекта']
+  hierarchy_level integer [note: 'Уровень в иерархии: производство -> цех -> установка']
+  object_class varchar [note: '(не использовать) Классификация объекта (завод, цех, очередь, установка)']
+  category integer [ref:> Category.id, note: 'Разделение на категории: 1:отраслевые, 2:назначения, 3:технология']
+  start_date date [note: 'Дата ввода в эксплуатацию.']
+  is_reconstructed bool [note: 'Была ли реконструкция']
+  capacity varchar [note: 'Мощность / объем производства']
+  status object_status [note: 'Состояние объекта']
+  notes text [note: 'Дополнительная информация']
+  parent_object_id integer [ref: > Object.id, note: 'Родительский объект на уровень(или 2) выше в иерархии']
+  address_id integer [ref: > Address.id]
+  owner_entity_id integer [ref: > OwnerEntity.id]
+}
+
+Enum system_status {
+  active
+  planned
+  unsupported
+  decommisioned
+}
+
+
+Enum product_type {
+  software
+  hardware
+  service
+}
+
+Table AutomatedSystem {
+  id integer [primary key]
+  autosystem_name varchar [note: 'Полное название системы автоматизации']
+  autosystem__short_name varchar [note: 'Короткое название системы автоматизации']
+  system_class integer [ref: > AutomationClass.id, note: 'Тип системы (уровень и класс)']
+  product_id integer [ref: > VendorProduct.id, note: 'Продукт на котором сделана система']
+
+  system_status system_status [note: 'Статус системы.']
+
+  notes text [note: 'Дополнительная информация']
+
+  release_year date [note: 'Дата выпуска системы']
+  technical_specs json [note: 'Технические характеристики (словарь)']
+  modules json [note: 'Модули системы (список)']
+  interfaces json [note: 'Интерфейсы системы (список)']
+}
+
+Table AutomationClass {
+  id integer [primary key]
+  level integer [note: 'Уровень автоматизации: L0 | L1 | L2 | L3 | L4']
+  system_class varchar [note: 'Класс системы']
+  description text
+}
+
+Enum auto_status {
+  planned
+  in_progress
+  completed
+  partial
+}
+
+Table ObjectSystem {
+  id integer [primary key]
+  object_id integer [ref: > Object.id]
+  system_id integer [ref: > AutomatedSystem.id]
+  status auto_status [note: 'Статус ввода системы в эксплуатацию']
+  implementation_date date [note: 'Дата ввода системы в эксплуатацию']
+  integrator_id integer [ref: > Participant.id, note: 'Интегратор системы']
+  implementer_id integer [ref: > Participant.id, note: 'Внедряющая компания']
+  notes text [note: 'Дополнительные пояснения']
+}
+
+Table ObjectCharacteristic {
+  id integer [primary key]
+  object_id integer [ref: > Object.id]
+  characteristic_name varchar [note: 'Название характеристики']
+  code varchar [note: 'Код характеристики']
+  unit varchar [note: 'Единица измерения']
+  description text [note: 'Описание']
+  is_required boolean [note: 'Обяательная характеристика']
+}
+
+Table ObjectCharacteristicValue {
+  id integer [primary key]
+  characteristic_id integer [ref: > ObjectCharacteristic.id]
+  value double [note: 'Значение']
+  measurement_date date [note: 'Дата измерения']
+  notes text [note: 'Дополнительная информация']
+}
+
+Table AutomationRequirement {
+  id integer [primary key]
+  automation varchar [ref: > ObjectSystem.id]
+  requirement text [note: 'Требование']
+  is_mandatory boolean [note: 'Обязательность']
+  regulation varchar [note: 'Нормативный документ']
+}
+
+Enum participant_type {
+  vendor
+  integrator
+  engineering_company
+  full_cycle
+  supplier
+}
+
+Table Participant {
+  id integer [primary key]
+  participant_name varchar
+  inn varchar [unique, note: 'ИНН']
+  contacts json [note: 'Контактная информация']
+  registration_date date [note: 'Дата регистрации']
+  financial_data json [note: 'Финансовые показатели']
+  participant_type participant_type [note: 'Тип участника: вендор,системный интегратор, инжиниринговая компания, вендо полного цикла, поставщик']
+  is_partner boolean [note: 'Является ли партнером']
+  website varchar [note: 'Ссылка на сайт']
+  kam_name varchar [note: 'Имя КАМ коммерсант Key account manager']
+  kam_phone varchar [note: 'Номер КАМ']
+  contact_person varchar [note: 'Контакт от ЦК ПА']
+  contact_phone varchar [note: 'Телефон от ЦК ПА']
+  presentation_url varchar [note: 'Ссылка на презентацию']
+  profile text [note: 'Профиль компании']
+  industries json [note: 'Отрасли применения']
+}
+
+Table VendorProduct {
+  id integer [primary key]
+  product_name varchar [note: 'Название вендорского продукта']
+  vendor_id integer [ref: > Participant.id, note: 'Вендор']
+  product_type product_type [note: 'Тип продукта']
+  system_class integer [ref: > AutomationClass.id,note: 'Классы  (По идее ссылка на один конкретный уровень класса систем)']
+  description text [note: 'Описание']
+  version varchar [note: 'Версия']
+  release_year date [note: 'Дата выпуска']
+  end_of_support date [note: 'Конец поддержки']
+  article varchar [unique, note: 'Артикул']
+  technical_specs json [note: 'Технические характеристики']
+  industries integer [ref: > Category.id, note: 'Отрасли применения из категорий 1го уровня']
+  is_active boolean [note: 'Активен ли продукт']
+}
+
+
+Table Project {
+  id integer [primary key]
+  participant_id integer [ref: > Participant.id, not null, note: 'Участник']
+  object_id integer [ref: > Object.id, not null, note: 'Объект внедрения']
+  name varchar(200) [not null, note: 'Название проекта']
+  year integer [not null, note: 'Год реализации']
+  successful boolean [not null, default: true, note: 'Успешный пуск']
+  description text [null, note: 'Описание']
+  created_at datetime [not null, note: 'Дата создания']
+  updated_at datetime [not null, note: 'Дата обновления']
+}
+
+Table Certificate {
+  id integer [primary key]
+  participant_id integer [ref: > Participant.id, not null, note: 'Участник']
+  name varchar(200) [not null, note: 'Название сертификата']
+  certificate_type varchar(20) [not null, note: 'Тип сертификата: ISO / AUTHORIZED / SPECIALIST / OTHER']
+  issued_by varchar(200) [not null, note: 'Кем выдан']
+  issued_date date [not null, note: 'Дата выдачи']
+  expiry_date date [null, note: 'Срок действия']
+  file varchar [null, note: 'Файл сертификата']
+  created_at datetime [not null, note: 'Дата создания']
+  updated_at datetime [not null, note: 'Дата обновления']
+}
+
+Table Review {
+  id integer [primary key]
+  participant_id integer [ref: > Participant.id, not null, note: 'Участник']
+  text text [not null, note: 'Текст отзыва']
+  rating integer [not null, note: 'Оценка 1..5']
+  date date [not null, note: 'Дата отзыва']
+  source varchar(200) [null, note: 'Источник']
+  created_at datetime [not null, note: 'Дата создания']
+  updated_at datetime [not null, note: 'Дата обновления']
+}
+
+Table TCOAnalysis {
+  id integer [primary key]
+  participant_id integer [ref: > Participant.id, not null, note: 'Участник']
+  capex decimal(15,2) [not null, note: 'CAPEX (млн руб)']
+  opex_per_year decimal(15,2) [not null, note: 'OPEX в год (млн руб)']
+  period_years integer [not null, default: 5, note: 'Период анализа (лет)']
+  discount_rate decimal(5,2) [not null, default: 10.0, note: 'Ставка дисконтирования %']
+  notes text [null, note: 'Примечания']
+  created_at datetime [not null, note: 'Дата создания']
+  updated_at datetime [not null, note: 'Дата обновления']
+}
