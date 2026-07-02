@@ -76,9 +76,9 @@
                 <div class="system-item {% if not link.integrator_id %}selected{% endif %}" data-id="" data-keep>
                     <span class="system-name">— Интегратор не указан —</span>
                 </div>
-                {% for participant in participants %}
-                <div class="system-item {% if link.integrator_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
-                    <span class="system-name">{{ participant.participant_name }}</span>
+                {% for entity in entities %}
+                <div class="system-item {% if link.integrator_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
+                    <span class="system-name">{{ entity.entity_name }}</span>
                 </div>
                 {% endfor %}
                 <div class="picker-no-results picker-empty">
@@ -100,9 +100,9 @@
                 <div class="system-item {% if not link.implimentor_id %}selected{% endif %}" data-id="" data-keep>
                     <span class="system-name">— Исполнитель не указан —</span>
                 </div>
-                {% for participant in participants %}
-                <div class="system-item {% if link.implimentor_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
-                    <span class="system-name">{{ participant.participant_name }}</span>
+                {% for entity in entities %}
+                <div class="system-item {% if link.implimentor_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
+                    <span class="system-name">{{ entity.entity_name }}</span>
                 </div>
                 {% endfor %}
                 <div class="picker-no-results picker-empty">

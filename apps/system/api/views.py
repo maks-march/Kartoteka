@@ -1,4 +1,4 @@
-"""REST API автоматизированных систем и справочника классов."""
+"""REST API автоматизированных систем, справочника классов и продуктов."""
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,9 +10,12 @@ from apps.system.api.serializers import (
     SystemCreateUpdateSerializer,
     SystemAttachObjectSerializer,
     AutomationClassSerializer,
+    VendorProductSerializer,
+    VendorProductCreateUpdateSerializer,
 )
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
+from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
 from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.api.serializers import ObjectSystemSerializer
 
@@ -27,6 +30,52 @@ class AutomationClassListView(APIView):
         return Response(serializer.data)
 
 
+class VendorProductListCreateView(APIView):
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    def get(self, request):
+        search = request.query_params.get("search")
+        ordering = request.query_params.getlist("ordering") or None
+        usecase = VendorProductUseCase()
+        products = usecase.list(search=search, ordering=ordering)
+        serializer = VendorProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = VendorProductCreateUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        usecase = VendorProductUseCase()
+        obj = usecase.create(**serializer.validated_data)
+        return Response(VendorProductSerializer(obj).data, status=status.HTTP_201_CREATED)
+
+
+class VendorProductDetailView(APIView):
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request, pk):
+        usecase = VendorProductUseCase()
+        obj = usecase.get(pk)
+        return Response(VendorProductSerializer(obj).data)
+
+    def patch(self, request, pk):
+        serializer = VendorProductCreateUpdateSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        usecase = VendorProductUseCase()
+        obj = usecase.update(pk, **serializer.validated_data)
+        return Response(VendorProductSerializer(obj).data)
+
+    def delete(self, request, pk):
+        usecase = VendorProductUseCase()
+        usecase.delete(pk)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class SystemListCreateView(APIView):
     def get_permissions(self):
         if self.request.method == "POST":
@@ -37,18 +86,16 @@ class SystemListCreateView(APIView):
         system_class = request.query_params.get("system_class")
         search = request.query_params.get("search")
         obj = request.query_params.getlist("object") or None
-        vendor = request.query_params.getlist("vendor") or None
+        product = request.query_params.getlist("product") or None
         system_status = request.query_params.getlist("system_status") or None
-        product_type = request.query_params.getlist("product_type") or None
         ordering = request.query_params.getlist("ordering") or None
         usecase = SystemUseCase()
         systems = usecase.list(
             system_class=system_class,
             search=search,
             obj=obj,
-            vendor=vendor,
+            product=product,
             system_status=system_status,
-            product_type=product_type,
             ordering=ordering,
         )
         serializer = SystemListSerializer(systems, many=True)

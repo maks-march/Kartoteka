@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ product.product_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div>
+        <h1 style="margin-bottom:5px">{{ product.product_name }}</h1>
+        <div class="detail-meta">
+            <p>Вендор: {% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</p>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef">
+        <a href="{% url 'product-edit' product.pk %}" class="btn btn-primary">Изменить</a>
+        <form action="{% url 'product-delete' product.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить продукт? Связи с системами будут очищены.')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Системы на этом продукте</h2>
+    <table>
+        <thead>
+            <tr><th>Система</th><th>Класс</th></tr>
+        </thead>
+        <tbody>
+            {% for system in systems %}
+            <tr>
+                <td><a href="{% url 'system-detail' system.pk %}">{{ system.autosystem_name }}</a></td>
+                <td><span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="empty">Нет систем</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:10px">
+    <a href="{% url 'product-list' %}" class="btn btn-secondary">← Назад к списку</a>
+</div>
+{% endblock %}

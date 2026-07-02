@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from apps.system.models import AutomatedSystem
 from apps.owners.models import OwnerEntity
-from apps.participants.models import Participant
+from apps.entities.models import Entity
 
 
 class Object(models.Model):
@@ -168,7 +168,7 @@ class ObjectSystem(models.Model):
         verbose_name="Дата ввода в эксплуатацию"
     )
     integrator = models.ForeignKey(
-        Participant,
+        Entity,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -176,7 +176,7 @@ class ObjectSystem(models.Model):
         verbose_name="Интегратор",
     )
     implimentor = models.ForeignKey(
-        Participant,
+        Entity,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -195,18 +195,17 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
 
     # ---------- usecase / web ----------
     def test_web_create_persists_new_fields(self):
+        from apps.system.models import VendorProduct
+        product = VendorProduct.objects.create(product_name="PCS 7")
         self.client.force_login(self.user)
         response = self.client.post("/system/create/", {
             "autosystem_name": "PCS 7 Full",
             "autosystem_short_name": "PCS7",
             "system_class": str(self.automation_class.pk),
-            "version": "V9.1",
-            "system_status": "pilot",
-            "product_type": "hardware",
-            "article": "ART-777",
+            "product": str(product.pk),
+            "system_status": "planned",
             "notes": "Примечание",
             "release_year": "2021-05-20",
-            "end_of_support": "2030-12-31",
             # Технические характеристики — пары ключ/значение
             "spec_key": ["cpu", ""],
             "spec_value": ["x86", "пустой ключ игнорируется"],
@@ -217,10 +216,8 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(response.status_code, 302)
         s = AutomatedSystem.objects.get(autosystem_name="PCS 7 Full")
         self.assertEqual(s.autosystem_short_name, "PCS7")
-        self.assertEqual(s.version, "V9.1")
-        self.assertEqual(s.system_status, "pilot")
-        self.assertEqual(s.product_type, "hardware")
-        self.assertEqual(s.article, "ART-777")
+        self.assertEqual(s.product_id, product.pk)
+        self.assertEqual(s.system_status, "planned")
         self.assertEqual(s.technical_specs, {"cpu": "x86"})
         self.assertEqual(s.modules, ["m1", "m2", "m3"])
         self.assertIsNone(s.interfaces)
@@ -235,13 +232,13 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(s.system_status, "active")
         self.assertEqual(s.status_tag_class, "tag-ok")
 
-    def test_empty_article_stored_as_null_allows_multiple(self):
+    def test_create_without_product_stores_null(self):
         from apps.system.usecases.system_usecase import SystemUseCase
         uc = SystemUseCase()
-        a = uc.create(user=self.user, autosystem_name="A", system_class=self.automation_class.pk, article="")
-        b = uc.create(user=self.user, autosystem_name="B", system_class=self.automation_class.pk, article="")
-        self.assertIsNone(a.article)
-        self.assertIsNone(b.article)
+        a = uc.create(user=self.user, autosystem_name="A", system_class=self.automation_class.pk)
+        b = uc.create(user=self.user, autosystem_name="B", system_class=self.automation_class.pk, product=None)
+        self.assertIsNone(a.product)
+        self.assertIsNone(b.product)
 
     def test_web_create_lists_support_comma_and_semicolon(self):
         self.client.force_login(self.user)
@@ -276,38 +273,40 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
 
     # ---------- API ----------
     def test_api_create_with_new_fields(self):
+        from apps.system.models import VendorProduct
+        product = VendorProduct.objects.create(product_name="API Product")
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/system/", {
             "autosystem_name": "API Sys",
             "autosystem_short_name": "AS",
             "system_class": self.automation_class.pk,
-            "version": "2.0",
+            "product": product.pk,
             "system_status": "planned",
-            "product_type": "service",
             "technical_specs": {"ram": "16GB"},
             "modules": ["x"],
         }, format="json")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data["autosystem_short_name"], "AS")
-        self.assertEqual(response.data["version"], "2.0")
+        self.assertEqual(response.data["product"], product.pk)
+        self.assertEqual(response.data["product_name"], "API Product")
         self.assertEqual(response.data["system_status"], "planned")
-        self.assertEqual(response.data["product_type"], "service")
         self.assertEqual(response.data["technical_specs"], {"ram": "16GB"})
         self.assertEqual(response.data["modules"], ["x"])
 
     def test_api_detail_exposes_new_fields(self):
+        from apps.system.models import VendorProduct
+        product = VendorProduct.objects.create(product_name="Detail Product")
         s = AutomatedSystem.objects.create(
             autosystem_name="Detail Sys",
             system_class=self.automation_class,
-            version="3.3",
+            product=product,
             system_status="active",
-            product_type="software",
             interfaces=["OPC UA"],
             creator_id=self.user,
         )
         response = self.api_client.get(f"/api/system/{s.pk}/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["version"], "3.3")
+        self.assertEqual(response.data["product_name"], "Detail Product")
         self.assertEqual(response.data["interfaces"], ["OPC UA"])
         self.assertEqual(response.data["status_display"], "В эксплуатации")
 
@@ -348,54 +347,50 @@ class SystemApiPartialUpdateTests(SystemEndpointTestMixin, TestCase):
 
 
 class SystemListFilterTests(TestCase):
-    """Дополнительные критерии поиска систем: вендор, статус, тип продукта."""
+    """Дополнительные критерии поиска систем: продукт, статус."""
 
     def setUp(self):
-        from apps.participants.models import Participant
+        from apps.system.models import VendorProduct
         self.user = User.objects.create_user(username="flt", password="pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
-        self.v1 = Participant.objects.create(participant_name="Siemens")
-        self.v2 = Participant.objects.create(participant_name="Honeywell")
+        self.p1 = VendorProduct.objects.create(product_name="Simatic")
+        self.p2 = VendorProduct.objects.create(product_name="Experion")
         self.s1 = AutomatedSystem.objects.create(
-            autosystem_name="S1", system_class=self.cls, vendor=self.v1,
-            system_status="active", product_type="software", creator_id=self.user,
+            autosystem_name="S1", system_class=self.cls, product=self.p1,
+            system_status="active", creator_id=self.user,
         )
         self.s2 = AutomatedSystem.objects.create(
-            autosystem_name="S2", system_class=self.cls, vendor=self.v2,
-            system_status="planned", product_type="hardware", creator_id=self.user,
+            autosystem_name="S2", system_class=self.cls, product=self.p2,
+            system_status="planned", creator_id=self.user,
         )
 
     def _names(self, params):
         from apps.system.usecases.system_usecase import SystemUseCase
         return sorted(s.autosystem_name for s in SystemUseCase().list(**params))
 
-    def test_filter_by_vendor(self):
-        self.assertEqual(self._names({"vendor": [self.v1.pk]}), ["S1"])
+    def test_filter_by_product(self):
+        self.assertEqual(self._names({"product": [self.p1.pk]}), ["S1"])
 
     def test_filter_by_status(self):
         self.assertEqual(self._names({"system_status": ["planned"]}), ["S2"])
 
-    def test_filter_by_product_type(self):
-        self.assertEqual(self._names({"product_type": ["hardware"]}), ["S2"])
-
     def test_filters_combine_with_and(self):
-        self.assertEqual(self._names({"vendor": [self.v1.pk], "system_status": ["active"]}), ["S1"])
-        self.assertEqual(self._names({"vendor": [self.v1.pk], "system_status": ["planned"]}), [])
+        self.assertEqual(self._names({"product": [self.p1.pk], "system_status": ["active"]}), ["S1"])
+        self.assertEqual(self._names({"product": [self.p1.pk], "system_status": ["planned"]}), [])
 
-    def test_multiselect_vendor_is_or(self):
-        self.assertEqual(self._names({"vendor": [self.v1.pk, self.v2.pk]}), ["S1", "S2"])
+    def test_multiselect_product_is_or(self):
+        self.assertEqual(self._names({"product": [self.p1.pk, self.p2.pk]}), ["S1", "S2"])
 
     def test_web_list_renders_new_filters(self):
         from django.test import Client
         c = Client()
         h = c.get("/system/").content.decode()
-        self.assertIn("Вендор", h)
+        self.assertIn("Продукт", h)
         self.assertIn("Статус системы", h)
-        self.assertIn("Тип продукта", h)
 
-    def test_web_list_filter_by_vendor_narrows_rows(self):
+    def test_web_list_filter_by_product_narrows_rows(self):
         from django.test import Client
         c = Client()
-        h = c.get("/system/", {"vendor": str(self.v1.pk)}).content.decode()
+        h = c.get("/system/", {"product": str(self.p1.pk)}).content.decode()
         self.assertIn("S1", h)
         self.assertNotIn(">S2<", h)

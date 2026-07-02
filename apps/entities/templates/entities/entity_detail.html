@@ -1,0 +1,168 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ entity.entity_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-title-row">
+        <div>
+            <h1 style="margin-bottom:6px">{{ entity.entity_name }}</h1>
+            {% if entity.entity_type %}<span class="tag {{ entity.entity_type_tag_class }}">{{ entity.get_entity_type_display }}</span>{% endif %}
+            {% if entity.is_partner %}<span class="tag tag-ok" style="margin-left:6px">Партнёр</span>{% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <div class="actions">
+            <a href="{% url 'entity-edit' entity.pk %}" class="btn btn-secondary">Изменить</a>
+            <form action="{% url 'entity-delete' entity.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить участника рынка? Связи с системами и объектами будут очищены.')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== Реквизиты ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Реквизиты</h3>
+        <div class="info-cards-entity">
+            <div class="info-card">
+                <span class="info-label">ИНН</span>
+                <span class="info-value">{{ entity.inn|default:'—' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Дата регистрации</span>
+                <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Сайт</span>
+                <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}—{% endif %}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Презентация</span>
+                <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}—{% endif %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Контакты ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Контакты</h3>
+        <div class="info-cards-entity">
+            <div class="info-card">
+                <span class="info-label">КАМ (Key Account Manager)</span>
+                <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Контакт от ЦК ПА</span>
+                <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
+            </div>
+            {% for key, value in entity.contacts_items %}
+            <div class="info-card">
+                <span class="info-label">{{ key }}</span>
+                <span class="info-value">{{ value }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== Отрасли и профиль ===== -->
+    <div class="info-block">
+        <h3 class="info-block-title">Отрасли и профиль</h3>
+        <div class="info-card full">
+            <span class="info-label">Отрасли применения</span>
+            {% if entity.industries %}
+            <div class="card-tags">
+                {% for ind in entity.industries %}<span class="tag tag-muted">{{ ind }}</span>{% endfor %}
+            </div>
+            {% else %}<span class="info-value">—</span>{% endif %}
+        </div>
+        <div class="info-card full" style="margin-top:12px">
+            <span class="info-label">Профиль компании</span>
+            <span class="info-value desc-text">{{ entity.profile|default:'—' }}</span>
+        </div>
+    </div>
+
+    <!-- ===== Финансовые показатели ===== -->
+    {% if entity.financial_data_items %}
+    <div class="info-block">
+        <h3 class="info-block-title">Финансовые показатели</h3>
+        <div class="tech-grid">
+            {% for key, value in entity.financial_data_items %}
+            <div class="tech-tile">
+                <span class="tech-key" title="{{ key }}">{{ key }}</span>
+                <span class="tech-val">{{ value }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if entity.can_have_products %}
+<div class="card">
+    <div class="card-title-row">
+        <h2 style="margin:0">Вендорские продукты</h2>
+        {% if user.is_authenticated %}<a href="{% url 'product-create' %}" class="btn btn-primary">+ Добавить продукт</a>{% endif %}
+    </div>
+    <table>
+        <thead>
+            <tr><th>Продукт</th><th>Систем на продукте</th></tr>
+        </thead>
+        <tbody>
+            {% for product in vendor_products %}
+            <tr>
+                <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
+                <td>{{ product.systems.count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="empty">Нет продуктов</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="card">
+    <h2>Интегрированные системы</h2>
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+            {% for link in integrated_links %}
+            <tr>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.name }}</a></td>
+                <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
+                <td>{{ link.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Нет связей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Внедренные системы</h2>
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+            {% for link in implemented_links %}
+            <tr>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.name }}</a></td>
+                <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
+                <td>{{ link.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Нет связей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:10px">
+    <a href="{% url 'entity-list' %}" class="btn btn-secondary">← Назад к списку</a>
+</div>
+{% endblock %}

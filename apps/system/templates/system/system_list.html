@@ -28,8 +28,7 @@
                 <th>{% sort_header "autosystem_name" "Название" %}</th>
                 <th>{% sort_header "system_class__system_class" "Класс" %}</th>
                 <th>{% sort_header "system_status" "Статус" %}</th>
-                <th>{% sort_header "vendor__participant_name" "Вендор" %}</th>
-                <th>{% sort_header "end_of_support" "Окончание поддержки" %}</th>
+                <th>{% sort_header "product__product_name" "Продукт" %}</th>
                 <th>{% sort_header "objects_count" "Объекты" %}</th>
             </tr>
         </thead>
@@ -39,12 +38,11 @@
                 <td><a class="link" href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
                 <td><span class="tag {{ s.status_tag_class }}">{{ s.get_system_status_display }}</span></td>
-                <td>{% if s.vendor %}<a class="link" href="{% url 'participant-detail' s.vendor.pk %}">{{ s.vendor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if s.is_supported %}<span class="tag tag-ok">Поддерживается</span>{% else %}<span class="tag tag-danger">{{ s.support_display }}</span>{% endif %}</td>
+                <td>{% if s.product %}<a class="link" href="{% url 'product-detail' s.product.pk %}">{{ s.product.product_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{{ s.objects_count }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="6" class="empty">Системы не найдены</td></tr>
+            <tr><td colspan="5" class="empty">Системы не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>

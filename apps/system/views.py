@@ -6,18 +6,17 @@ from django.core.exceptions import ValidationError
 
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
+from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
 from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
-from apps.participants.usecases.participant_usecase import ParticipantUseCase
+from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.system.models import AutomatedSystem
 
 
 # Простые текстовые поля системы, считываемые из формы напрямую.
 _SYSTEM_TEXT_FIELDS = (
     "autosystem_short_name",
-    "version",
-    "article",
     "notes",
 )
 
@@ -54,9 +53,7 @@ def _extract_system_fields(post):
     """Собирает дополнительные поля системы из POST."""
     data = {field: post.get(field, "") or "" for field in _SYSTEM_TEXT_FIELDS}
     data["system_status"] = post.get("system_status") or "active"
-    data["product_type"] = post.get("product_type") or "software"
     data["release_year"] = post.get("release_year") or None
-    data["end_of_support"] = post.get("end_of_support") or None
 
     # Списки — через запятую/точку с запятой; характеристики — пары ключ/значение.
     data["modules"] = _parse_list_field(post.get("modules"))
@@ -79,39 +76,35 @@ def _system_list_render(request, template, view_mode):
     system_class = request.GET.get("system_class") or None
     search = request.GET.get("search") or None
     obj = request.GET.getlist("object") or None
-    vendor = request.GET.getlist("vendor") or None
+    product = request.GET.getlist("product") or None
     system_status = request.GET.getlist("system_status") or None
-    product_type = request.GET.getlist("product_type") or None
     ordering = request.GET.getlist("ordering") or None
 
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
     object_usecase = ObjectUseCase()
-    participant_usecase = ParticipantUseCase()
+    product_usecase = VendorProductUseCase()
 
     systems = usecase.list(
         system_class=system_class,
         search=search,
         obj=obj,
-        vendor=vendor,
+        product=product,
         system_status=system_status,
-        product_type=product_type,
         ordering=ordering,
     )
     classes = class_usecase.list()
     all_objects = object_usecase.list()
-    all_vendors = participant_usecase.list()
+    all_products = product_usecase.list()
     return render(request, template, {
         "systems": systems,
         "classes": classes,
         "all_objects": all_objects,
-        "all_vendors": all_vendors,
+        "all_products": all_products,
         "status_choices": AutomatedSystem.STATUS_CHOICES,
-        "product_type_choices": AutomatedSystem.PRODUCT_TYPE_CHOICES,
         "selected_objects": obj or [],
-        "selected_vendors": vendor or [],
+        "selected_products": product or [],
         "selected_statuses": system_status or [],
-        "selected_product_types": product_type or [],
         "ordering": ordering or [],
         "view_mode": view_mode,
     })
@@ -133,7 +126,7 @@ def system_detail(request, pk):
 @login_required
 def system_create(request):
     class_usecase = AutomationClassUseCase()
-    participant_usecase = ParticipantUseCase()
+    product_usecase = VendorProductUseCase()
     error = None
 
     if request.method == "POST":
@@ -143,7 +136,7 @@ def system_create(request):
                 user=request.user,
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
-                vendor=request.POST.get("vendor") or None,
+                product=request.POST.get("product") or None,
                 **_extract_system_fields(request.POST),
             )
             return redirect("system-list")
@@ -151,12 +144,11 @@ def system_create(request):
             error = str(e)
 
     classes = class_usecase.list()
-    participants = participant_usecase.list()
+    products = product_usecase.list()
     return render(request, "system/system_form.html", {
         "classes": classes,
-        "participants": participants,
+        "products": products,
         "status_choices": AutomatedSystem.STATUS_CHOICES,
-        "product_type_choices": AutomatedSystem.PRODUCT_TYPE_CHOICES,
         "error": error,
     })
 
@@ -166,7 +158,7 @@ def system_create(request):
 def system_edit(request, pk):
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
-    participant_usecase = ParticipantUseCase()
+    product_usecase = VendorProductUseCase()
     obj = usecase.get(pk)
     error = None
 
@@ -177,7 +169,7 @@ def system_edit(request, pk):
                 user=request.user,
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
-                vendor=request.POST.get("vendor") or None,
+                product=request.POST.get("product") or None,
                 **_extract_system_fields(request.POST),
             )
             return redirect("system-detail", pk=pk)
@@ -185,13 +177,12 @@ def system_edit(request, pk):
             error = str(e)
 
     classes = class_usecase.list()
-    participants = participant_usecase.list()
+    products = product_usecase.list()
     return render(request, "system/system_form.html", {
         "system": obj,
         "classes": classes,
-        "participants": participants,
+        "products": products,
         "status_choices": AutomatedSystem.STATUS_CHOICES,
-        "product_type_choices": AutomatedSystem.PRODUCT_TYPE_CHOICES,
         "error": error,
     })
 
@@ -210,7 +201,7 @@ def system_attach_object(request, pk):
     usecase = SystemUseCase()
     os_usecase = ObjectSystemUseCase()
     object_usecase = ObjectUseCase()
-    participant_usecase = ParticipantUseCase()
+    entity_usecase = EntityUseCase()
     system = usecase.get(pk)
     error = None
 
@@ -230,11 +221,88 @@ def system_attach_object(request, pk):
 
     attached_ids = os_usecase.list_for_system(system).values_list("object_id", flat=True)
     objects = object_usecase.list().exclude(pk__in=attached_ids)
-    participants = participant_usecase.list()
+    entities = entity_usecase.list()
     return render(request, "system/system_object_form.html", {
         "system": system,
         "objects": objects,
-        "participants": participants,
+        "entities": entities,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "error": error,
     })
+
+
+# ===================== Продукты вендоров =====================
+
+@require_http_methods(["GET"])
+def product_list(request):
+    search = request.GET.get("search") or None
+    ordering = request.GET.getlist("ordering") or None
+    usecase = VendorProductUseCase()
+    products = usecase.list(search=search, ordering=ordering)
+    return render(request, "system/product_list.html", {
+        "products": products,
+        "ordering": ordering or [],
+    })
+
+
+@require_http_methods(["GET"])
+def product_detail(request, pk):
+    usecase = VendorProductUseCase()
+    product = usecase.get(pk)
+    systems = product.systems.select_related("system_class")
+    return render(request, "system/product_detail.html", {
+        "product": product,
+        "systems": systems,
+    })
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def product_create(request):
+    error = None
+    if request.method == "POST":
+        usecase = VendorProductUseCase()
+        try:
+            product = usecase.create(
+                product_name=request.POST.get("product_name"),
+                vendor=request.POST.get("vendor") or None,
+            )
+            return redirect("product-detail", pk=product.pk)
+        except (ValidationError, Exception) as e:
+            error = str(e)
+    vendors = EntityUseCase().list()
+    return render(request, "system/product_form.html", {"vendors": vendors, "error": error})
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def product_edit(request, pk):
+    usecase = VendorProductUseCase()
+    product = usecase.get(pk)
+    error = None
+
+    if request.method == "POST":
+        try:
+            usecase.update(
+                pk=pk,
+                product_name=request.POST.get("product_name"),
+                vendor=request.POST.get("vendor") or None,
+            )
+            return redirect("product-detail", pk=pk)
+        except (ValidationError, Exception) as e:
+            error = str(e)
+
+    vendors = EntityUseCase().list()
+    return render(request, "system/product_form.html", {
+        "product": product,
+        "vendors": vendors,
+        "error": error,
+    })
+
+
+@require_http_methods(["POST"])
+@login_required
+def product_delete(request, pk):
+    usecase = VendorProductUseCase()
+    usecase.delete(pk)
+    return redirect("product-list")

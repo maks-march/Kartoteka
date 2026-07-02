@@ -10,7 +10,7 @@ from apps.objects.repositories.object_repository import ObjectRepository
 from apps.categories.usecases.category_usecase import CategoryUseCase
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
-from apps.participants.usecases.participant_usecase import ParticipantUseCase
+from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.objects.models import Object, ObjectSystem
 
 
@@ -299,7 +299,7 @@ def object_attach_system(request, pk):
     usecase = ObjectUseCase()
     os_usecase = ObjectSystemUseCase()
     system_usecase = SystemUseCase()
-    participant_usecase = ParticipantUseCase()
+    entity_usecase = EntityUseCase()
     obj = usecase.get(pk)
     error = None
 
@@ -319,11 +319,11 @@ def object_attach_system(request, pk):
 
     attached_ids = os_usecase.list_for_object(obj).values_list("system_id", flat=True)
     systems = system_usecase.list().exclude(pk__in=attached_ids)
-    participants = participant_usecase.list()
+    entities = entity_usecase.list()
     return render(request, "objects/object_system_form.html", {
         "object": obj,
         "systems": systems,
-        "participants": participants,
+        "entities": entities,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "error": error,
     })
@@ -341,7 +341,7 @@ def object_system_edit(request, pk):
     os_usecase = ObjectSystemUseCase()
     system_usecase = SystemUseCase()
     object_usecase = ObjectUseCase()
-    participant_usecase = ParticipantUseCase()
+    entity_usecase = EntityUseCase()
     link = os_usecase.get(pk)
     next_page = request.POST.get("next") or request.GET.get("next") or "object"
     error = None
@@ -361,7 +361,7 @@ def object_system_edit(request, pk):
         except (ValidationError, ValueError, TypeError) as e:
             error = str(e)
 
-    participants = participant_usecase.list()
+    entities = entity_usecase.list()
 
     if next_page == "system":
         # Форма как при создании со стороны системы: выбираем объект
@@ -370,7 +370,7 @@ def object_system_edit(request, pk):
         return render(request, "system/system_object_form.html", {
             "system": link.system,
             "objects": objects.distinct(),
-            "participants": participants,
+            "entities": entities,
             "status_choices": ObjectSystem.STATUS_CHOICES,
             "link": link,
             "next_page": next_page,
@@ -383,7 +383,7 @@ def object_system_edit(request, pk):
     return render(request, "objects/object_system_form.html", {
         "object": link.object,
         "systems": systems.distinct(),
-        "participants": participants,
+        "entities": entities,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "link": link,
         "next_page": next_page,

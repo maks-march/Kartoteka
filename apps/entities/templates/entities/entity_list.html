@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+{% load sorting %}
+
+{% block title %}Участники рынка{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-title-row">
+        <h1 style="margin:0">Участники рынка</h1>
+        <div style="display:flex; gap:12px; align-items:center">
+            <div class="view-toggle">
+                <a href="{% url 'entity-list' %}" class="active">Таблица</a>
+                <a href="{% url 'entity-cards' %}">Карточки</a>
+            </div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'entity-create' %}" class="btn btn-primary">+ Добавить участника</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="{% url 'entity-list' %}" class="btn-reset" title="Сбросить фильтр">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </a>
+        </div>
+    </form>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>{% sort_header "entity_name" "Название" %}</th>
+                <th>{% sort_header "entity_type" "Тип" %}</th>
+                <th>Отрасль</th>
+                <th>{% sort_header "inn" "ИНН" %}</th>
+                <th>{% sort_header "systems_count" "Системы" %}</th>
+                <th>{% sort_header "products_count" "Продукты" %}</th>
+                <th>{% sort_header "is_partner" "Партнёр" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entity in entities %}
+            <tr>
+                <td><a class="link" href="{% url 'entity-detail' entity.pk %}">{{ entity.entity_name }}</a></td>
+                <td>{% if entity.entity_type %}<span class="tag {{ entity.entity_type_tag_class }}">{{ entity.get_entity_type_display }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{{ entity.industries_first|default:'—' }}</td>
+                <td>{{ entity.inn|default:'—' }}</td>
+                <td>{{ entity.systems_count }}</td>
+                <td>{% if entity.can_have_products %}{{ entity.products_count }}{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if entity.is_partner %}<span class="tag tag-ok">Да</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="empty">Участники рынка не найдены</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

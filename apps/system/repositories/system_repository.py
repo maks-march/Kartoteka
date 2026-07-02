@@ -22,17 +22,17 @@ class SystemRepository:
     сортировкой и счётчиком подключённых объектов, а также CRUD."""
     # Поля, по которым разрешена серверная сортировка.
     ORDERING_FIELDS = {
-        "autosystem_name", "version", "system_status", "product_type",
-        "release_year", "end_of_support",
-        "system_class__system_class", "vendor__participant_name",
+        "autosystem_name", "system_status",
+        "release_year",
+        "system_class__system_class", "product__product_name",
         # Аннотированное поле (Count) — количество подключённых объектов.
         "objects_count",
     }
     DEFAULT_ORDERING = "autosystem_name"
 
     def get_all(self, system_class=None, search=None, obj=None,
-                vendor=None, system_status=None, product_type=None, ordering=None):
-        qs = AutomatedSystem.objects.all().select_related("system_class", "vendor")
+                product=None, system_status=None, ordering=None):
+        qs = AutomatedSystem.objects.all().select_related("system_class", "product")
         if system_class is not None:
             qs = qs.filter(system_class_id=system_class)
         if search:
@@ -43,25 +43,22 @@ class SystemRepository:
         if obj_ids:
             # ИЛИ: системы, привязанные к любому из выбранных объектов
             qs = qs.filter(objectsystem__object_id__in=obj_ids).distinct()
-        vendor_ids = _as_id_list(vendor)
-        if vendor_ids:
-            # ИЛИ: системы любого из выбранных вендоров
-            qs = qs.filter(vendor_id__in=vendor_ids)
+        product_ids = _as_id_list(product)
+        if product_ids:
+            # ИЛИ: системы на любом из выбранных продуктов
+            qs = qs.filter(product_id__in=product_ids)
         status_values = _as_id_list(system_status)
         if status_values:
             qs = qs.filter(system_status__in=status_values)
-        product_types = _as_id_list(product_type)
-        if product_types:
-            qs = qs.filter(product_type__in=product_types)
         # Количество подключённых объектов (для списков/карточек)
         qs = qs.annotate(objects_count=Count("objectsystem", distinct=True))
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
-        return AutomatedSystem.objects.filter(pk=pk).select_related("system_class", "vendor", "creator_id").first()
+        return AutomatedSystem.objects.filter(pk=pk).select_related("system_class", "product", "creator_id").first()
 
     def get_by_creator(self, user, search=None):
-        qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class", "vendor")
+        qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class", "product")
         if search:
             qs = qs.filter(autosystem_name__iregex=re.escape(search))
         return qs

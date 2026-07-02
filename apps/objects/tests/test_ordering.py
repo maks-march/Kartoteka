@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from apps.categories.models import Category
 from apps.objects.models import Object
 from apps.owners.models import OwnerEntity
-from apps.participants.models import Participant
+from apps.entities.models import Entity
 
 
 class ObjectApiOrderingTests(TestCase):
@@ -39,8 +39,8 @@ class OtherEntitiesApiOrderingTests(TestCase):
         self.user = User.objects.create_user("ord2", "o2@x.x", "pw")
         OwnerEntity.objects.create(owner_name="Бета")
         OwnerEntity.objects.create(owner_name="Альфа")
-        Participant.objects.create(participant_name="Бета")
-        Participant.objects.create(participant_name="Альфа")
+        Entity.objects.create(entity_name="Бета")
+        Entity.objects.create(entity_name="Альфа")
         Category.objects.create(name="Бета", level=1, creator_id=self.user)
         Category.objects.create(name="Альфа", level=1, creator_id=self.user)
         self.api = APIClient()
@@ -50,10 +50,10 @@ class OtherEntitiesApiOrderingTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual([r["owner_name"] for r in resp.data], ["Бета", "Альфа"])
 
-    def test_participants_ordering_desc(self):
-        resp = self.api.get("/api/participants/", {"ordering": "-participant_name"})
+    def test_entities_ordering_desc(self):
+        resp = self.api.get("/api/entities/", {"ordering": "-entity_name"})
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual([r["participant_name"] for r in resp.data], ["Бета", "Альфа"])
+        self.assertEqual([r["entity_name"] for r in resp.data], ["Бета", "Альфа"])
 
     def test_categories_ordering_desc(self):
         resp = self.api.get("/api/categories/categories/", {"ordering": "-name"})

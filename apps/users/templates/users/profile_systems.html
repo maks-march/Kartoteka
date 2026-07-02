@@ -48,7 +48,7 @@
             <tr>
                 <th>Название</th>
                 <th>Класс</th>
-                <th>Вендор</th>
+                <th>Продукт</th>
                 <th>Действия</th>
             </tr>
         </thead>
@@ -57,7 +57,7 @@
             <tr>
                 <td><a href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
-                <td>{% if s.vendor %}<a href="{% url 'participant-detail' s.vendor.pk %}">{{ s.vendor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if s.product %}<a href="{% url 'product-detail' s.product.pk %}">{{ s.product.product_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>
                     <div class="actions">
                         <a href="{% url 'system-edit' s.pk %}" class="btn btn-primary">Изменить</a>

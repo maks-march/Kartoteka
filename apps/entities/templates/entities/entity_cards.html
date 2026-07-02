@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Участники рынка — карточки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-title-row">
+        <h1 style="margin:0">Участники рынка</h1>
+        <div style="display:flex; gap:12px; align-items:center">
+            <div class="view-toggle">
+                <a href="{% url 'entity-list' %}">Таблица</a>
+                <a href="{% url 'entity-cards' %}" class="active">Карточки</a>
+            </div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'entity-create' %}" class="btn btn-primary">+ Добавить участника</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="{% url 'entity-cards' %}" class="btn-reset" title="Сбросить фильтр">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </a>
+        </div>
+    </form>
+
+    <div class="cards-grid">
+        {% for entity in entities %}
+        <div class="entity-card" data-href="{% url 'entity-detail' entity.pk %}">
+            <div class="card-title">
+                <a href="{% url 'entity-detail' entity.pk %}">{{ entity.entity_name }}</a>
+                {% if entity.is_partner %}<span class="tag tag-ok">Партнёр</span>{% endif %}
+            </div>
+            <div class="card-tags">
+                {% if entity.entity_type %}<span class="tag {{ entity.entity_type_tag_class }}">{{ entity.get_entity_type_display }}</span>{% endif %}
+
+            </div>
+            <div class="card-rows">
+                <div class="card-row"><span class="k">Отрасли</span><span class="v">{{ entity.industries_first_three|default:'—' }}</span></div>
+                <div class="card-row"><span class="k">ИНН</span><span class="v">{{ entity.inn|default:'—' }}</span></div>
+                <div class="card-row"><span class="k">Связанные системы</span><span class="v">{{ entity.systems_count }}</span></div>
+                {% if entity.can_have_products %}
+                <div class="card-row"><span class="k">Продукты</span><span class="v">{{ entity.products_count }}</span></div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty">Участники рынка не найдены</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

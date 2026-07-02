@@ -9,9 +9,6 @@
             <h1 style="margin-bottom:6px">{{ system.autosystem_name }}</h1>
             <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
             <span class="tag {{ system.status_tag_class }}" style="margin-left:6px">{{ system.get_system_status_display }}</span>
-            {% if system.product_type %}
-                <span class="tag tag-muted" style="margin-left:6px">{{ system.get_product_type_display }}</span>
-            {% endif %}
 
             <div class="detail-meta">
                 <p>Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
@@ -37,34 +34,22 @@
                 <span class="info-label">Короткое название</span>
                 <span class="info-value">{{ system.autosystem_short_name|default:'—' }}</span>
             </div>
-            <div class="info-card">
-                <span class="info-label">Версия</span>
-                <span class="info-value">{{ system.version|default:'—' }}</span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Артикул</span>
-                <span class="info-value">{{ system.article|default:'—' }}</span>
-            </div>
         </div>
     </div>
 
-    <!-- ===== Классификация и участники ===== -->
+    <!-- ===== Классификация и продукт ===== -->
     <div class="info-block">
-        <h3 class="info-block-title">Классификация и участники</h3>
+        <h3 class="info-block-title">Классификация и продукт</h3>
         <div class="info-cards">
             <div class="info-card">
                 <span class="info-label">Класс системы</span>
                 <span class="info-value">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
             </div>
             <div class="info-card">
-                <span class="info-label">Вендор</span>
+                <span class="info-label">Продукт</span>
                 <span class="info-value">
-                    {% if system.vendor %}<a class="link" href="{% url 'participant-detail' system.vendor.pk %}">{{ system.vendor.participant_name }}</a>{% else %}—{% endif %}
+                    {% if system.product %}<a class="link" href="{% url 'product-detail' system.product.pk %}">{{ system.product.product_name }}</a>{% else %}—{% endif %}
                 </span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Тип продукта</span>
-                <span class="info-value">{{ system.get_product_type_display|default:'—' }}</span>
             </div>
         </div>
     </div>
@@ -80,10 +65,6 @@
             <div class="info-card">
                 <span class="info-label">Дата выпуска</span>
                 <span class="info-value">{% if system.release_year %}{{ system.release_year|date:"d.m.Y" }}{% else %}—{% endif %}</span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Конец поддержки</span>
-                <span class="info-value">{% if system.end_of_support %}{{ system.end_of_support|date:"d.m.Y" }}{% else %}—{% endif %}</span>
             </div>
 
             <div class="info-card full">
@@ -152,8 +133,8 @@
                 <td><span class="tag tag-{{ os.object.level }}">Уровень {{ os.object.level }}</span></td>
                 <td>{{ os.get_status_display }}</td>
                 <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.integrator %}<a href="{% url 'participant-detail' os.integrator.pk %}">{{ os.integrator.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.implimentor %}<a href="{% url 'participant-detail' os.implimentor.pk %}">{{ os.implimentor.participant_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if os.integrator %}<a href="{% url 'entity-detail' os.integrator.pk %}">{{ os.integrator.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if os.implimentor %}<a href="{% url 'entity-detail' os.implimentor.pk %}">{{ os.implimentor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 {% if user.is_authenticated %}
                 <td>
                     <div class="actions">

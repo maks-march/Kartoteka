@@ -28,10 +28,18 @@
                 <div class="nav-dropdown">
                     <a href="{% url 'system-list' %}">Таблица</a>
                     <a href="{% url 'system-cards' %}">Карточки</a>
+                    <div class="nav-sep"></div>
+                    <a href="{% url 'product-list' %}">Продукты</a>
                 </div>
             </div>
 
-            <a href="{% url 'participant-list' %}">Участники</a>
+            <div class="nav-item">
+                <a href="{% url 'entity-cards' %}" class="nav-parent">Участники ▾</a>
+                <div class="nav-dropdown">
+                    <a href="{% url 'entity-list' %}">Таблица</a>
+                    <a href="{% url 'entity-cards' %}">Карточки</a>
+                </div>
+            </div>
         </nav>
         <div class="user-menu">
             {% if user.is_authenticated %}

@@ -11,8 +11,8 @@ urlpatterns = [
     path("api/owners/", include("apps.owners.api.urls")),
     path("owners/", include("apps.owners.urls")),
 
-    path("api/participants/", include("apps.participants.api.urls")),
-    path("participants/", include("apps.participants.urls")),
+    path("api/entities/", include("apps.entities.api.urls")),
+    path("entities/", include("apps.entities.urls")),
 
     path("api/objects/", include("apps.objects.api.urls")),
     path("objects/", include("apps.objects.urls")),

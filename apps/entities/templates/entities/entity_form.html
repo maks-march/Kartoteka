@@ -1,0 +1,151 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if entity %}Изменить{% else %}Добавить{% endif %} участника рынка{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>{% if entity %}Изменить{% else %}Добавить{% endif %} участника рынка</h1>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    <form method="post" id="entityForm">
+        {% csrf_token %}
+
+        <!-- ===== Основная информация ===== -->
+        <div class="form-section">
+            <h2>Основная информация</h2>
+            <div class="form-group">
+                <label>Название участника рынка</label>
+                <input type="text" name="entity_name" value="{{ entity.entity_name|default:'' }}" required>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>ИНН</label>
+                    <input type="text" name="inn" value="{{ entity.inn|default:'' }}" placeholder="10 или 12 цифр (необязательно)">
+                </div>
+                <div class="form-group">
+                    <label>Тип участника</label>
+                    <select name="entity_type">
+                        <option value="">— Не указан —</option>
+                        {% for value, label in entity_type_choices %}
+                        <option value="{{ value }}" {% if entity.entity_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Дата регистрации</label>
+                    <input type="date" name="registration_date" value="{{ entity.registration_date|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_partner" {% if entity.is_partner %}checked{% endif %}>
+                        Является партнёром
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Ссылки ===== -->
+        <div class="form-section">
+            <h2>Ссылки</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Сайт</label>
+                    <input type="text" name="website" value="{{ entity.website|default:'' }}" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на презентацию</label>
+                    <input type="text" name="presentation_url" value="{{ entity.presentation_url|default:'' }}" placeholder="https://...">
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Контакты ===== -->
+        <div class="form-section">
+            <h2>Контакты</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Имя КАМ (Key Account Manager)</label>
+                    <input type="text" name="kam_name" value="{{ entity.kam_name|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Телефон КАМ</label>
+                    <input type="text" name="kam_phone" value="{{ entity.kam_phone|default:'' }}">
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Контакт от ЦК ПА</label>
+                    <input type="text" name="contact_person" value="{{ entity.contact_person|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Телефон от ЦК ПА</label>
+                    <input type="text" name="contact_phone" value="{{ entity.contact_phone|default:'' }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Дополнительные контакты</label>
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Пары «канал — значение» (например, email — info@company.ru).</p>
+                <div id="contactsList">
+                    {% for key, value in entity.contacts_items %}
+                    <div class="kv-row">
+                        <input type="text" name="contact_key" value="{{ key }}" placeholder="Канал">
+                        <input type="text" name="contact_value" value="{{ value }}" placeholder="Значение">
+                        <button type="button" class="btn btn-danger btn-sm kv-remove" title="Удалить">−</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm kv-add" data-target="#contactsList" data-key="contact_key" data-value="contact_value">+ Добавить контакт</button>
+            </div>
+        </div>
+
+        <!-- ===== Отрасли и профиль ===== -->
+        <div class="form-section">
+            <h2>Отрасли и профиль</h2>
+            <div class="form-group">
+                <label>Отрасли применения</label>
+                <input type="text" name="industries" list="industryOptions" value="{{ entity.industries_text }}" placeholder="Химия, Металлургия, ...">
+                <datalist id="industryOptions">
+                    {% for ind in industry_suggestions %}<option value="{{ ind }}">{% endfor %}
+                </datalist>
+                <p class="hint" style="margin-top:4px">Перечислите через запятую. Подсказки — категории 1-го уровня.</p>
+            </div>
+            <div class="form-group">
+                <label>Профиль компании</label>
+                <textarea name="profile" rows="4">{{ entity.profile|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- ===== Финансовые показатели ===== -->
+        <div class="form-section">
+            <h2>Финансовые показатели</h2>
+            <div class="form-group">
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Пары «показатель — значение» (например, Выручка 2024 — 1.2 млрд).</p>
+                <div id="finList">
+                    {% for key, value in entity.financial_data_items %}
+                    <div class="kv-row">
+                        <input type="text" name="fin_key" value="{{ key }}" placeholder="Показатель">
+                        <input type="text" name="fin_value" value="{{ value }}" placeholder="Значение">
+                        <button type="button" class="btn btn-danger btn-sm kv-remove" title="Удалить">−</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm kv-add" data-target="#finList" data-key="fin_key" data-value="fin_value">+ Добавить показатель</button>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{% if entity %}{% url 'entity-detail' entity.pk %}{% else %}{% url 'entity-list' %}{% endif %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/entity_form.js' %}" defer></script>
+{% endblock %}

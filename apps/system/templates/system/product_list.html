@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% load sorting %}
+
+{% block title %}Продукты вендоров{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+        <h1 style="margin:0">Продукты вендоров</h1>
+        {% if user.is_authenticated %}
+            <a href="{% url 'product-create' %}" class="btn btn-primary">+ Добавить продукт</a>
+        {% endif %}
+    </div>
+
+    <form class="filters" method="get" id="filterForm">
+        <div class="main-row">
+            <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="{% url 'product-list' %}" class="btn-reset" title="Сбросить фильтр">
+                <svg class="icon-trash" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6m2 3h14v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9m3 3v6h2v-6H8m4 0v6h2v-6h-2m4 0v6h2v-6h-2M9 4l1-1h4l1 1h5v2H4V4h5z"/>
+                </svg>
+            </a>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>{% sort_header "product_name" "Название" %}</th>
+                <th>Вендор</th>
+                <th>{% sort_header "systems_count" "Систем" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><a href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
+                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{{ product.systems_count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Продукты не найдены</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

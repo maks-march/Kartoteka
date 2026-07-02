@@ -19,25 +19,15 @@
                 <label>Полное название системы автоматизации</label>
                 <input type="text" name="autosystem_name" value="{{ system.autosystem_name|default:'' }}" required>
             </div>
-            <div class="form-grid two">
-                <div class="form-group">
-                    <label>Короткое название</label>
-                    <input type="text" name="autosystem_short_name" value="{{ system.autosystem_short_name|default:'' }}">
-                </div>
-                <div class="form-group">
-                    <label>Версия системы</label>
-                    <input type="text" name="version" value="{{ system.version|default:'' }}">
-                </div>
-            </div>
             <div class="form-group">
-                <label>Артикул</label>
-                <input type="text" name="article" value="{{ system.article|default:'' }}" placeholder="Уникальный артикул (необязательно)">
+                <label>Короткое название</label>
+                <input type="text" name="autosystem_short_name" value="{{ system.autosystem_short_name|default:'' }}">
             </div>
         </div>
 
-        <!-- ===== Классификация и участники ===== -->
+        <!-- ===== Классификация и продукт ===== -->
         <div class="form-section">
-            <h2>Классификация и участники</h2>
+            <h2>Классификация и продукт</h2>
 
             <div class="form-group">
                 <label>Тип системы — уровень и класс</label>
@@ -67,38 +57,39 @@
             </div>
 
             <div class="form-group">
-                <label>Поставщик системы / вендор</label>
-                <div class="picker collapsible" data-target="#selectedVendorId" data-empty-text="Не указан">
+                <label>Продукт</label>
+                <div class="picker collapsible" data-target="#selectedProductId" data-empty-text="Не указан">
                     <div class="picker-header">
-                        <span class="picker-header-label">Вендор</span>
+                        <span class="picker-header-label">Продукт</span>
                         <span class="picker-header-value empty-value">Не указан</span>
                         <span class="picker-caret">▾</span>
                     </div>
                     <div class="picker-body">
                         <div class="search-wrapper">
-                            <input type="text" class="picker-search" placeholder="Введите название участника рынка..." style="margin-bottom:0">
+                            <input type="text" class="picker-search" placeholder="Введите название продукта..." style="margin-bottom:0">
                             <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                         </div>
                         <div class="system-results-container">
-                            <div class="system-item {% if not system.vendor_id %}selected{% endif %}" data-id="" data-keep>
-                                <span class="system-name">— Вендор не указан —</span>
+                            <div class="system-item {% if not system.product_id %}selected{% endif %}" data-id="" data-keep>
+                                <span class="system-name">— Продукт не указан —</span>
                             </div>
-                            {% for participant in participants %}
-                            <div class="system-item {% if system.vendor_id == participant.pk %}selected{% endif %}" data-id="{{ participant.pk }}" data-name="{{ participant.participant_name|lower }}">
-                                <span class="system-name">{{ participant.participant_name }}</span>
+                            {% for product in products %}
+                            <div class="system-item {% if system.product_id == product.pk %}selected{% endif %}" data-id="{{ product.pk }}" data-name="{{ product.product_name|lower }}">
+                                <span class="system-name">{{ product.product_name }}</span>
                             </div>
                             {% endfor %}
-                            <div class="picker-no-results picker-empty">Участники рынка не найдены</div>
+                            <div class="picker-no-results picker-empty">Продукты не найдены</div>
                         </div>
                     </div>
-                    <input type="hidden" name="vendor" id="selectedVendorId" value="{{ system.vendor_id|default:'' }}">
+                    <input type="hidden" name="product" id="selectedProductId" value="{{ system.product_id|default:'' }}">
                 </div>
+                <p class="hint" style="margin-top:6px">Нет нужного продукта? <a class="link" href="{% url 'product-create' %}" target="_blank">Создать продукт</a></p>
             </div>
         </div>
 
         <!-- ===== Состояние продукта ===== -->
         <div class="form-section">
-            <h2>Состояние продукта</h2>
+            <h2>Состояние системы</h2>
             <div class="form-grid two">
                 <div class="form-group">
                     <label>Статус системы</label>
@@ -109,22 +100,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Тип продукта</label>
-                    <select name="product_type">
-                        {% for value, label in product_type_choices %}
-                        <option value="{{ value }}" {% if system.product_type == value %}selected{% elif not system and value == 'software' %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form-grid two">
-                <div class="form-group">
                     <label>Дата выпуска</label>
                     <input type="date" name="release_year" value="{{ system.release_year|date:'Y-m-d'|default:'' }}">
-                </div>
-                <div class="form-group">
-                    <label>Конец поддержки</label>
-                    <input type="date" name="end_of_support" value="{{ system.end_of_support|date:'Y-m-d'|default:'' }}">
                 </div>
             </div>
         </div>

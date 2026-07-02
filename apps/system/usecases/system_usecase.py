@@ -1,27 +1,26 @@
 from apps.system.repositories.system_repository import SystemRepository
 from apps.system.repositories.automation_class_repository import AutomationClassRepository
-from apps.participants.repositories.participant_repository import ParticipantRepository
+from apps.system.repositories.vendor_product_repository import VendorProductRepository
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ValidationError
 
 
 class SystemUseCase:
     """Сценарии работы с автоматизированными системами: список с фильтрами и
-    сортировкой, CRUD, разбор JSON-полей и связанных участников."""
-    def __init__(self, repo=None, class_repo=None, participant_repo=None):
+    сортировкой, CRUD, разбор JSON-полей и связанного продукта."""
+    def __init__(self, repo=None, class_repo=None, product_repo=None):
         self.repo = repo or SystemRepository()
         self.class_repo = class_repo or AutomationClassRepository()
-        self.participant_repo = participant_repo or ParticipantRepository()
+        self.product_repo = product_repo or VendorProductRepository()
 
     def list(self, system_class=None, search=None, obj=None,
-             vendor=None, system_status=None, product_type=None, ordering=None):
+             product=None, system_status=None, ordering=None):
         return self.repo.get_all(
             system_class=system_class,
             search=search,
             obj=obj,
-            vendor=vendor,
+            product=product,
             system_status=system_status,
-            product_type=product_type,
             ordering=ordering,
         )
 
@@ -34,20 +33,13 @@ class SystemUseCase:
             raise NotFound("System not found")
         return obj
 
-    def _get_optional_participant(self, pk, field_name):
+    def _get_optional_product(self, pk):
         if pk in (None, "", "None"):
             return None
-        participant = self.participant_repo.get_by_id(pk)
-        if not participant:
-            raise ValidationError(f"{field_name} не найден")
-        return participant
-
-    @staticmethod
-    def _normalize_article(data):
-        # Артикул уникален; пустую строку храним как NULL, чтобы несколько систем
-        # без артикула не конфликтовали по unique-ограничению.
-        if "article" in data and not (data["article"] or "").strip():
-            data["article"] = None
+        product = self.product_repo.get_by_id(pk)
+        if not product:
+            raise ValidationError("Продукт не найден")
+        return product
 
     def create(self, user=None, **data):
         class_id = data.get("system_class")
@@ -55,10 +47,8 @@ class SystemUseCase:
             raise ValidationError("Automation class not found")
         data['system_class'] = self.class_repo.get_by_id(class_id)
 
-        vendor_id = data.pop("vendor", None)
-        data["vendor"] = self._get_optional_participant(vendor_id, "Вендор")
-
-        self._normalize_article(data)
+        product_id = data.pop("product", None)
+        data["product"] = self._get_optional_product(product_id)
 
         if user is not None:
             data['creator_id'] = user
@@ -74,11 +64,9 @@ class SystemUseCase:
                 raise ValidationError("Automation class not found")
             data["system_class"] = klass
 
-        if "vendor" in data:
-            vendor_id = data.pop("vendor")
-            data["vendor"] = self._get_optional_participant(vendor_id, "Вендор")
-
-        self._normalize_article(data)
+        if "product" in data:
+            product_id = data.pop("product")
+            data["product"] = self._get_optional_product(product_id)
 
         return self.repo.update(obj, **data)
 

@@ -126,8 +126,8 @@ class ObjectSystemSerializer(serializers.ModelSerializer):
     object_name = serializers.CharField(source="object.name", read_only=True)
     system_name = serializers.CharField(source="system.autosystem_name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
-    integrator_name = serializers.CharField(source="integrator.participant_name", read_only=True)
-    implimentor_name = serializers.CharField(source="implimentor.participant_name", read_only=True)
+    integrator_name = serializers.CharField(source="integrator.entity_name", read_only=True)
+    implimentor_name = serializers.CharField(source="implimentor.entity_name", read_only=True)
 
     class Meta:
         model = ObjectSystem

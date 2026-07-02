@@ -80,8 +80,7 @@ class RelatedFieldSortingTests(TestCase):
     def setUp(self):
         from apps.categories.models import Category
         from apps.owners.models import OwnerEntity
-        from apps.system.models import AutomationClass, AutomatedSystem
-        from apps.participants.models import Participant
+        from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
         self.user = User.objects.create_user("rel", "r@r.r", "pw")
 
         cat_b = Category.objects.create(name="Бета", level=1, creator_id=self.user)
@@ -93,10 +92,10 @@ class RelatedFieldSortingTests(TestCase):
 
         self.cls_b = AutomationClass.objects.create(level=2, system_class="Бета-класс")
         self.cls_a = AutomationClass.objects.create(level=2, system_class="Альфа-класс")
-        self.v_b = Participant.objects.create(participant_name="Бета-вендор")
-        self.v_a = Participant.objects.create(participant_name="Альфа-вендор")
-        AutomatedSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, vendor=self.v_b, creator_id=self.user)
-        AutomatedSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, vendor=self.v_a, creator_id=self.user)
+        self.p_b = VendorProduct.objects.create(product_name="Бета-продукт")
+        self.p_a = VendorProduct.objects.create(product_name="Альфа-продукт")
+        AutomatedSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, product=self.p_b, creator_id=self.user)
+        AutomatedSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator_id=self.user)
 
     def test_objects_sort_by_category_name(self):
         resp = self.client.get("/objects/?ordering=category__name")
@@ -110,8 +109,8 @@ class RelatedFieldSortingTests(TestCase):
         resp = self.client.get("/system/?ordering=system_class__system_class")
         self.assertEqual([s.autosystem_name for s in resp.context["systems"]], ["S2", "S1"])
 
-    def test_systems_sort_by_vendor_name_desc(self):
-        resp = self.client.get("/system/?ordering=-vendor__participant_name")
+    def test_systems_sort_by_product_name_desc(self):
+        resp = self.client.get("/system/?ordering=-product__product_name")
         self.assertEqual([s.autosystem_name for s in resp.context["systems"]], ["S1", "S2"])
 
     def test_related_sort_header_links_present(self):
@@ -120,7 +119,7 @@ class RelatedFieldSortingTests(TestCase):
         self.assertIn("ordering=-owner_entity__owner_name", oh)
         sh = self.client.get("/system/").content.decode().replace("&amp;", "&")
         self.assertIn("ordering=-system_class__system_class", sh)
-        self.assertIn("ordering=-vendor__participant_name", sh)
+        self.assertIn("ordering=-product__product_name", sh)
 
 
 class ViewModeAndNavTests(TestCase):
@@ -157,7 +156,7 @@ class ViewModeAndNavTests(TestCase):
         self.assertContains(r, "nav-dropdown")
         self.assertContains(r, "Владельцы")
         self.assertNotContains(r, "Юр. лица")
-        self.assertContains(r, "Карточное представление")
+        self.assertContains(r, "Карточки")
 
 
 class CardCountsTests(TestCase):

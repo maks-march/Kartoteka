@@ -1,8 +1,8 @@
 /**
  * Инициализация фильтров расширенного поиска в списке/карточках систем:
  *  - «Класс системы» — одиночный выбор (пишет id в скрытый input);
- *  - «Объект», «Вендор» — мультивыбор с поиском;
- *  - «Статус», «Тип продукта» — мультивыбор без поля поиска.
+ *  - «Объект», «Продукт» — мультивыбор с поиском;
+ *  - «Статус» — мультивыбор без поля поиска.
  * Опирается на setupMultiFilterPicker из app.js.
  */
 document.addEventListener('DOMContentLoaded', function () {
@@ -22,8 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     setupMultiFilterPicker('objectFilterSearch', 'objectFilterBtn', 'objectFilterList', 'objectFilterInputs', 'objectFilterNoResults');
-    setupMultiFilterPicker('vendorFilterSearch', 'vendorFilterBtn', 'vendorFilterList', 'vendorFilterInputs', 'vendorFilterNoResults');
-    // Статус и тип продукта — без поля поиска (только выбор пунктов).
+    setupMultiFilterPicker('productFilterSearch', 'productFilterBtn', 'productFilterList', 'productFilterInputs', 'productFilterNoResults');
+    // Статус — без поля поиска (только выбор пунктов).
     setupMultiFilterPicker(null, null, 'statusFilterList', 'statusFilterInputs', null);
-    setupMultiFilterPicker(null, null, 'ptypeFilterList', 'ptypeFilterInputs', null);
 });

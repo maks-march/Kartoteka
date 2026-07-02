@@ -7,8 +7,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from apps.participants.models import Participant
-from apps.system.models import AutomationClass, AutomatedSystem
+from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
 from apps.system.usecases.system_usecase import SystemUseCase
 
 
@@ -16,9 +15,12 @@ class SystemOrderingTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("o", "o@o.o", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
-        AutomatedSystem.objects.create(autosystem_name="Бета", system_class=self.cls, version="2", creator_id=self.user)
-        AutomatedSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, version="3", creator_id=self.user)
-        AutomatedSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, version="1", creator_id=self.user)
+        self.pb = VendorProduct.objects.create(product_name="Бета-продукт")
+        self.pa = VendorProduct.objects.create(product_name="Альфа-продукт")
+        self.pg = VendorProduct.objects.create(product_name="Гамма-продукт")
+        AutomatedSystem.objects.create(autosystem_name="Бета", system_class=self.cls, product=self.pb, creator_id=self.user)
+        AutomatedSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, product=self.pa, creator_id=self.user)
+        AutomatedSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator_id=self.user)
 
     def _names(self, ordering):
         return [s.autosystem_name for s in SystemUseCase().list(ordering=ordering)]
@@ -29,8 +31,9 @@ class SystemOrderingTests(TestCase):
     def test_ordering_desc_by_name(self):
         self.assertEqual(self._names("-autosystem_name"), ["Гамма", "Бета", "Альфа"])
 
-    def test_ordering_by_version(self):
-        self.assertEqual(self._names("version"), ["Гамма", "Бета", "Альфа"])
+    def test_ordering_by_product_name(self):
+        # Альфа-продукт < Бета-продукт < Гамма-продукт
+        self.assertEqual(self._names("product__product_name"), ["Альфа", "Бета", "Гамма"])
 
     def test_invalid_ordering_field_falls_back_to_default(self):
         # Защита от инъекции произвольного поля: берётся сортировка по умолчанию.
@@ -50,15 +53,15 @@ class SystemApiFilterParityTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("p", "p@p.p", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
-        self.v1 = Participant.objects.create(participant_name="Siemens")
-        self.v2 = Participant.objects.create(participant_name="Honeywell")
+        self.p1 = VendorProduct.objects.create(product_name="Simatic")
+        self.p2 = VendorProduct.objects.create(product_name="Experion")
         self.s1 = AutomatedSystem.objects.create(
-            autosystem_name="S1", system_class=self.cls, vendor=self.v1,
-            system_status="active", product_type="software", creator_id=self.user,
+            autosystem_name="S1", system_class=self.cls, product=self.p1,
+            system_status="active", creator_id=self.user,
         )
         self.s2 = AutomatedSystem.objects.create(
-            autosystem_name="S2", system_class=self.cls, vendor=self.v2,
-            system_status="planned", product_type="hardware", creator_id=self.user,
+            autosystem_name="S2", system_class=self.cls, product=self.p2,
+            system_status="planned", creator_id=self.user,
         )
         self.client_api = APIClient()
 
@@ -67,20 +70,17 @@ class SystemApiFilterParityTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         return sorted(row["autosystem_name"] for row in resp.data)
 
-    def test_api_filter_by_vendor(self):
-        self.assertEqual(self._names({"vendor": self.v1.pk}), ["S1"])
+    def test_api_filter_by_product(self):
+        self.assertEqual(self._names({"product": self.p1.pk}), ["S1"])
 
     def test_api_filter_by_status(self):
         self.assertEqual(self._names({"system_status": "planned"}), ["S2"])
 
-    def test_api_filter_by_product_type(self):
-        self.assertEqual(self._names({"product_type": "hardware"}), ["S2"])
-
     def test_api_filters_combine_with_and(self):
-        self.assertEqual(self._names({"vendor": self.v1.pk, "system_status": "active"}), ["S1"])
-        self.assertEqual(self._names({"vendor": self.v1.pk, "system_status": "planned"}), [])
+        self.assertEqual(self._names({"product": self.p1.pk, "system_status": "active"}), ["S1"])
+        self.assertEqual(self._names({"product": self.p1.pk, "system_status": "planned"}), [])
 
-    def test_api_multiselect_vendor_is_or(self):
-        resp = self.client_api.get(f"/api/system/?vendor={self.v1.pk}&vendor={self.v2.pk}")
+    def test_api_multiselect_product_is_or(self):
+        resp = self.client_api.get(f"/api/system/?product={self.p1.pk}&product={self.p2.pk}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(sorted(r["autosystem_name"] for r in resp.data), ["S1", "S2"])

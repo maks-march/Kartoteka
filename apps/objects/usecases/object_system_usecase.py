@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from apps.objects.repositories.object_system_repository import ObjectSystemRepository
 from apps.objects.repositories.object_repository import ObjectRepository
 from apps.system.repositories.system_repository import SystemRepository
-from apps.participants.repositories.participant_repository import ParticipantRepository
+from apps.entities.repositories.entity_repository import EntityRepository
 from common.exceptions import NotFoundException
 from rest_framework.exceptions import NotFound
 
@@ -11,11 +11,11 @@ from rest_framework.exceptions import NotFound
 class ObjectSystemUseCase:
     """Сценарии управления связью «система на объекте» (привязка, изменение,
     отвязка) с проверкой участников и уникальности связи."""
-    def __init__(self, repo=None, object_repo=None, system_repo=None, participant_repo=None):
+    def __init__(self, repo=None, object_repo=None, system_repo=None, entity_repo=None):
         self.repo = repo or ObjectSystemRepository()
         self.object_repo = object_repo or ObjectRepository()
         self.system_repo = system_repo or SystemRepository()
-        self.participant_repo = participant_repo or ParticipantRepository()
+        self.entity_repo = entity_repo or EntityRepository()
 
     def list_for_object(self, obj):
         return self.repo.get_for_object(obj)
@@ -23,21 +23,21 @@ class ObjectSystemUseCase:
     def list_for_system(self, system):
         return self.repo.get_for_system(system)
 
-    def _get_optional_participant(self, pk, field_name):
+    def _get_optional_entity(self, pk, field_name):
         if pk in (None, "", "None"):
             return None
-        participant = self.participant_repo.get_by_id(pk)
-        if not participant:
+        entity = self.entity_repo.get_by_id(pk)
+        if not entity:
             raise ValidationError(f"{field_name} не найден")
-        return participant
+        return entity
 
-    def _resolve_participants(self, data):
+    def _resolve_entities(self, data):
         if "integrator" in data:
             integrator_id = data.pop("integrator")
-            data["integrator"] = self._get_optional_participant(integrator_id, "Интегратор")
+            data["integrator"] = self._get_optional_entity(integrator_id, "Интегратор")
         if "implimentor" in data:
             implimentor_id = data.pop("implimentor")
-            data["implimentor"] = self._get_optional_participant(implimentor_id, "Исполнитель внедрения")
+            data["implimentor"] = self._get_optional_entity(implimentor_id, "Исполнитель внедрения")
         return data
 
     def attach(self, object_pk=None, system_pk=None, **data):
@@ -62,7 +62,7 @@ class ObjectSystemUseCase:
         if self.repo.exists(obj, system):
             raise ValidationError("Эта система уже привязана к объекту")
 
-        data = self._resolve_participants(data)
+        data = self._resolve_entities(data)
         return self.repo.create(object=obj, system=system, **data)
 
     def get(self, pk):
@@ -89,7 +89,7 @@ class ObjectSystemUseCase:
         if self.repo.exists(obj, system, exclude_pk=link.pk):
             raise ValidationError("Эта система уже привязана к объекту")
 
-        data = self._resolve_participants(data)
+        data = self._resolve_entities(data)
         return self.repo.update(link, object=obj, system=system, **data)
 
     def detach(self, pk):

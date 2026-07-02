@@ -2,8 +2,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from apps.participants.models import Participant
-
 
 class AutomationClass(models.Model):
 
@@ -37,6 +35,36 @@ class AutomationClass(models.Model):
         return f"L{self.level} - {self.system_class}"
 
 
+class VendorProduct(models.Model):
+    """Продукт вендора, на котором строится система автоматизации.
+
+    Пока модель содержит название и вендора-владельца (Entity). Остальные поля
+    (тип продукта, версия, артикул, класс и т.д.) будут добавлены отдельным
+    инкрементом.
+    """
+
+    product_name = models.CharField(
+        max_length=255,
+        verbose_name="Название продукта",
+    )
+    vendor = models.ForeignKey(
+        "entities.Entity",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+        verbose_name="Вендор",
+    )
+
+    class Meta:
+        verbose_name = "Продукт вендора"
+        verbose_name_plural = "Продукты вендоров"
+        ordering = ["product_name"]
+
+    def __str__(self):
+        return self.product_name
+
+
 class AutomatedSystem(models.Model):
 
     STATUS_CHOICES = [
@@ -44,12 +72,6 @@ class AutomatedSystem(models.Model):
         ("planned", "Планируется"),
         ("unsupported", "Не поддерживается"),
         ("decommissioned", "Выведена из эксплуатации"),
-    ]
-
-    PRODUCT_TYPE_CHOICES = [
-        ("software", "Программное обеспечение"),
-        ("hardware", "Оборудование"),
-        ("service", "Сервис"),
     ]
 
     STATUS_TAG_CLASSES = {
@@ -77,19 +99,13 @@ class AutomatedSystem(models.Model):
         related_name='systems',
         verbose_name="Класс системы"
     )
-    vendor = models.ForeignKey(
-        Participant,
+    product = models.ForeignKey(
+        VendorProduct,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="vendor_systems",
-        verbose_name="Поставщик системы",
-    )
-    version = models.CharField(
-        max_length=255,
-        blank=True,
-        default="",
-        verbose_name="Версия системы",
+        related_name="systems",
+        verbose_name="Продукт",
     )
 
     # --- Состояние продукта ---
@@ -98,13 +114,6 @@ class AutomatedSystem(models.Model):
         choices=STATUS_CHOICES,
         default="active",
         verbose_name="Статус системы",
-    )
-    product_type = models.CharField(
-        max_length=50,
-        choices=PRODUCT_TYPE_CHOICES,
-        blank=True,
-        default="software",
-        verbose_name="Тип продукта",
     )
 
     notes = models.TextField(
@@ -119,20 +128,8 @@ class AutomatedSystem(models.Model):
         blank=True,
         verbose_name="Дата выпуска",
     )
-    end_of_support = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name="Конец поддержки",
-    )
 
     # --- Технические данные ---
-    article = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        unique=True,
-        verbose_name="Артикул",
-    )
     technical_specs = models.JSONField(
         blank=True,
         null=True,
@@ -210,22 +207,3 @@ class AutomatedSystem(models.Model):
         if isinstance(self.technical_specs, dict):
             return list(self.technical_specs.items())
         return []
-
-    @property
-    def support_display(self):
-        """Текст для колонки «Окончание поддержки».
-
-        Если дата окончания не указана или ещё не наступила — «Поддерживается»,
-        иначе — дата окончания.
-        """
-        from django.utils import timezone
-        if not self.end_of_support:
-            return "Поддерживается"
-        if self.end_of_support >= timezone.localdate():
-            return "Поддерживается"
-        return self.end_of_support.strftime("%d.%m.%Y")
-
-    @property
-    def is_supported(self):
-        from django.utils import timezone
-        return (not self.end_of_support) or (self.end_of_support >= timezone.localdate())

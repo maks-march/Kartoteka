@@ -710,6 +710,12 @@ td a:hover {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
 }
+
+.info-cards-entity {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: 12px;
+}
 /* Отдельная карточка-плитка */
 .info-card {
     background: #f8f9fb;
