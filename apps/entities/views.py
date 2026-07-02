@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.entities.models import Entity
 from apps.categories.usecases.category_usecase import CategoryUseCase
+from common.summary import summary_group as _summary_group
 
 
 # Простые текстовые поля, считываемые из формы напрямую.
@@ -95,15 +96,50 @@ def _entity_list_render(request, template, view_mode):
 def entity_detail(request, pk):
     usecase = EntityUseCase()
     entity = usecase.get(pk)
-    integrated_links = entity.integrated_object_systems.select_related("object", "system")
-    implemented_links = entity.implemented_object_systems.select_related("object", "system")
+    integrated_links = entity.integrated_object_systems.select_related(
+        "object", "system", "system__system_class"
+    )
+    implemented_links = entity.implemented_object_systems.select_related(
+        "object", "system", "system__system_class"
+    )
     # Продукты, где участник выступает вендором
-    vendor_products = entity.products.all()
+    vendor_products = entity.products.select_related("vendor").prefetch_related(
+        "systems__system_class"
+    )
+
+    integrated = list(integrated_links)
+    implemented = list(implemented_links)
+    # Системы, созданные на продуктах этого вендора
+    vendor_systems = [s for p in vendor_products for s in p.systems.all()]
+
+    # ---- Сводка связанности (агрегат из таблиц ниже) ----
+    integrated_classes = _summary_group(
+        (l.system.system_class for l in integrated if l.system and l.system.system_class),
+        key=lambda c: c.pk,
+    )
+    implemented_classes = _summary_group(
+        (l.system.system_class for l in implemented if l.system and l.system.system_class),
+        key=lambda c: c.pk,
+    )
+    vendor_classes = _summary_group(
+        (s.system_class for s in vendor_systems if s.system_class),
+        key=lambda c: c.pk,
+    )
+    summary = {
+        "integrated_count": len(integrated),
+        "implemented_count": len(implemented),
+        "products_count": vendor_products.count() if entity.can_have_products else None,
+        "integrated_classes": integrated_classes,
+        "implemented_classes": implemented_classes,
+        "vendor_classes": vendor_classes,
+        "is_vendor": entity.can_have_products,
+    }
     return render(request, "entities/entity_detail.html", {
         "entity": entity,
         "integrated_links": integrated_links,
         "implemented_links": implemented_links,
         "vendor_products": vendor_products,
+        "summary": summary,
     })
 
 

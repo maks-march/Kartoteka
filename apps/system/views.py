@@ -12,6 +12,7 @@ from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
 from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.system.models import AutomatedSystem
+from common.summary import summary_group as _summary_group
 
 
 # Простые текстовые поля системы, считываемые из формы напрямую.
@@ -116,9 +117,23 @@ def system_detail(request, pk):
     os_usecase = ObjectSystemUseCase()
     obj = usecase.get(pk)
     system_objects = os_usecase.list_for_system(obj)
+
+    # ---- Сводка связанности (агрегат из таблицы «Подключенные объекты») ----
+    integrators = _summary_group(
+        (os.integrator for os in system_objects if os.integrator), key=lambda e: e.pk
+    )
+    implimentors = _summary_group(
+        (os.implimentor for os in system_objects if os.implimentor), key=lambda e: e.pk
+    )
+    summary = {
+        "objects_count": len(system_objects),
+        "integrators": integrators,
+        "implimentors": implimentors,
+    }
     return render(request, "system/system_detail.html", {
         "system": obj,
         "system_objects": system_objects,
+        "summary": summary,
     })
 
 

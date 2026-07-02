@@ -1,0 +1,19 @@
+{% comment %}Сводка связанности участника — агрегат из таблиц ниже.{% endcomment %}
+<aside class="summary-panel">
+    <div class="summary-head">Сводка связанности</div>
+    <div class="summary-body">
+        <div class="summary-metrics">
+            <div class="metric"><span class="metric-num">{{ summary.integrated_count }}</span><span class="metric-label">Интегр. систем</span></div>
+            <div class="metric"><span class="metric-num">{{ summary.implemented_count }}</span><span class="metric-label">Внедр. систем</span></div>
+            {% if summary.is_vendor %}
+            <div class="metric"><span class="metric-num">{{ summary.products_count }}</span><span class="metric-label">Продуктов</span></div>
+            {% endif %}
+        </div>
+
+        {% include "core/_summary_group.html" with title="Классы интегрированных систем" group=summary.integrated_classes kind="class" %}
+        {% include "core/_summary_group.html" with title="Классы внедрённых систем" group=summary.implemented_classes kind="class" %}
+        {% if summary.is_vendor %}
+        {% include "core/_summary_group.html" with title="Классы вендорских систем" group=summary.vendor_classes kind="class" %}
+        {% endif %}
+    </div>
+</aside>

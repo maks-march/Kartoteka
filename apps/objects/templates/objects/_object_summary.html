@@ -1,0 +1,15 @@
+{% comment %}Сводка связанности объекта — агрегат из таблиц ниже.{% endcomment %}
+<aside class="summary-panel">
+    <div class="summary-head">Сводка связанности</div>
+    <div class="summary-body">
+        <div class="summary-metrics">
+            <div class="metric"><span class="metric-num">{{ summary.systems_count }}</span><span class="metric-label">Систем</span></div>
+            <div class="metric"><span class="metric-num">{{ summary.children_count }}</span><span class="metric-label">Дочерних</span></div>
+        </div>
+
+        {% include "core/_summary_group.html" with title="Классы систем" group=summary.system_classes kind="class" %}
+        {% include "core/_summary_group.html" with title="Вендоры" group=summary.vendors kind="entity" tag="tag-blue" %}
+        {% include "core/_summary_group.html" with title="Интеграторы" group=summary.integrators kind="entity" tag="tag-ok" %}
+        {% include "core/_summary_group.html" with title="Исполнители" group=summary.implimentors kind="entity" tag="tag-warn" %}
+    </div>
+</aside>

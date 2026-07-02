@@ -204,7 +204,7 @@ class EntityCountsAndViewsTests(TestCase):
     def test_list_page_shows_colored_type_and_counts(self):
         h = self.client.get("/entities/").content.decode()
         self.assertIn("tag-blue", h)          # тип вендора цветной
-        self.assertIn("Связ. системы", h)     # колонка счётчика систем
+        self.assertIn("ordering=-systems_count", h)  # колонка/сортировка счётчика систем
 
     def test_cards_page(self):
         h = self.client.get("/entities/cards/").content.decode()
@@ -226,9 +226,92 @@ class EntityCountsAndViewsTests(TestCase):
 
     def test_detail_shows_products_block_for_vendor(self):
         h = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
-        self.assertIn("Продукты, где участник является вендором", h)
+        self.assertIn("Вендорские продукты", h)
         self.assertIn("Продукт-1", h)
 
     def test_detail_no_products_block_for_integrator(self):
         h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
-        self.assertNotIn("Продукты, где участник является вендором", h)
+        self.assertNotIn("Вендорские продукты", h)
+
+
+class DetailSummaryPanelTests(TestCase):
+    """Сводная панель справа в детальных карточках (объект/система/участник)."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
+        from apps.objects.models import Object, ObjectSystem
+        self.user = User.objects.create_user("sp", "sp@x.x", "pw")
+        self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
+        self.vendor = Entity.objects.create(entity_name="ВендорП", entity_type="vendor")
+        self.integ = Entity.objects.create(entity_name="ИнтегП", entity_type="system_integrator")
+        self.impl = Entity.objects.create(entity_name="ИсполП", entity_type="engineering_company")
+        self.product = VendorProduct.objects.create(product_name="ПродуктП", vendor=self.vendor)
+        self.system = AutomatedSystem.objects.create(
+            autosystem_name="СистемаП", system_class=self.cls, product=self.product, creator_id=self.user)
+        self.obj = Object.objects.create(name="ОбъектП", level=1, creator_id=self.user)
+        ObjectSystem.objects.create(
+            object=self.obj, system=self.system, integrator=self.integ, implimentor=self.impl)
+
+    def test_object_summary_panel(self):
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        self.assertIn("summary-panel", h)
+        self.assertIn("Сводка связанности", h)
+        # агрегаты из таблицы систем: класс, вендор (через product.vendor),
+        # интегратор, исполнитель
+        self.assertIn("SCADA", h)
+        self.assertIn("Вендоры", h)
+        self.assertIn("ВендорП", h)
+        self.assertIn("ИнтегП", h)
+        self.assertIn("ИсполП", h)
+
+    def test_system_summary_panel(self):
+        h = self.client.get(f"/system/{self.system.pk}/").content.decode()
+        self.assertIn("summary-panel", h)
+        self.assertIn("Сводка связанности", h)
+        self.assertIn("Интеграторы", h)
+        self.assertIn("ИнтегП", h)
+        self.assertIn("ИсполП", h)
+
+    def test_entity_summary_panel(self):
+        # у интегратора сводка показывает классы интегрированных систем
+        h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
+        self.assertIn("summary-panel", h)
+        self.assertIn("Классы интегрированных систем", h)
+        self.assertIn("SCADA", h)
+        self.assertIn("Интегр. систем", h)
+
+    def test_entity_summary_products_only_for_vendor_types(self):
+        hv = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
+        # у вендора в сводке есть метрика продуктов и классы вендорских систем
+        self.assertIn("Продуктов", hv)
+        self.assertIn("Классы вендорских систем", hv)
+        hi = self.client.get(f"/entities/{self.impl.pk}/").content.decode()
+        # инжиниринговая компания — без продуктов и вендорских систем в сводке
+        self.assertNotIn("Продуктов", hi)
+        self.assertNotIn("Классы вендорских систем", hi)
+
+
+class SummaryLimitTests(TestCase):
+    """Сводка обрезает группу до 5 элементов и показывает «ещё N»."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, AutomatedSystem
+        from apps.objects.models import Object, ObjectSystem
+        self.user = User.objects.create_user("lim", "lim@x.x", "pw")
+        self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
+        self.obj = Object.objects.create(name="ОбъектЛ", level=1, creator_id=self.user)
+        # 7 разных интеграторов -> в сводке максимум 5 + «ещё 2»
+        for i in range(7):
+            e = Entity.objects.create(entity_name=f"Инт{i}", entity_type="system_integrator")
+            s = AutomatedSystem.objects.create(
+                autosystem_name=f"С{i}", system_class=self.cls, creator_id=self.user)
+            ObjectSystem.objects.create(object=self.obj, system=s, integrator=e)
+
+    def test_object_summary_caps_at_five(self):
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        # блок сводки
+        panel = h.split('summary-panel', 1)[1]
+        # в группе «Интеграторы» показано 5 тегов-ссылок + «ещё 2»
+        self.assertIn("ещё 2", panel)
+        # метрика систем = 7 (не обрезается)
+        self.assertIn(">7<", panel)

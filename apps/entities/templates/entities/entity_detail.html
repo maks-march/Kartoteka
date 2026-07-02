@@ -21,6 +21,9 @@
         {% endif %}
     </div>
 
+    <div class="detail-body">
+    <div class="detail-main">
+
     <!-- ===== Реквизиты ===== -->
     <div class="info-block">
         <h3 class="info-block-title">Реквизиты</h3>
@@ -96,6 +99,10 @@
         </div>
     </div>
     {% endif %}
+
+    </div><!-- /.detail-main -->
+    {% include "entities/_entity_summary.html" %}
+    </div><!-- /.detail-body -->
 </div>
 
 {% if entity.can_have_products %}

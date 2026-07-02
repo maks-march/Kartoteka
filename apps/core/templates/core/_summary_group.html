@@ -1,0 +1,29 @@
+{% comment %}
+Одна группа сводки. Параметры через {% include with %}:
+  title  — заголовок группы
+  group  — dict {items, total, more} из common.summary.summary_group
+  tag    — css-класс тега (например "tag-ok"); если пусто — по item.tag_class
+  label  — атрибут элемента для подписи (по умолчанию отрисовка через label_kind)
+  kind   — тип элемента: "class" | "entity" | "system" | "product" | "object"
+{% endcomment %}
+<div class="summary-group">
+    <div class="summary-group-title">{{ title }}</div>
+    {% if group.items %}
+    <div class="summary-tags">
+        {% for it in group.items %}
+            {% if kind == "class" %}
+                <span class="tag tag-{{ it.level }}">L{{ it.level }} - {{ it.system_class }}</span>
+            {% elif kind == "entity" %}
+                <span class="tag {{ tag }}"><a href="{% url 'entity-detail' it.pk %}">{{ it.entity_name }}</a></span>
+            {% elif kind == "system" %}
+                <span class="tag {{ tag }}"><a href="{% url 'system-detail' it.pk %}">{{ it.autosystem_name }}</a></span>
+            {% elif kind == "object" %}
+                <span class="tag tag-{{ it.level }}"><a href="{% url 'object-detail' it.pk %}">{{ it.name }}</a></span>
+            {% elif kind == "product" %}
+                <span class="tag {{ tag }}"><a href="{% url 'product-detail' it.pk %}">{{ it.product_name }}</a></span>
+            {% endif %}
+        {% endfor %}
+        {% if group.more %}<span class="tag tag-muted">ещё {{ group.more }}</span>{% endif %}
+    </div>
+    {% else %}<div class="summary-empty">—</div>{% endif %}
+</div>

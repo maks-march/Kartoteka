@@ -12,6 +12,7 @@ from apps.system.usecases.system_usecase import SystemUseCase
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
 from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.objects.models import Object, ObjectSystem
+from common.summary import summary_group as _summary_group
 
 
 # Текстовые/прочие поля объекта, считываемые из формы напрямую.
@@ -123,10 +124,36 @@ def object_detail(request, pk):
     obj = usecase.get(pk)
     children = obj.children.filter(is_deleted=False)
     object_systems = os_usecase.list_for_object(obj)
+
+    # ---- Сводка связанности (агрегат из таблицы «Подключенные системы») ----
+    system_classes = _summary_group(
+        (os.system.system_class for os in object_systems if os.system and os.system.system_class),
+        key=lambda c: c.pk,
+    )
+    vendors = _summary_group(
+        (os.system.product.vendor for os in object_systems
+         if os.system and os.system.product and os.system.product.vendor),
+        key=lambda e: e.pk,
+    )
+    integrators = _summary_group(
+        (os.integrator for os in object_systems if os.integrator), key=lambda e: e.pk
+    )
+    implimentors = _summary_group(
+        (os.implimentor for os in object_systems if os.implimentor), key=lambda e: e.pk
+    )
+    summary = {
+        "systems_count": len(object_systems),
+        "children_count": children.count(),
+        "system_classes": system_classes,
+        "vendors": vendors,
+        "integrators": integrators,
+        "implimentors": implimentors,
+    }
     return render(request, "objects/object_detail.html", {
         "object": obj,
         "children": children,
         "object_systems": object_systems,
+        "summary": summary,
     })
 
 
