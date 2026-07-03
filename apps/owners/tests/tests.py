@@ -229,3 +229,66 @@ class OwnerEntityDescendantsTests(TestCase):
             ids,
             {self.root.pk, self.child_a.pk, self.child_b.pk, self.grandchild.pk},
         )
+
+
+class OwnerIsRootTests(TestCase):
+    """Флаг is_root (материнская компания) и фильтр по материнским."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("root", "r@r.r", "pw")
+        self.mother = OwnerEntity.objects.create(owner_name="Материнская АО")
+        self.sub = OwnerEntity.objects.create(owner_name="Дочерняя ООО", owner=self.mother)
+
+    def test_is_root_auto_true_when_no_owner(self):
+        self.assertTrue(self.mother.is_root)
+
+    def test_is_root_auto_false_when_has_owner(self):
+        self.assertFalse(self.sub.is_root)
+
+    def test_is_root_recomputed_on_owner_change(self):
+        self.mother.owner = OwnerEntity.objects.create(owner_name="Новая мать")
+        self.mother.save()
+        self.mother.refresh_from_db()
+        self.assertFalse(self.mother.is_root)
+        self.sub.owner = None
+        self.sub.save()
+        self.sub.refresh_from_db()
+        self.assertTrue(self.sub.is_root)
+
+    def test_is_root_manual_value_ignored(self):
+        m = OwnerEntity(owner_name="Форс", owner=None, is_root=False)
+        m.save()
+        self.assertTrue(m.is_root)
+
+    def test_list_roots_returns_only_mothers(self):
+        from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
+        roots = list(OwnerEntityUseCase().list_roots())
+        self.assertIn(self.mother, roots)
+        self.assertNotIn(self.sub, roots)
+
+
+class ObjectFilterByMotherTests(TestCase):
+    """Фильтр объектов по материнской подтягивает объекты дочерних управляющих."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("of", "of@x.x", "pw")
+        self.mother = OwnerEntity.objects.create(owner_name="Мать-Холдинг")
+        self.sub = OwnerEntity.objects.create(owner_name="Дочка-Упр", owner=self.mother)
+        self.obj_sub = Object.objects.create(
+            name="Объект дочки", level=1, owner_entity=self.sub, creator_id=self.user)
+        self.obj_mother = Object.objects.create(
+            name="Объект матери", level=1, owner_entity=self.mother, creator_id=self.user)
+        self.obj_other = Object.objects.create(
+            name="Чужой объект", level=1, creator_id=self.user)
+
+    def test_filter_by_mother_includes_subsidiary_objects(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        names = sorted(o.name for o in ObjectUseCase().list(owner_entity=[self.mother.pk]))
+        self.assertEqual(names, ["Объект дочки", "Объект матери"])
+
+    def test_object_list_owner_filter_offers_only_mothers(self):
+        h = self.client.get("/objects/").content.decode()
+        self.assertIn("Материнская компания", h)
+        picker = h.split('id="ownerEntityFilterList"', 1)[1].split("</div>\n                    <div", 1)[0]
+        self.assertIn("Мать-Холдинг", picker)
+        self.assertNotIn("Дочка-Упр", picker)

@@ -17,7 +17,9 @@ class OwnerEntitySerializer(serializers.ModelSerializer):
             "owner_name_display",
             "ultimate_owner",
             "ultimate_owner_name",
+            "is_root",
         ]
+        read_only_fields = ["is_root"]
 
 
 class OwnerEntityCreateUpdateSerializer(serializers.Serializer):

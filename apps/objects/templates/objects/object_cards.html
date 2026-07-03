@@ -30,7 +30,7 @@
                 {% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% endif %}
             </div>
             <div class="card-rows">
-                <div class="card-row"><span class="k">Владелец</span><span class="v">{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}—{% endif %}</span></div>
+                <div class="card-row"><span class="k">Упр. компания</span><span class="v">{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}—{% endif %}</span></div>
                 <div class="card-row"><span class="k">Родитель</span><span class="v">{% if obj.parent %}<a class="link" href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}—{% endif %}</span></div>
                 <div class="card-row"><span class="k">Город</span><span class="v">{{ obj.city|default:'—' }}</span></div>
                 <div class="card-row"><span class="k">Систем</span><span class="v">{{ obj.systems_count }}</span></div>

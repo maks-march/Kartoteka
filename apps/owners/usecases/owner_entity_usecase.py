@@ -13,8 +13,12 @@ class OwnerEntityUseCase:
     def __init__(self, repo=None):
         self.repo = repo or OwnerEntityRepository()
 
-    def list(self, search=None, ordering=None):
-        return self.repo.get_all(search=search, ordering=ordering)
+    def list(self, search=None, ordering=None, roots_only=False):
+        return self.repo.get_all(search=search, ordering=ordering, roots_only=roots_only)
+
+    def list_roots(self, ordering=None):
+        """Материнские компании (для фильтра объектов)."""
+        return self.repo.get_roots(ordering=ordering)
 
     def get(self, pk):
         obj = self.repo.get_by_id(pk)

@@ -103,7 +103,9 @@ def _object_list_render(request, template, view_mode):
     )
     all_categories = cat_usecase.list()
     all_systems = system_usecase.list()
-    all_owner_entities = owner_usecase.list()
+    # Фильтр объектов ведём по материнским компаниям (иерархический фильтр
+    # сам подтянет объекты дочерних управляющих компаний).
+    all_owner_entities = owner_usecase.list_roots()
     return render(request, template, {
         "objects": objects,
         "all_categories": all_categories,

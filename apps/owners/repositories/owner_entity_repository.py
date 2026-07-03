@@ -6,16 +6,22 @@ from common.ordering import apply_ordering
 
 class OwnerEntityRepository:
     """Доступ к данным юридических лиц, включая обход дерева владения."""
-    ORDERING_FIELDS = {"owner_name"}
+    ORDERING_FIELDS = {"owner_name", "is_root"}
     DEFAULT_ORDERING = "owner_name"
 
-    def get_all(self, search=None, ordering=None):
+    def get_all(self, search=None, ordering=None, roots_only=False):
         qs = OwnerEntity.objects.all().select_related("owner", "ultimate_owner")
+        if roots_only:
+            qs = qs.filter(is_root=True)
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
             qs = qs.filter(owner_name__iregex=re.escape(search))
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
+
+    def get_roots(self, ordering=None):
+        """Материнские компании (верхний уровень иерархии)."""
+        return self.get_all(ordering=ordering, roots_only=True)
 
     def get_by_id(self, pk):
         return (

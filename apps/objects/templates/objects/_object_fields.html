@@ -114,31 +114,31 @@
         </div>
     </div>
 
-    <!-- Юридическое лицо -->
+    <!-- Управляющая компания -->
     <div class="form-group">
-        <label>Юридическое лицо</label>
-        <div class="picker collapsible" data-target="#selectedOwnerEntityId" data-empty-text="Без юр. лица">
+        <label>Управляющая компания</label>
+        <div class="picker collapsible" data-target="#selectedOwnerEntityId" data-empty-text="Без управляющей компании">
             <div class="picker-header">
-                <span class="picker-header-label">Юридическое лицо</span>
-                <span class="picker-header-value empty-value">Без юр. лица</span>
+                <span class="picker-header-label">Управляющая компания</span>
+                <span class="picker-header-value empty-value">Без управляющей компании</span>
                 <span class="picker-caret">▾</span>
             </div>
             <div class="picker-body">
                 <div class="search-wrapper">
-                    <input type="text" class="picker-search" placeholder="Введите название юр. лица..." style="margin-bottom:0">
+                    <input type="text" class="picker-search" placeholder="Введите название компании..." style="margin-bottom:0">
                     <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container">
                     <div class="system-item {% if not object.owner_entity_id %}selected{% endif %}" data-id="" data-keep>
-                        <span class="system-name">— Без юр. лица —</span>
+                        <span class="system-name">— Без управляющей компании —</span>
                     </div>
                     {% for owner in owner_entities %}
                     <div class="system-item {% if object.owner_entity_id == owner.pk %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
                         <span class="system-name">{{ owner.owner_name }}</span>
-                        <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
+                        <span class="system-info">{% if owner.is_root %}Материнская компания{% elif owner.ultimate_owner %}Материнская: {{ owner.ultimate_owner.owner_name }}{% else %}Материнская не указана{% endif %}</span>
                     </div>
                     {% endfor %}
-                    <div class="picker-no-results picker-empty">Юридические лица не найдены</div>
+                    <div class="picker-no-results picker-empty">Компании не найдены</div>
                 </div>
             </div>
             <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">

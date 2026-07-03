@@ -55,30 +55,30 @@
                 </div>
             </div>
 
-            <!-- Подпоиск юридического лица -->
+            <!-- Подпоиск по материнской компании -->
             <div class="filter-collapse">
                 <div class="filter-collapse-header">
-                    <span class="fc-label">Юридическое лицо</span>
+                    <span class="fc-label">Материнская компания</span>
                     <span class="fc-hint">{% if selected_owner_entities %}выбрано: {{ selected_owner_entities|length }}{% else %}все{% endif %}</span>
                     <span class="fc-caret">▾</span>
                 </div>
                 <div class="filter-collapse-body">
                     <div class="search-wrapper">
-                        <input type="text" id="ownerEntityFilterSearch" placeholder="Введите название юр. лица..." style="margin-bottom:0">
+                        <input type="text" id="ownerEntityFilterSearch" placeholder="Введите название компании..." style="margin-bottom:0">
                         <button type="button" id="ownerEntityFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
                     <div class="system-results-container filter-list-160" id="ownerEntityFilterList">
                         <div class="system-item {% if not selected_owner_entities %}selected{% endif %}" data-id="">
-                            <span class="system-name">— Все юридические лица —</span>
+                            <span class="system-name">— Все материнские компании —</span>
                         </div>
                         {% for owner in all_owner_entities %}
                         <div class="system-item {% if owner.pk|stringformat:"s" in selected_owner_entities %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
                             <span class="system-name">{{ owner.owner_name }}</span>
-                            <span class="system-info">{% if owner.ultimate_owner %}Корень: {{ owner.ultimate_owner.owner_name }}{% else %}Корневой владелец не указан{% endif %}</span>
+                            <span class="system-info">Материнская компания (включая дочерние)</span>
                         </div>
                         {% endfor %}
                         <div id="ownerEntityFilterNoResults" class="picker-empty">
-                            Юридические лица не найдены
+                            Компании не найдены
                         </div>
                     </div>
                     <div id="ownerEntityFilterInputs" data-name="owner_entity">

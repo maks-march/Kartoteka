@@ -56,7 +56,7 @@
         <h3 class="info-block-title">Принадлежность</h3>
         <div class="info-cards">
             <div class="info-card">
-                <span class="info-label">Юридическое лицо</span>
+                <span class="info-label">Управляющая компания</span>
                 <span class="info-value">
                     {% if object.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>{% else %}—{% endif %}
                 </span>

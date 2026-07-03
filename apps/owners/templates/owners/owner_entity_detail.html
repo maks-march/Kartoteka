@@ -5,7 +5,9 @@
 {% block content %}
 <div class="card">
     <div>
-        <h1 style="margin-bottom:5px">{{ owner_entity.owner_name }}</h1>
+        <h1 style="margin-bottom:5px">{{ owner_entity.owner_name }}
+            {% if owner_entity.is_root %}<span class="tag tag-blue" style="vertical-align:middle">Материнская компания</span>{% else %}<span class="tag tag-muted" style="vertical-align:middle">Дочерняя</span>{% endif %}
+        </h1>
         <p style="margin-top:10px; color:#666">
             Следующий владелец:
             {% if owner_entity.owner %}
