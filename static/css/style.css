@@ -809,7 +809,7 @@ td a:hover {
     gap: 12px;
 }
 
-.info-cards-entity {
+.info-cards-two {
     display: grid;
     grid-template-columns: repeat(2, minmax(160px, 1fr));
     gap: 12px;
@@ -1231,3 +1231,54 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 }
 /* Ограничение высоты списка результатов фильтра */
 .filter-list-160 { max-height: 160px; }
+
+/* ===== Классы подсистем в форме системы (чекбоксы в сетку) ===== */
+.subsystem-checks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px 14px;
+    border: 1px solid #eef0f4;
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: #f8f9fb;
+    max-height: 260px;
+    overflow-y: auto;
+}
+.subsystem-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    cursor: pointer;
+}
+.subsystem-check input { margin: 0; }
+
+/* Доп. инфо о классе под кодом (рус. аббревиатура + описание) в detail */
+.info-card .class-subinfo {
+    font-size: 12px;
+    color: #8a909a;
+    font-weight: 400;
+    margin-top: 2px;
+    line-height: 1.35;
+}
+
+/* Строка на всю ширину внутри .info-cards (напр. «Классы подсистем»):
+   не плитка, а подпись + переносящиеся теги под верхним рядом плиток */
+.info-cards .info-subrow {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 2px;
+}
+.info-cards .info-subrow .info-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #8a909a;
+}
+.info-cards .info-subrow .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}

@@ -473,7 +473,8 @@
   "fields": {
    "owner_name": "ПАО \"Газпром\"",
    "owner": null,
-   "ultimate_owner": null
+   "ultimate_owner": null,
+   "is_root": true
   }
  },
  {
@@ -482,7 +483,8 @@
   "fields": {
    "owner_name": "ПАО \"Газпром нефть\"",
    "owner": 1,
-   "ultimate_owner": 1
+   "ultimate_owner": 1,
+   "is_root": false
   }
  },
  {
@@ -491,7 +493,8 @@
   "fields": {
    "owner_name": "АО \"Газпромнефть-Омский НПЗ\"",
    "owner": 2,
-   "ultimate_owner": 1
+   "ultimate_owner": 1,
+   "is_root": false
   }
  },
  {
@@ -500,7 +503,8 @@
   "fields": {
    "owner_name": "ПАО \"СИБУР Холдинг\"",
    "owner": null,
-   "ultimate_owner": null
+   "ultimate_owner": null,
+   "is_root": true
   }
  },
  {
@@ -509,7 +513,8 @@
   "fields": {
    "owner_name": "ООО \"СИБУР Тобольск\"",
    "owner": 4,
-   "ultimate_owner": 4
+   "ultimate_owner": 4,
+   "is_root": false
   }
  },
  {
@@ -518,7 +523,8 @@
   "fields": {
    "owner_name": "ПАО \"НОВАТЭК\"",
    "owner": null,
-   "ultimate_owner": null
+   "ultimate_owner": null,
+   "is_root": true
   }
  },
  {
@@ -527,7 +533,8 @@
   "fields": {
    "owner_name": "ОАО \"Ямал СПГ\"",
    "owner": 6,
-   "ultimate_owner": 6
+   "ultimate_owner": 6,
+   "is_root": false
   }
  },
  {
@@ -536,7 +543,8 @@
   "fields": {
    "owner_name": "ПАО \"НК Роснефть\"",
    "owner": null,
-   "ultimate_owner": null
+   "ultimate_owner": null,
+   "is_root": true
   }
  },
  {
@@ -545,7 +553,8 @@
   "fields": {
    "owner_name": "ООО \"РН-Коммерция\"",
    "owner": 8,
-   "ultimate_owner": 8
+   "ultimate_owner": 8,
+   "is_root": false
   }
  },
  {
@@ -554,7 +563,8 @@
   "fields": {
    "owner_name": "АО \"Сызранский НПЗ\"",
    "owner": 9,
-   "ultimate_owner": 8
+   "ultimate_owner": 8,
+   "is_root": false
   }
  },
  {
@@ -909,114 +919,6 @@
   }
  },
  {
-  "model": "system.automationclass",
-  "pk": 1,
-  "fields": {
-   "level": 0,
-   "system_class": "КИПиА",
-   "description": "Датчики и исполнительные механизмы"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 2,
-  "fields": {
-   "level": 1,
-   "system_class": "ПЛК",
-   "description": "Контроллеры и логика"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 3,
-  "fields": {
-   "level": 2,
-   "system_class": "SCADA/DCS",
-   "description": "Визуализация и управление"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 4,
-  "fields": {
-   "level": 3,
-   "system_class": "MES",
-   "description": "Управление производством"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 5,
-  "fields": {
-   "level": 4,
-   "system_class": "ERP",
-   "description": "Бизнес-планирование"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 6,
-  "fields": {
-   "level": 2,
-   "system_class": "АСУТП",
-   "description": "Управление технологическим процессом"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 7,
-  "fields": {
-   "level": 2,
-   "system_class": "СУУТП",
-   "description": "Усовершенствованное управление технологическим процессом"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 8,
-  "fields": {
-   "level": 3,
-   "system_class": "APS",
-   "description": "Планирование производства"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 9,
-  "fields": {
-   "level": 3,
-   "system_class": "ТОИР",
-   "description": "Техобслуживание и ремонт"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 10,
-  "fields": {
-   "level": 3,
-   "system_class": "BMS",
-   "description": "Автоматизация зданий"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 11,
-  "fields": {
-   "level": 3,
-   "system_class": "WMS",
-   "description": "Автоматизация складов и терминалов"
-  }
- },
- {
-  "model": "system.automationclass",
-  "pk": 12,
-  "fields": {
-   "level": 3,
-   "system_class": "PLM",
-   "description": "Система управления жизненным циклом продукта"
-  }
- },
- {
   "model": "system.vendorproduct",
   "pk": 1,
   "fields": {
@@ -1134,7 +1036,7 @@
   "fields": {
    "autosystem_name": "Siemens PCS7",
    "autosystem_short_name": "PCS7",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "active",
    "notes": "Система автоматизации. Демонстрационное описание.",
    "release_year": "2015-01-15",
@@ -1153,7 +1055,8 @@
     "Modbus TCP"
    ],
    "creator_id": 1,
-   "product": 1
+   "product": 1,
+   "subsystem_classes": []
   }
  },
  {
@@ -1162,7 +1065,7 @@
   "fields": {
    "autosystem_name": "Honeywell Experion",
    "autosystem_short_name": "Experion",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "planned",
    "notes": "Система автоматизации. Демонстрационное описание.",
    "release_year": "2016-02-15",
@@ -1182,7 +1085,8 @@
     "REST API"
    ],
    "creator_id": 1,
-   "product": 2
+   "product": 2,
+   "subsystem_classes": []
   }
  },
  {
@@ -1211,7 +1115,8 @@
     "OPC UA"
    ],
    "creator_id": 1,
-   "product": 3
+   "product": 3,
+   "subsystem_classes": []
   }
  },
  {
@@ -1239,7 +1144,12 @@
     "HART"
    ],
    "creator_id": 1,
-   "product": 4
+   "product": 4,
+   "subsystem_classes": [
+    11,
+    9,
+    8
+   ]
   }
  },
  {
@@ -1267,7 +1177,8 @@
     "Modbus TCP"
    ],
    "creator_id": 1,
-   "product": 5
+   "product": 5,
+   "subsystem_classes": []
   }
  },
  {
@@ -1276,7 +1187,7 @@
   "fields": {
    "autosystem_name": "Schneider EcoStruxure",
    "autosystem_short_name": "EcoStruxure",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "planned",
    "notes": "Система автоматизации. Демонстрационное описание.",
    "release_year": "2020-06-15",
@@ -1296,7 +1207,8 @@
     "REST API"
    ],
    "creator_id": 1,
-   "product": 6
+   "product": 6,
+   "subsystem_classes": []
   }
  },
  {
@@ -1305,7 +1217,7 @@
   "fields": {
    "autosystem_name": "Wonderware System Platform",
    "autosystem_short_name": "Platform",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "unsupported",
    "notes": "Система автоматизации. Демонстрационное описание.",
    "release_year": "2021-07-15",
@@ -1325,7 +1237,8 @@
     "OPC UA"
    ],
    "creator_id": 1,
-   "product": 7
+   "product": 7,
+   "subsystem_classes": []
   }
  },
  {
@@ -1353,7 +1266,12 @@
     "HART"
    ],
    "creator_id": 1,
-   "product": 8
+   "product": 8,
+   "subsystem_classes": [
+    11,
+    9,
+    8
+   ]
   }
  },
  {
@@ -1362,7 +1280,7 @@
   "fields": {
    "autosystem_name": "Emerson DeltaV",
    "autosystem_short_name": "DeltaV",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "active",
    "notes": "Система автоматизации. Демонстрационное описание.",
    "release_year": "2023-09-15",
@@ -1381,7 +1299,8 @@
     "Modbus TCP"
    ],
    "creator_id": 1,
-   "product": 9
+   "product": 9,
+   "subsystem_classes": []
   }
  },
  {
@@ -1390,7 +1309,7 @@
   "fields": {
    "autosystem_name": "Yokogawa CENTUM VP",
    "autosystem_short_name": "VP",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "planned",
    "notes": "Система автоматизации. Демонстрационное описание.",
    "release_year": "2024-01-15",
@@ -1410,7 +1329,8 @@
     "REST API"
    ],
    "creator_id": 1,
-   "product": 10
+   "product": 10,
+   "subsystem_classes": []
   }
  },
  {
@@ -1439,7 +1359,8 @@
     "OPC UA"
    ],
    "creator_id": 1,
-   "product": 11
+   "product": 11,
+   "subsystem_classes": []
   }
  },
  {
@@ -1467,7 +1388,8 @@
     "HART"
    ],
    "creator_id": 1,
-   "product": 12
+   "product": 12,
+   "subsystem_classes": []
   }
  },
  {
@@ -1495,7 +1417,11 @@
     "Modbus TCP"
    ],
    "creator_id": 1,
-   "product": 13
+   "product": 13,
+   "subsystem_classes": [
+    13,
+    3
+   ]
   }
  },
  {
@@ -1504,7 +1430,7 @@
   "fields": {
    "autosystem_name": "test",
    "autosystem_short_name": "test",
-   "system_class": 3,
+   "system_class": 13,
    "system_status": "planned",
    "notes": "Дополнительная информация",
    "release_year": "2026-06-01",
@@ -1590,7 +1516,8 @@
     "Modbus"
    ],
    "creator_id": 1,
-   "product": 14
+   "product": 14,
+   "subsystem_classes": []
   }
  },
  {
@@ -2243,6 +2170,280 @@
    "implementation_date": null,
    "integrator": null,
    "implimentor": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 1,
+  "fields": {
+   "level": 0,
+   "system_class": "КИПиА",
+   "name_ru": "КИПиА",
+   "description": "Датчики и исполнительные механизмы",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 2,
+  "fields": {
+   "level": 1,
+   "system_class": "PLC",
+   "name_ru": "ПЛК",
+   "description": "Контроллеры и логика",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 3,
+  "fields": {
+   "level": 2,
+   "system_class": "HMI",
+   "name_ru": "",
+   "description": "Визуализация и управление",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 6,
+  "fields": {
+   "level": 2,
+   "system_class": "АСУТП",
+   "name_ru": "АСУТП",
+   "description": "Управление технологическим процессом",
+   "is_composite": true,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 7,
+  "fields": {
+   "level": 2,
+   "system_class": "APC",
+   "name_ru": "СУУТП",
+   "description": "Усовершенствованное управление технологическим процессом",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 13,
+  "fields": {
+   "level": 2,
+   "system_class": "SCADA",
+   "name_ru": "",
+   "description": "Система сбора данных",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 14,
+  "fields": {
+   "level": 2,
+   "system_class": "DCS",
+   "name_ru": "РСУ",
+   "description": "Распределённая система управления",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 15,
+  "fields": {
+   "level": 2,
+   "system_class": "ESD",
+   "name_ru": "ПАЗ",
+   "description": "Противоаварийная защита",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 16,
+  "fields": {
+   "level": 2,
+   "system_class": "VMS",
+   "name_ru": "ВМ",
+   "description": "Вибромониторинг",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 4,
+  "fields": {
+   "level": 3,
+   "system_class": "MES",
+   "name_ru": "",
+   "description": "Управление производством",
+   "is_composite": true,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 8,
+  "fields": {
+   "level": 3,
+   "system_class": "APS",
+   "name_ru": "",
+   "description": "Планирование производства",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 9,
+  "fields": {
+   "level": 3,
+   "system_class": "EAM",
+   "name_ru": "ТОИР",
+   "description": "Техобслуживание и ремонт",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 10,
+  "fields": {
+   "level": 3,
+   "system_class": "BMS",
+   "name_ru": "",
+   "description": "Автоматизация зданий",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 11,
+  "fields": {
+   "level": 3,
+   "system_class": "WMS",
+   "name_ru": "",
+   "description": "Автоматизация складов и терминалов",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 12,
+  "fields": {
+   "level": 3,
+   "system_class": "PLM",
+   "name_ru": "",
+   "description": "Система управления жизненным циклом продукта",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 17,
+  "fields": {
+   "level": 3,
+   "system_class": "DS",
+   "name_ru": "ДС",
+   "description": "Диспетчеризация",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 18,
+  "fields": {
+   "level": 3,
+   "system_class": "DCA",
+   "name_ru": "",
+   "description": "Data collection — сбор и хранение данных",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 19,
+  "fields": {
+   "level": 3,
+   "system_class": "LIMS",
+   "name_ru": "ЛИМС",
+   "description": "Лабораторная информационная менеджмент-система",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 20,
+  "fields": {
+   "level": 3,
+   "system_class": "MOM",
+   "name_ru": "",
+   "description": "Управление производственными операциями (включает в себя MES)",
+   "is_composite": true,
+   "includes": 4
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 21,
+  "fields": {
+   "level": 3,
+   "system_class": "QMS",
+   "name_ru": "",
+   "description": "Система управления качеством",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automationclass",
+  "pk": 5,
+  "fields": {
+   "level": 4,
+   "system_class": "ERP",
+   "name_ru": "",
+   "description": "Бизнес-планирование",
+   "is_composite": false,
+   "includes": null
+  }
+ },
+ {
+  "model": "system.automatedsystem",
+  "pk": 15,
+  "fields": {
+   "autosystem_name": "Единая MOM-платформа",
+   "autosystem_short_name": "MOM",
+   "system_class": 20,
+   "subsystem_classes": [
+    4,
+    11,
+    9
+   ],
+   "product": null,
+   "system_status": "active",
+   "notes": "Демонстрационная MOM-система (включает MES и подсистемы).",
+   "release_year": null,
+   "technical_specs": null,
+   "modules": null,
+   "interfaces": null,
+   "creator_id": 1
   }
  }
 ]

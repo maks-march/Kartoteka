@@ -152,6 +152,7 @@ def system_create(request):
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
                 product=request.POST.get("product") or None,
+                subsystem_classes=request.POST.getlist("subsystem_classes"),
                 **_extract_system_fields(request.POST),
             )
             return redirect("system-list")
@@ -185,6 +186,7 @@ def system_edit(request, pk):
                 autosystem_name=request.POST.get("autosystem_name"),
                 system_class=int(request.POST.get("system_class")),
                 product=request.POST.get("product") or None,
+                subsystem_classes=request.POST.getlist("subsystem_classes"),
                 **_extract_system_fields(request.POST),
             )
             return redirect("system-detail", pk=pk)
@@ -197,6 +199,7 @@ def system_edit(request, pk):
         "system": obj,
         "classes": classes,
         "products": products,
+        "selected_subsystem_ids": list(obj.subsystem_classes.values_list("id", flat=True)),
         "status_choices": AutomatedSystem.STATUS_CHOICES,
         "error": error,
     })

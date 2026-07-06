@@ -394,3 +394,127 @@ class SystemListFilterTests(TestCase):
         h = c.get("/system/", {"product": str(self.p1.pk)}).content.decode()
         self.assertIn("S1", h)
         self.assertNotIn(">S2<", h)
+
+
+class SubsystemClassesTests(TestCase):
+    """Классы подсистем: составные классы, авто-MES (MOM⇒MES), фильтрация,
+    очистка при смене класса, отображение label (ENG (РУС))."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("sub", "s@s.s", "pw")
+        # Классы: MOM (составной, includes=MES), MES (составной), WMS, SCADA,
+        # АСУТП (составной), обычный ERP.
+        self.mes = AutomationClass.objects.create(level=3, system_class="MES", is_composite=True)
+        self.mom = AutomationClass.objects.create(
+            level=3, system_class="MOM", is_composite=True, includes=self.mes)
+        self.wms = AutomationClass.objects.create(level=3, system_class="WMS")
+        self.asutp = AutomationClass.objects.create(
+            level=2, system_class="АСУТП", name_ru="", is_composite=True)
+        self.dcs = AutomationClass.objects.create(level=2, system_class="DCS", name_ru="РСУ")
+        self.erp = AutomationClass.objects.create(level=4, system_class="ERP")
+
+    def _uc(self):
+        from apps.system.usecases.system_usecase import SystemUseCase
+        return SystemUseCase()
+
+    def test_label_eng_and_ru(self):
+        self.assertEqual(self.dcs.label, "DCS (РСУ)")
+        self.assertEqual(self.mes.label, "MES")
+
+    def test_create_composite_auto_adds_includes(self):
+        # MOM без явных подсистем -> автоматически появляется MES
+        s = self._uc().create(user=self.user, autosystem_name="MOM-1",
+                              system_class=self.mom.pk, subsystem_classes=[])
+        subs = set(s.subsystem_classes.values_list("system_class", flat=True))
+        self.assertIn("MES", subs)
+
+    def test_create_composite_keeps_selected_and_adds_includes(self):
+        s = self._uc().create(user=self.user, autosystem_name="MOM-2",
+                              system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
+        subs = set(s.subsystem_classes.values_list("system_class", flat=True))
+        self.assertEqual(subs, {"WMS", "MES"})
+
+    def test_non_composite_class_clears_subsystems(self):
+        # обычный класс (WMS) -> подсистемы игнорируются
+        s = self._uc().create(user=self.user, autosystem_name="Wms-only",
+                              system_class=self.wms.pk, subsystem_classes=[self.mes.pk])
+        self.assertEqual(s.subsystem_classes.count(), 0)
+
+    def test_change_to_non_composite_clears_on_update(self):
+        s = self._uc().create(user=self.user, autosystem_name="X",
+                              system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
+        self.assertTrue(s.subsystem_classes.exists())
+        # меняем класс на обычный -> подсистемы должны очиститься
+        s = self._uc().update(pk=s.pk, user=self.user, autosystem_name="X",
+                             system_class=self.wms.pk)
+        self.assertEqual(s.subsystem_classes.count(), 0)
+
+    def test_filter_by_composite_matches_subsystem(self):
+        # система MES с подсистемой WMS
+        self._uc().create(user=self.user, autosystem_name="MES-sys",
+                         system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+        # отдельная WMS-система
+        self._uc().create(user=self.user, autosystem_name="WMS-sys", system_class=self.wms.pk)
+        names = sorted(s.autosystem_name for s in self._uc().list(system_class=self.mes.pk))
+        self.assertEqual(names, ["MES-sys"])
+
+    def test_filter_by_ordinary_class_also_matches_subsystem(self):
+        # B-б: фильтр по WMS находит и отдельную WMS, и MES где WMS в подсистемах
+        self._uc().create(user=self.user, autosystem_name="MES-sys",
+                         system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+        self._uc().create(user=self.user, autosystem_name="WMS-sys", system_class=self.wms.pk)
+        names = sorted(s.autosystem_name for s in self._uc().list(system_class=self.wms.pk))
+        self.assertEqual(names, ["MES-sys", "WMS-sys"])
+
+    def test_filter_no_duplicates(self):
+        # система, где класс совпадает и как основной, и (случайно) в подсистемах
+        s = self._uc().create(user=self.user, autosystem_name="MES-dup",
+                             system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+        # добавим сам MES в подсистемы вручную не даём (self скрыт), проверяем что
+        # фильтр по MES не задваивает строку
+        results = list(self._uc().list(system_class=self.mes.pk))
+        self.assertEqual(len([x for x in results if x.pk == s.pk]), 1)
+
+    def test_form_shows_subsystem_block(self):
+        from django.test import Client
+        c = Client(); c.force_login(self.user)
+        h = c.get("/system/create/").content.decode()
+        self.assertIn("subsystemsBlock", h)
+        self.assertIn("Классы подсистем", h)
+        # data-composite проставлен у составных классов
+        self.assertIn('data-composite="1"', h)
+
+
+class ClassLabelDisplayTests(TestCase):
+    """Русская аббревиатура показывается только в подробной карточке (под классом),
+    а в списках/тегах — только англ. код без скобок."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("lbl", "l@l.l", "pw")
+        self.cls = AutomationClass.objects.create(
+            level=2, system_class="DCS", name_ru="РСУ",
+            description="Распределённая система управления")
+        from apps.system.usecases.system_usecase import SystemUseCase
+        self.sys = SystemUseCase().create(
+            user=self.user, autosystem_name="DCS-система", system_class=self.cls.pk)
+
+    def test_detail_shows_ru_and_description_under_class(self):
+        h = self.client.get(f"/system/{self.sys.pk}/").content.decode()
+        self.assertIn("class-subinfo", h)
+        self.assertIn("РСУ", h)
+        self.assertIn("Распределённая система управления", h)
+        # код класса тоже есть
+        self.assertIn("DCS", h)
+        # но не в формате «DCS (РСУ)» в теге/значении
+        self.assertNotIn("DCS (РСУ)", h)
+
+    def test_list_shows_code_only(self):
+        h = self.client.get("/system/").content.decode()
+        self.assertIn("DCS", h)
+        self.assertNotIn("DCS (РСУ)", h)
+        self.assertNotIn("class-subinfo", h)
+
+    def test_cards_show_code_only(self):
+        h = self.client.get("/system/cards/").content.decode()
+        self.assertIn("DCS", h)
+        self.assertNotIn("DCS (РСУ)", h)

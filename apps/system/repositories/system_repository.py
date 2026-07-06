@@ -1,6 +1,6 @@
 import re
 
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from apps.system.models import AutomatedSystem
 from common.ordering import apply_ordering
@@ -34,7 +34,12 @@ class SystemRepository:
                 product=None, system_status=None, ordering=None):
         qs = AutomatedSystem.objects.all().select_related("system_class", "product")
         if system_class is not None:
-            qs = qs.filter(system_class_id=system_class)
+            # Класс совпал, если это основной класс системы ЛИБО он есть среди
+            # классов подсистем (для составных классов вроде MES/MOM/АСУТП).
+            qs = qs.filter(
+                Q(system_class_id=system_class)
+                | Q(subsystem_classes__id=system_class)
+            ).distinct()
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
@@ -55,7 +60,12 @@ class SystemRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
-        return AutomatedSystem.objects.filter(pk=pk).select_related("system_class", "product", "creator_id").first()
+        return (
+            AutomatedSystem.objects.filter(pk=pk)
+            .select_related("system_class", "product", "creator_id")
+            .prefetch_related("subsystem_classes")
+            .first()
+        )
 
     def get_by_creator(self, user, search=None):
         qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class", "product")
@@ -64,12 +74,20 @@ class SystemRepository:
         return qs
 
     def create(self, **kwargs):
-        return AutomatedSystem.objects.create(**kwargs)
+        # M2M нельзя передать в create() — сохраняем отдельно после создания.
+        subsystem_classes = kwargs.pop("subsystem_classes", None)
+        instance = AutomatedSystem.objects.create(**kwargs)
+        if subsystem_classes is not None:
+            instance.subsystem_classes.set(subsystem_classes)
+        return instance
 
     def update(self, instance, **kwargs):
+        subsystem_classes = kwargs.pop("subsystem_classes", "__keep__")
         for key, value in kwargs.items():
             setattr(instance, key, value)
         instance.save()
+        if subsystem_classes != "__keep__":
+            instance.subsystem_classes.set(subsystem_classes or [])
         return instance
 
     def delete(self, instance):

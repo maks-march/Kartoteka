@@ -159,6 +159,8 @@ function initPicker(picker) {
             items.forEach(function(i) { i.classList.remove('selected'); });
             this.classList.add('selected');
             hiddenInput.value = this.getAttribute('data-id');
+            // Сообщаем внешним обработчикам о смене выбора (напр. классы подсистем).
+            hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
             if (submitBtn) submitBtn.disabled = false;
 
             // Обновляем подпись заголовка и сворачиваем (для пустого пункта — «Не указано»)

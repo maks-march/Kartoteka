@@ -41,14 +41,55 @@ class SystemUseCase:
             raise ValidationError("Продукт не найден")
         return product
 
+    def _resolve_subsystem_classes(self, raw_ids, primary_class):
+        """Готовит набор классов-подсистем для составного основного класса.
+
+        Правила:
+        - если основной класс не составной (is_composite=False) → подсистем нет
+          (очищаем), даже если что-то передали;
+        - если составной → берём переданные классы + автоматически добавляем
+          класс из primary_class.includes (напр. MOM ⇒ MES).
+        """
+        if primary_class is None or not primary_class.is_composite:
+            return []
+
+        ids = []
+        for i in (raw_ids or []):
+            if i in (None, "", "None"):
+                continue
+            ids.append(int(i))
+
+        classes = []
+        seen = set()
+        for cid in ids:
+            klass = self.class_repo.get_by_id(cid)
+            if not klass:
+                raise ValidationError(f"Класс подсистемы не найден: {cid}")
+            if klass.pk not in seen:
+                seen.add(klass.pk)
+                classes.append(klass)
+
+        # Авто-подстановка включаемого класса (MOM ⇒ MES).
+        if primary_class.includes_id and primary_class.includes_id not in seen:
+            included = self.class_repo.get_by_id(primary_class.includes_id)
+            if included:
+                seen.add(included.pk)
+                classes.append(included)
+
+        return classes
+
     def create(self, user=None, **data):
         class_id = data.get("system_class")
-        if class_id is not None and not self.class_repo.get_by_id(class_id):
+        primary_class = self.class_repo.get_by_id(class_id) if class_id is not None else None
+        if primary_class is None:
             raise ValidationError("Automation class not found")
-        data['system_class'] = self.class_repo.get_by_id(class_id)
+        data['system_class'] = primary_class
 
         product_id = data.pop("product", None)
         data["product"] = self._get_optional_product(product_id)
+
+        raw_subsystems = data.pop("subsystem_classes", None)
+        data["subsystem_classes"] = self._resolve_subsystem_classes(raw_subsystems, primary_class)
 
         if user is not None:
             data['creator_id'] = user
@@ -56,17 +97,28 @@ class SystemUseCase:
 
     def update(self, pk, user, **data):
         obj = self.get(pk)
+
         # system_class трогаем только если он передан (для частичного обновления).
+        primary_class = obj.system_class
         if "system_class" in data:
             class_id = data.get("system_class")
             klass = self.class_repo.get_by_id(class_id) if class_id is not None else None
             if klass is None:
                 raise ValidationError("Automation class not found")
             data["system_class"] = klass
+            primary_class = klass
 
         if "product" in data:
             product_id = data.pop("product")
             data["product"] = self._get_optional_product(product_id)
+
+        # Подсистемы пересчитываем, если их передали ИЛИ сменили основной класс
+        # (смена класса на несоставной очищает подсистемы — правило 4).
+        if "subsystem_classes" in data or "system_class" in data:
+            raw_subsystems = data.pop("subsystem_classes", None)
+            data["subsystem_classes"] = self._resolve_subsystem_classes(
+                raw_subsystems, primary_class
+            )
 
         return self.repo.update(obj, **data)
 

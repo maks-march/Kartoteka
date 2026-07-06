@@ -19,12 +19,35 @@ class AutomationClass(models.Model):
     )
     system_class = models.CharField(
         max_length=255,
-        verbose_name="Класс системы"
+        verbose_name="Класс системы (англ. аббревиатура)"
+    )
+    name_ru = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Русская аббревиатура",
+        help_text="Русская аббревиатура класса, если есть (напр. РСУ, ПАЗ, ТОИР).",
     )
     description = models.TextField(
         blank=True,
         null=True,
         verbose_name="Описание"
+    )
+    is_composite = models.BooleanField(
+        default=False,
+        verbose_name="Составной класс",
+        help_text="Класс, который может включать подсистемы (MES, MOM, АСУТП и т.п.). "
+                  "Для таких систем заполняются «классы подсистем».",
+    )
+    includes = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="included_by",
+        verbose_name="Включает класс",
+        help_text="Класс, который автоматически подставляется в подсистемы "
+                  "(напр. у MOM здесь MES).",
     )
 
     class Meta:
@@ -32,7 +55,14 @@ class AutomationClass(models.Model):
         verbose_name_plural = "Классы автоматизации"
 
     def __str__(self):
-        return f"L{self.level} - {self.system_class}"
+        return f"L{self.level} - {self.label}"
+
+    @property
+    def label(self):
+        """Отображение: «ENG (РУС)», если есть русская аббревиатура, иначе ENG."""
+        if self.name_ru:
+            return f"{self.system_class} ({self.name_ru})"
+        return self.system_class
 
 
 class VendorProduct(models.Model):
@@ -98,6 +128,14 @@ class AutomatedSystem(models.Model):
         on_delete=models.PROTECT,
         related_name='systems',
         verbose_name="Класс системы"
+    )
+    subsystem_classes = models.ManyToManyField(
+        AutomationClass,
+        blank=True,
+        related_name="subsystem_of_systems",
+        verbose_name="Классы подсистем",
+        help_text="Заполняется только для составных классов (MES, MOM, АСУТП): "
+                  "какие классы входят в систему.",
     )
     product = models.ForeignKey(
         VendorProduct,

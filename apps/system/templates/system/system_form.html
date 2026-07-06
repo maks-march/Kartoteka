@@ -44,15 +44,34 @@
                         </div>
                         <div class="system-results-container">
                             {% for cls in classes %}
-                            <div class="system-item {% if system.system_class_id == cls.pk %}selected{% endif %}" data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }}" data-level="{{ cls.level }}">
+                            <div class="system-item {% if system.system_class_id == cls.pk %}selected{% endif %}"
+                                 data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }}"
+                                 data-level="{{ cls.level }}"
+                                 data-composite="{% if cls.is_composite %}1{% else %}0{% endif %}"
+                                 data-includes="{{ cls.includes_id|default:'' }}">
                                 <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
-                                <span class="system-info">Уровень {{ cls.level }}</span>
+                                <span class="system-info">Уровень {{ cls.level }}{% if cls.is_composite %} · составной{% endif %}</span>
                             </div>
                             {% endfor %}
                             <div class="picker-no-results picker-empty">Классы не найдены</div>
                         </div>
                     </div>
                     <input type="hidden" name="system_class" id="selectedClassId" value="{{ system.system_class_id|default:'' }}" required>
+                </div>
+            </div>
+
+            <!-- ===== Классы подсистем (только для составных классов) ===== -->
+            <div class="form-group" id="subsystemsBlock" style="display:none">
+                <label>Классы подсистем</label>
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Отметьте классы, которые входят в эту систему (для составных классов — MES, MOM, АСУТП).</p>
+                <div class="subsystem-checks">
+                    {% for cls in classes %}
+                    <label class="subsystem-check" data-cls-id="{{ cls.pk }}">
+                        <input type="checkbox" name="subsystem_classes" value="{{ cls.pk }}"
+                            {% if cls.pk in selected_subsystem_ids %}checked{% endif %}>
+                        <span>L{{ cls.level }} - {{ cls.system_class }}</span>
+                    </label>
+                    {% endfor %}
                 </div>
             </div>
 

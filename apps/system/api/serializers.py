@@ -6,9 +6,12 @@ from apps.objects.models import ObjectSystem
 
 
 class AutomationClassSerializer(serializers.ModelSerializer):
+    label = serializers.CharField(read_only=True)
+
     class Meta:
         model = AutomationClass
-        fields = ["id", "level", "system_class", "description"]
+        fields = ["id", "level", "system_class", "name_ru", "label",
+                  "description", "is_composite", "includes"]
 
 
 class VendorProductSerializer(serializers.ModelSerializer):
@@ -45,11 +48,16 @@ class SystemDetailSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.product_name", read_only=True)
     status_display = serializers.CharField(source="get_system_status_display", read_only=True)
 
+    subsystem_classes_detail = AutomationClassSerializer(
+        source="subsystem_classes", many=True, read_only=True
+    )
+
     class Meta:
         model = AutomatedSystem
         fields = [
             "id", "autosystem_name", "autosystem_short_name",
             "system_class", "system_class_detail",
+            "subsystem_classes", "subsystem_classes_detail",
             "product", "product_name",
             "system_status", "status_display",
             "notes", "release_year",
@@ -61,6 +69,9 @@ class SystemCreateUpdateSerializer(serializers.Serializer):
     autosystem_name = serializers.CharField(max_length=255)
     autosystem_short_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
     system_class = serializers.IntegerField()
+    subsystem_classes = serializers.ListField(
+        child=serializers.IntegerField(), required=False
+    )
     product = serializers.IntegerField(required=False, allow_null=True)
     system_status = serializers.ChoiceField(choices=AutomatedSystem.STATUS_CHOICES, required=False)
     notes = serializers.CharField(required=False, allow_blank=True)

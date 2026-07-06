@@ -8,11 +8,11 @@
         <div>
             <h1 style="margin-bottom:6px">{{ system.autosystem_name }}</h1>
             <span class="tag tag-{{ system.system_class.level }}">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
+            {% for sub in system.subsystem_classes.all %}<span class="tag tag-{{ sub.level }}" style="margin-left:6px">{{ sub.system_class }}</span>{% endfor %}
             <span class="tag {{ system.status_tag_class }}" style="margin-left:6px">{{ system.get_system_status_display }}</span>
 
             <div class="detail-meta">
                 <p>Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
-                {% if system.system_class.description %}<p>{{ system.system_class.description }}</p>{% endif %}
             </div>
         </div>
         {% if user.is_authenticated %}
@@ -43,10 +43,13 @@
     <!-- ===== Классификация и продукт ===== -->
     <div class="info-block">
         <h3 class="info-block-title">Классификация и продукт</h3>
-        <div class="info-cards">
+        <div class="info-cards-two">
             <div class="info-card">
                 <span class="info-label">Класс системы</span>
                 <span class="info-value">L{{ system.system_class.level }} - {{ system.system_class.system_class }}</span>
+                {% if system.system_class.name_ru or system.system_class.description %}
+                <span class="class-subinfo">{% if system.system_class.name_ru %}{{ system.system_class.name_ru }}{% if system.system_class.description %} · {% endif %}{% endif %}{{ system.system_class.description }}</span>
+                {% endif %}
             </div>
             <div class="info-card">
                 <span class="info-label">Продукт</span>
@@ -54,6 +57,14 @@
                     {% if system.product %}<a class="link" href="{% url 'product-detail' system.product.pk %}">{{ system.product.product_name }}</a>{% else %}—{% endif %}
                 </span>
             </div>
+            {% if system.subsystem_classes.exists %}
+            <div class="info-card">
+                <span class="info-label">Классы подсистем</span>
+                <div class="card-tags">
+                    {% for sub in system.subsystem_classes.all %}<span class="tag tag-{{ sub.level }}">L{{ sub.level }} - {{ sub.system_class }}</span>{% endfor %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
