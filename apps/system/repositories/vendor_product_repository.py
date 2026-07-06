@@ -1,6 +1,6 @@
 import re
 
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from apps.system.models import VendorProduct
 from common.ordering import apply_ordering
@@ -8,11 +8,23 @@ from common.ordering import apply_ordering
 
 class VendorProductRepository:
     """Доступ к данным продуктов вендоров."""
-    ORDERING_FIELDS = {"product_name", "systems_count"}
+    ORDERING_FIELDS = {
+        "product_name", "product_type", "version",
+        "release_year", "end_of_support",
+        "vendor__entity_name", "system_class__system_class",
+        "systems_count",
+    }
     DEFAULT_ORDERING = "product_name"
 
-    def get_all(self, search=None, ordering=None):
-        qs = VendorProduct.objects.all().select_related("vendor")
+    def get_all(self, search=None, system_class=None, ordering=None):
+        qs = VendorProduct.objects.all().select_related("vendor", "system_class")
+        if system_class is not None:
+            # Класс совпал, если это основной класс продукта ЛИБО он среди
+            # классов подсистем (для составных классов вроде MES/MOM/АСУТП).
+            qs = qs.filter(
+                Q(system_class_id=system_class)
+                | Q(subsystem_classes__id=system_class)
+            ).distinct()
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
@@ -21,15 +33,27 @@ class VendorProductRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
-        return VendorProduct.objects.filter(pk=pk).select_related("vendor").first()
+        return (
+            VendorProduct.objects.filter(pk=pk)
+            .select_related("vendor", "system_class")
+            .prefetch_related("subsystem_classes")
+            .first()
+        )
 
     def create(self, **kwargs):
-        return VendorProduct.objects.create(**kwargs)
+        subsystem_classes = kwargs.pop("subsystem_classes", None)
+        instance = VendorProduct.objects.create(**kwargs)
+        if subsystem_classes is not None:
+            instance.subsystem_classes.set(subsystem_classes)
+        return instance
 
     def update(self, instance, **kwargs):
+        subsystem_classes = kwargs.pop("subsystem_classes", "__keep__")
         for key, value in kwargs.items():
             setattr(instance, key, value)
         instance.save()
+        if subsystem_classes != "__keep__":
+            instance.subsystem_classes.set(subsystem_classes or [])
         return instance
 
     def delete(self, instance):

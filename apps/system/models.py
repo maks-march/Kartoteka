@@ -66,12 +66,13 @@ class AutomationClass(models.Model):
 
 
 class VendorProduct(models.Model):
-    """Продукт вендора, на котором строится система автоматизации.
+    """Продукт вендора, на котором строится система автоматизации."""
 
-    Пока модель содержит название и вендора-владельца (Entity). Остальные поля
-    (тип продукта, версия, артикул, класс и т.д.) будут добавлены отдельным
-    инкрементом.
-    """
+    PRODUCT_TYPE_CHOICES = [
+        ("software", "ПО"),
+        ("hardware", "Технические средства"),
+        ("complex", "ПАК"),
+    ]
 
     product_name = models.CharField(
         max_length=255,
@@ -84,6 +85,50 @@ class VendorProduct(models.Model):
         blank=True,
         related_name="products",
         verbose_name="Вендор",
+    )
+    product_type = models.CharField(
+        max_length=50,
+        choices=PRODUCT_TYPE_CHOICES,
+        blank=True,
+        default="",
+        verbose_name="Тип продукта",
+    )
+    system_class = models.ForeignKey(
+        AutomationClass,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+        verbose_name="Класс системы",
+    )
+    subsystem_classes = models.ManyToManyField(
+        AutomationClass,
+        blank=True,
+        related_name="subsystem_of_products",
+        verbose_name="Классы подсистем",
+        help_text="Заполняется только для составных классов (MES, MOM, АСУТП): "
+                  "какие классы входят в продукт.",
+    )
+    description = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Описание",
+    )
+    version = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Версия",
+    )
+    release_year = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Дата выпуска",
+    )
+    end_of_support = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Конец поддержки",
     )
 
     class Meta:
@@ -202,25 +247,6 @@ class AutomatedSystem(models.Model):
     @property
     def status_tag_class(self):
         return self.STATUS_TAG_CLASSES.get(self.system_status, "tag-muted")
-
-    @staticmethod
-    def _json_to_text(value):
-        if value in (None, ""):
-            return ""
-        import json
-        return json.dumps(value, ensure_ascii=False, indent=2)
-
-    @property
-    def technical_specs_json(self):
-        return self._json_to_text(self.technical_specs)
-
-    @property
-    def modules_json(self):
-        return self._json_to_text(self.modules)
-
-    @property
-    def interfaces_json(self):
-        return self._json_to_text(self.interfaces)
 
     @staticmethod
     def _list_to_text(value):

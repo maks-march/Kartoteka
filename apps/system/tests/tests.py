@@ -484,6 +484,37 @@ class SubsystemClassesTests(TestCase):
         # data-composite проставлен у составных классов
         self.assertIn('data-composite="1"', h)
 
+    def test_subsystem_picker_items_carry_level_and_composite(self):
+        """Список подсистем — крупные блоки .system-item с data-level и
+        data-composite, чтобы фронт мог оставить только классы того же уровня
+        (кроме основного и составных)."""
+        from django.test import Client
+        c = Client(); c.force_login(self.user)
+        h = c.get("/system/create/").content.decode()
+        # блок-список подсистем и скрытые input'ы мультивыбора
+        self.assertIn('id="subsystemList"', h)
+        self.assertIn('id="subsystemInputs"', h)
+        # пункты списка несут data-level (для фильтра по уровню)
+        block = h.split('id="subsystemList"', 1)[1].split('id="subsystemInputs"', 1)[0]
+        self.assertIn("system-item", block)
+        self.assertIn("data-level=", block)
+        self.assertIn("data-composite=", block)
+
+    def test_subsystem_search_covers_code_ru_and_description(self):
+        """Поиск идёт по data-name: англ. код + рус. аббревиатура + описание."""
+        from django.test import Client
+        # класс с рус. аббревиатурой и описанием
+        AutomationClass.objects.create(
+            level=3, system_class="LIMS", name_ru="ЛИМС",
+            description="Лабораторная информационная система")
+        c = Client(); c.force_login(self.user)
+        h = c.get("/system/create/").content.decode()
+        block = h.split('id="subsystemList"', 1)[1].split('id="subsystemInputs"', 1)[0]
+        # в data-name присутствуют все три источника (в нижнем регистре)
+        self.assertIn("lims", block)
+        self.assertIn("лимс", block)
+        self.assertIn("лабораторная информационная система", block)
+
 
 class ClassLabelDisplayTests(TestCase):
     """Русская аббревиатура показывается только в подробной карточке (под классом),
@@ -518,3 +549,139 @@ class ClassLabelDisplayTests(TestCase):
         h = self.client.get("/system/cards/").content.decode()
         self.assertIn("DCS", h)
         self.assertNotIn("DCS (РСУ)", h)
+
+
+class VendorProductFieldsTests(TestCase):
+    """Новые поля продукта: тип, класс, версия, даты, описание."""
+
+    def setUp(self):
+        from apps.entities.models import Entity
+        self.user = User.objects.create_user("vp", "vp@x.x", "pw")
+        self.vendor = Entity.objects.create(entity_name="Вендор А", entity_type="vendor")
+        self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.api = APIClient()
+
+    def _uc(self):
+        from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
+        return VendorProductUseCase()
+
+    def test_web_create_with_all_fields(self):
+        self.client.force_login(self.user)
+        r = self.client.post("/system/products/create/", {
+            "product_name": "PCS 7",
+            "vendor": str(self.vendor.pk),
+            "product_type": "software",
+            "system_class": str(self.cls.pk),
+            "version": "V9.1 SP2",
+            "release_year": "2015-01-15",
+            "end_of_support": "2026-06-15",
+            "description": "Демо-описание",
+        })
+        self.assertEqual(r.status_code, 302)
+        from apps.system.models import VendorProduct
+        p = VendorProduct.objects.get(product_name="PCS 7")
+        self.assertEqual(p.vendor_id, self.vendor.pk)
+        self.assertEqual(p.product_type, "software")
+        self.assertEqual(p.system_class_id, self.cls.pk)
+        self.assertEqual(p.version, "V9.1 SP2")
+        self.assertEqual(str(p.release_year), "2015-01-15")
+        self.assertEqual(str(p.end_of_support), "2026-06-15")
+        self.assertEqual(p.description, "Демо-описание")
+
+    def test_usecase_invalid_class_rejected(self):
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self._uc().create(product_name="X", system_class=999999)
+
+    def test_form_shows_new_fields(self):
+        self.client.force_login(self.user)
+        h = self.client.get("/system/products/create/").content.decode()
+        self.assertIn('name="product_type"', h)
+        self.assertIn('name="version"', h)
+        self.assertIn('name="release_year"', h)
+        self.assertIn('name="end_of_support"', h)
+        self.assertIn('name="description"', h)
+        self.assertIn('id="selectedProductClassId"', h)
+        # варианты типа продукта
+        self.assertIn("ПАК", h)
+        self.assertIn("Технические средства", h)
+
+    def test_detail_shows_new_fields(self):
+        p = self._uc().create(
+            product_name="Experion", vendor=self.vendor.pk, product_type="complex",
+            system_class=self.cls.pk, version="R520", description="desc")
+        h = self.client.get(f"/system/products/{p.pk}/").content.decode()
+        self.assertIn("ПАК", h)
+        self.assertIn("R520", h)
+        self.assertIn("desc", h)
+
+    def test_api_create_and_detail(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.post("/api/system/products/", {
+            "product_name": "ApiProd", "vendor": self.vendor.pk,
+            "product_type": "hardware", "system_class": self.cls.pk,
+            "version": "1.0",
+        }, format="json")
+        self.assertEqual(r.status_code, 201)
+        pid = r.data["id"]
+        r = self.api.get(f"/api/system/products/{pid}/")
+        self.assertEqual(r.data["product_type"], "hardware")
+        self.assertEqual(r.data["product_type_display"], "Технические средства")
+        self.assertEqual(r.data["system_class"], self.cls.pk)
+        self.assertEqual(r.data["version"], "1.0")
+
+
+class VendorProductSubsystemTests(TestCase):
+    """Классы подсистем у продукта: как у систем — авто-MES, фильтр, очистка."""
+
+    def setUp(self):
+        from apps.entities.models import Entity
+        self.user = User.objects.create_user("vps", "vps@x.x", "pw")
+        self.vendor = Entity.objects.create(entity_name="V", entity_type="vendor")
+        self.mes = AutomationClass.objects.create(level=3, system_class="MES", is_composite=True)
+        self.mom = AutomationClass.objects.create(
+            level=3, system_class="MOM", is_composite=True, includes=self.mes)
+        self.wms = AutomationClass.objects.create(level=3, system_class="WMS")
+
+    def _uc(self):
+        from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
+        return VendorProductUseCase()
+
+    def test_composite_auto_adds_includes(self):
+        p = self._uc().create(product_name="MOM prod", system_class=self.mom.pk, subsystem_classes=[])
+        subs = set(p.subsystem_classes.values_list("system_class", flat=True))
+        self.assertIn("MES", subs)
+
+    def test_composite_keeps_selected_plus_includes(self):
+        p = self._uc().create(product_name="MOM+", system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
+        subs = set(p.subsystem_classes.values_list("system_class", flat=True))
+        self.assertEqual(subs, {"WMS", "MES"})
+
+    def test_non_composite_clears_subsystems(self):
+        p = self._uc().create(product_name="Wms", system_class=self.wms.pk, subsystem_classes=[self.mes.pk])
+        self.assertEqual(p.subsystem_classes.count(), 0)
+
+    def test_change_to_non_composite_clears_on_update(self):
+        p = self._uc().create(product_name="X", system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
+        self.assertTrue(p.subsystem_classes.exists())
+        p = self._uc().update(pk=p.pk, product_name="X", system_class=self.wms.pk)
+        self.assertEqual(p.subsystem_classes.count(), 0)
+
+    def test_filter_by_class_matches_subsystem(self):
+        # продукт класса MES с подсистемой WMS
+        self._uc().create(product_name="MES-prod", system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+        self._uc().create(product_name="WMS-prod", system_class=self.wms.pk)
+        names = sorted(p.product_name for p in self._uc().list(system_class=self.wms.pk))
+        # фильтр по WMS ловит и отдельный WMS-продукт, и MES-продукт с WMS в подсистемах
+        self.assertEqual(names, ["MES-prod", "WMS-prod"])
+
+    def test_form_shows_subsystem_block(self):
+        self.client.force_login(self.user)
+        h = self.client.get("/system/products/create/").content.decode()
+        self.assertIn("productSubsystemsBlock", h)
+        self.assertIn("subsystems-block", h)
+        self.assertIn('data-class-input="#selectedProductClassId"', h)
+
+    def test_list_class_filter_present(self):
+        h = self.client.get("/system/products/").content.decode()
+        self.assertIn('name="system_class"', h)

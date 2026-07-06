@@ -1,1 +1,1 @@
-from django.db import models
+# В этом приложении нет собственных моделей.

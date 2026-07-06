@@ -32,39 +32,92 @@
 
 
 /**
- * Классы подсистем: блок виден только когда выбран составной класс
- * (data-composite="1"). При выборе составного класса автоматически отмечается
- * включаемый класс (data-includes, напр. у MOM — MES). При смене основного
- * класса ранее отмеченные подсистемы очищаются (после подтверждения).
+ * Классы подсистем (крупные блоки-мультивыбор) — общий для форм системы и продукта.
+ * Каждый блок .subsystems-block описывается data-атрибутами:
+ *   data-class-input   — селектор скрытого input основного класса
+ *   data-class-picker  — селектор пикера выбора основного класса
+ *   data-list          — селектор контейнера со списком .system-item
+ *   data-inputs        — селектор контейнера для скрытых input'ов подсистем
+ *   data-search / data-search-btn / data-no-results — поиск (опционально)
+ * Блок виден только для составного основного класса (data-composite="1").
+ * Доступны только классы того же уровня, кроме самого основного и других
+ * составных. При выборе составного авто-отмечается includes (MOM -> MES).
+ * При смене основного класса выбор очищается (после подтверждения).
  */
-(function () {
-    const classHidden = document.getElementById('selectedClassId');
-    const block = document.getElementById('subsystemsBlock');
-    if (!classHidden || !block) return;
+function initSubsystemsBlock(block) {
+    const classHidden = document.querySelector(block.getAttribute('data-class-input') || '');
+    const list = document.querySelector(block.getAttribute('data-list') || '');
+    const inputs = document.querySelector(block.getAttribute('data-inputs') || '');
+    if (!classHidden || !list || !inputs) return;
 
-    // Пункты списка классов (содержат data-composite / data-includes).
-    const classItems = Array.from(document.querySelectorAll('.system-item[data-composite]'));
-    const checks = Array.from(block.querySelectorAll('input[name="subsystem_classes"]'));
+    const searchInput = document.querySelector(block.getAttribute('data-search') || '');
+    const searchBtn = document.querySelector(block.getAttribute('data-search-btn') || '');
+    const noResults = document.querySelector(block.getAttribute('data-no-results') || '');
+    const classItems = Array.from(
+        document.querySelectorAll((block.getAttribute('data-class-picker') || '') + ' .system-item')
+    );
+    const items = Array.from(list.querySelectorAll('.system-item'));
 
-    function itemById(id) {
+    function classItemById(id) {
         return classItems.find(function (i) { return i.getAttribute('data-id') === String(id); });
     }
-    function setChecked(clsId, val) {
-        const cb = checks.find(function (c) { return c.value === String(clsId); });
-        if (cb) cb.checked = val;
-    }
-    function clearAllChecks() {
-        checks.forEach(function (c) { c.checked = false; });
-    }
-    function currentIsComposite(id) {
-        const it = itemById(id);
+    function primaryIsComposite(id) {
+        const it = classItemById(id);
         return it && it.getAttribute('data-composite') === '1';
     }
 
-    // Прячем чекбокс класса, совпадающего с основным (нельзя быть подсистемой себя).
-    function hideSelfCheckbox(id) {
-        block.querySelectorAll('.subsystem-check').forEach(function (lbl) {
-            lbl.style.display = (lbl.getAttribute('data-cls-id') === String(id)) ? 'none' : '';
+    function syncInputs() {
+        inputs.innerHTML = '';
+        items.forEach(function (item) {
+            const id = item.getAttribute('data-id');
+            if (id && item.classList.contains('selected') && item.style.display !== 'none') {
+                const inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'subsystem_classes';
+                inp.value = id;
+                inputs.appendChild(inp);
+            }
+        });
+    }
+
+    // Доступность: тот же уровень, не сам основной, не составной. Недоступные скрыть и снять выбор.
+    function applyEligibility() {
+        const primaryId = classHidden.value;
+        const primaryItem = classItemById(primaryId);
+        const level = primaryItem ? primaryItem.getAttribute('data-level') : null;
+        const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+        let hasVisible = false;
+
+        items.forEach(function (item) {
+            const sameLevel = level !== null && item.getAttribute('data-level') === level;
+            const isSelf = item.getAttribute('data-id') === String(primaryId);
+            const isComposite = item.getAttribute('data-composite') === '1';
+            const eligible = sameLevel && !isSelf && !isComposite;
+            const matchesSearch = item.getAttribute('data-name').includes(query);
+
+            if (eligible && matchesSearch) {
+                item.style.display = 'flex';
+                hasVisible = true;
+            } else {
+                item.style.display = 'none';
+                if (!eligible) item.classList.remove('selected');
+            }
+        });
+        if (noResults) noResults.style.display = hasVisible ? 'none' : 'block';
+    }
+
+    items.forEach(function (item) {
+        item.addEventListener('click', function () {
+            if (item.style.display === 'none') return;
+            item.classList.toggle('selected');
+            syncInputs();
+        });
+    });
+
+    if (searchBtn) searchBtn.addEventListener('click', applyEligibility);
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); applyEligibility(); }
         });
     }
 
@@ -72,40 +125,44 @@
 
     function refresh(auto) {
         const id = classHidden.value;
-        if (currentIsComposite(id)) {
+        if (primaryIsComposite(id)) {
             block.style.display = '';
-            hideSelfCheckbox(id);
-            // Авто-подстановка включаемого класса (MOM -> MES) при выборе класса.
+            applyEligibility();
             if (auto) {
-                const it = itemById(id);
+                const it = classItemById(id);
                 const inc = it ? it.getAttribute('data-includes') : '';
-                if (inc) setChecked(inc, true);
+                if (inc) {
+                    const incItem = items.find(function (i) { return i.getAttribute('data-id') === String(inc); });
+                    if (incItem && incItem.style.display !== 'none') incItem.classList.add('selected');
+                }
             }
+            syncInputs();
         } else {
             block.style.display = 'none';
+            items.forEach(function (i) { i.classList.remove('selected'); });
+            syncInputs();
         }
     }
 
-    // Реакция на смену основного класса.
     classHidden.addEventListener('change', function () {
         const newId = classHidden.value;
         if (newId === prevId) return;
-        // Если были отмеченные подсистемы — подтверждаем очистку при смене класса.
-        const hadChecked = checks.some(function (c) { return c.checked; });
-        if (hadChecked && !confirm('Сменить класс системы? Ранее выбранные классы подсистем будут очищены.')) {
-            // откат выбора класса к предыдущему
+        const hadSelected = items.some(function (i) { return i.classList.contains('selected'); });
+        if (hadSelected && !confirm('Сменить класс? Ранее выбранные классы подсистем будут очищены.')) {
             classHidden.value = prevId;
-            const prevItem = itemById(prevId);
-            document.querySelectorAll('.picker[data-target="#selectedClassId"] .system-item')
-                .forEach(function (i) { i.classList.remove('selected'); });
+            classItems.forEach(function (i) { i.classList.remove('selected'); });
+            const prevItem = classItemById(prevId);
             if (prevItem) prevItem.classList.add('selected');
             return;
         }
-        clearAllChecks();
+        items.forEach(function (i) { i.classList.remove('selected'); });
         prevId = newId;
         refresh(true);
     });
 
-    // Инициализация при загрузке (без авто-очистки/подстановки поверх сохранённых).
     refresh(false);
-})();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.subsystems-block').forEach(initSubsystemsBlock);
+});

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}{% if product %}Изменить{% else %}Добавить{% endif %} продукт{% endblock %}
 
@@ -8,21 +9,137 @@
 
     {% if error %}<p class="error">{{ error }}</p>{% endif %}
 
-    <form method="post">
+    <form method="post" id="productForm">
         {% csrf_token %}
-        <div class="form-group">
-            <label>Название продукта</label>
-            <input type="text" name="product_name" value="{{ product.product_name|default:'' }}" required>
+
+        <!-- ===== Основная информация ===== -->
+        <div class="form-section">
+            <h2>Основная информация</h2>
+            <div class="form-group">
+                <label>Название продукта</label>
+                <input type="text" name="product_name" value="{{ product.product_name|default:'' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Вендор</label>
+                <select name="vendor">
+                    <option value="">— Вендор не указан —</option>
+                    {% for v in vendors %}
+                    <option value="{{ v.pk }}" {% if product.vendor_id == v.pk %}selected{% endif %}>{{ v.entity_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Вендор</label>
-            <select name="vendor">
-                <option value="">— Вендор не указан —</option>
-                {% for v in vendors %}
-                <option value="{{ v.pk }}" {% if product.vendor_id == v.pk %}selected{% endif %}>{{ v.entity_name }}</option>
-                {% endfor %}
-            </select>
+        <!-- ===== Классификация ===== -->
+        <div class="form-section">
+            <h2>Классификация</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Класс системы</label>
+                    <div class="picker collapsible" data-target="#selectedProductClassId" data-empty-text="Не указан">
+                        <div class="picker-header">
+                            <span class="picker-header-label">Класс системы</span>
+                            <span class="picker-header-value empty-value">Не указан</span>
+                            <span class="picker-caret">▾</span>
+                        </div>
+                        <div class="picker-body">
+                            <div class="search-wrapper">
+                                <input type="text" class="picker-search" placeholder="Класс, аббревиатура или описание..." style="margin-bottom:0">
+                                <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
+                            </div>
+                            <div class="system-results-container">
+                                <div class="system-item {% if not product.system_class_id %}selected{% endif %}" data-id="" data-keep>
+                                    <span class="system-name">— Класс не указан —</span>
+                                </div>
+                                {% for cls in classes %}
+                                <div class="system-item {% if product.system_class_id == cls.pk %}selected{% endif %}"
+                                     data-id="{{ cls.pk }}"
+                                     data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }} {{ cls.description|lower }}"
+                                     data-level="{{ cls.level }}"
+                                     data-composite="{% if cls.is_composite %}1{% else %}0{% endif %}"
+                                     data-includes="{{ cls.includes_id|default:'' }}">
+                                    <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
+                                    {% if cls.name_ru or cls.description %}<span class="system-info">{% if cls.name_ru %}{{ cls.name_ru }}{% if cls.description %} · {% endif %}{% endif %}{{ cls.description }}</span>{% endif %}
+                                </div>
+                                {% endfor %}
+                                <div class="picker-no-results picker-empty">Классы не найдены</div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="system_class" id="selectedProductClassId" value="{{ product.system_class_id|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Тип продукта</label>
+                    <select name="product_type">
+                        <option value="">— Не указан —</option>
+                        {% for value, label in product_type_choices %}
+                        <option value="{{ value }}" {% if product.product_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Классы подсистем (только для составного класса) -->
+            <div class="form-group subsystems-block" id="productSubsystemsBlock" style="display:none"
+                 data-class-input="#selectedProductClassId" data-list="#productSubsystemList"
+                 data-inputs="#productSubsystemInputs" data-search="#productSubsystemSearch"
+                 data-search-btn="#productSubsystemSearchBtn" data-no-results="#productSubsystemNoResults"
+                 data-class-picker='.picker[data-target="#selectedProductClassId"]'>
+                <label>Классы подсистем</label>
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Выберите классы того же уровня, которые входят в этот продукт.</p>
+                <div class="search-wrapper">
+                    <input type="text" id="productSubsystemSearch" placeholder="Введите класс..." style="margin-bottom:0">
+                    <button type="button" id="productSubsystemSearchBtn" class="btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container filter-list-160" id="productSubsystemList">
+                    {% for cls in classes %}
+                    <div class="system-item {% if cls.pk in selected_subsystem_ids %}selected{% endif %}"
+                         data-id="{{ cls.pk }}"
+                         data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }} {{ cls.description|lower }}"
+                         data-level="{{ cls.level }}"
+                         data-composite="{% if cls.is_composite %}1{% else %}0{% endif %}">
+                        <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
+                        {% if cls.name_ru or cls.description %}<span class="system-info">{% if cls.name_ru %}{{ cls.name_ru }}{% if cls.description %} · {% endif %}{% endif %}{{ cls.description }}</span>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <div id="productSubsystemNoResults" class="picker-empty">Классы не найдены</div>
+                </div>
+                <div id="productSubsystemInputs" data-name="subsystem_classes">
+                    {% for sid in selected_subsystem_ids %}
+                    <input type="hidden" name="subsystem_classes" value="{{ sid }}">
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Жизненный цикл ===== -->
+        <div class="form-section">
+            <h2>Жизненный цикл</h2>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Версия</label>
+                    <input type="text" name="version" value="{{ product.version|default:'' }}" placeholder="напр. V9.1 SP2">
+                </div>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Дата выпуска</label>
+                    <input type="date" name="release_year" value="{{ product.release_year|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>Конец поддержки</label>
+                    <input type="date" name="end_of_support" value="{{ product.end_of_support|date:'Y-m-d'|default:'' }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Описание ===== -->
+        <div class="form-section">
+            <h2>Описание</h2>
+            <div class="form-group">
+                <label>Описание продукта</label>
+                <textarea name="description" rows="4">{{ product.description|default:'' }}</textarea>
+            </div>
         </div>
 
         <div class="form-actions">
@@ -31,4 +148,8 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/system_form.js' %}" defer></script>
 {% endblock %}

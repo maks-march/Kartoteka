@@ -45,7 +45,7 @@
                         <div class="system-results-container">
                             {% for cls in classes %}
                             <div class="system-item {% if system.system_class_id == cls.pk %}selected{% endif %}"
-                                 data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }}"
+                                 data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }} {{ cls.description|lower }}"
                                  data-level="{{ cls.level }}"
                                  data-composite="{% if cls.is_composite %}1{% else %}0{% endif %}"
                                  data-includes="{{ cls.includes_id|default:'' }}">
@@ -61,16 +61,32 @@
             </div>
 
             <!-- ===== Классы подсистем (только для составных классов) ===== -->
-            <div class="form-group" id="subsystemsBlock" style="display:none">
+            <div class="form-group subsystems-block" id="subsystemsBlock" style="display:none"
+                 data-class-input="#selectedClassId" data-list="#subsystemList"
+                 data-inputs="#subsystemInputs" data-search="#subsystemSearch"
+                 data-search-btn="#subsystemSearchBtn" data-no-results="#subsystemNoResults"
+                 data-class-picker='.picker[data-target="#selectedClassId"]'>
                 <label>Классы подсистем</label>
-                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Отметьте классы, которые входят в эту систему (для составных классов — MES, MOM, АСУТП).</p>
-                <div class="subsystem-checks">
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Выберите классы того же уровня, которые входят в эту систему.</p>
+                <div class="search-wrapper">
+                    <input type="text" id="subsystemSearch" placeholder="Введите класс..." style="margin-bottom:0">
+                    <button type="button" id="subsystemSearchBtn" class="btn btn-secondary">Найти</button>
+                </div>
+                <div class="system-results-container filter-list-160" id="subsystemList">
                     {% for cls in classes %}
-                    <label class="subsystem-check" data-cls-id="{{ cls.pk }}">
-                        <input type="checkbox" name="subsystem_classes" value="{{ cls.pk }}"
-                            {% if cls.pk in selected_subsystem_ids %}checked{% endif %}>
-                        <span>L{{ cls.level }} - {{ cls.system_class }}</span>
-                    </label>
+                    <div class="system-item {% if cls.pk in selected_subsystem_ids %}selected{% endif %}"
+                         data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }} {{ cls.description|lower }}"
+                         data-level="{{ cls.level }}"
+                         data-composite="{% if cls.is_composite %}1{% else %}0{% endif %}">
+                        <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
+                        {% if cls.name_ru or cls.description %}<span class="system-info">{% if cls.name_ru %}{{ cls.name_ru }}{% if cls.description %} · {% endif %}{% endif %}{{ cls.description }}</span>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <div id="subsystemNoResults" class="picker-empty">Классы не найдены</div>
+                </div>
+                <div id="subsystemInputs" data-name="subsystem_classes">
+                    {% for sid in selected_subsystem_ids %}
+                    <input type="hidden" name="subsystem_classes" value="{{ sid }}">
                     {% endfor %}
                 </div>
             </div>

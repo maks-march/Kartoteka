@@ -13,8 +13,11 @@ class AutomationClassAdmin(admin.ModelAdmin):
 
 @admin.register(VendorProduct)
 class VendorProductAdmin(admin.ModelAdmin):
-    list_display = ["product_name"]
-    search_fields = ["product_name"]
+    list_display = ["product_name", "vendor", "product_type", "system_class", "version"]
+    list_filter = ["product_type", "system_class__level"]
+    search_fields = ["product_name", "version"]
+    raw_id_fields = ["vendor", "system_class"]
+    filter_horizontal = ["subsystem_classes"]
 
 
 @admin.register(AutomatedSystem)

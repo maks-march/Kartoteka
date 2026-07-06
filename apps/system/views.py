@@ -11,7 +11,7 @@ from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
 from apps.entities.usecases.entity_usecase import EntityUseCase
-from apps.system.models import AutomatedSystem
+from apps.system.models import AutomatedSystem, VendorProduct
 from common.summary import summary_group as _summary_group
 
 
@@ -254,11 +254,14 @@ def system_attach_object(request, pk):
 @require_http_methods(["GET"])
 def product_list(request):
     search = request.GET.get("search") or None
+    system_class = request.GET.get("system_class") or None
     ordering = request.GET.getlist("ordering") or None
     usecase = VendorProductUseCase()
-    products = usecase.list(search=search, ordering=ordering)
+    products = usecase.list(search=search, system_class=system_class, ordering=ordering)
     return render(request, "system/product_list.html", {
         "products": products,
+        "classes": AutomationClassUseCase().list(),
+        "selected_class": system_class or "",
         "ordering": ordering or [],
     })
 
@@ -274,6 +277,28 @@ def product_detail(request, pk):
     })
 
 
+def _extract_product_fields(post):
+    """Дополнительные поля продукта из POST."""
+    return {
+        "product_type": post.get("product_type") or "",
+        "system_class": post.get("system_class") or None,
+        "description": post.get("description", "") or "",
+        "version": post.get("version", "") or "",
+        "release_year": post.get("release_year") or None,
+        "end_of_support": post.get("end_of_support") or None,
+    }
+
+
+def _product_form_context(**extra):
+    ctx = {
+        "vendors": EntityUseCase().list(),
+        "classes": AutomationClassUseCase().list(),
+        "product_type_choices": VendorProduct.PRODUCT_TYPE_CHOICES,
+    }
+    ctx.update(extra)
+    return ctx
+
+
 @require_http_methods(["GET", "POST"])
 @login_required
 def product_create(request):
@@ -284,12 +309,13 @@ def product_create(request):
             product = usecase.create(
                 product_name=request.POST.get("product_name"),
                 vendor=request.POST.get("vendor") or None,
+                subsystem_classes=request.POST.getlist("subsystem_classes"),
+                **_extract_product_fields(request.POST),
             )
             return redirect("product-detail", pk=product.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
-    vendors = EntityUseCase().list()
-    return render(request, "system/product_form.html", {"vendors": vendors, "error": error})
+    return render(request, "system/product_form.html", _product_form_context(error=error))
 
 
 @require_http_methods(["GET", "POST"])
@@ -305,17 +331,18 @@ def product_edit(request, pk):
                 pk=pk,
                 product_name=request.POST.get("product_name"),
                 vendor=request.POST.get("vendor") or None,
+                subsystem_classes=request.POST.getlist("subsystem_classes"),
+                **_extract_product_fields(request.POST),
             )
             return redirect("product-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)
 
-    vendors = EntityUseCase().list()
-    return render(request, "system/product_form.html", {
-        "product": product,
-        "vendors": vendors,
-        "error": error,
-    })
+    return render(request, "system/product_form.html", _product_form_context(
+        product=product,
+        selected_subsystem_ids=list(product.subsystem_classes.values_list("id", flat=True)),
+        error=error,
+    ))
 
 
 @require_http_methods(["POST"])

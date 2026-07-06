@@ -1,3 +1,1 @@
-from django.db import models
-
-# Create your models here.
+# В этом приложении нет собственных моделей.

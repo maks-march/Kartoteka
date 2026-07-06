@@ -15,6 +15,12 @@
     <form class="filters" method="get" id="filterForm">
         <div class="main-row">
             <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search|default:'' }}">
+            <select name="system_class">
+                <option value="">Все классы</option>
+                {% for cls in classes %}
+                <option value="{{ cls.pk }}" {% if selected_class == cls.pk|stringformat:"s" %}selected{% endif %}>L{{ cls.level }} - {{ cls.system_class }}</option>
+                {% endfor %}
+            </select>
             <button type="submit" class="btn btn-primary">Применить</button>
             <a href="{% url 'product-list' %}" class="btn-reset" title="Сбросить фильтр">
                 <svg class="icon-trash" viewBox="0 0 24 24">
@@ -29,6 +35,9 @@
             <tr>
                 <th>{% sort_header "product_name" "Название" %}</th>
                 <th>Вендор</th>
+                <th>{% sort_header "product_type" "Тип" %}</th>
+                <th>{% sort_header "system_class__system_class" "Класс" %}</th>
+                <th>{% sort_header "version" "Версия" %}</th>
                 <th>{% sort_header "systems_count" "Систем" %}</th>
             </tr>
         </thead>
@@ -37,10 +46,13 @@
             <tr>
                 <td><a href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
                 <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if product.product_type %}<span class="tag tag-blue">{{ product.get_product_type_display }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if product.system_class %}<span class="tag tag-{{ product.system_class.level }}">{{ product.system_class.system_class }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{{ product.version|default:'—' }}</td>
                 <td>{{ product.systems_count }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="empty">Продукты не найдены</td></tr>
+            <tr><td colspan="6" class="empty">Продукты не найдены</td></tr>
             {% endfor %}
         </tbody>
     </table>

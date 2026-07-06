@@ -143,21 +143,6 @@ class Entity(models.Model):
 
     # --- Вспомогательные свойства для форм/детали ---
 
-    @staticmethod
-    def _json_to_text(value):
-        if value in (None, ""):
-            return ""
-        import json
-        return json.dumps(value, ensure_ascii=False, indent=2)
-
-    @property
-    def contacts_json(self):
-        return self._json_to_text(self.contacts)
-
-    @property
-    def financial_data_json(self):
-        return self._json_to_text(self.financial_data)
-
     @property
     def industries_text(self):
         """Отрасли списком через запятую (для предзаполнения поля)."""

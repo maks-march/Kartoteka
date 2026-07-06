@@ -16,15 +16,33 @@ class AutomationClassSerializer(serializers.ModelSerializer):
 
 class VendorProductSerializer(serializers.ModelSerializer):
     vendor_name = serializers.CharField(source="vendor.entity_name", read_only=True)
+    product_type_display = serializers.CharField(source="get_product_type_display", read_only=True)
+    system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
 
     class Meta:
         model = VendorProduct
-        fields = ["id", "product_name", "vendor", "vendor_name"]
+        fields = [
+            "id", "product_name", "vendor", "vendor_name",
+            "product_type", "product_type_display",
+            "system_class", "system_class_name", "subsystem_classes",
+            "description", "version", "release_year", "end_of_support",
+        ]
 
 
 class VendorProductCreateUpdateSerializer(serializers.Serializer):
     product_name = serializers.CharField(max_length=255)
     vendor = serializers.IntegerField(required=False, allow_null=True)
+    product_type = serializers.ChoiceField(
+        choices=VendorProduct.PRODUCT_TYPE_CHOICES, required=False, allow_blank=True
+    )
+    system_class = serializers.IntegerField(required=False, allow_null=True)
+    subsystem_classes = serializers.ListField(
+        child=serializers.IntegerField(), required=False
+    )
+    description = serializers.CharField(required=False, allow_blank=True)
+    version = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    release_year = serializers.DateField(required=False, allow_null=True)
+    end_of_support = serializers.DateField(required=False, allow_null=True)
 
 
 class SystemListSerializer(serializers.ModelSerializer):
