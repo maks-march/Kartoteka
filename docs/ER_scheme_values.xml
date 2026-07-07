@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="Django Project ER" id="django-er">
-    <mxGraphModel dx="1212" dy="2346" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
+    <mxGraphModel dx="2060" dy="2868" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -342,7 +342,7 @@
           <mxGeometry height="22" width="320" y="114" as="geometry" />
         </mxCell>
         <mxCell id="o8nNvLJebMqvUlWPgHjm-128" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#ffe6cc;strokeColor=#d79b00;" value="ObjectSystem" vertex="1">
-          <mxGeometry height="150" width="320" x="850" y="1570" as="geometry" />
+          <mxGeometry height="210" width="320" x="850" y="1570" as="geometry" />
         </mxCell>
         <mxCell id="o8nNvLJebMqvUlWPgHjm-129" parent="o8nNvLJebMqvUlWPgHjm-128" style="text;align=left;" value="id (PK): 4" vertex="1">
           <mxGeometry height="22" width="320" y="26" as="geometry" />
@@ -359,8 +359,14 @@
         <mxCell id="o8nNvLJebMqvUlWPgHjm-133" parent="o8nNvLJebMqvUlWPgHjm-128" style="text;align=left;" value="implementation_date : 14.06.2026 12:00:00" vertex="1">
           <mxGeometry height="22" width="320" y="114" as="geometry" />
         </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-23" parent="o8nNvLJebMqvUlWPgHjm-128" style="text;align=left;" value="implementor_id → 1" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-24" parent="o8nNvLJebMqvUlWPgHjm-128" style="text;align=left;" value="integrator_id → 1" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
         <mxCell id="o8nNvLJebMqvUlWPgHjm-134" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;" value="AutomatedSystem" vertex="1">
-          <mxGeometry height="130" width="320" x="1340" y="1710" as="geometry" />
+          <mxGeometry height="150" width="320" x="1340" y="1710" as="geometry" />
         </mxCell>
         <mxCell id="o8nNvLJebMqvUlWPgHjm-135" parent="o8nNvLJebMqvUlWPgHjm-134" style="text;align=left;" value="id (PK): 1" vertex="1">
           <mxGeometry height="22" width="320" y="26" as="geometry" />
@@ -373,6 +379,9 @@
         </mxCell>
         <mxCell id="o8nNvLJebMqvUlWPgHjm-153" parent="o8nNvLJebMqvUlWPgHjm-134" style="text;align=left;" value="creator_id → 1" vertex="1">
           <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-27" parent="o8nNvLJebMqvUlWPgHjm-134" style="text;align=left;" value="product_id → 1" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
         </mxCell>
         <mxCell id="o8nNvLJebMqvUlWPgHjm-138" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;" value="AutomatedSystem" vertex="1">
           <mxGeometry height="130" width="320" x="1340" y="1460" as="geometry" />
@@ -525,6 +534,144 @@
               <mxPoint x="110" y="547" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="ent" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#d5e8d4;strokeColor=#82b366;" value="Entity" vertex="1">
+          <mxGeometry height="290" width="300" x="2810" y="-460" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_1" parent="ent" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_2" parent="ent" style="text;align=left;" value="entity_name : varchar" vertex="1">
+          <mxGeometry height="22" width="300" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_3" parent="ent" style="text;align=left;" value="inn : varchar (unique)" vertex="1">
+          <mxGeometry height="22" width="300" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_4" parent="ent" style="text;align=left;" value="entity_type : enum" vertex="1">
+          <mxGeometry height="22" width="300" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_5" parent="ent" style="text;align=left;" value="is_partner : boolean" vertex="1">
+          <mxGeometry height="22" width="300" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_6" parent="ent" style="text;align=left;" value="website : varchar" vertex="1">
+          <mxGeometry height="22" width="300" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_7" parent="ent" style="text;align=left;" value="contacts : json" vertex="1">
+          <mxGeometry height="22" width="300" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_8" parent="ent" style="text;align=left;" value="financial_data : json" vertex="1">
+          <mxGeometry height="22" width="300" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_9" parent="ent" style="text;align=left;" value="registration_date : date" vertex="1">
+          <mxGeometry height="22" width="300" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_10" parent="ent" style="text;align=left;" value="industries : json" vertex="1">
+          <mxGeometry height="22" width="300" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_11" parent="ent" style="text;align=left;" value="profile : text" vertex="1">
+          <mxGeometry height="22" width="300" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_12" parent="ent" style="text;align=left;" value="kam_name / kam_phone / contact_person / contact_phone / presentation_url" vertex="1">
+          <mxGeometry height="22" width="300" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="vp" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#e1d5e7;strokeColor=#9673a6;" value="VendorProduct" vertex="1">
+          <mxGeometry height="246" width="320" x="2460" y="-460" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_1" parent="vp" style="text;align=left;" value="id (PK)" vertex="1">
+          <mxGeometry height="22" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_2" parent="vp" style="text;align=left;" value="product_name : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_3" parent="vp" style="text;align=left;" value="vendor_id → Entity.id" vertex="1">
+          <mxGeometry height="22" width="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_4" parent="vp" style="text;align=left;" value="product_type : enum (ПО / Тех.средства / ПАК)" vertex="1">
+          <mxGeometry height="22" width="320" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_5" parent="vp" style="text;align=left;" value="system_class_id → AutomationClass.id" vertex="1">
+          <mxGeometry height="22" width="320" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_6" parent="vp" style="text;align=left;" value="version : varchar" vertex="1">
+          <mxGeometry height="22" width="320" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_7" parent="vp" style="text;align=left;" value="release_year : date" vertex="1">
+          <mxGeometry height="22" width="320" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_8" parent="vp" style="text;align=left;" value="end_of_support : date" vertex="1">
+          <mxGeometry height="22" width="320" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_9" parent="vp" style="text;align=left;" value="description : text" vertex="1">
+          <mxGeometry height="22" width="320" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_10" parent="vp" style="text;align=left;" value="subsystem_classes ↔ AutomationClass (M2M)" vertex="1">
+          <mxGeometry height="22" width="320" y="224" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-1" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#fff2cc;strokeColor=#d6b656;" value="VendorProduct " vertex="1">
+          <mxGeometry height="224" width="360" x="1340" y="1966" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-2" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="id = 1" vertex="1">
+          <mxGeometry height="22" width="360" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-3" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="product_name = &quot;Siemens AG Siemens PCS7 V9.1 SP2&quot;" vertex="1">
+          <mxGeometry height="22" width="360" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-4" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="vendor_id → 1" vertex="1">
+          <mxGeometry height="22" width="360" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-5" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="product_type = hardware (Технические средства)" vertex="1">
+          <mxGeometry height="22" width="360" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-6" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="system_class_id = 13 (→ SCADA)" vertex="1">
+          <mxGeometry height="22" width="360" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-7" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="version = &quot;V9.1 SP2&quot;" vertex="1">
+          <mxGeometry height="22" width="360" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-8" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="release_year = 2015-02-15" vertex="1">
+          <mxGeometry height="22" width="360" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-9" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="end_of_support = 2027-12-31" vertex="1">
+          <mxGeometry height="22" width="360" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-10" parent="NtgCh6NLsDPLb2c4kayn-1" style="text;align=left;" value="subsystem_classes = [] (класс не составной)" vertex="1">
+          <mxGeometry height="22" width="360" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-11" parent="1" style="shape=table;startSize=26;fontStyle=1;align=center;fillColor=#fff2cc;strokeColor=#d6b656;" value="Entity" vertex="1">
+          <mxGeometry height="180" width="360" x="850" y="2010" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-12" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="id = 1" vertex="1">
+          <mxGeometry height="22" width="360" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-13" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="entity_name = &quot;Siemens AG&quot;" vertex="1">
+          <mxGeometry height="22" width="360" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-14" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="inn = &quot;7700000274&quot;" vertex="1">
+          <mxGeometry height="22" width="360" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-15" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="entity_type = supplier (Поставщик)" vertex="1">
+          <mxGeometry height="22" width="360" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-16" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="website = &quot;https://siemensag.com&quot;" vertex="1">
+          <mxGeometry height="22" width="360" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-17" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="contacts = {email: info@siemensag.com, phone: +7 495 102-12-14}" vertex="1">
+          <mxGeometry height="22" width="360" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-18" parent="NtgCh6NLsDPLb2c4kayn-11" style="text;align=left;" value="industries = [Газопереработка, Химия, Добыча нефти]" vertex="1">
+          <mxGeometry height="22" width="360" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-25" edge="1" parent="1" source="NtgCh6NLsDPLb2c4kayn-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="NtgCh6NLsDPLb2c4kayn-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-26" edge="1" parent="1" source="NtgCh6NLsDPLb2c4kayn-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="NtgCh6NLsDPLb2c4kayn-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-28" edge="1" parent="1" source="NtgCh6NLsDPLb2c4kayn-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="NtgCh6NLsDPLb2c4kayn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NtgCh6NLsDPLb2c4kayn-29" edge="1" parent="1" source="NtgCh6NLsDPLb2c4kayn-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="NtgCh6NLsDPLb2c4kayn-12">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
