@@ -39,6 +39,36 @@ class EntityWebEndpointTests(TestCase):
         r = self.client.get("/entities/create/")
         self.assertEqual(r.status_code, 302)
 
+    def test_industry_picker_is_multiselect_without_search(self):
+        """Форма: отрасли выбираются множественно (пикер), без поля поиска."""
+        from apps.categories.models import Category
+        Category.objects.create(name="Химия", level=1)
+        Category.objects.create(name="Металлургия", level=1)
+        self.client.force_login(self.user)
+        h = self.client.get("/entities/create/").content.decode()
+        # мультивыбор через пикер, значение пишется в скрытый input с прежним именем
+        self.assertIn("industry-picker", h)
+        self.assertIn('id="industriesValue"', h)
+        self.assertIn('name="industries"', h)
+        # пункты — категории 1-го уровня
+        self.assertIn('data-name="Химия"', h)
+        self.assertIn('data-name="Металлургия"', h)
+        # поиска в пикере отраслей быть не должно
+        block = h[h.index("industry-picker"):]
+        block = block[:block.index("</div></div>") if "</div></div>" in block else len(block)]
+        self.assertNotIn("picker-search", block)
+
+    def test_industry_picker_preselects_on_edit(self):
+        from apps.categories.models import Category
+        Category.objects.create(name="Химия", level=1)
+        Category.objects.create(name="Нефтехимия", level=1)
+        e = Entity.objects.create(entity_name="Ред", industries=["Химия"])
+        self.client.force_login(self.user)
+        h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
+        # выбранная отрасль помечена selected, значение предзаполнено
+        self.assertIn('class="system-item selected" data-name="Химия"', h)
+        self.assertIn('value="Химия"', h)
+
     def test_authenticated_crud_with_full_fields(self):
         self.client.force_login(self.user)
 
@@ -147,7 +177,7 @@ class EntityCountsAndViewsTests(TestCase):
     """Счётчики (продукты, связанные системы), карточки, цветные типы, сортировка."""
 
     def setUp(self):
-        from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
+        from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("cv", "cv@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
@@ -160,10 +190,10 @@ class EntityCountsAndViewsTests(TestCase):
         self.p2 = VendorProduct.objects.create(product_name="Продукт-2", vendor=self.vendor)
 
         # sys_on_product использует продукт вендора -> связан с вендором через product
-        self.sys_prod = AutomatedSystem.objects.create(
+        self.sys_prod = AutomationSystem.objects.create(
             autosystem_name="СистемаНаПродукте", system_class=self.cls, product=self.p1, creator_id=self.user)
         # sys_role: интегратор — ИнтеграторБ
-        self.sys_role = AutomatedSystem.objects.create(
+        self.sys_role = AutomationSystem.objects.create(
             autosystem_name="СистемаСвязь", system_class=self.cls, creator_id=self.user)
         obj = Object.objects.create(name="Объект", level=1, creator_id=self.user)
         ObjectSystem.objects.create(object=obj, system=self.sys_role, integrator=self.integ)
@@ -238,7 +268,7 @@ class DetailSummaryPanelTests(TestCase):
     """Сводная панель справа в детальных карточках (объект/система/участник)."""
 
     def setUp(self):
-        from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
+        from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("sp", "sp@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
@@ -246,7 +276,7 @@ class DetailSummaryPanelTests(TestCase):
         self.integ = Entity.objects.create(entity_name="ИнтегП", entity_type="system_integrator")
         self.impl = Entity.objects.create(entity_name="ИсполП", entity_type="engineering_company")
         self.product = VendorProduct.objects.create(product_name="ПродуктП", vendor=self.vendor)
-        self.system = AutomatedSystem.objects.create(
+        self.system = AutomationSystem.objects.create(
             autosystem_name="СистемаП", system_class=self.cls, product=self.product, creator_id=self.user)
         self.obj = Object.objects.create(name="ОбъектП", level=1, creator_id=self.user)
         ObjectSystem.objects.create(
@@ -295,7 +325,7 @@ class SummaryLimitTests(TestCase):
     """Сводка обрезает группу до 5 элементов и показывает «ещё N»."""
 
     def setUp(self):
-        from apps.system.models import AutomationClass, AutomatedSystem
+        from apps.system.models import AutomationClass, AutomationSystem
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("lim", "lim@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
@@ -303,7 +333,7 @@ class SummaryLimitTests(TestCase):
         # 7 разных интеграторов -> в сводке максимум 5 + «ещё 2»
         for i in range(7):
             e = Entity.objects.create(entity_name=f"Инт{i}", entity_type="system_integrator")
-            s = AutomatedSystem.objects.create(
+            s = AutomationSystem.objects.create(
                 autosystem_name=f"С{i}", system_class=self.cls, creator_id=self.user)
             ObjectSystem.objects.create(object=self.obj, system=s, integrator=e)
 

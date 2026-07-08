@@ -67,6 +67,29 @@
         </div>
     </div>
 
+    <!-- ===== Технические данные ===== -->
+    {% if product.industries or product.specs_items %}
+    <div class="info-block">
+        <h3 class="info-block-title">Технические данные</h3>
+        <div class="info-cards">
+            {% if product.industries %}
+            <div class="info-card full">
+                <span class="info-label">Отрасли применения</span>
+                <div class="card-tags">
+                    {% for ind in product.industries %}<span class="tag tag-muted">{{ ind }}</span>{% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% for key, value in product.specs_items %}
+            <div class="info-card">
+                <span class="info-label">{{ key }}</span>
+                <span class="info-value">{{ value|default:'—' }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <!-- ===== Описание ===== -->
     <div class="info-block">
         <h3 class="info-block-title">Описание</h3>

@@ -2,7 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from apps.system.models import AutomatedSystem
+from apps.system.models import AutomationSystem
 from apps.owners.models import OwnerEntity
 from apps.entities.models import Entity
 
@@ -154,7 +154,7 @@ class ObjectSystem(models.Model):
     ]
 
     object = models.ForeignKey(Object, on_delete=models.CASCADE, verbose_name="Объект")
-    system = models.ForeignKey(AutomatedSystem, on_delete=models.CASCADE, verbose_name="Система")
+    system = models.ForeignKey(AutomationSystem, on_delete=models.CASCADE, verbose_name="Система")
 
     status = models.CharField(
         max_length=50,

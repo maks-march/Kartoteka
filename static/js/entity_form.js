@@ -31,4 +31,5 @@ document.addEventListener('DOMContentLoaded', function () {
             if (row) row.remove();
         }
     });
+    // Пикер отраслей (множественный выбор) инициализируется в app.js.
 });

@@ -130,6 +130,18 @@ class VendorProduct(models.Model):
         blank=True,
         verbose_name="Конец поддержки",
     )
+    technical_specs = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name="Технические характеристики",
+        help_text="Словарь «характеристика — значение».",
+    )
+    industries = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name="Отрасли применения",
+        help_text="Список отраслей (значения из категорий 1-го уровня, без связи).",
+    )
 
     class Meta:
         verbose_name = "Продукт вендора"
@@ -139,8 +151,31 @@ class VendorProduct(models.Model):
     def __str__(self):
         return self.product_name
 
+    @property
+    def specs_items(self):
+        """Пары (ключ, значение) технических характеристик для рендера."""
+        if isinstance(self.technical_specs, dict):
+            return list(self.technical_specs.items())
+        return []
 
-class AutomatedSystem(models.Model):
+    @property
+    def industries_text(self):
+        """Отрасли строкой через запятую (для предзаполнения поля формы)."""
+        if not self.industries:
+            return ""
+        if isinstance(self.industries, (list, tuple)):
+            return ", ".join(str(v) for v in self.industries)
+        return str(self.industries)
+
+    @property
+    def industries_first_three(self):
+        """Первые три отрасли строкой через запятую (для карточки/списка)."""
+        if isinstance(self.industries, (list, tuple)) and self.industries:
+            return ", ".join(str(v) for v in self.industries[:3])
+        return ""
+
+
+class AutomationSystem(models.Model):
 
     STATUS_CHOICES = [
         ("active", "В эксплуатации"),

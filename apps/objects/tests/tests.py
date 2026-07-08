@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from apps.categories.models import Category
 from apps.objects.models import Object, ObjectSystem
 from apps.owners.models import OwnerEntity
-from apps.system.models import AutomatedSystem, AutomationClass
+from apps.system.models import AutomationSystem, AutomationClass
 
 
 class ObjectsEndpointTestMixin:
@@ -19,12 +19,12 @@ class ObjectsEndpointTestMixin:
             system_class="SCADA",
             description="Диспетчеризация",
         )
-        self.system = AutomatedSystem.objects.create(
+        self.system = AutomationSystem.objects.create(
             autosystem_name="АСУ ТП",
             system_class=self.automation_class,
             creator_id=self.user,
         )
-        self.second_system = AutomatedSystem.objects.create(
+        self.second_system = AutomationSystem.objects.create(
             autosystem_name="MES",
             system_class=self.automation_class,
             creator_id=self.user,

@@ -4,7 +4,7 @@ from django.db.models import Count, Q, Subquery, OuterRef, IntegerField, Value
 from django.db.models.functions import Coalesce
 
 from apps.entities.models import Entity
-from apps.system.models import AutomatedSystem
+from apps.system.models import AutomationSystem
 from common.ordering import apply_ordering
 
 
@@ -22,11 +22,11 @@ class EntityRepository:
 
         systems_count — число РАЗЛИЧНЫХ систем, связанных с участником:
         где он integrator или implimentor в ObjectSystem, ЛИБО чей продукт
-        принадлежит этому вендору. Считаем подзапросом по AutomatedSystem,
+        принадлежит этому вендору. Считаем подзапросом по AutomationSystem,
         чтобы distinct работал корректно поверх разных связей.
         """
         related_systems = (
-            AutomatedSystem.objects
+            AutomationSystem.objects
             .filter(
                 Q(objectsystem__integrator=OuterRef("pk"))
                 | Q(objectsystem__implimentor=OuterRef("pk"))

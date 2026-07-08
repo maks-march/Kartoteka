@@ -202,9 +202,51 @@ function initModeToggle(toggle) {
     });
 }
 
+/* ===== Пикер отраслей: множественный выбор без поиска =====
+   Выбранные названия (data-name пунктов) собираются в строку через запятую,
+   пишутся в скрытый input (data-target) и выводятся в заголовок пикера.
+   Используется в формах участника и продукта. */
+function initIndustryPicker(picker) {
+    const hidden = document.querySelector(picker.getAttribute('data-target') || '');
+    const header = picker.querySelector('.picker-header');
+    const headerValue = picker.querySelector('.picker-header-value');
+    const emptyText = picker.getAttribute('data-empty-text') || 'Не выбрано';
+    const items = Array.from(picker.querySelectorAll('.system-item'));
+    if (!hidden) return;
+
+    function sync() {
+        const names = items
+            .filter(function (i) { return i.classList.contains('selected'); })
+            .map(function (i) { return i.getAttribute('data-name'); });
+        hidden.value = names.join(', ');
+        if (headerValue) {
+            if (names.length) {
+                headerValue.textContent = names.join(', ');
+                headerValue.classList.remove('empty-value');
+            } else {
+                headerValue.textContent = emptyText;
+                headerValue.classList.add('empty-value');
+            }
+        }
+    }
+
+    if (header) {
+        header.addEventListener('click', function () { picker.classList.toggle('open'); });
+    }
+    items.forEach(function (item) {
+        item.addEventListener('click', function () {
+            item.classList.toggle('selected');
+            sync();
+        });
+    });
+    sync();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.picker').forEach(initPicker);
-    document.querySelectorAll('.picker.collapsible').forEach(initCollapsiblePicker);
+    // .industry-picker — множественный выбор, обрабатывается отдельно
+    document.querySelectorAll('.picker:not(.industry-picker)').forEach(initPicker);
+    document.querySelectorAll('.picker.collapsible:not(.industry-picker)').forEach(initCollapsiblePicker);
+    document.querySelectorAll('.industry-picker').forEach(initIndustryPicker);
     document.querySelectorAll('.mode-toggle').forEach(initModeToggle);
 });
 

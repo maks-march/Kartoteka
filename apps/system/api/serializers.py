@@ -1,7 +1,7 @@
 """Сериализаторы систем, классов автоматизации и продуктов для REST API."""
 from rest_framework import serializers
 
-from apps.system.models import AutomatedSystem, AutomationClass, VendorProduct
+from apps.system.models import AutomationSystem, AutomationClass, VendorProduct
 from apps.objects.models import ObjectSystem
 
 
@@ -26,6 +26,7 @@ class VendorProductSerializer(serializers.ModelSerializer):
             "product_type", "product_type_display",
             "system_class", "system_class_name", "subsystem_classes",
             "description", "version", "release_year", "end_of_support",
+            "technical_specs", "industries",
         ]
 
 
@@ -43,6 +44,10 @@ class VendorProductCreateUpdateSerializer(serializers.Serializer):
     version = serializers.CharField(max_length=255, required=False, allow_blank=True)
     release_year = serializers.DateField(required=False, allow_null=True)
     end_of_support = serializers.DateField(required=False, allow_null=True)
+    technical_specs = serializers.DictField(required=False, allow_null=True)
+    industries = serializers.ListField(
+        child=serializers.CharField(), required=False, allow_null=True
+    )
 
 
 class SystemListSerializer(serializers.ModelSerializer):
@@ -52,7 +57,7 @@ class SystemListSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source="get_system_status_display", read_only=True)
 
     class Meta:
-        model = AutomatedSystem
+        model = AutomationSystem
         fields = [
             "id", "autosystem_name", "autosystem_short_name",
             "system_class", "class_name", "class_level",
@@ -71,7 +76,7 @@ class SystemDetailSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = AutomatedSystem
+        model = AutomationSystem
         fields = [
             "id", "autosystem_name", "autosystem_short_name",
             "system_class", "system_class_detail",
@@ -91,7 +96,7 @@ class SystemCreateUpdateSerializer(serializers.Serializer):
         child=serializers.IntegerField(), required=False
     )
     product = serializers.IntegerField(required=False, allow_null=True)
-    system_status = serializers.ChoiceField(choices=AutomatedSystem.STATUS_CHOICES, required=False)
+    system_status = serializers.ChoiceField(choices=AutomationSystem.STATUS_CHOICES, required=False)
     notes = serializers.CharField(required=False, allow_blank=True)
     release_year = serializers.DateField(required=False, allow_null=True)
     technical_specs = serializers.JSONField(required=False, allow_null=True)

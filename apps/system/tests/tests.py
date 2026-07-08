@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 
 from apps.categories.models import Category
 from apps.objects.models import Object, ObjectSystem
-from apps.system.models import AutomatedSystem, AutomationClass
+from apps.system.models import AutomationSystem, AutomationClass
 
 
 class SystemEndpointTestMixin:
@@ -15,7 +15,7 @@ class SystemEndpointTestMixin:
             system_class="SCADA",
             description="Диспетчеризация",
         )
-        self.system = AutomatedSystem.objects.create(
+        self.system = AutomationSystem.objects.create(
             autosystem_name="АСУ ТП",
             system_class=self.automation_class,
             creator_id=self.user,
@@ -63,7 +63,7 @@ class SystemWebEndpointTests(SystemEndpointTestMixin, TestCase):
             "system_class": str(self.automation_class.pk),
         })
         self.assertEqual(response.status_code, 302)
-        created = AutomatedSystem.objects.get(autosystem_name="MES")
+        created = AutomationSystem.objects.get(autosystem_name="MES")
 
         response = self.client.get(f"/system/{created.pk}/edit/")
         self.assertEqual(response.status_code, 200)
@@ -89,7 +89,7 @@ class SystemWebEndpointTests(SystemEndpointTestMixin, TestCase):
 
         response = self.client.post(f"/system/{created.pk}/delete/")
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(AutomatedSystem.objects.filter(pk=created.pk).exists())
+        self.assertFalse(AutomationSystem.objects.filter(pk=created.pk).exists())
 
 
 class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
@@ -137,7 +137,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
 
         response = self.api_client.delete(f"/api/system/{system_id}/")
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(AutomatedSystem.objects.filter(pk=system_id).exists())
+        self.assertFalse(AutomationSystem.objects.filter(pk=system_id).exists())
 
     def test_system_api_attach_object_requires_authentication(self):
         response = self.api_client.post(
@@ -214,7 +214,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
             "interfaces": "",
         })
         self.assertEqual(response.status_code, 302)
-        s = AutomatedSystem.objects.get(autosystem_name="PCS 7 Full")
+        s = AutomationSystem.objects.get(autosystem_name="PCS 7 Full")
         self.assertEqual(s.autosystem_short_name, "PCS7")
         self.assertEqual(s.product_id, product.pk)
         self.assertEqual(s.system_status, "planned")
@@ -249,7 +249,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
             "interfaces": "OPC UA; Modbus",
         })
         self.assertEqual(response.status_code, 302)
-        s = AutomatedSystem.objects.get(autosystem_name="ListSep")
+        s = AutomationSystem.objects.get(autosystem_name="ListSep")
         self.assertEqual(s.modules, ["A", "B", "C"])
         self.assertEqual(s.interfaces, ["OPC UA", "Modbus"])
 
@@ -262,13 +262,13 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
             "interfaces": "",
         })
         self.assertEqual(response.status_code, 302)
-        s = AutomatedSystem.objects.get(autosystem_name="Empties")
+        s = AutomationSystem.objects.get(autosystem_name="Empties")
         self.assertIsNone(s.modules)
         self.assertIsNone(s.interfaces)
         self.assertIsNone(s.technical_specs)
 
     def test_status_tag_class_mapping(self):
-        s = AutomatedSystem(autosystem_name="x", system_class=self.automation_class, system_status="unsupported")
+        s = AutomationSystem(autosystem_name="x", system_class=self.automation_class, system_status="unsupported")
         self.assertEqual(s.status_tag_class, "tag-danger")
 
     # ---------- API ----------
@@ -296,7 +296,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
     def test_api_detail_exposes_new_fields(self):
         from apps.system.models import VendorProduct
         product = VendorProduct.objects.create(product_name="Detail Product")
-        s = AutomatedSystem.objects.create(
+        s = AutomationSystem.objects.create(
             autosystem_name="Detail Sys",
             system_class=self.automation_class,
             product=product,
@@ -355,11 +355,11 @@ class SystemListFilterTests(TestCase):
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
         self.p1 = VendorProduct.objects.create(product_name="Simatic")
         self.p2 = VendorProduct.objects.create(product_name="Experion")
-        self.s1 = AutomatedSystem.objects.create(
+        self.s1 = AutomationSystem.objects.create(
             autosystem_name="S1", system_class=self.cls, product=self.p1,
             system_status="active", creator_id=self.user,
         )
-        self.s2 = AutomatedSystem.objects.create(
+        self.s2 = AutomationSystem.objects.create(
             autosystem_name="S2", system_class=self.cls, product=self.p2,
             system_status="planned", creator_id=self.user,
         )
@@ -587,6 +587,59 @@ class VendorProductFieldsTests(TestCase):
         self.assertEqual(str(p.release_year), "2015-01-15")
         self.assertEqual(str(p.end_of_support), "2026-06-15")
         self.assertEqual(p.description, "Демо-описание")
+
+    def test_web_create_with_specs_and_industries(self):
+        self.client.force_login(self.user)
+        r = self.client.post("/system/products/create/", {
+            "product_name": "SpecProd",
+            "industries": "Химия, Металлургия;Химия",
+            "spec_key": ["Разрядность", "", "Протокол"],
+            "spec_value": ["64 бита", "пропустить", "OPC UA"],
+        })
+        self.assertEqual(r.status_code, 302)
+        from apps.system.models import VendorProduct
+        p = VendorProduct.objects.get(product_name="SpecProd")
+        # industries: список, пустые ключи характеристик отброшены
+        self.assertEqual(p.industries, ["Химия", "Металлургия", "Химия"])
+        self.assertEqual(p.technical_specs, {"Разрядность": "64 бита", "Протокол": "OPC UA"})
+        # свойства-помощники
+        self.assertEqual(p.industries_text, "Химия, Металлургия, Химия")
+        self.assertIn(("Протокол", "OPC UA"), p.specs_items)
+
+    def test_form_shows_specs_and_industries(self):
+        from apps.categories.models import Category
+        Category.objects.create(name="Химия", level=1)
+        self.client.force_login(self.user)
+        h = self.client.get("/system/products/create/").content.decode()
+        # отрасли — пикер множественного выбора (как в форме участника), без datalist
+        self.assertIn("industry-picker", h)
+        self.assertIn('id="productIndustriesValue"', h)
+        self.assertIn('name="industries"', h)
+        self.assertIn('data-name="Химия"', h)
+        self.assertNotIn("industryOptions", h)
+        self.assertIn('id="specsList"', h)
+        self.assertIn('id="specsAddBtn"', h)
+
+    def test_detail_shows_specs_and_industries(self):
+        p = self._uc().create(
+            product_name="ShowProd", industries=["Химия"],
+            technical_specs={"CPU": "x86"})
+        h = self.client.get(f"/system/products/{p.pk}/").content.decode()
+        self.assertIn("Химия", h)
+        self.assertIn("CPU", h)
+        self.assertIn("x86", h)
+
+    def test_api_create_with_specs_and_industries(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.post("/api/system/products/", {
+            "product_name": "ApiSpec",
+            "technical_specs": {"CPU": "ARM"},
+            "industries": ["Нефтехимия", "Газопереработка"],
+        }, format="json")
+        self.assertEqual(r.status_code, 201)
+        r = self.api.get(f"/api/system/products/{r.data['id']}/")
+        self.assertEqual(r.data["technical_specs"], {"CPU": "ARM"})
+        self.assertEqual(r.data["industries"], ["Нефтехимия", "Газопереработка"])
 
     def test_usecase_invalid_class_rejected(self):
         from django.core.exceptions import ValidationError

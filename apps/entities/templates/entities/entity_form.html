@@ -108,11 +108,33 @@
             <h2>Отрасли и профиль</h2>
             <div class="form-group">
                 <label>Отрасли применения</label>
-                <input type="text" name="industries" list="industryOptions" value="{{ entity.industries_text }}" placeholder="Химия, Металлургия, ...">
-                <datalist id="industryOptions">
-                    {% for ind in industry_suggestions %}<option value="{{ ind }}">{% endfor %}
-                </datalist>
-                <p class="hint" style="margin-top:4px">Перечислите через запятую. Подсказки — категории 1-го уровня.</p>
+                <div class="picker collapsible industry-picker" data-target="#industriesValue" data-empty-text="Не выбрано">
+                    <div class="picker-header">
+                        <span class="picker-header-label">Отрасли</span>
+                        <span class="picker-header-value empty-value">Не выбрано</span>
+                        <span class="picker-caret">▾</span>
+                    </div>
+                    <div class="picker-body">
+                        <div class="system-results-container">
+                            {% for ind in industry_suggestions %}
+                            <div class="system-item{% if entity.industries and ind in entity.industries %} selected{% endif %}" data-name="{{ ind }}">
+                                <span class="system-name">{{ ind }}</span>
+                            </div>
+                            {% endfor %}
+                            {# Ранее сохранённые отрасли, которых больше нет среди категорий 1-го уровня #}
+                            {% if entity.industries %}{% for ind in entity.industries %}{% if ind not in industry_suggestions %}
+                            <div class="system-item selected" data-name="{{ ind }}">
+                                <span class="system-name">{{ ind }}</span>
+                            </div>
+                            {% endif %}{% endfor %}{% endif %}
+                            {% if not industry_suggestions and not entity.industries %}
+                            <div class="picker-empty">Нет категорий 1-го уровня</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <input type="hidden" name="industries" id="industriesValue" value="{{ entity.industries_text }}">
+                </div>
+                <p class="hint" style="margin-top:4px">Выберите одну или несколько отраслей. Значения — категории 1-го уровня.</p>
             </div>
             <div class="form-group">
                 <label>Профиль компании</label>

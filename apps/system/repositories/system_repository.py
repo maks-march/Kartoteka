@@ -2,7 +2,7 @@ import re
 
 from django.db.models import Count, Q
 
-from apps.system.models import AutomatedSystem
+from apps.system.models import AutomationSystem
 from common.ordering import apply_ordering
 
 
@@ -32,7 +32,7 @@ class SystemRepository:
 
     def get_all(self, system_class=None, search=None, obj=None,
                 product=None, system_status=None, ordering=None):
-        qs = AutomatedSystem.objects.all().select_related("system_class", "product")
+        qs = AutomationSystem.objects.all().select_related("system_class", "product")
         if system_class is not None:
             # Класс совпал, если это основной класс системы ЛИБО он есть среди
             # классов подсистем (для составных классов вроде MES/MOM/АСУТП).
@@ -61,14 +61,14 @@ class SystemRepository:
 
     def get_by_id(self, pk):
         return (
-            AutomatedSystem.objects.filter(pk=pk)
+            AutomationSystem.objects.filter(pk=pk)
             .select_related("system_class", "product", "creator_id")
             .prefetch_related("subsystem_classes")
             .first()
         )
 
     def get_by_creator(self, user, search=None):
-        qs = AutomatedSystem.objects.filter(creator_id=user).select_related("system_class", "product")
+        qs = AutomationSystem.objects.filter(creator_id=user).select_related("system_class", "product")
         if search:
             qs = qs.filter(autosystem_name__iregex=re.escape(search))
         return qs
@@ -76,7 +76,7 @@ class SystemRepository:
     def create(self, **kwargs):
         # M2M нельзя передать в create() — сохраняем отдельно после создания.
         subsystem_classes = kwargs.pop("subsystem_classes", None)
-        instance = AutomatedSystem.objects.create(**kwargs)
+        instance = AutomationSystem.objects.create(**kwargs)
         if subsystem_classes is not None:
             instance.subsystem_classes.set(subsystem_classes)
         return instance

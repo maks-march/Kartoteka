@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
+from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
 
 
 @admin.register(AutomationClass)
@@ -20,8 +20,8 @@ class VendorProductAdmin(admin.ModelAdmin):
     filter_horizontal = ["subsystem_classes"]
 
 
-@admin.register(AutomatedSystem)
-class AutomatedSystemAdmin(admin.ModelAdmin):
+@admin.register(AutomationSystem)
+class AutomationSystemAdmin(admin.ModelAdmin):
     list_display = ["autosystem_name", "autosystem_short_name", "system_class", "product", "system_status"]
     list_filter = ["system_class__level", "system_status"]
     search_fields = ["autosystem_name", "autosystem_short_name"]

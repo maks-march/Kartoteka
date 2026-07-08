@@ -4,6 +4,7 @@ Table OwnerEntity {
   is_root boolean [note: 'Материнская компания (авто: True, если нет владельца)']
   owner_id integer [ref: > OwnerEntity.id, note: 'Следующий в иерархии владелец']
   ultimate_owner_id integer [ref: > OwnerEntity.id, note: 'Корневой владелец.']
+
   // еще не реализовано
   inn varchar [unique, note: 'ИНН']
   ownership_percentage decimal [note: 'Доля владения']
@@ -17,6 +18,7 @@ Table Category {
   creator_id integer [note: 'Создатель']
 }
 
+
 Enum object_status {
   active
   in_project
@@ -24,15 +26,17 @@ Enum object_status {
   stopped
 }
 
+
 Table Object {
   id integer [primary key]
   object_name varchar [note: 'Полное название объекта']
   object_short_name varchar [note: 'Короткое название объекта']
   object_old_name varchar [note: 'Историческое название объекта']
   object_law_name varchar [note: 'Юридическое название объекта']
+
   // не используется
   object_class varchar [note: '(не использовать) Классификация объекта (завод, цех, очередь, установка)']
-  
+
   capacity varchar [note: 'Мощность / объем производства']
   notes text [note: 'Дополнительная информация']
 
@@ -44,7 +48,8 @@ Table Object {
 
   parent_object_id integer [ref: > Object.id, note: 'Родительский объект на уровень(или 2) выше в иерархии']
   owner_entity_id integer [ref: > OwnerEntity.id]
-  category_id integer [ref:> Category.id, note: 'Разделение на категории: 1:отраслевые, 2:назначения, 3:технология']
+  category_id integer [ref: > Category.id, note: 'Разделение на категории: 1:отраслевые, 2:назначения, 3:технология']
+
   // Адрес
   country varchar
   region varchar
@@ -53,11 +58,12 @@ Table Object {
   house varchar [note: 'Адрес производства (уровень 1)']
   title varchar [note: 'Кодовое расположение установки (только уровень 3)']
   fias_code varchar
-  
+
   creator_id integer [note: 'Создатель']
   created_at datetime
   updated_at datetime
 }
+
 
 Enum auto_status {
   planned
@@ -66,16 +72,18 @@ Enum auto_status {
   partial
 }
 
+
 Table ObjectSystem {
   id integer [primary key]
   object_id integer [ref: > Object.id]
-  system_id integer [ref: > AutomatedSystem.id]
+  system_id integer [ref: > AutomationSystem.id]
   status auto_status [note: 'Статус ввода системы в эксплуатацию']
   implementation_date date [note: 'Дата ввода системы в эксплуатацию']
   integrator_id integer [ref: > Entity.id, note: 'Интегратор системы']
   implementor_id integer [ref: > Entity.id, note: 'Внедряющая компания']
   notes text [note: 'Дополнительные пояснения']
 }
+
 
 Enum system_status {
   active
@@ -84,11 +92,12 @@ Enum system_status {
   decommisioned
 }
 
-Table AutomatedSystem {
+
+Table AutomationSystem {
   id integer [primary key]
   autosystem_name varchar [note: 'Полное название системы автоматизации']
-  autosystem__short_name varchar [note: 'Короткое название системы автоматизации']
-  
+  autosystem_short_name varchar [note: 'Короткое название системы автоматизации']
+
   release_year date [note: 'Дата выпуска системы']
   notes text [note: 'Дополнительная информация']
 
@@ -103,6 +112,7 @@ Table AutomatedSystem {
   interfaces json [note: 'Интерфейсы системы (список)']
 }
 
+
 Table AutomationClass {
   id integer [primary key]
   level integer [note: 'Уровень автоматизации: L0 | L1 | L2 | L3 | L4']
@@ -112,14 +122,15 @@ Table AutomationClass {
 
   is_composite boolean [note: 'Составной класс (может включать подсистемы: MES, MOM, АСУТП)']
   includes_id integer [ref: > AutomationClass.id, note: 'Класс, автоматически подставляемый в подсистемы (у MOM — MES)']
-
 }
 
-Table AutomatedSystem_subsystem_classes {
+
+Table AutomationSystem_subsystem_classes {
   id integer [primary key]
-  automatedsystem_id integer [ref: > AutomatedSystem.id]
+  automationsystem_id integer [ref: > AutomationSystem.id]
   automationclass_id integer [ref: > AutomationClass.id]
 }
+
 
 Table VendorProduct_subsystem_classes {
   id integer [primary key]
@@ -127,27 +138,28 @@ Table VendorProduct_subsystem_classes {
   automationclass_id integer [ref: > AutomationClass.id]
 }
 
+
 Enum product_type {
   software [note: "ПО"]
   hardware [note: "Технические средства"]
   complex [note: "ПАК"]
 }
- 
+
+
 Table VendorProduct {
   id integer [primary key]
   product_name varchar [note: 'Название вендорского продукта']
-  vendor_id integer [ref: > Entity.id, note: 'Вендор']
+  vendor_id integer [ref: > VendorProfile.entity_id, note: 'Вендор (только vendor / full_cycle_vendor — через VendorProfile)']
   product_type product_type [note: 'Тип продукта']
-  system_class integer [ref: > AutomationClass.id,note: 'Классы  (По идее ссылка на один конкретный уровень класса систем)']
+  system_class_id integer [ref: > AutomationClass.id, note: 'Класс (ссылка на один конкретный уровень класса систем)']
   description text [note: 'Описание']
   version varchar [note: 'Версия']
   release_year date [note: 'Дата выпуска']
   end_of_support date [note: 'Конец поддержки']
-  article varchar [unique, note: 'Артикул']
   technical_specs json [note: 'Технические характеристики']
-  is_active boolean [note: 'Активен ли продукт']  
   industries json [note: 'Отрасли применения (список; значения из категорий 1го уровня, без связи)']
 }
+
 
 Enum entity_type {
   vendor
@@ -157,6 +169,9 @@ Enum entity_type {
   supplier
 }
 
+
+// Entity — общая («зонтичная») таблица с полями, общими для всех типов.
+// Специфичные для типа поля вынесены в профили (см. ниже).
 Table Entity {
   id integer [primary key]
   entity_name varchar
@@ -172,12 +187,51 @@ Table Entity {
   is_partner boolean [note: 'Является ли партнером']
   registration_date date [note: 'Дата регистрации']
 
-  entity_type entity_type [note: 'Тип участника: вендор,системный интегратор, инжиниринговая компания, вендо полного цикла, поставщик']
+  entity_type entity_type [note: 'Тип участника: вендор, системный интегратор, инжиниринговая компания, вендор полного цикла, поставщик']
 
   financial_data json [note: 'Финансовые показатели (пока не используем)']
   contacts json [note: 'Контактная информация (список)']
   industries json [note: 'Отрасли применения (список; значения из категорий 1го уровня, без связи)']
 }
+
+
+Table VendorProfile {
+  id integer [primary key]
+  entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип vendor / full_cycle_vendor)']
+}
+
+
+Table EngineeringCompanyProfile {
+  id integer [primary key]
+  entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип engineering_company)']
+
+  region varchar [note: 'Локация — регион (значения-подсказки из Object.region, без жёсткой связи)']
+  resident_object_id integer [ref: > Object.id, note: 'Вхожий объект: компания уже закрепилась и работает на этом объекте']
+}
+
+
+// Узкая компетенция инж. компании по продуктам — множественная связь с продуктом.
+Table EngineeringCompanyProfile_product_competencies {
+  id integer [primary key]
+  engineeringcompanyprofile_id integer [ref: > EngineeringCompanyProfile.id]
+  vendorproduct_id integer [ref: > VendorProduct.id]
+}
+
+
+// Узкая компетенция инж. компании по функции — совокупность
+// «класс систем + индустрия». Каждая строка = одна связанная пара
+// (напр. MES · Нефтехимия). Компания может иметь несколько таких пар.
+Table FunctionCompetency {
+  id integer [primary key]
+  profile_id integer [ref: > EngineeringCompanyProfile.id, note: 'Профиль инж. компании']
+  system_class_id integer [ref: > AutomationClass.id, note: 'Класс систем']
+  industry varchar [note: 'Индустрия (значение из категорий 1го уровня, без жёсткой связи)']
+}
+
+
+// ============================================================
+//  НЕ РЕАЛИЗОВАНО
+// ============================================================
 
 // [НЕ РЕАЛИЗОВАНО]
 Table ObjectCharacteristic {
@@ -187,7 +241,7 @@ Table ObjectCharacteristic {
   code varchar [note: 'Код характеристики']
   unit varchar [note: 'Единица измерения']
   description text [note: 'Описание']
-  is_required boolean [note: 'Обяательная характеристика']
+  is_required boolean [note: 'Обязательная характеристика']
 }
 
 // [НЕ РЕАЛИЗОВАНО]

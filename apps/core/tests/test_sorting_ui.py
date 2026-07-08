@@ -80,7 +80,7 @@ class RelatedFieldSortingTests(TestCase):
     def setUp(self):
         from apps.categories.models import Category
         from apps.owners.models import OwnerEntity
-        from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
+        from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         self.user = User.objects.create_user("rel", "r@r.r", "pw")
 
         cat_b = Category.objects.create(name="Бета", level=1, creator_id=self.user)
@@ -94,8 +94,8 @@ class RelatedFieldSortingTests(TestCase):
         self.cls_a = AutomationClass.objects.create(level=2, system_class="Альфа-класс")
         self.p_b = VendorProduct.objects.create(product_name="Бета-продукт")
         self.p_a = VendorProduct.objects.create(product_name="Альфа-продукт")
-        AutomatedSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, product=self.p_b, creator_id=self.user)
-        AutomatedSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, product=self.p_b, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator_id=self.user)
 
     def test_objects_sort_by_category_name(self):
         resp = self.client.get("/objects/?ordering=category__name")
@@ -124,11 +124,11 @@ class RelatedFieldSortingTests(TestCase):
 
 class ViewModeAndNavTests(TestCase):
     def setUp(self):
-        from apps.system.models import AutomationClass, AutomatedSystem
+        from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("vm", "vm@x.x", "pw")
         Object.objects.create(name="Объект A", level=1, status="active", city="Омск", creator_id=self.user)
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        AutomatedSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator_id=self.user)
 
     def test_object_cards_page(self):
         r = self.client.get("/objects/cards/")
@@ -162,13 +162,13 @@ class ViewModeAndNavTests(TestCase):
 class CardCountsTests(TestCase):
     def setUp(self):
         from apps.objects.models import Object, ObjectSystem
-        from apps.system.models import AutomationClass, AutomatedSystem
+        from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cc", "cc@x.x", "pw")
         self.o = Object.objects.create(name="Объект A", level=1, status="active", creator_id=self.user)
         self.o2 = Object.objects.create(name="Объект B", level=1, status="active", creator_id=self.user)
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.s1 = AutomatedSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)
-        self.s2 = AutomatedSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)
+        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)
+        self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)
         ObjectSystem.objects.create(object=self.o, system=self.s1)
         ObjectSystem.objects.create(object=self.o, system=self.s2)
         ObjectSystem.objects.create(object=self.o2, system=self.s1)
@@ -199,14 +199,14 @@ class CountSortingTests(TestCase):
 
     def setUp(self):
         from apps.objects.models import Object, ObjectSystem
-        from apps.system.models import AutomationClass, AutomatedSystem
+        from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cnt", "cnt@x.x", "pw")
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
         self.a = Object.objects.create(name="A", level=1, status="active", creator_id=self.user)  # 0 систем
         self.b = Object.objects.create(name="B", level=1, status="active", creator_id=self.user)  # 2
         self.c = Object.objects.create(name="C", level=1, status="active", creator_id=self.user)  # 1
-        self.s1 = AutomatedSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)  # 2 объекта
-        self.s2 = AutomatedSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)  # 1 объект
+        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)  # 2 объекта
+        self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)  # 1 объект
         ObjectSystem.objects.create(object=self.b, system=self.s1)
         ObjectSystem.objects.create(object=self.b, system=self.s2)
         ObjectSystem.objects.create(object=self.c, system=self.s1)

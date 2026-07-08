@@ -11,7 +11,8 @@ from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 from apps.objects.usecases.object_usecase import ObjectUseCase
 from apps.objects.models import ObjectSystem
 from apps.entities.usecases.entity_usecase import EntityUseCase
-from apps.system.models import AutomatedSystem, VendorProduct
+from apps.categories.usecases.category_usecase import CategoryUseCase
+from apps.system.models import AutomationSystem, VendorProduct
 from common.summary import summary_group as _summary_group
 
 
@@ -102,7 +103,7 @@ def _system_list_render(request, template, view_mode):
         "classes": classes,
         "all_objects": all_objects,
         "all_products": all_products,
-        "status_choices": AutomatedSystem.STATUS_CHOICES,
+        "status_choices": AutomationSystem.STATUS_CHOICES,
         "selected_objects": obj or [],
         "selected_products": product or [],
         "selected_statuses": system_status or [],
@@ -164,7 +165,7 @@ def system_create(request):
     return render(request, "system/system_form.html", {
         "classes": classes,
         "products": products,
-        "status_choices": AutomatedSystem.STATUS_CHOICES,
+        "status_choices": AutomationSystem.STATUS_CHOICES,
         "error": error,
     })
 
@@ -200,7 +201,7 @@ def system_edit(request, pk):
         "classes": classes,
         "products": products,
         "selected_subsystem_ids": list(obj.subsystem_classes.values_list("id", flat=True)),
-        "status_choices": AutomatedSystem.STATUS_CHOICES,
+        "status_choices": AutomationSystem.STATUS_CHOICES,
         "error": error,
     })
 
@@ -286,6 +287,8 @@ def _extract_product_fields(post):
         "version": post.get("version", "") or "",
         "release_year": post.get("release_year") or None,
         "end_of_support": post.get("end_of_support") or None,
+        "technical_specs": _parse_specs_pairs(post),
+        "industries": _parse_list_field(post.get("industries")),
     }
 
 
@@ -294,6 +297,8 @@ def _product_form_context(**extra):
         "vendors": EntityUseCase().list(),
         "classes": AutomationClassUseCase().list(),
         "product_type_choices": VendorProduct.PRODUCT_TYPE_CHOICES,
+        # Отрасли-подсказки: категории 1-го уровня (без связи, только значения).
+        "industry_suggestions": [c.name for c in CategoryUseCase().list(level=1)],
     }
     ctx.update(extra)
     return ctx

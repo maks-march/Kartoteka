@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from apps.system.models import AutomationClass, AutomatedSystem, VendorProduct
+from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
 from apps.system.usecases.system_usecase import SystemUseCase
 
 
@@ -18,9 +18,9 @@ class SystemOrderingTests(TestCase):
         self.pb = VendorProduct.objects.create(product_name="Бета-продукт")
         self.pa = VendorProduct.objects.create(product_name="Альфа-продукт")
         self.pg = VendorProduct.objects.create(product_name="Гамма-продукт")
-        AutomatedSystem.objects.create(autosystem_name="Бета", system_class=self.cls, product=self.pb, creator_id=self.user)
-        AutomatedSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, product=self.pa, creator_id=self.user)
-        AutomatedSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="Бета", system_class=self.cls, product=self.pb, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, product=self.pa, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator_id=self.user)
 
     def _names(self, ordering):
         return [s.autosystem_name for s in SystemUseCase().list(ordering=ordering)]
@@ -55,11 +55,11 @@ class SystemApiFilterParityTests(TestCase):
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
         self.p1 = VendorProduct.objects.create(product_name="Simatic")
         self.p2 = VendorProduct.objects.create(product_name="Experion")
-        self.s1 = AutomatedSystem.objects.create(
+        self.s1 = AutomationSystem.objects.create(
             autosystem_name="S1", system_class=self.cls, product=self.p1,
             system_status="active", creator_id=self.user,
         )
-        self.s2 = AutomatedSystem.objects.create(
+        self.s2 = AutomationSystem.objects.create(
             autosystem_name="S2", system_class=self.cls, product=self.p2,
             system_status="planned", creator_id=self.user,
         )
