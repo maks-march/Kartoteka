@@ -1,11 +1,38 @@
 """Сериализаторы участников рынка для REST API."""
 from rest_framework import serializers
 
-from apps.entities.models import Entity
+from apps.entities.models import (
+    Entity, EngineeringCompanyProfile, FunctionCompetency,
+)
+
+
+class FunctionCompetencySerializer(serializers.ModelSerializer):
+    system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
+
+    class Meta:
+        model = FunctionCompetency
+        fields = ["id", "system_class", "system_class_name", "industry"]
+
+
+class EngineeringProfileSerializer(serializers.ModelSerializer):
+    """Чтение профиля инжиниринговой компании."""
+    resident_object_name = serializers.CharField(source="resident_object.name", read_only=True)
+    product_competencies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    function_competencies = FunctionCompetencySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = EngineeringCompanyProfile
+        fields = [
+            "id", "region", "resident_object", "resident_object_name",
+            "product_competencies", "function_competencies",
+        ]
 
 
 class EntitySerializer(serializers.ModelSerializer):
     entity_type_display = serializers.CharField(source="get_entity_type_display", read_only=True)
+    # Профили типов (только чтение, показываются при наличии).
+    engineering_profile = EngineeringProfileSerializer(read_only=True)
+    products = serializers.SerializerMethodField()
 
     class Meta:
         model = Entity
@@ -14,7 +41,12 @@ class EntitySerializer(serializers.ModelSerializer):
             "financial_data", "entity_type", "entity_type_display", "is_partner",
             "website", "kam_name", "kam_phone", "contact_person", "contact_phone",
             "presentation_url", "profile", "industries",
+            "engineering_profile", "products",
         ]
+
+    def get_products(self, obj):
+        """Id продуктов вендора (через VendorProfile)."""
+        return list(obj.products.values_list("id", flat=True))
 
 
 class EntityCreateUpdateSerializer(serializers.Serializer):
@@ -39,3 +71,20 @@ class EntityCreateUpdateSerializer(serializers.Serializer):
         if value in (None, ""):
             return None
         return value
+
+
+class FunctionCompetencyWriteSerializer(serializers.Serializer):
+    system_class = serializers.IntegerField()
+    industry = serializers.CharField(max_length=255)
+
+
+class EngineeringProfileWriteSerializer(serializers.Serializer):
+    """Запись профиля инжиниринговой компании (region + связи + компетенции)."""
+    region = serializers.CharField(required=False, allow_blank=True, default="")
+    resident_object = serializers.IntegerField(required=False, allow_null=True)
+    product_competencies = serializers.ListField(
+        child=serializers.IntegerField(), required=False, default=list
+    )
+    function_competencies = FunctionCompetencyWriteSerializer(
+        many=True, required=False, default=list
+    )

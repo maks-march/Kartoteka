@@ -122,10 +122,31 @@ class Entity(models.Model):
         """CSS-класс цветного тега для типа участника."""
         return self.ENTITY_TYPE_TAG_CLASSES.get(self.entity_type, "tag-muted")
 
+    # Типы, у которых заводится профиль вендора (точка привязки продуктов).
+    VENDOR_TYPES = ("vendor", "full_cycle_vendor")
+
     @property
     def can_have_products(self):
         """Может ли у участника быть свои продукты (вендор/полн. цикл/поставщик)."""
         return self.entity_type in self.TYPES_WITH_PRODUCTS
+
+    @property
+    def is_vendor_type(self):
+        """Тип, для которого заводится VendorProfile (vendor / full_cycle_vendor)."""
+        return self.entity_type in self.VENDOR_TYPES
+
+    @property
+    def is_engineering_type(self):
+        return self.entity_type == "engineering_company"
+
+    @property
+    def products(self):
+        """Продукты вендора (через VendorProfile). Пусто, если профиля нет."""
+        from apps.system.models import VendorProduct
+        profile = getattr(self, "vendor_profile", None)
+        if profile is None:
+            return VendorProduct.objects.none()
+        return profile.products.all()
 
     @property
     def industries_first(self):
@@ -164,3 +185,104 @@ class Entity(models.Model):
         if isinstance(self.financial_data, dict):
             return list(self.financial_data.items())
         return []
+
+
+class VendorProfile(models.Model):
+    """Профиль вендора (типы vendor / full_cycle_vendor).
+
+    Почти пустой по собственным полям, но служит точкой привязки продуктов:
+    VendorProduct.vendor ссылается именно на VendorProfile, что гарантирует
+    «продукт может принадлежать только вендору / вендору полного цикла».
+    """
+
+    entity = models.OneToOneField(
+        Entity,
+        on_delete=models.CASCADE,
+        related_name="vendor_profile",
+        verbose_name="Участник",
+    )
+
+    class Meta:
+        verbose_name = "Профиль вендора"
+        verbose_name_plural = "Профили вендоров"
+
+    def __str__(self):
+        return f"VendorProfile: {self.entity.entity_name}"
+
+    @property
+    def entity_name(self):
+        """Имя участника — для удобного доступа из шаблонов (product.vendor.entity_name)."""
+        return self.entity.entity_name
+
+
+class EngineeringCompanyProfile(models.Model):
+    """Профиль инжиниринговой компании (тип engineering_company)."""
+
+    entity = models.OneToOneField(
+        Entity,
+        on_delete=models.CASCADE,
+        related_name="engineering_profile",
+        verbose_name="Участник",
+    )
+    region = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Локация (регион)",
+        help_text="Регион деятельности. Подсказки — регионы существующих объектов.",
+    )
+    resident_object = models.ForeignKey(
+        "objects.Object",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="resident_engineering_companies",
+        verbose_name="Вхожий объект",
+        help_text="Объект, на котором компания уже закрепилась и работает.",
+    )
+    product_competencies = models.ManyToManyField(
+        "system.VendorProduct",
+        blank=True,
+        related_name="competent_engineering_companies",
+        verbose_name="Узкая компетенция по продуктам",
+    )
+
+    class Meta:
+        verbose_name = "Профиль инжиниринговой компании"
+        verbose_name_plural = "Профили инжиниринговых компаний"
+
+    def __str__(self):
+        return f"EngineeringCompanyProfile: {self.entity.entity_name}"
+
+
+class FunctionCompetency(models.Model):
+    """Узкая компетенция инж. компании по функции: пара «класс + индустрия».
+
+    Каждая строка — одна связанная пара (напр. MES · Нефтехимия).
+    """
+
+    profile = models.ForeignKey(
+        EngineeringCompanyProfile,
+        on_delete=models.CASCADE,
+        related_name="function_competencies",
+        verbose_name="Профиль инжиниринговой компании",
+    )
+    system_class = models.ForeignKey(
+        "system.AutomationClass",
+        on_delete=models.CASCADE,
+        related_name="function_competencies",
+        verbose_name="Класс систем",
+    )
+    industry = models.CharField(
+        max_length=255,
+        verbose_name="Индустрия",
+        help_text="Значение из категорий 1-го уровня (без жёсткой связи).",
+    )
+
+    class Meta:
+        verbose_name = "Компетенция по функции"
+        verbose_name_plural = "Компетенции по функции"
+        ordering = ["system_class__level", "system_class__system_class", "industry"]
+
+    def __str__(self):
+        return f"{self.system_class.system_class} · {self.industry}"

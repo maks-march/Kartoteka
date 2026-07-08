@@ -27,7 +27,7 @@
     <!-- ===== Реквизиты ===== -->
     <div class="info-block">
         <h3 class="info-block-title">Реквизиты</h3>
-        <div class="info-cards-entity">
+        <div class="info-cards-two">
             <div class="info-card">
                 <span class="info-label">ИНН</span>
                 <span class="info-value">{{ entity.inn|default:'—' }}</span>
@@ -50,7 +50,7 @@
     <!-- ===== Контакты ===== -->
     <div class="info-block">
         <h3 class="info-block-title">Контакты</h3>
-        <div class="info-cards-entity">
+        <div class="info-cards-two">
             <div class="info-card">
                 <span class="info-label">КАМ (Key Account Manager)</span>
                 <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
@@ -126,6 +126,40 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
+{% endif %}
+
+{% if entity.is_engineering_type %}
+<div class="card">
+    <h2>Инжиниринговая компания</h2>
+    {% with prof=entity.engineering_profile %}
+    <div class="info-cards">
+        <div class="info-card">
+            <span class="info-label">Локация (регион)</span>
+            <span class="info-value">{{ prof.region|default:'—' }}</span>
+        </div>
+        <div class="info-card">
+            <span class="info-label">Вхожий объект</span>
+            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.name }}</a>{% else %}—{% endif %}</span>
+        </div>
+        <div class="info-card full">
+            <span class="info-label">Узкая компетенция по продуктам</span>
+            {% if prof.product_competencies.all %}
+            <div class="card-tags">
+                {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+            </div>
+            {% else %}<span class="info-value">—</span>{% endif %}
+        </div>
+        <div class="info-card full">
+            <span class="info-label">Узкая компетенция по функции</span>
+            {% if prof.function_competencies.all %}
+            <div class="card-tags">
+                {% for fc in prof.function_competencies.all %}<span class="tag tag-muted">{{ fc.system_class.system_class }} · {{ fc.industry }}</span>{% endfor %}
+            </div>
+            {% else %}<span class="info-value">—</span>{% endif %}
+        </div>
+    </div>
+    {% endwith %}
 </div>
 {% endif %}
 

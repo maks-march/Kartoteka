@@ -11,7 +11,7 @@
             {% if product.system_class %}<span class="tag tag-{{ product.system_class.level }}" style="margin-left:6px">L{{ product.system_class.level }} - {{ product.system_class.system_class }}</span>{% endif %}
             {% for sub in product.subsystem_classes.all %}<span class="tag tag-{{ sub.level }}" style="margin-left:6px">{{ sub.system_class }}</span>{% endfor %}
             <div class="detail-meta">
-                <p>Вендор: {% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</p>
+                <p>Вендор: {% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</p>
             </div>
         </div>
         {% if user.is_authenticated %}

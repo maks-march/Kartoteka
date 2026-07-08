@@ -23,15 +23,25 @@ class VendorProductUseCase:
         return obj
 
     def _resolve_vendor(self, data):
+        """Значение поля vendor — это id УЧАСТНИКА (Entity). Продукт привязывается
+        к его VendorProfile (создаётся при необходимости). Профиль есть только у
+        вендора / вендора полного цикла — иначе привязка запрещена.
+        """
         if "vendor" in data:
             vendor_id = data.pop("vendor")
             if vendor_id in (None, "", "None"):
                 data["vendor"] = None
             else:
-                vendor = self.entity_repo.get_by_id(vendor_id)
-                if not vendor:
+                entity = self.entity_repo.get_by_id(vendor_id)
+                if not entity:
                     raise ValidationError("Вендор не найден")
-                data["vendor"] = vendor
+                if not entity.is_vendor_type:
+                    raise ValidationError(
+                        "Продукт можно привязать только к вендору или вендору полного цикла"
+                    )
+                from apps.entities.models import VendorProfile
+                profile, _ = VendorProfile.objects.get_or_create(entity=entity)
+                data["vendor"] = profile
         return data
 
     def _get_class(self, class_id):

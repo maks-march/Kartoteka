@@ -133,7 +133,7 @@ def object_detail(request, pk):
         key=lambda c: c.pk,
     )
     vendors = _summary_group(
-        (os.system.product.vendor for os in object_systems
+        (os.system.product.vendor.entity for os in object_systems
          if os.system and os.system.product and os.system.product.vendor),
         key=lambda e: e.pk,
     )

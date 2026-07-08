@@ -629,6 +629,25 @@ class VendorProductFieldsTests(TestCase):
         self.assertIn("CPU", h)
         self.assertIn("x86", h)
 
+    def test_api_vendor_is_entity_pk_roundtrip(self):
+        """API: vendor принимается и возвращается как id УЧАСТНИКА (Entity),
+        хотя внутри связь идёт через VendorProfile."""
+        self.api.force_authenticate(user=self.user)
+        r = self.api.post("/api/system/products/", {
+            "product_name": "VP", "vendor": self.vendor.pk,
+        }, format="json")
+        self.assertEqual(r.status_code, 201)
+        pid = r.data["id"]
+        r = self.api.get(f"/api/system/products/{pid}/")
+        self.assertEqual(r.data["vendor"], self.vendor.pk)
+        self.assertEqual(r.data["vendor_name"], self.vendor.entity_name)
+        # связь реально идёт через VendorProfile
+        from apps.system.models import VendorProduct
+        from apps.entities.models import VendorProfile
+        p = VendorProduct.objects.get(pk=pid)
+        self.assertIsInstance(p.vendor, VendorProfile)
+        self.assertEqual(p.vendor.entity_id, self.vendor.pk)
+
     def test_api_create_with_specs_and_industries(self):
         self.api.force_authenticate(user=self.user)
         r = self.api.post("/api/system/products/", {

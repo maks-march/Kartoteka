@@ -62,7 +62,7 @@
     "Выручка": "374 млн ₽",
     "Сотрудников": "156"
    },
-   "entity_type": "supplier",
+   "entity_type": "vendor",
    "is_partner": false,
    "website": "https://siemensag.com",
    "kam_name": "КАМ 2",
@@ -152,7 +152,7 @@
     "Выручка": "785 млн ₽",
     "Сотрудников": "315"
    },
-   "entity_type": "supplier",
+   "entity_type": "vendor",
    "is_partner": false,
    "website": "https://aspentechnologyinc.com",
    "kam_name": "КАМ 5",
@@ -242,7 +242,7 @@
     "Выручка": "296 млн ₽",
     "Сотрудников": "474"
    },
-   "entity_type": "supplier",
+   "entity_type": "vendor",
    "is_partner": false,
    "website": "https://avevagroupplc.com",
    "kam_name": "КАМ 8",
@@ -332,7 +332,7 @@
     "Выручка": "707 млн ₽",
     "Сотрудников": "633"
    },
-   "entity_type": "supplier",
+   "entity_type": "vendor",
    "is_partner": false,
    "website": "https://yokogawaelectriccorp.com",
    "kam_name": "КАМ 11",
@@ -923,7 +923,7 @@
   "pk": 1,
   "fields": {
    "product_name": "Siemens AG Siemens PCS7 V9.1 SP2",
-   "vendor": 2,
+   "vendor": 1,
    "product_type": "hardware",
    "system_class": 13,
    "version": "V9.1 SP2",
@@ -938,7 +938,7 @@
   "pk": 2,
   "fields": {
    "product_name": "Honeywell International Inc. Honeywell Experion R520.2",
-   "vendor": 3,
+   "vendor": 2,
    "product_type": "complex",
    "system_class": 13,
    "version": "R520.2",
@@ -953,7 +953,7 @@
   "pk": 3,
   "fields": {
    "product_name": "SAP SE SAP S/4HANA 2023 FPS01",
-   "vendor": 4,
+   "vendor": 3,
    "product_type": "software",
    "system_class": 5,
    "version": "2023 FPS01",
@@ -968,7 +968,7 @@
   "pk": 4,
   "fields": {
    "product_name": "Aspen Technology, Inc. Aspen InfoPlus.21 v15.3",
-   "vendor": 5,
+   "vendor": 4,
    "product_type": "hardware",
    "system_class": 4,
    "version": "v15.3",
@@ -987,7 +987,7 @@
   "pk": 5,
   "fields": {
    "product_name": "ООО \"1С\" 1C:ERP Производство 8.4.1",
-   "vendor": 6,
+   "vendor": 5,
    "product_type": "complex",
    "system_class": 5,
    "version": "8.4.1",
@@ -1002,7 +1002,7 @@
   "pk": 6,
   "fields": {
    "product_name": "Schneider Electric SE Schneider EcoStruxure 2.8.4",
-   "vendor": 7,
+   "vendor": 6,
    "product_type": "software",
    "system_class": 13,
    "version": "2.8.4",
@@ -1017,7 +1017,7 @@
   "pk": 7,
   "fields": {
    "product_name": "AVEVA Group plc Wonderware System Platform R4.1",
-   "vendor": 8,
+   "vendor": 7,
    "product_type": "hardware",
    "system_class": 13,
    "version": "R4.1",
@@ -1032,7 +1032,7 @@
   "pk": 8,
   "fields": {
    "product_name": "OSIsoft LLC OSIsoft PI System V9.1 SP2",
-   "vendor": 9,
+   "vendor": 8,
    "product_type": "complex",
    "system_class": 4,
    "version": "V9.1 SP2",
@@ -1051,7 +1051,7 @@
   "pk": 9,
   "fields": {
    "product_name": "Emerson Electric Co. Emerson DeltaV R520.2",
-   "vendor": 10,
+   "vendor": 9,
    "product_type": "software",
    "system_class": 13,
    "version": "R520.2",
@@ -1066,7 +1066,7 @@
   "pk": 10,
   "fields": {
    "product_name": "Yokogawa Electric Corporation Yokogawa CENTUM VP 2023 FPS01",
-   "vendor": 11,
+   "vendor": 10,
    "product_type": "hardware",
    "system_class": 13,
    "version": "2023 FPS01",
@@ -1081,7 +1081,7 @@
   "pk": 11,
   "fields": {
    "product_name": "ООО \"Автоматика\" Датчик №123432 v15.3",
-   "vendor": 1,
+   "vendor": 11,
    "product_type": "complex",
    "system_class": 1,
    "version": "v15.3",
@@ -1096,7 +1096,7 @@
   "pk": 12,
   "fields": {
    "product_name": "ООО \"Автоматика\" Контроллер №4132 8.4.1",
-   "vendor": 1,
+   "vendor": 11,
    "product_type": "software",
    "system_class": 2,
    "version": "8.4.1",
@@ -1111,7 +1111,7 @@
   "pk": 13,
   "fields": {
    "product_name": "Emerson Electric Co. АСУТП Emerson DeltaV 2.8.4",
-   "vendor": 10,
+   "vendor": 9,
    "product_type": "hardware",
    "system_class": 6,
    "version": "2.8.4",
@@ -1129,7 +1129,7 @@
   "pk": 14,
   "fields": {
    "product_name": "Emerson Electric Co. test",
-   "vendor": 10,
+   "vendor": 9,
    "product_type": "complex",
    "system_class": 13,
    "version": "",
@@ -1140,7 +1140,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 1,
   "fields": {
    "autosystem_name": "Siemens PCS7",
@@ -1169,7 +1169,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 2,
   "fields": {
    "autosystem_name": "Honeywell Experion",
@@ -1199,7 +1199,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 3,
   "fields": {
    "autosystem_name": "SAP S/4HANA",
@@ -1229,7 +1229,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 4,
   "fields": {
    "autosystem_name": "Aspen InfoPlus.21",
@@ -1262,7 +1262,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 5,
   "fields": {
    "autosystem_name": "1C:ERP Производство",
@@ -1291,7 +1291,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 6,
   "fields": {
    "autosystem_name": "Schneider EcoStruxure",
@@ -1321,7 +1321,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 7,
   "fields": {
    "autosystem_name": "Wonderware System Platform",
@@ -1351,7 +1351,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 8,
   "fields": {
    "autosystem_name": "OSIsoft PI System",
@@ -1384,7 +1384,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 9,
   "fields": {
    "autosystem_name": "Emerson DeltaV",
@@ -1413,7 +1413,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 10,
   "fields": {
    "autosystem_name": "Yokogawa CENTUM VP",
@@ -1443,7 +1443,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 11,
   "fields": {
    "autosystem_name": "Датчик №123432",
@@ -1473,7 +1473,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 12,
   "fields": {
    "autosystem_name": "Контроллер №4132",
@@ -1502,7 +1502,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 13,
   "fields": {
    "autosystem_name": "АСУТП Emerson DeltaV",
@@ -1534,7 +1534,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 14,
   "fields": {
    "autosystem_name": "test",
@@ -2534,7 +2534,7 @@
   }
  },
  {
-  "model": "system.automatedsystem",
+  "model": "system.automationsystem",
   "pk": 15,
   "fields": {
    "autosystem_name": "Единая MOM-платформа",
@@ -2553,6 +2553,174 @@
    "modules": null,
    "interfaces": null,
    "creator_id": 1
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 1,
+  "fields": {
+   "entity": 2
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 2,
+  "fields": {
+   "entity": 3
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 3,
+  "fields": {
+   "entity": 4
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 4,
+  "fields": {
+   "entity": 5
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 5,
+  "fields": {
+   "entity": 6
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 6,
+  "fields": {
+   "entity": 7
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 7,
+  "fields": {
+   "entity": 8
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 8,
+  "fields": {
+   "entity": 9
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 9,
+  "fields": {
+   "entity": 10
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 10,
+  "fields": {
+   "entity": 11
+  }
+ },
+ {
+  "model": "entities.vendorprofile",
+  "pk": 11,
+  "fields": {
+   "entity": 1
+  }
+ },
+ {
+  "model": "entities.entity",
+  "pk": 16,
+  "fields": {
+   "entity_name": "ООО \"СистемИнтегро\"",
+   "inn": "7700000900",
+   "contacts": {
+    "email": "info@ооо.ru",
+    "phone": "+7 495 100-00-00"
+   },
+   "registration_date": "2005-05-05",
+   "financial_data": {
+    "Выручка": "500 млн ₽",
+    "Сотрудников": "200"
+   },
+   "entity_type": "system_integrator",
+   "is_partner": true,
+   "website": "https://ооо.ru",
+   "kam_name": "КАМ",
+   "kam_phone": "+7 916 200-00-00",
+   "contact_person": "Контакт ЦК ПА",
+   "contact_phone": "+7 903 300-00-00",
+   "presentation_url": "",
+   "profile": "Профиль компании «ООО \"СистемИнтегро\"».",
+   "industries": [
+    "Нефтехимия",
+    "Металлургия"
+   ]
+  }
+ },
+ {
+  "model": "entities.entity",
+  "pk": 17,
+  "fields": {
+   "entity_name": "АО \"ИнжПроект\"",
+   "inn": "7700000901",
+   "contacts": {
+    "email": "info@ао.ru",
+    "phone": "+7 495 100-00-00"
+   },
+   "registration_date": "2005-05-05",
+   "financial_data": {
+    "Выручка": "500 млн ₽",
+    "Сотрудников": "200"
+   },
+   "entity_type": "engineering_company",
+   "is_partner": true,
+   "website": "https://ао.ru",
+   "kam_name": "КАМ",
+   "kam_phone": "+7 916 200-00-00",
+   "contact_person": "Контакт ЦК ПА",
+   "contact_phone": "+7 903 300-00-00",
+   "presentation_url": "",
+   "profile": "Профиль компании «АО \"ИнжПроект\"».",
+   "industries": [
+    "Газопереработка",
+    "Химия"
+   ]
+  }
+ },
+ {
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 1,
+  "fields": {
+   "entity": 17,
+   "region": "Челябинская область",
+   "resident_object": 1,
+   "product_competencies": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "model": "entities.functioncompetency",
+  "pk": 1,
+  "fields": {
+   "profile": 1,
+   "system_class": 1,
+   "industry": "Нефтехимия"
+  }
+ },
+ {
+  "model": "entities.functioncompetency",
+  "pk": 2,
+  "fields": {
+   "profile": 1,
+   "system_class": 2,
+   "industry": "Металлургия"
   }
  }
 ]

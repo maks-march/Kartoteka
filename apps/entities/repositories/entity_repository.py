@@ -30,7 +30,7 @@ class EntityRepository:
             .filter(
                 Q(objectsystem__integrator=OuterRef("pk"))
                 | Q(objectsystem__implimentor=OuterRef("pk"))
-                | Q(product__vendor=OuterRef("pk"))
+                | Q(product__vendor__entity=OuterRef("pk"))
             )
             .order_by()
             .annotate(_g=Value(1))          # константный ключ группировки
@@ -39,7 +39,7 @@ class EntityRepository:
             .values("c")
         )
         return qs.annotate(
-            products_count=Count("products", distinct=True),
+            products_count=Count("vendor_profile__products", distinct=True),
             systems_count=Coalesce(
                 Subquery(related_systems, output_field=IntegerField()), 0
             ),

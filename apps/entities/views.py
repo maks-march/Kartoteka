@@ -59,12 +59,49 @@ def _extract_entity_fields(post):
     return data
 
 
+def _parse_competencies(post):
+    """Пары (system_class_id, industry) из параллельных массивов
+    comp_class / comp_industry. Пустые/неполные строки пропускаются."""
+    classes = post.getlist("comp_class")
+    industries = post.getlist("comp_industry")
+    pairs = []
+    for class_id, industry in zip(classes, industries):
+        class_id = (class_id or "").strip()
+        industry = (industry or "").strip()
+        if class_id and industry:
+            pairs.append((class_id, industry))
+    return pairs
+
+
+def _extract_engineering_fields(post):
+    """Поля профиля инжиниринговой компании из POST."""
+    return {
+        "region": (post.get("region") or "").strip(),
+        "resident_object_id": post.get("resident_object") or None,
+        "product_ids": post.getlist("product_competencies"),
+        "competencies": _parse_competencies(post),
+    }
+
+
 def _form_context(**extra):
     """Общий контекст форм: справочники и т.п."""
+    from apps.objects.usecases.object_usecase import ObjectUseCase
+    from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
+    from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
+    from apps.objects.models import Object
+
     industries = [c.name for c in CategoryUseCase().list(level=1)]
+    # Регионы-подсказки — из существующих объектов.
+    regions = sorted({
+        r for r in Object.objects.exclude(region="").values_list("region", flat=True) if r
+    })
     ctx = {
         "entity_type_choices": Entity.ENTITY_TYPE_CHOICES,
         "industry_suggestions": industries,
+        "region_suggestions": regions,
+        "all_objects": ObjectUseCase().list(),
+        "all_products": VendorProductUseCase().list(),
+        "all_classes": AutomationClassUseCase().list(),
     }
     ctx.update(extra)
     return ctx
@@ -154,6 +191,7 @@ def entity_create(request):
                 entity_name=request.POST.get("entity_name"),
                 **_extract_entity_fields(request.POST),
             )
+            usecase.save_engineering_profile(entity, **_extract_engineering_fields(request.POST))
             return redirect("entity-detail", pk=entity.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
@@ -169,11 +207,12 @@ def entity_edit(request, pk):
 
     if request.method == "POST":
         try:
-            usecase.update(
+            entity = usecase.update(
                 pk=pk,
                 entity_name=request.POST.get("entity_name"),
                 **_extract_entity_fields(request.POST),
             )
+            usecase.save_engineering_profile(entity, **_extract_engineering_fields(request.POST))
             return redirect("entity-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)

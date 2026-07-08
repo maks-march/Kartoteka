@@ -183,11 +183,13 @@ class EntityCountsAndViewsTests(TestCase):
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
 
         # Вендор с двумя продуктами; на одном продукте — система.
+        from apps.entities.models import VendorProfile
         self.vendor = Entity.objects.create(entity_name="ВендорА", entity_type="vendor", is_partner=True)
         self.integ = Entity.objects.create(entity_name="ИнтеграторБ", entity_type="system_integrator")
 
-        self.p1 = VendorProduct.objects.create(product_name="Продукт-1", vendor=self.vendor)
-        self.p2 = VendorProduct.objects.create(product_name="Продукт-2", vendor=self.vendor)
+        self.vendor_profile = VendorProfile.objects.create(entity=self.vendor)
+        self.p1 = VendorProduct.objects.create(product_name="Продукт-1", vendor=self.vendor_profile)
+        self.p2 = VendorProduct.objects.create(product_name="Продукт-2", vendor=self.vendor_profile)
 
         # sys_on_product использует продукт вендора -> связан с вендором через product
         self.sys_prod = AutomationSystem.objects.create(
@@ -272,10 +274,12 @@ class DetailSummaryPanelTests(TestCase):
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("sp", "sp@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
+        from apps.entities.models import VendorProfile
         self.vendor = Entity.objects.create(entity_name="ВендорП", entity_type="vendor")
         self.integ = Entity.objects.create(entity_name="ИнтегП", entity_type="system_integrator")
         self.impl = Entity.objects.create(entity_name="ИсполП", entity_type="engineering_company")
-        self.product = VendorProduct.objects.create(product_name="ПродуктП", vendor=self.vendor)
+        self.vendor_profile = VendorProfile.objects.create(entity=self.vendor)
+        self.product = VendorProduct.objects.create(product_name="ПродуктП", vendor=self.vendor_profile)
         self.system = AutomationSystem.objects.create(
             autosystem_name="СистемаП", system_class=self.cls, product=self.product, creator_id=self.user)
         self.obj = Object.objects.create(name="ОбъектП", level=1, creator_id=self.user)
@@ -345,3 +349,162 @@ class SummaryLimitTests(TestCase):
         self.assertIn("ещё 2", panel)
         # метрика систем = 7 (не обрезается)
         self.assertIn(">7<", panel)
+
+
+class EntityTypingProfilesTests(TestCase):
+    """Типизация Entity через профили: авто-создание/удаление и данные инж. компании."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass
+        from apps.objects.models import Object
+        self.user = User.objects.create_user("typ", "typ@x.x", "pw")
+        self.client.force_login(self.user)
+        self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.obj = Object.objects.create(name="ЗаводТ", level=1, region="Урал", creator_id=self.user)
+
+    def _uc(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        return EntityUseCase()
+
+    def test_vendor_profile_autocreated_and_removed(self):
+        from apps.entities.models import VendorProfile
+        e = self._uc().create(entity_name="В1", entity_type="vendor")
+        self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
+        # смена типа на интегратора удаляет пустой профиль вендора
+        self._uc().update(e.pk, entity_name="В1", entity_type="system_integrator")
+        self.assertFalse(VendorProfile.objects.filter(entity=e).exists())
+
+    def test_vendor_profile_kept_if_has_products(self):
+        from apps.entities.models import VendorProfile
+        from apps.system.models import VendorProduct
+        e = self._uc().create(entity_name="В2", entity_type="vendor")
+        prof = VendorProfile.objects.get(entity=e)
+        VendorProduct.objects.create(product_name="P", vendor=prof)
+        # смена типа НЕ удаляет профиль, пока есть продукты
+        self._uc().update(e.pk, entity_name="В2", entity_type="supplier")
+        self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
+
+    def test_engineering_profile_autocreated(self):
+        from apps.entities.models import EngineeringCompanyProfile
+        e = self._uc().create(entity_name="ИК", entity_type="engineering_company")
+        self.assertTrue(EngineeringCompanyProfile.objects.filter(entity=e).exists())
+
+    def test_product_only_for_vendor_types(self):
+        from django.core.exceptions import ValidationError
+        from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
+        integ = self._uc().create(entity_name="Инт", entity_type="system_integrator")
+        with self.assertRaises(ValidationError):
+            VendorProductUseCase().create(product_name="X", vendor=integ.pk)
+
+    def test_web_create_engineering_with_profile_fields(self):
+        from apps.entities.models import Entity, VendorProfile
+        from apps.system.models import VendorProduct
+        vend = self._uc().create(entity_name="ВендорПрод", entity_type="vendor")
+        product = VendorProduct.objects.create(product_name="Prod1", vendor=VendorProfile.objects.get(entity=vend))
+        r = self.client.post("/entities/create/", {
+            "entity_name": "ИнжКомп",
+            "entity_type": "engineering_company",
+            "region": "Урал",
+            "resident_object": str(self.obj.pk),
+            "product_competencies": [str(product.pk)],
+            "comp_class": [str(self.cls.pk), ""],
+            "comp_industry": ["Нефтехимия", "пропуск-без-класса"],
+        })
+        self.assertEqual(r.status_code, 302)
+        e = Entity.objects.get(entity_name="ИнжКомп")
+        prof = e.engineering_profile
+        self.assertEqual(prof.region, "Урал")
+        self.assertEqual(prof.resident_object_id, self.obj.pk)
+        self.assertEqual(list(prof.product_competencies.values_list("pk", flat=True)), [product.pk])
+        # одна валидная компетенция (вторая без класса — отброшена)
+        self.assertEqual(prof.function_competencies.count(), 1)
+        fc = prof.function_competencies.first()
+        self.assertEqual(fc.system_class_id, self.cls.pk)
+        self.assertEqual(fc.industry, "Нефтехимия")
+
+    def test_form_shows_engineering_section(self):
+        h = self.client.get("/entities/create/").content.decode()
+        self.assertIn('id="engineeringSection"', h)
+        self.assertIn('name="region"', h)
+        self.assertIn('name="resident_object"', h)
+        self.assertIn('id="competencyClassTemplate"', h)
+        self.assertIn('id="competencyAddBtn"', h)
+
+    def test_detail_shows_engineering_block(self):
+        e = self._uc().create(entity_name="ИК2", entity_type="engineering_company")
+        self._uc().save_engineering_profile(
+            e, region="Сибирь", resident_object_id=self.obj.pk,
+            product_ids=[], competencies=[(self.cls.pk, "Химия")])
+        h = self.client.get(f"/entities/{e.pk}/").content.decode()
+        self.assertIn("Инжиниринговая компания", h)
+        self.assertIn("Сибирь", h)
+        self.assertIn("Химия", h)
+
+
+class EngineeringProfileAPITests(TestCase):
+    """REST API профиля инжиниринговой компании."""
+
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from apps.system.models import AutomationClass, VendorProduct
+        from apps.objects.models import Object
+        from apps.entities.models import VendorProfile
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+
+        self.user = User.objects.create_user("api", "api@x.x", "pw")
+        self.api = APIClient()
+        self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.obj = Object.objects.create(name="ОбъектAPI", level=1, creator_id=self.user)
+        vend = EntityUseCase().create(entity_name="ВендAPI", entity_type="vendor")
+        self.product = VendorProduct.objects.create(
+            product_name="ProdAPI", vendor=VendorProfile.objects.get(entity=vend))
+        self.eng = EntityUseCase().create(entity_name="ИнжAPI", entity_type="engineering_company")
+
+    def test_put_and_get_engineering_profile(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(f"/api/entities/{self.eng.pk}/engineering-profile/", {
+            "region": "Урал",
+            "resident_object": self.obj.pk,
+            "product_competencies": [self.product.pk],
+            "function_competencies": [{"system_class": self.cls.pk, "industry": "Нефтехимия"}],
+        }, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["region"], "Урал")
+        self.assertEqual(r.data["resident_object"], self.obj.pk)
+        self.assertEqual(r.data["product_competencies"], [self.product.pk])
+        self.assertEqual(len(r.data["function_competencies"]), 1)
+        self.assertEqual(r.data["function_competencies"][0]["industry"], "Нефтехимия")
+
+        # GET доступен без авторизации
+        r = self.api.get(f"/api/entities/{self.eng.pk}/engineering-profile/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["region"], "Урал")
+
+    def test_put_rejected_for_non_engineering(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        integ = EntityUseCase().create(entity_name="ИнтAPI", entity_type="system_integrator")
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(f"/api/entities/{integ.pk}/engineering-profile/",
+                         {"region": "X"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_get_404_when_no_profile(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        sup = EntityUseCase().create(entity_name="ПостAPI", entity_type="supplier")
+        r = self.api.get(f"/api/entities/{sup.pk}/engineering-profile/")
+        self.assertEqual(r.status_code, 404)
+
+    def test_entity_detail_api_includes_profile(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        EntityUseCase().save_engineering_profile(
+            self.eng, region="Сибирь", resident_object_id=None,
+            product_ids=[self.product.pk], competencies=[(self.cls.pk, "Химия")])
+        r = self.api.get(f"/api/entities/{self.eng.pk}/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIsNotNone(r.data["engineering_profile"])
+        self.assertEqual(r.data["engineering_profile"]["region"], "Сибирь")
+
+    def test_put_requires_auth(self):
+        r = self.api.put(f"/api/entities/{self.eng.pk}/engineering-profile/",
+                         {"region": "X"}, format="json")
+        self.assertIn(r.status_code, (401, 403))

@@ -293,8 +293,11 @@ def _extract_product_fields(post):
 
 
 def _product_form_context(**extra):
+    # В выборе вендора — только участники типа vendor / full_cycle_vendor
+    # (продукт может принадлежать только им).
+    vendors = [e for e in EntityUseCase().list() if e.is_vendor_type]
     ctx = {
-        "vendors": EntityUseCase().list(),
+        "vendors": vendors,
         "classes": AutomationClassUseCase().list(),
         "product_type_choices": VendorProduct.PRODUCT_TYPE_CHOICES,
         # Отрасли-подсказки: категории 1-го уровня (без связи, только значения).

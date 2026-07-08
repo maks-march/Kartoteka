@@ -243,8 +243,8 @@ function initIndustryPicker(picker) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // .industry-picker — множественный выбор, обрабатывается отдельно
-    document.querySelectorAll('.picker:not(.industry-picker)').forEach(initPicker);
+    // .industry-picker и .multi-id-picker — множественный выбор, обрабатываются отдельно
+    document.querySelectorAll('.picker:not(.industry-picker):not(.multi-id-picker)').forEach(initPicker);
     document.querySelectorAll('.picker.collapsible:not(.industry-picker)').forEach(initCollapsiblePicker);
     document.querySelectorAll('.industry-picker').forEach(initIndustryPicker);
     document.querySelectorAll('.mode-toggle').forEach(initModeToggle);

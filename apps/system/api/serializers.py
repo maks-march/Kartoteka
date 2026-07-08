@@ -15,6 +15,10 @@ class AutomationClassSerializer(serializers.ModelSerializer):
 
 
 class VendorProductSerializer(serializers.ModelSerializer):
+    # vendor в API — это id УЧАСТНИКА (Entity), а не VendorProfile,
+    # чтобы read/write были симметричны. Внутри модели связь идёт через
+    # VendorProfile (vendor.entity_id).
+    vendor = serializers.IntegerField(source="vendor.entity_id", read_only=True)
     vendor_name = serializers.CharField(source="vendor.entity_name", read_only=True)
     product_type_display = serializers.CharField(source="get_product_type_display", read_only=True)
     system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)

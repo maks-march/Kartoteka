@@ -79,7 +79,7 @@ class VendorProduct(models.Model):
         verbose_name="Название продукта",
     )
     vendor = models.ForeignKey(
-        "entities.Entity",
+        "entities.VendorProfile",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

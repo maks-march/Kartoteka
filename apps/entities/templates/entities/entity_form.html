@@ -26,7 +26,7 @@
                 </div>
                 <div class="form-group">
                     <label>Тип участника</label>
-                    <select name="entity_type">
+                    <select name="entity_type" id="entityTypeSelect">
                         <option value="">— Не указан —</option>
                         {% for value, label in entity_type_choices %}
                         <option value="{{ value }}" {% if entity.entity_type == value %}selected{% endif %}>{{ label }}</option>
@@ -157,6 +157,88 @@
                     {% endfor %}
                 </div>
                 <button type="button" class="btn btn-secondary btn-sm kv-add" data-target="#finList" data-key="fin_key" data-value="fin_value">+ Добавить показатель</button>
+            </div>
+        </div>
+
+        <!-- ===== Профиль инжиниринговой компании (только для этого типа) ===== -->
+        <div class="form-section" id="engineeringSection"
+             {% if entity.entity_type != 'engineering_company' %}style="display:none"{% endif %}>
+            <h2>Инжиниринговая компания</h2>
+
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label>Локация (регион)</label>
+                    <input type="text" name="region" list="regionOptions"
+                           value="{{ entity.engineering_profile.region|default:'' }}"
+                           placeholder="напр. Челябинская область">
+                    <datalist id="regionOptions">
+                        {% for r in region_suggestions %}<option value="{{ r }}">{% endfor %}
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Вхожий объект</label>
+                    <select name="resident_object">
+                        <option value="">— Не указан —</option>
+                        {% for o in all_objects %}
+                        <option value="{{ o.pk }}" {% if entity.engineering_profile.resident_object_id == o.pk %}selected{% endif %}>{{ o.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="hint" style="margin-top:4px">Объект, на котором компания уже закрепилась и работает.</p>
+                </div>
+            </div>
+
+            <!-- Узкая компетенция по продуктам (множественный выбор) -->
+            <div class="form-group">
+                <label>Узкая компетенция по продуктам</label>
+                <div class="picker collapsible multi-id-picker" id="productCompetenciesPicker" data-empty-text="Не выбрано">
+                    <div class="picker-header">
+                        <span class="picker-header-label">Продукты</span>
+                        <span class="picker-header-value empty-value">Не выбрано</span>
+                        <span class="picker-caret">▾</span>
+                    </div>
+                    <div class="picker-body">
+                        <div class="system-results-container filter-list-160" id="productCompetenciesList">
+                            {% for p in all_products %}
+                            <div class="system-item{% if p in entity.engineering_profile.product_competencies.all %} selected{% endif %}"
+                                 data-id="{{ p.pk }}" data-name="{{ p.product_name|lower }}">
+                                <span class="system-name">{{ p.product_name }}</span>
+                            </div>
+                            {% endfor %}
+                            {% if not all_products %}<div class="picker-empty">Нет продуктов</div>{% endif %}
+                        </div>
+                    </div>
+                    <div id="productCompetenciesInputs" data-name="product_competencies">
+                        {% for p in entity.engineering_profile.product_competencies.all %}
+                        <input type="hidden" name="product_competencies" value="{{ p.pk }}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Узкая компетенция по функции: пары «класс + индустрия» -->
+            <div class="form-group">
+                <label>Узкая компетенция по функции</label>
+                <p class="hint" style="margin-top:-2px; margin-bottom:8px">Пары «класс систем — индустрия» (напр. MES — Нефтехимия).</p>
+                <div id="competencyList">
+                    {% for fc in entity.engineering_profile.function_competencies.all %}
+                    <div class="kv-row">
+                        <select name="comp_class">
+                            <option value="">— Класс —</option>
+                            {% for c in all_classes %}
+                            <option value="{{ c.pk }}" {% if fc.system_class_id == c.pk %}selected{% endif %}>L{{ c.level }} - {{ c.system_class }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="comp_industry" value="{{ fc.industry }}" list="industryOptions" placeholder="Индустрия">
+                        <button type="button" class="btn btn-danger btn-sm kv-remove" title="Удалить">−</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="competencyAddBtn"
+                        data-classes-source="#competencyClassTemplate">+ Добавить компетенцию</button>
+                <select id="competencyClassTemplate" style="display:none">
+                    <option value="">— Класс —</option>
+                    {% for c in all_classes %}<option value="{{ c.pk }}">L{{ c.level }} - {{ c.system_class }}</option>{% endfor %}
+                </select>
             </div>
         </div>
 
