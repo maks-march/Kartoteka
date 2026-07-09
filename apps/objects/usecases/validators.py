@@ -16,11 +16,11 @@ class ObjectValidator:
             raise ValidationError("Объект первого уровня не может иметь родителя")
 
         try:
-            parent = Object.objects.get(pk=parent_id, is_deleted=False)
+            parent = Object.objects.get(pk=parent_id)
         except Object.DoesNotExist:
             raise ValidationError("Родительский объект не найден")
 
-        if parent.level >= level:
+        if parent.hierarchy_level >= level:
             raise ValidationError(
                 "Уровень родительского объекта должен быть ниже уровня дочернего объекта"
             )
@@ -30,12 +30,12 @@ class ObjectValidator:
 
         if instance:
             current = parent
-            while current.parent:
-                if current.parent.pk == instance.pk:
+            while current.parent_object:
+                if current.parent_object.pk == instance.pk:
                     raise ValidationError(
                         "Обнаружен цикл: нельзя назначить потомка родителем"
                     )
-                current = current.parent
+                current = current.parent_object
 
     def validate_category(self, category_id, object_level):
         if category_id is None:
@@ -46,7 +46,7 @@ class ObjectValidator:
         except Category.DoesNotExist:
             raise ValidationError("Категория не найдена")
 
-        if category.level != object_level:
+        if category.object_level != object_level:
             raise ValidationError(
                 "Уровень категории должен совпадать с уровнем объекта"
             )

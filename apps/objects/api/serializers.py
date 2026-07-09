@@ -5,19 +5,19 @@ from apps.objects.models import Object, ObjectSystem
 
 
 class ObjectListSerializer(serializers.ModelSerializer):
-    parent_name = serializers.CharField(source="parent.name", read_only=True)
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    parent_name = serializers.CharField(source="parent_object.object_name", read_only=True)
+    category_name = serializers.CharField(source="category.category_name", read_only=True)
     owner_entity_name = serializers.CharField(source="owner_entity.owner_name", read_only=True)
 
     class Meta:
         model = Object
         fields = [
             "id",
-            "name",
+            "object_name",
             "object_short_name",
             "object_class",
-            "level",
-            "parent",
+            "hierarchy_level",
+            "parent_object",
             "parent_name",
             "category",
             "category_name",
@@ -30,8 +30,8 @@ class ObjectListSerializer(serializers.ModelSerializer):
 
 
 class ObjectDetailSerializer(serializers.ModelSerializer):
-    parent_name = serializers.CharField(source="parent.name", read_only=True)
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    parent_name = serializers.CharField(source="parent_object.object_name", read_only=True)
+    category_name = serializers.CharField(source="category.category_name", read_only=True)
     owner_entity_name = serializers.CharField(source="owner_entity.owner_name", read_only=True)
     children = serializers.SerializerMethodField()
     creator_id_username = serializers.CharField(
@@ -44,13 +44,13 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
         model = Object
         fields = [
             "id",
-            "name",
+            "object_name",
             "object_short_name",
             "object_old_name",
             "object_law_name",
             "object_class",
-            "level",
-            "parent",
+            "hierarchy_level",
+            "parent_object",
             "parent_name",
             "category",
             "category_name",
@@ -79,7 +79,7 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_children(self, obj):
-        qs = obj.children.filter(is_deleted=False)
+        qs = obj.children.all()
         return ObjectListSerializer(qs, many=True).data
 
 
@@ -107,27 +107,27 @@ class _ObjectExtraFieldsMixin(serializers.Serializer):
 
 
 class ObjectCreateSerializer(_ObjectExtraFieldsMixin):
-    name = serializers.CharField(max_length=255)
-    level = serializers.IntegerField(min_value=1, max_value=3)
+    object_name = serializers.CharField(max_length=255)
+    hierarchy_level = serializers.IntegerField(min_value=1, max_value=3)
     parent = serializers.IntegerField(required=False, allow_null=True)
     category = serializers.IntegerField(required=False, allow_null=True)
     owner_entity = serializers.IntegerField(required=False, allow_null=True)
 
 
 class ObjectUpdateSerializer(_ObjectExtraFieldsMixin):
-    name = serializers.CharField(max_length=255, required=False)
-    level = serializers.IntegerField(min_value=1, max_value=3, required=False)
+    object_name = serializers.CharField(max_length=255, required=False)
+    hierarchy_level = serializers.IntegerField(min_value=1, max_value=3, required=False)
     parent = serializers.IntegerField(required=False, allow_null=True)
     category = serializers.IntegerField(required=False, allow_null=True)
     owner_entity = serializers.IntegerField(required=False, allow_null=True)
 
 
 class ObjectSystemSerializer(serializers.ModelSerializer):
-    object_name = serializers.CharField(source="object.name", read_only=True)
+    object_name = serializers.CharField(source="object.object_name", read_only=True)
     system_name = serializers.CharField(source="system.autosystem_name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     integrator_name = serializers.CharField(source="integrator.entity_name", read_only=True)
-    implimentor_name = serializers.CharField(source="implimentor.entity_name", read_only=True)
+    implementor_name = serializers.CharField(source="implementor.entity_name", read_only=True)
 
     class Meta:
         model = ObjectSystem
@@ -142,8 +142,8 @@ class ObjectSystemSerializer(serializers.ModelSerializer):
             "implementation_date",
             "integrator",
             "integrator_name",
-            "implimentor",
-            "implimentor_name",
+            "implementor",
+            "implementor_name",
         ]
 
 
@@ -155,7 +155,7 @@ class ObjectSystemCreateSerializer(serializers.Serializer):
     )
     implementation_date = serializers.DateField(required=False, allow_null=True)
     integrator = serializers.IntegerField(required=False, allow_null=True)
-    implimentor = serializers.IntegerField(required=False, allow_null=True)
+    implementor = serializers.IntegerField(required=False, allow_null=True)
 
 
 class ObjectSystemUpdateSerializer(serializers.Serializer):
@@ -164,4 +164,4 @@ class ObjectSystemUpdateSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=ObjectSystem.STATUS_CHOICES, required=False)
     implementation_date = serializers.DateField(required=False, allow_null=True)
     integrator = serializers.IntegerField(required=False, allow_null=True)
-    implimentor = serializers.IntegerField(required=False, allow_null=True)
+    implementor = serializers.IntegerField(required=False, allow_null=True)

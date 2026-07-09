@@ -140,7 +140,7 @@
         </div>
         <div class="info-card">
             <span class="info-label">Вхожий объект</span>
-            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.name }}</a>{% else %}—{% endif %}</span>
+            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
         </div>
         <div class="info-card full">
             <span class="info-label">Узкая компетенция по продуктам</span>
@@ -172,7 +172,7 @@
         <tbody>
             {% for link in integrated_links %}
             <tr>
-                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.name }}</a></td>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.object_name }}</a></td>
                 <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
                 <td>{{ link.get_status_display }}</td>
             </tr>
@@ -192,7 +192,7 @@
         <tbody>
             {% for link in implemented_links %}
             <tr>
-                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.name }}</a></td>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.object_name }}</a></td>
                 <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
                 <td>{{ link.get_status_display }}</td>
             </tr>

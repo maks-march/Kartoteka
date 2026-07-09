@@ -103,8 +103,8 @@
                                 </div>
                                 {% for o in all_objects %}
                                 <div class="system-item{% if entity.engineering_profile.resident_object_id == o.pk %} selected{% endif %}"
-                                     data-id="{{ o.pk }}" data-region="{{ o.region }}" data-name="{{ o.name|lower }} {{ o.region|lower }}">
-                                    <span class="system-name">{{ o.name }}</span>
+                                     data-id="{{ o.pk }}" data-region="{{ o.region }}" data-name="{{ o.object_name|lower }} {{ o.region|lower }}">
+                                    <span class="system-name">{{ o.object_name }}</span>
                                     {% if o.region %}<span class="system-info">{{ o.region }}{% if o.city %} · {{ o.city }}{% endif %}</span>{% endif %}
                                 </div>
                                 {% endfor %}
@@ -307,10 +307,6 @@
                 <button type="button" class="btn btn-secondary btn-sm kv-add" data-target="#finList" data-key="fin_key" data-value="fin_value">+ Добавить показатель</button>
             </div>
         </div>
-
-        <datalist id="industryOptions">
-            {% for ind in industry_suggestions %}<option value="{{ ind }}">{% endfor %}
-        </datalist>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Сохранить</button>

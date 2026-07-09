@@ -21,22 +21,22 @@ class ObjectRepository:
     """Доступ к данным объектов: выборки с фильтрами, сортировкой и счётчиком
     подключённых систем, а также CRUD и мягкое удаление."""
     ORDERING_FIELDS = {
-        "name", "level", "status", "city", "created_at", "start_date",
-        "category__name", "owner_entity__owner_name",
+        "object_name", "hierarchy_level", "status", "city", "created_at", "start_date",
+        "category__category_name", "owner_entity__owner_name",
         # Аннотированное поле (Count) — количество подключённых систем.
         "systems_count",
     }
-    DEFAULT_ORDERING = ("level", "name")
+    DEFAULT_ORDERING = ("hierarchy_level", "object_name")
 
     def get_all(self, level=None, search=None, category=None, system=None,
                 owner_entity=None, ordering=None):
-        qs = Object.objects.filter(is_deleted=False).select_related("parent", "category", "owner_entity")
+        qs = Object.objects.all().select_related("parent_object", "category", "owner_entity")
         if level is not None:
-            qs = qs.filter(level=level)
+            qs = qs.filter(hierarchy_level=level)
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
-            qs = qs.filter(name__iregex=re.escape(search))
+            qs = qs.filter(object_name__iregex=re.escape(search))
         category_ids = _as_id_list(category)
         if category_ids:
             # ИЛИ: объекты с любой из выбранных категорий
@@ -65,16 +65,16 @@ class ObjectRepository:
 
     def get_by_id(self, pk):
         return (
-            Object.objects.filter(pk=pk, is_deleted=False)
-            .select_related("parent", "category", "owner_entity", "creator_id")
+            Object.objects.filter(pk=pk)
+            .select_related("parent_object", "category", "owner_entity", "creator_id")
             .prefetch_related("children")
             .first()
         )
 
     def get_by_creator(self, user, search=None):
-        qs = Object.objects.filter(is_deleted=False, creator_id=user).select_related("parent", "category", "owner_entity")
+        qs = Object.objects.filter(creator_id=user).select_related("parent_object", "category", "owner_entity")
         if search:
-            qs = qs.filter(name__iregex=re.escape(search))
+            qs = qs.filter(object_name__iregex=re.escape(search))
         return qs
 
     def create(self, **kwargs):
@@ -86,7 +86,6 @@ class ObjectRepository:
         instance.save()
         return instance
 
-    def soft_delete(self, instance):
-        instance.is_deleted = True
-        instance.save()
+    def delete(self, instance):
+        instance.delete()
         return instance

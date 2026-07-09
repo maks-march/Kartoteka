@@ -18,7 +18,7 @@
             {% elif kind == "system" %}
                 <span class="tag {{ tag }}"><a href="{% url 'system-detail' it.pk %}">{{ it.autosystem_name }}</a></span>
             {% elif kind == "object" %}
-                <span class="tag tag-{{ it.level }}"><a href="{% url 'object-detail' it.pk %}">{{ it.name }}</a></span>
+                <span class="tag tag-{{ it.hierarchy_level }}"><a href="{% url 'object-detail' it.pk %}">{{ it.object_name }}</a></span>
             {% elif kind == "product" %}
                 <span class="tag {{ tag }}"><a href="{% url 'product-detail' it.pk %}">{{ it.product_name }}</a></span>
             {% endif %}

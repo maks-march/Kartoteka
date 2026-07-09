@@ -6,17 +6,17 @@ from common.ordering import apply_ordering
 
 class CategoryRepository:
     """Доступ к данным категорий объектов."""
-    ORDERING_FIELDS = {"name", "level"}
-    DEFAULT_ORDERING = ("level", "name")
+    ORDERING_FIELDS = {"category_name", "object_level"}
+    DEFAULT_ORDERING = ("object_level", "category_name")
 
     def get_all(self, level=None, search=None, ordering=None):
         qs = Category.objects.all()
         if level is not None:
-            qs = qs.filter(level=level)
+            qs = qs.filter(object_level=level)
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
             # регистр для не-ASCII символов (кириллицы)
-            qs = qs.filter(name__iregex=re.escape(search))
+            qs = qs.filter(category_name__iregex=re.escape(search))
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
@@ -25,7 +25,7 @@ class CategoryRepository:
     def get_by_creator(self, user, search=None):
         qs = Category.objects.filter(creator_id=user)
         if search:
-            qs = qs.filter(name__iregex=re.escape(search))
+            qs = qs.filter(category_name__iregex=re.escape(search))
         return qs
 
     def create(self, **kwargs):

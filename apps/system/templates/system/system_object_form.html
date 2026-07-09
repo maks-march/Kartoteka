@@ -35,9 +35,9 @@
             <!-- Ограниченный блок со списком объектов -->
             <div class="system-results-container">
                 {% for o in objects %}
-                <div class="system-item {% if link.object_id == o.pk %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}" data-level="{{ o.level }}">
-                    <span class="system-name">{{ o.name }}</span>
-                    <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
+                <div class="system-item {% if link.object_id == o.pk %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.object_name|lower }}" data-level="{{ o.hierarchy_level }}">
+                    <span class="system-name">{{ o.object_name }}</span>
+                    <span class="system-info">Уровень {{ o.hierarchy_level }}{% if o.category %} · {{ o.category.category_name }}{% endif %}</span>
                 </div>
                 {% endfor %}
                 <div class="picker-no-results picker-empty">
@@ -94,11 +94,11 @@
                 </div>
             </div>
             <div class="system-results-container">
-                <div class="system-item {% if not link.implimentor_id %}selected{% endif %}" data-id="" data-keep>
+                <div class="system-item {% if not link.implementor_id %}selected{% endif %}" data-id="" data-keep>
                     <span class="system-name">— Исполнитель не указан —</span>
                 </div>
                 {% for entity in entities %}
-                <div class="system-item {% if link.implimentor_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
+                <div class="system-item {% if link.implementor_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
                     <span class="system-name">{{ entity.entity_name }}</span>
                 </div>
                 {% endfor %}
@@ -106,7 +106,7 @@
                     Участники рынка не найдены
                 </div>
             </div>
-            <input type="hidden" name="implimentor" id="selectedImplimentorId" value="{{ link.implimentor_id|default:'' }}">
+            <input type="hidden" name="implementor" id="selectedImplimentorId" value="{{ link.implementor_id|default:'' }}">
         </div>
 
         <div class="form-actions">

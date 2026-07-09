@@ -68,10 +68,10 @@
         <tbody>
             {% for obj in objects %}
             <tr>
-                <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.name }}</a></td>
-                <td><span class="tag tag-{{ obj.level }}">Уровень {{ obj.level }}</span></td>
-                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.level }}">{{ obj.category.name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if obj.parent %}<a href="{% url 'object-detail' obj.parent.pk %}">{{ obj.parent.name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.object_name }}</a></td>
+                <td><span class="tag tag-{{ obj.hierarchy_level }}">Уровень {{ obj.hierarchy_level }}</span></td>
+                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="4" class="empty">Объектов у этого юр. лица пока нет</td></tr>

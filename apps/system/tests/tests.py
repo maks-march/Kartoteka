@@ -20,10 +20,10 @@ class SystemEndpointTestMixin:
             system_class=self.automation_class,
             creator_id=self.user,
         )
-        self.category = Category.objects.create(name="Площадка", level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
         self.object = Object.objects.create(
-            name="Завод",
-            level=1,
+            object_name="Завод",
+            hierarchy_level=1,
             category=self.category,
             creator_id=self.user,
         )
@@ -608,7 +608,7 @@ class VendorProductFieldsTests(TestCase):
 
     def test_form_shows_specs_and_industries(self):
         from apps.categories.models import Category
-        Category.objects.create(name="Химия", level=1)
+        Category.objects.create(category_name="Химия", object_level=1)
         self.client.force_login(self.user)
         h = self.client.get("/system/products/create/").content.decode()
         # отрасли — пикер множественного выбора (как в форме участника), без datalist

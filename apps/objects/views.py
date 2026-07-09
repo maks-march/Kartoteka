@@ -124,7 +124,7 @@ def object_detail(request, pk):
     usecase = ObjectUseCase()
     os_usecase = ObjectSystemUseCase()
     obj = usecase.get(pk)
-    children = obj.children.filter(is_deleted=False)
+    children = obj.children.all()
     object_systems = os_usecase.list_for_object(obj)
 
     # ---- Сводка связанности (агрегат из таблицы «Подключенные системы») ----
@@ -140,8 +140,8 @@ def object_detail(request, pk):
     integrators = _summary_group(
         (os.integrator for os in object_systems if os.integrator), key=lambda e: e.pk
     )
-    implimentors = _summary_group(
-        (os.implimentor for os in object_systems if os.implimentor), key=lambda e: e.pk
+    implementors = _summary_group(
+        (os.implementor for os in object_systems if os.implementor), key=lambda e: e.pk
     )
     summary = {
         "systems_count": len(object_systems),
@@ -149,7 +149,7 @@ def object_detail(request, pk):
         "system_classes": system_classes,
         "vendors": vendors,
         "integrators": integrators,
-        "implimentors": implimentors,
+        "implementors": implementors,
     }
     return render(request, "objects/object_detail.html", {
         "object": obj,
@@ -171,11 +171,11 @@ def object_create(request):
     if request.method == "POST":
         usecase = ObjectUseCase()
         try:
-            level = int(request.POST.get("level"))
+            level = int(request.POST.get("hierarchy_level"))
             usecase.create(
                 user=request.user,
-                name=request.POST.get("name"),
-                level=level,
+                object_name=request.POST.get("object_name"),
+                hierarchy_level=level,
                 parent=request.POST.get("parent") or None,
                 category=request.POST.get("category") or None,
                 owner_entity=request.POST.get("owner_entity") or None,
@@ -186,7 +186,7 @@ def object_create(request):
             error = str(e)
             object_instance = None
 
-    possible_parents = repo.get_all().filter(level__lt=3)
+    possible_parents = repo.get_all().filter(hierarchy_level__lt=3)
     categories = cat_usecase.list()
     owner_entities = owner_usecase.list()
     return render(request, "objects/object_form.html", {
@@ -213,12 +213,12 @@ def object_edit(request, pk):
 
     if request.method == "POST":
         try:
-            level = int(request.POST.get("level"))
+            level = int(request.POST.get("hierarchy_level"))
             usecase.update(
                 pk=pk,
                 user=request.user,
-                name=request.POST.get("name"),
-                level=level,
+                object_name=request.POST.get("object_name"),
+                hierarchy_level=level,
                 parent=request.POST.get("parent") or None,
                 category=request.POST.get("category") or None,
                 owner_entity=request.POST.get("owner_entity") or None,
@@ -228,7 +228,7 @@ def object_edit(request, pk):
         except (ValidationError, Exception) as e:
             error = str(e)
 
-    possible_parents = repo.get_all().exclude(pk=pk).filter(level__lt=3)
+    possible_parents = repo.get_all().exclude(pk=pk).filter(hierarchy_level__lt=3)
     categories = cat_usecase.list()
     owner_entities = owner_usecase.list()
     return render(request, "objects/object_form.html", {
@@ -262,7 +262,7 @@ def object_add_child(request, pk):
     error = None
     active_mode = "existing"
 
-    if parent.level >= 3:
+    if parent.hierarchy_level >= 3:
         return redirect("object-detail", pk=pk)
 
     if request.method == "POST":
@@ -274,11 +274,11 @@ def object_add_child(request, pk):
                     raise ValidationError("Необходимо выбрать объект")
                 usecase.update(pk=int(child_pk), user=request.user, parent=parent.pk)
             else:
-                level = int(request.POST.get("level"))
+                level = int(request.POST.get("hierarchy_level"))
                 usecase.create(
                     user=request.user,
-                    name=request.POST.get("name"),
-                    level=level,
+                    object_name=request.POST.get("object_name"),
+                    hierarchy_level=level,
                     parent=parent.pk,
                     category=request.POST.get("category") or None,
                     owner_entity=request.POST.get("owner_entity") or None,
@@ -292,19 +292,19 @@ def object_add_child(request, pk):
     # исключая самого родителя, его текущих детей и его предков (защита от цикла)
     ancestor_ids = []
     current = parent
-    while current.parent_id:
-        ancestor_ids.append(current.parent_id)
-        current = current.parent
+    while current.parent_object_id:
+        ancestor_ids.append(current.parent_object_id)
+        current = current.parent_object
 
     possible_children = (
         repo.get_all()
-        .filter(level__gt=parent.level)
+        .filter(hierarchy_level__gt=parent.hierarchy_level)
         .exclude(pk=parent.pk)
-        .exclude(parent_id=parent.pk)
+        .exclude(parent_object_id=parent.pk)
         .exclude(pk__in=ancestor_ids)
     )
 
-    child_levels = [lvl for lvl in (1, 2, 3) if lvl > parent.level]
+    child_levels = [lvl for lvl in (1, 2, 3) if lvl > parent.hierarchy_level]
     categories = cat_usecase.list()
     owner_entities = owner_usecase.list()
     # Предзаполнение адреса наследуемыми полями родителя (с возможностью правок).
@@ -340,7 +340,7 @@ def object_attach_system(request, pk):
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
                 integrator=request.POST.get("integrator") or None,
-                implimentor=request.POST.get("implimentor") or None,
+                implementor=request.POST.get("implementor") or None,
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -384,7 +384,7 @@ def object_system_edit(request, pk):
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
                 integrator=request.POST.get("integrator") or None,
-                implimentor=request.POST.get("implimentor") or None,
+                implementor=request.POST.get("implementor") or None,
             )
             return _object_system_redirect(link, next_page)
         except (ValidationError, ValueError, TypeError) as e:

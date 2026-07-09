@@ -54,8 +54,8 @@
         <tbody>
             {% for cat in categories %}
             <tr>
-                <td><a href="{% url 'category-detail' cat.pk %}">{{ cat.name }}</a></td>
-                <td><span class="tag tag-{{ cat.level }}">Уровень {{ cat.level }}</span></td>
+                <td><a href="{% url 'category-detail' cat.pk %}">{{ cat.category_name }}</a></td>
+                <td><span class="tag tag-{{ cat.object_level }}">Уровень {{ cat.object_level }}</span></td>
                 <td>
                     <div class="actions">
                         <a href="{% url 'category-edit' cat.pk %}" class="btn btn-primary">Изменить</a>

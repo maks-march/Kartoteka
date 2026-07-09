@@ -147,12 +147,12 @@
         <tbody>
             {% for os in system_objects %}
             <tr>
-                <td><a href="{% url 'object-detail' os.object.pk %}">{{ os.object.name }}</a></td>
-                <td><span class="tag tag-{{ os.object.level }}">Уровень {{ os.object.level }}</span></td>
+                <td><a href="{% url 'object-detail' os.object.pk %}">{{ os.object.object_name }}</a></td>
+                <td><span class="tag tag-{{ os.object.hierarchy_level }}">Уровень {{ os.object.hierarchy_level }}</span></td>
                 <td>{{ os.get_status_display }}</td>
                 <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{% if os.integrator %}<a href="{% url 'entity-detail' os.integrator.pk %}">{{ os.integrator.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.implimentor %}<a href="{% url 'entity-detail' os.implimentor.pk %}">{{ os.implimentor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if os.implementor %}<a href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 {% if user.is_authenticated %}
                 <td>
                     <div class="actions">

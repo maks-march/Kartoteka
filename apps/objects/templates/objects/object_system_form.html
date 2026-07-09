@@ -1,13 +1,13 @@
 {% extends 'core/base.html' %}
 
-{% block title %}{% if link %}Изменить привязку{% else %}Привязать систему{% endif %} — {{ object.name }}{% endblock %}
+{% block title %}{% if link %}Изменить привязку{% else %}Привязать систему{% endif %} — {{ object.object_name }}{% endblock %}
 
 {% block content %}
 <div class="card form-card">
     <h1>{% if link %}Изменить привязку{% else %}Привязать систему{% endif %}</h1>
     <p style="margin-bottom:15px; color:#666">
-        Объект: <a href="{% url 'object-detail' object.pk %}">{{ object.name }}</a>
-        <span class="tag tag-{{ object.level }}">Уровень {{ object.level }}</span>
+        Объект: <a href="{% url 'object-detail' object.pk %}">{{ object.object_name }}</a>
+        <span class="tag tag-{{ object.hierarchy_level }}">Уровень {{ object.hierarchy_level }}</span>
     </p>
 
     {% if error %}<p class="error">{{ error }}</p>{% endif %}
@@ -88,11 +88,11 @@
                 </div>
             </div>
             <div class="system-results-container">
-                <div class="system-item {% if not link.implimentor_id %}selected{% endif %}" data-id="" data-keep>
+                <div class="system-item {% if not link.implementor_id %}selected{% endif %}" data-id="" data-keep>
                     <span class="system-name">— Исполнитель не указан —</span>
                 </div>
                 {% for entity in entities %}
-                <div class="system-item {% if link.implimentor_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
+                <div class="system-item {% if link.implementor_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
                     <span class="system-name">{{ entity.entity_name }}</span>
                 </div>
                 {% endfor %}
@@ -100,7 +100,7 @@
                     Участники рынка не найдены
                 </div>
             </div>
-            <input type="hidden" name="implimentor" id="selectedImplimentorId" value="{{ link.implimentor_id|default:'' }}">
+            <input type="hidden" name="implementor" id="selectedImplimentorId" value="{{ link.implementor_id|default:'' }}">
         </div>
 
         <div class="form-actions">

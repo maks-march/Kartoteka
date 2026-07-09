@@ -46,7 +46,7 @@ class ObjectUseCase:
         parent_id = data.pop("parent", None)
         category_id = data.pop("category", None)
         owner_entity_id = data.pop("owner_entity", None)
-        level = data.get("level")
+        level = data.get("hierarchy_level")
 
         self.validator.validate_parent(parent_id, level)
         self.validator.validate_category(category_id, level)
@@ -62,7 +62,7 @@ class ObjectUseCase:
                     data[field] = value
 
         if parent_id is not None:
-            data["parent_id"] = parent_id
+            data["parent_object_id"] = parent_id
         if category_id is not None:
             data["category_id"] = category_id
         if owner_entity_id is not None:
@@ -75,11 +75,11 @@ class ObjectUseCase:
         parent_id = data.pop("parent", "__missing__")
         category_id = data.pop("category", "__missing__")
         owner_entity_id = data.pop("owner_entity", "__missing__")
-        level = data.get("level", obj.level)
+        level = data.get("hierarchy_level", obj.hierarchy_level)
 
         if parent_id != "__missing__":
             self.validator.validate_parent(parent_id, level, instance=obj)
-            data["parent_id"] = parent_id
+            data["parent_object_id"] = parent_id
         if category_id != "__missing__":
             self.validator.validate_category(category_id, level)
             data["category_id"] = category_id
@@ -90,20 +90,20 @@ class ObjectUseCase:
         # Валидация title: уровень определяем по новому значению (если меняется),
         # иначе по текущему уровню объекта.
         if "title" in data:
-            effective_level = data.get("level", obj.level)
+            effective_level = data.get("hierarchy_level", obj.hierarchy_level)
             self.validator.validate_title(data.get("title"), effective_level)
 
-        if "level" in data and data["level"] != obj.level:
+        if "hierarchy_level" in data and data["hierarchy_level"] != obj.hierarchy_level:
             # При смене уровня перепроверяем текущего родителя и категорию
-            current_parent_id = data.get("parent_id", obj.parent_id)
+            current_parent_id = data.get("parent_object_id", obj.parent_object_id)
             if current_parent_id is not None:
-                self.validator.validate_parent(current_parent_id, data["level"], instance=obj)
+                self.validator.validate_parent(current_parent_id, data["hierarchy_level"], instance=obj)
             current_category_id = data.get("category_id", obj.category_id)
             if current_category_id is not None:
-                self.validator.validate_category(current_category_id, data["level"])
+                self.validator.validate_category(current_category_id, data["hierarchy_level"])
 
         return self.repo.update(obj, **data)
 
     def delete(self, pk, user):
         obj = self.get(pk)
-        return self.repo.soft_delete(obj)
+        return self.repo.delete(obj)

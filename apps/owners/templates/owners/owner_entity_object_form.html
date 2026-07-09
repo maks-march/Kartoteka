@@ -32,11 +32,11 @@
 
             <div class="system-results-container">
                 {% for obj in objects %}
-                <div class="system-item" data-id="{{ obj.pk }}" data-name="{{ obj.name|lower }}" data-level="{{ obj.level }}">
-                    <span class="system-name">{{ obj.name }}</span>
+                <div class="system-item" data-id="{{ obj.pk }}" data-name="{{ obj.object_name|lower }}" data-level="{{ obj.hierarchy_level }}">
+                    <span class="system-name">{{ obj.object_name }}</span>
                     <span class="system-info">
-                        Уровень {{ obj.level }}
-                        {% if obj.category %} · {{ obj.category.name }}{% endif %}
+                        Уровень {{ obj.hierarchy_level }}
+                        {% if obj.category %} · {{ obj.category.category_name }}{% endif %}
                         {% if obj.owner_entity %} · Сейчас: {{ obj.owner_entity.owner_name }}{% else %} · Без юр. лица{% endif %}
                     </span>
                 </div>

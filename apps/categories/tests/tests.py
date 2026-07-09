@@ -9,8 +9,8 @@ class CategoriesWebEndpointTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="user", password="password")
         self.category = Category.objects.create(
-            name="Производство",
-            level=1,
+            category_name="Производство",
+            object_level=1,
             creator_id=self.user,
         )
 
@@ -37,22 +37,22 @@ class CategoriesWebEndpointTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post("/categories/create/", {
-            "name": "Склад",
-            "level": "2",
+            "category_name": "Склад",
+            "object_level": "2",
         })
         self.assertEqual(response.status_code, 302)
-        created = Category.objects.get(name="Склад")
+        created = Category.objects.get(category_name="Склад")
 
         response = self.client.get(f"/categories/{created.pk}/edit/")
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(f"/categories/{created.pk}/edit/", {
-            "name": "Склад готовой продукции",
-            "level": "2",
+            "category_name": "Склад готовой продукции",
+            "object_level": "2",
         })
         self.assertEqual(response.status_code, 302)
         created.refresh_from_db()
-        self.assertEqual(created.name, "Склад готовой продукции")
+        self.assertEqual(created.category_name, "Склад готовой продукции")
 
         response = self.client.post(f"/categories/{created.pk}/delete/")
         self.assertEqual(response.status_code, 302)
@@ -62,7 +62,7 @@ class CategoriesWebEndpointTests(TestCase):
 class CategoriesApiEndpointTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="api-user", password="password")
-        self.category = Category.objects.create(name="Цех", level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Цех", object_level=1, creator_id=self.user)
         self.api_client = APIClient()
 
     def test_category_api_list_and_detail_are_public(self):
@@ -75,8 +75,8 @@ class CategoriesApiEndpointTests(TestCase):
 
     def test_category_api_create_requires_authentication(self):
         response = self.api_client.post("/api/categories/categories/", {
-            "name": "Линия",
-            "level": 2,
+            "category_name": "Линия",
+            "object_level": 2,
         }, format="json")
         self.assertIn(response.status_code, (401, 403))
 
@@ -84,18 +84,18 @@ class CategoriesApiEndpointTests(TestCase):
         self.api_client.force_authenticate(user=self.user)
 
         response = self.api_client.post("/api/categories/categories/", {
-            "name": "Линия",
-            "level": 2,
+            "category_name": "Линия",
+            "object_level": 2,
         }, format="json")
         self.assertEqual(response.status_code, 201)
         category_id = response.data["id"]
 
         response = self.api_client.patch(f"/api/categories/categories/{category_id}/", {
-            "name": "Линия розлива",
-            "level": 2,
+            "category_name": "Линия розлива",
+            "object_level": 2,
         }, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], "Линия розлива")
+        self.assertEqual(response.data["category_name"], "Линия розлива")
 
         response = self.api_client.delete(f"/api/categories/categories/{category_id}/")
         self.assertEqual(response.status_code, 204)

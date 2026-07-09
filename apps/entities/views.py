@@ -90,7 +90,7 @@ def _form_context(**extra):
     from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
     from apps.objects.models import Object
 
-    industries = [c.name for c in CategoryUseCase().list(level=1)]
+    industries = [c.category_name for c in CategoryUseCase().list(level=1)]
     # Регионы-подсказки — из существующих объектов.
     regions = sorted({
         r for r in Object.objects.exclude(region="").values_list("region", flat=True) if r

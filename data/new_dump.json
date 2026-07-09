@@ -571,351 +571,351 @@
   "model": "categories.category",
   "pk": 1,
   "fields": {
-   "name": "Нефтепереработка",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Нефтепереработка",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 2,
   "fields": {
-   "name": "Нефтехимия",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Нефтехимия",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 3,
   "fields": {
-   "name": "Газопереработка",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Газопереработка",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 4,
   "fields": {
-   "name": "Газохимия",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Газохимия",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 5,
   "fields": {
-   "name": "Химия",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Химия",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 6,
   "fields": {
-   "name": "Химия-удобрение",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Химия-удобрение",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 7,
   "fields": {
-   "name": "Добыча нефти",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Добыча нефти",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 8,
   "fields": {
-   "name": "Добыча газа",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Добыча газа",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 9,
   "fields": {
-   "name": "Добыча руды",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Добыча руды",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 10,
   "fields": {
-   "name": "Транспорт",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Транспорт",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 11,
   "fields": {
-   "name": "Пищевая",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Пищевая",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 12,
   "fields": {
-   "name": "Фарма",
-   "level": 1,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Фарма",
+   "object_level": 1
   }
  },
  {
   "model": "categories.category",
   "pk": 13,
   "fields": {
-   "name": "Основные",
-   "level": 2,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Основные",
+   "object_level": 2
   }
  },
  {
   "model": "categories.category",
   "pk": 14,
   "fields": {
-   "name": "Вспомогательные",
-   "level": 2,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Вспомогательные",
+   "object_level": 2
   }
  },
  {
   "model": "categories.category",
   "pk": 15,
   "fields": {
-   "name": "Общие",
-   "level": 2,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Общие",
+   "object_level": 2
   }
  },
  {
   "model": "categories.category",
   "pk": 16,
   "fields": {
-   "name": "Сырьевые",
-   "level": 2,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Сырьевые",
+   "object_level": 2
   }
  },
  {
   "model": "categories.category",
   "pk": 17,
   "fields": {
-   "name": "Товарные",
-   "level": 2,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Товарные",
+   "object_level": 2
   }
  },
  {
   "model": "categories.category",
   "pk": 18,
   "fields": {
-   "name": "Атмосферное разделение",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Атмосферное разделение",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 19,
   "fields": {
-   "name": "Вакуумное разделение",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Вакуумное разделение",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 20,
   "fields": {
-   "name": "Крекинг каталитический",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Крекинг каталитический",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 21,
   "fields": {
-   "name": "Крекинг гидро",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Крекинг гидро",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 22,
   "fields": {
-   "name": "Реформинг",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Реформинг",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 23,
   "fields": {
-   "name": "Полимеризация",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Полимеризация",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 24,
   "fields": {
-   "name": "Гидроочистка",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Гидроочистка",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 25,
   "fields": {
-   "name": "Мокрый катализ",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Мокрый катализ",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 26,
   "fields": {
-   "name": "Грануляция",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Грануляция",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 27,
   "fields": {
-   "name": "Фильтрация",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Фильтрация",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 28,
   "fields": {
-   "name": "Электролиз",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Электролиз",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 29,
   "fields": {
-   "name": "Абсорбция",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Абсорбция",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 30,
   "fields": {
-   "name": "Стабилизация",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Стабилизация",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 31,
   "fields": {
-   "name": "КЦА",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "КЦА",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 32,
   "fields": {
-   "name": "Дробление",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Дробление",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 33,
   "fields": {
-   "name": "Транспорт (техн)",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Транспорт (техн)",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 34,
   "fields": {
-   "name": "Измельчение",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Измельчение",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 35,
   "fields": {
-   "name": "Флотация",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Флотация",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 36,
   "fields": {
-   "name": "Фильтрация руды",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Фильтрация руды",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 37,
   "fields": {
-   "name": "Катание",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Катание",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 38,
   "fields": {
-   "name": "Ковка",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Ковка",
+   "object_level": 3
   }
  },
  {
   "model": "categories.category",
   "pk": 39,
   "fields": {
-   "name": "Штамповка",
-   "level": 3,
-   "creator_id": 1
+   "creator_id": 1,
+   "category_name": "Штамповка",
+   "object_level": 3
   }
  },
  {
@@ -1633,13 +1633,13 @@
   "model": "objects.object",
   "pk": 1,
   "fields": {
-   "name": "Омский НПЗ",
+   "object_name": "Омский НПЗ",
    "object_short_name": "ОН",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Производство",
-   "level": 1,
-   "parent": null,
+   "hierarchy_level": 1,
+   "parent_object": null,
    "category": 1,
    "owner_entity": 3,
    "start_date": "2008-01-10",
@@ -1654,7 +1654,6 @@
    "house": "1",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000001",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T10:00:00Z",
    "updated_at": "2026-06-26T06:49:11.296Z"
@@ -1664,13 +1663,13 @@
   "model": "objects.object",
   "pk": 2,
   "fields": {
-   "name": "Тобольск-Полимер",
+   "object_name": "Тобольск-Полимер",
    "object_short_name": "Т",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Завод",
-   "level": 1,
-   "parent": null,
+   "hierarchy_level": 1,
+   "parent_object": null,
    "category": 2,
    "owner_entity": 5,
    "start_date": "2009-02-11",
@@ -1685,7 +1684,6 @@
    "house": "8",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000002",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T10:00:00Z",
    "updated_at": "2026-01-01T10:00:00Z"
@@ -1695,13 +1693,13 @@
   "model": "objects.object",
   "pk": 3,
   "fields": {
-   "name": "Ямал СПГ",
+   "object_name": "Ямал СПГ",
    "object_short_name": "ЯС",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Промплощадка",
-   "level": 1,
-   "parent": null,
+   "hierarchy_level": 1,
+   "parent_object": null,
    "category": 3,
    "owner_entity": 7,
    "start_date": "2010-03-12",
@@ -1716,7 +1714,6 @@
    "house": "15",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000003",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T10:00:00Z",
    "updated_at": "2026-01-01T10:00:00Z"
@@ -1726,13 +1723,13 @@
   "model": "objects.object",
   "pk": 4,
   "fields": {
-   "name": "Цех №10 (АВТ)",
+   "object_name": "Цех №10 (АВТ)",
    "object_short_name": "Ц№(",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Цех",
-   "level": 2,
-   "parent": 1,
+   "hierarchy_level": 2,
+   "parent_object": 1,
    "category": 13,
    "owner_entity": 3,
    "start_date": "2011-04-13",
@@ -1747,7 +1744,6 @@
    "house": "22",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000004",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T11:00:00Z",
    "updated_at": "2026-01-01T11:00:00Z"
@@ -1757,13 +1753,13 @@
   "model": "objects.object",
   "pk": 5,
   "fields": {
-   "name": "Производство полипропилена",
+   "object_name": "Производство полипропилена",
    "object_short_name": "ПП",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Очередь",
-   "level": 2,
-   "parent": 2,
+   "hierarchy_level": 2,
+   "parent_object": 2,
    "category": 13,
    "owner_entity": 5,
    "start_date": "2012-05-14",
@@ -1778,7 +1774,6 @@
    "house": "29",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000005",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T11:00:00Z",
    "updated_at": "2026-01-01T11:00:00Z"
@@ -1788,13 +1783,13 @@
   "model": "objects.object",
   "pk": 6,
   "fields": {
-   "name": "Линия сжижения газа №1",
+   "object_name": "Линия сжижения газа №1",
    "object_short_name": "ЛСЖГ №1",
    "object_old_name": "Линия сжижения газа №1",
    "object_law_name": "Линия сжижения газа №1",
    "object_class": "Линия",
-   "level": 2,
-   "parent": 3,
+   "hierarchy_level": 2,
+   "parent_object": 3,
    "category": 13,
    "owner_entity": 7,
    "start_date": "2026-06-26",
@@ -1809,7 +1804,6 @@
    "house": "36",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000006",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T11:00:00Z",
    "updated_at": "2026-06-28T15:50:40.088Z"
@@ -1819,13 +1813,13 @@
   "model": "objects.object",
   "pk": 7,
   "fields": {
-   "name": "Резервуарный парк",
+   "object_name": "Резервуарный парк",
    "object_short_name": "РП",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Цех",
-   "level": 2,
-   "parent": 1,
+   "hierarchy_level": 2,
+   "parent_object": 1,
    "category": 17,
    "owner_entity": 3,
    "start_date": "2014-07-16",
@@ -1840,7 +1834,6 @@
    "house": "43",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000007",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T11:00:00Z",
    "updated_at": "2026-01-01T11:00:00Z"
@@ -1850,13 +1843,13 @@
   "model": "objects.object",
   "pk": 8,
   "fields": {
-   "name": "Установка АВТ-10",
+   "object_name": "Установка АВТ-10",
    "object_short_name": "УА",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Блок",
-   "level": 3,
-   "parent": 4,
+   "hierarchy_level": 3,
+   "parent_object": 4,
    "category": 18,
    "owner_entity": 3,
    "start_date": "2015-08-17",
@@ -1871,7 +1864,6 @@
    "house": "50",
    "title": "Цех-3-поз.17",
    "fias_code": "00000000-0000-0000-0000-000000000008",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T12:00:00Z",
    "updated_at": "2026-01-01T12:00:00Z"
@@ -1881,13 +1873,13 @@
   "model": "objects.object",
   "pk": 9,
   "fields": {
-   "name": "Установка полимеризации пропилена",
+   "object_name": "Установка полимеризации пропилена",
    "object_short_name": "УПП",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Узел",
-   "level": 3,
-   "parent": 5,
+   "hierarchy_level": 3,
+   "parent_object": 5,
    "category": 23,
    "owner_entity": 5,
    "start_date": "2016-09-18",
@@ -1902,7 +1894,6 @@
    "house": "7",
    "title": "Цех-4-поз.18",
    "fias_code": "00000000-0000-0000-0000-000000000009",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T12:00:00Z",
    "updated_at": "2026-01-01T12:00:00Z"
@@ -1912,13 +1903,13 @@
   "model": "objects.object",
   "pk": 10,
   "fields": {
-   "name": "Блок компримирования и сжижения",
+   "object_name": "Блок компримирования и сжижения",
    "object_short_name": "БКИ",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Установка",
-   "level": 3,
-   "parent": 6,
+   "hierarchy_level": 3,
+   "parent_object": 6,
    "category": 33,
    "owner_entity": 7,
    "start_date": "2017-01-19",
@@ -1933,7 +1924,6 @@
    "house": "14",
    "title": "Цех-5-поз.19",
    "fias_code": "00000000-0000-0000-0000-000000000010",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T12:00:00Z",
    "updated_at": "2026-01-01T12:00:00Z"
@@ -1943,13 +1933,13 @@
   "model": "objects.object",
   "pk": 11,
   "fields": {
-   "name": "Сызранский НПЗ",
+   "object_name": "Сызранский НПЗ",
    "object_short_name": "СН",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Завод",
-   "level": 1,
-   "parent": null,
+   "hierarchy_level": 1,
+   "parent_object": null,
    "category": 1,
    "owner_entity": 10,
    "start_date": "2018-02-10",
@@ -1964,7 +1954,6 @@
    "house": "21",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000011",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T10:00:00Z",
    "updated_at": "2026-01-01T10:00:00Z"
@@ -1974,13 +1963,13 @@
   "model": "objects.object",
   "pk": 12,
   "fields": {
-   "name": "Цех вторичных процессов",
+   "object_name": "Цех вторичных процессов",
    "object_short_name": "ЦВП",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Производственный участок",
-   "level": 2,
-   "parent": 11,
+   "hierarchy_level": 2,
+   "parent_object": 11,
    "category": 13,
    "owner_entity": 10,
    "start_date": "2019-03-11",
@@ -1995,7 +1984,6 @@
    "house": "28",
    "title": "",
    "fias_code": "00000000-0000-0000-0000-000000000012",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T11:00:00Z",
    "updated_at": "2026-01-01T11:00:00Z"
@@ -2005,13 +1993,13 @@
   "model": "objects.object",
   "pk": 13,
   "fields": {
-   "name": "Установка каталитического риформинга",
+   "object_name": "Установка каталитического риформинга",
    "object_short_name": "УКР",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Установка",
-   "level": 3,
-   "parent": 12,
+   "hierarchy_level": 3,
+   "parent_object": 12,
    "category": 22,
    "owner_entity": 10,
    "start_date": "2020-04-12",
@@ -2026,7 +2014,6 @@
    "house": "35",
    "title": "Цех-3-поз.22",
    "fias_code": "00000000-0000-0000-0000-000000000013",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T12:00:00Z",
    "updated_at": "2026-01-01T12:00:00Z"
@@ -2036,13 +2023,13 @@
   "model": "objects.object",
   "pk": 14,
   "fields": {
-   "name": "Блок гидроочистки дизельного топлива",
+   "object_name": "Блок гидроочистки дизельного топлива",
    "object_short_name": "БГД",
    "object_old_name": "",
    "object_law_name": "",
    "object_class": "Блок",
-   "level": 3,
-   "parent": 12,
+   "hierarchy_level": 3,
+   "parent_object": 12,
    "category": 24,
    "owner_entity": 10,
    "start_date": "2021-05-13",
@@ -2057,72 +2044,9 @@
    "house": "42",
    "title": "Цех-4-поз.23",
    "fias_code": "00000000-0000-0000-0000-000000000014",
-   "is_deleted": false,
    "creator_id": 1,
    "created_at": "2026-01-01T12:00:00Z",
    "updated_at": "2026-01-01T12:00:00Z"
-  }
- },
- {
-  "model": "objects.object",
-  "pk": 15,
-  "fields": {
-   "name": "ЄхёЄ",
-   "object_short_name": "Є",
-   "object_old_name": "",
-   "object_law_name": "",
-   "object_class": "Промплощадка",
-   "level": 1,
-   "parent": null,
-   "category": null,
-   "owner_entity": null,
-   "start_date": "2022-06-14",
-   "is_reconstructed": false,
-   "capacity": "750 тыс. т/год",
-   "status": "reconstruction",
-   "notes": "Объект уровня 1. Демонстрационные данные.",
-   "country": "Россия",
-   "region": "Самарская область",
-   "city": "Новокуйбышевск",
-   "street": "Нефтяников",
-   "house": "49",
-   "title": "",
-   "fias_code": "00000000-0000-0000-0000-000000000015",
-   "is_deleted": true,
-   "creator_id": 1,
-   "created_at": "2026-06-24T04:36:31.476Z",
-   "updated_at": "2026-06-24T04:36:39.276Z"
-  }
- },
- {
-  "model": "objects.object",
-  "pk": 16,
-  "fields": {
-   "name": "ЄхёЄ",
-   "object_short_name": "Є",
-   "object_old_name": "",
-   "object_law_name": "",
-   "object_class": "Производство",
-   "level": 1,
-   "parent": null,
-   "category": null,
-   "owner_entity": 2,
-   "start_date": "2023-07-15",
-   "is_reconstructed": true,
-   "capacity": "800 тыс. т/год",
-   "status": "stopped",
-   "notes": "Объект уровня 1. Демонстрационные данные.",
-   "country": "Россия",
-   "region": "Омская область",
-   "city": "Омск",
-   "street": "Заводская",
-   "house": "6",
-   "title": "",
-   "fias_code": "00000000-0000-0000-0000-000000000016",
-   "is_deleted": true,
-   "creator_id": 1,
-   "created_at": "2026-06-26T05:54:08.528Z",
-   "updated_at": "2026-06-26T05:54:22.708Z"
   }
  },
  {
@@ -2134,7 +2058,7 @@
    "status": "active",
    "implementation_date": "2024-01-01",
    "integrator": 13,
-   "implimentor": 15
+   "implementor": 15
   }
  },
  {
@@ -2146,7 +2070,7 @@
    "status": "active",
    "implementation_date": "2024-02-01",
    "integrator": 12,
-   "implimentor": 14
+   "implementor": 14
   }
  },
  {
@@ -2158,7 +2082,7 @@
    "status": "active",
    "implementation_date": "2025-05-10",
    "integrator": 15,
-   "implimentor": 1
+   "implementor": 1
   }
  },
  {
@@ -2170,7 +2094,7 @@
    "status": "active",
    "implementation_date": "2025-06-15",
    "integrator": 12,
-   "implimentor": 1
+   "implementor": 1
   }
  },
  {
@@ -2182,7 +2106,7 @@
    "status": "active",
    "implementation_date": "2025-08-20",
    "integrator": 13,
-   "implimentor": 1
+   "implementor": 1
   }
  },
  {
@@ -2194,7 +2118,7 @@
    "status": "active",
    "implementation_date": "2025-09-01",
    "integrator": 15,
-   "implimentor": 12
+   "implementor": 12
   }
  },
  {
@@ -2206,7 +2130,7 @@
    "status": "active",
    "implementation_date": "2025-10-10",
    "integrator": 1,
-   "implimentor": 10
+   "implementor": 10
   }
  },
  {
@@ -2218,7 +2142,7 @@
    "status": "planned",
    "implementation_date": "2026-12-01",
    "integrator": 13,
-   "implimentor": 7
+   "implementor": 7
   }
  },
  {
@@ -2230,7 +2154,7 @@
    "status": "maintenance",
    "implementation_date": "2023-11-11",
    "integrator": 15,
-   "implimentor": 8
+   "implementor": 8
   }
  },
  {
@@ -2242,7 +2166,7 @@
    "status": "active",
    "implementation_date": "2025-12-30",
    "integrator": 12,
-   "implimentor": 5
+   "implementor": 5
   }
  },
  {
@@ -2254,7 +2178,7 @@
    "status": "active",
    "implementation_date": "2025-04-15",
    "integrator": 1,
-   "implimentor": 10
+   "implementor": 10
   }
  },
  {
@@ -2266,7 +2190,7 @@
    "status": "active",
    "implementation_date": "2025-07-01",
    "integrator": 1,
-   "implimentor": 10
+   "implementor": 10
   }
  },
  {
@@ -2278,7 +2202,7 @@
    "status": "planned",
    "implementation_date": null,
    "integrator": null,
-   "implimentor": null
+   "implementor": null
   }
  },
  {

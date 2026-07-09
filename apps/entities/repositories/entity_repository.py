@@ -21,7 +21,7 @@ class EntityRepository:
         """Добавляет счётчики продуктов и связанных систем.
 
         systems_count — число РАЗЛИЧНЫХ систем, связанных с участником:
-        где он integrator или implimentor в ObjectSystem, ЛИБО чей продукт
+        где он integrator или implementor в ObjectSystem, ЛИБО чей продукт
         принадлежит этому вендору. Считаем подзапросом по AutomationSystem,
         чтобы distinct работал корректно поверх разных связей.
         """
@@ -29,7 +29,7 @@ class EntityRepository:
             AutomationSystem.objects
             .filter(
                 Q(objectsystem__integrator=OuterRef("pk"))
-                | Q(objectsystem__implimentor=OuterRef("pk"))
+                | Q(objectsystem__implementor=OuterRef("pk"))
                 | Q(product__vendor__entity=OuterRef("pk"))
             )
             .order_by()

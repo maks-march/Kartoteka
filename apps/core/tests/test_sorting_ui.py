@@ -12,29 +12,29 @@ from apps.objects.models import Object
 class ObjectListSortingTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("s", "s@s.s", "pw")
-        Object.objects.create(name="Бета", level=2, status="active", city="Б", creator_id=self.user)
-        Object.objects.create(name="Альфа", level=1, status="stopped", city="А", creator_id=self.user)
-        Object.objects.create(name="Гамма", level=1, status="active", city="В", creator_id=self.user)
+        Object.objects.create(object_name="Бета", hierarchy_level=2, status="active", city="Б", creator_id=self.user)
+        Object.objects.create(object_name="Альфа", hierarchy_level=1, status="stopped", city="А", creator_id=self.user)
+        Object.objects.create(object_name="Гамма", hierarchy_level=1, status="active", city="В", creator_id=self.user)
 
     def _order(self, url):
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
-        return [o.name for o in resp.context["objects"]]
+        return [o.object_name for o in resp.context["objects"]]
 
     def test_default_order(self):
         # дефолт репозитория: level, name
         self.assertEqual(self._order("/objects/"), ["Альфа", "Гамма", "Бета"])
 
     def test_single_desc(self):
-        self.assertEqual(self._order("/objects/?ordering=-name"), ["Гамма", "Бета", "Альфа"])
+        self.assertEqual(self._order("/objects/?ordering=-object_name"), ["Гамма", "Бета", "Альфа"])
 
     def test_single_asc(self):
-        self.assertEqual(self._order("/objects/?ordering=name"), ["Альфа", "Бета", "Гамма"])
+        self.assertEqual(self._order("/objects/?ordering=object_name"), ["Альфа", "Бета", "Гамма"])
 
     def test_multi_level_then_name_desc(self):
         # level asc, внутри уровня name desc
         self.assertEqual(
-            self._order("/objects/?ordering=level&ordering=-name"),
+            self._order("/objects/?ordering=hierarchy_level&ordering=-object_name"),
             ["Гамма", "Альфа", "Бета"],
         )
 
@@ -47,31 +47,31 @@ class SortHeaderTagTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("h", "h@h.h", "pw")
-        Object.objects.create(name="A", level=1, creator_id=self.user)
+        Object.objects.create(object_name="A", hierarchy_level=1, creator_id=self.user)
 
     def test_no_sort_links_to_desc(self):
         html = self.client.get("/objects/").content.decode().replace("&amp;", "&")
-        self.assertIn('href="?ordering=-name"', html)
+        self.assertIn('href="?ordering=-object_name"', html)
 
     def test_desc_shows_arrow_and_links_to_asc(self):
-        html = self.client.get("/objects/?ordering=-name").content.decode().replace("&amp;", "&")
+        html = self.client.get("/objects/?ordering=-object_name").content.decode().replace("&amp;", "&")
         self.assertIn("▼", html)
-        self.assertIn('href="?ordering=name"', html)
+        self.assertIn('href="?ordering=object_name"', html)
 
     def test_asc_links_to_removed(self):
         # при возрастании следующий клик убирает сортировку по столбцу
-        html = self.client.get("/objects/?ordering=name").content.decode().replace("&amp;", "&")
+        html = self.client.get("/objects/?ordering=object_name").content.decode().replace("&amp;", "&")
         self.assertIn("▲", html)
         # ссылка заголовка "Название" не должна содержать ordering для name
         start = html.find("Название")
-        # в сегменте ссылки этого заголовка не должно быть ordering=name / -name
-        self.assertNotIn('ordering=name"', html[start - 250:start + 20])
+        # в сегменте ссылки этого заголовка не должно быть ordering=object_name / -name
+        self.assertNotIn('ordering=object_name"', html[start - 250:start + 20])
 
     def test_other_params_preserved(self):
         html = self.client.get("/objects/?search=abc").content.decode().replace("&amp;", "&")
         # ссылка сортировки сохраняет search
         self.assertIn("search=abc", html)
-        self.assertIn("ordering=-name", html)
+        self.assertIn("ordering=-object_name", html)
 
 
 class RelatedFieldSortingTests(TestCase):
@@ -83,12 +83,12 @@ class RelatedFieldSortingTests(TestCase):
         from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         self.user = User.objects.create_user("rel", "r@r.r", "pw")
 
-        cat_b = Category.objects.create(name="Бета", level=1, creator_id=self.user)
-        cat_a = Category.objects.create(name="Альфа", level=1, creator_id=self.user)
+        cat_b = Category.objects.create(category_name="Бета", object_level=1, creator_id=self.user)
+        cat_a = Category.objects.create(category_name="Альфа", object_level=1, creator_id=self.user)
         own_b = OwnerEntity.objects.create(owner_name="Бета-Холдинг")
         own_a = OwnerEntity.objects.create(owner_name="Альфа-Холдинг")
-        Object.objects.create(name="O1", level=1, category=cat_b, owner_entity=own_b, creator_id=self.user)
-        Object.objects.create(name="O2", level=1, category=cat_a, owner_entity=own_a, creator_id=self.user)
+        Object.objects.create(object_name="O1", hierarchy_level=1, category=cat_b, owner_entity=own_b, creator_id=self.user)
+        Object.objects.create(object_name="O2", hierarchy_level=1, category=cat_a, owner_entity=own_a, creator_id=self.user)
 
         self.cls_b = AutomationClass.objects.create(level=2, system_class="Бета-класс")
         self.cls_a = AutomationClass.objects.create(level=2, system_class="Альфа-класс")
@@ -98,12 +98,12 @@ class RelatedFieldSortingTests(TestCase):
         AutomationSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator_id=self.user)
 
     def test_objects_sort_by_category_name(self):
-        resp = self.client.get("/objects/?ordering=category__name")
-        self.assertEqual([o.name for o in resp.context["objects"]], ["O2", "O1"])
+        resp = self.client.get("/objects/?ordering=category__category_name")
+        self.assertEqual([o.object_name for o in resp.context["objects"]], ["O2", "O1"])
 
     def test_objects_sort_by_owner_name_desc(self):
         resp = self.client.get("/objects/?ordering=-owner_entity__owner_name")
-        self.assertEqual([o.name for o in resp.context["objects"]], ["O1", "O2"])
+        self.assertEqual([o.object_name for o in resp.context["objects"]], ["O1", "O2"])
 
     def test_systems_sort_by_class_name(self):
         resp = self.client.get("/system/?ordering=system_class__system_class")
@@ -115,7 +115,7 @@ class RelatedFieldSortingTests(TestCase):
 
     def test_related_sort_header_links_present(self):
         oh = self.client.get("/objects/").content.decode().replace("&amp;", "&")
-        self.assertIn("ordering=-category__name", oh)
+        self.assertIn("ordering=-category__category_name", oh)
         self.assertIn("ordering=-owner_entity__owner_name", oh)
         sh = self.client.get("/system/").content.decode().replace("&amp;", "&")
         self.assertIn("ordering=-system_class__system_class", sh)
@@ -126,7 +126,7 @@ class ViewModeAndNavTests(TestCase):
     def setUp(self):
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("vm", "vm@x.x", "pw")
-        Object.objects.create(name="Объект A", level=1, status="active", city="Омск", creator_id=self.user)
+        Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", city="Омск", creator_id=self.user)
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
         AutomationSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator_id=self.user)
 
@@ -144,7 +144,7 @@ class ViewModeAndNavTests(TestCase):
         self.assertContains(r, "Sys A")
 
     def test_cards_respect_filters(self):
-        Object.objects.create(name="Другой", level=1, status="stopped", creator_id=self.user)
+        Object.objects.create(object_name="Другой", hierarchy_level=1, status="stopped", creator_id=self.user)
         r = self.client.get("/objects/cards/?search=Объект")
         self.assertContains(r, "Объект A")
         # "Другой" не должен попасть в сетку карточек
@@ -164,8 +164,8 @@ class CardCountsTests(TestCase):
         from apps.objects.models import Object, ObjectSystem
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cc", "cc@x.x", "pw")
-        self.o = Object.objects.create(name="Объект A", level=1, status="active", creator_id=self.user)
-        self.o2 = Object.objects.create(name="Объект B", level=1, status="active", creator_id=self.user)
+        self.o = Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", creator_id=self.user)
+        self.o2 = Object.objects.create(object_name="Объект B", hierarchy_level=1, status="active", creator_id=self.user)
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
         self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)
         self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)
@@ -175,7 +175,7 @@ class CardCountsTests(TestCase):
 
     def test_object_systems_count(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
-        counts = {o.name: o.systems_count for o in ObjectUseCase().list()}
+        counts = {o.object_name: o.systems_count for o in ObjectUseCase().list()}
         self.assertEqual(counts["Объект A"], 2)
         self.assertEqual(counts["Объект B"], 1)
 
@@ -202,9 +202,9 @@ class CountSortingTests(TestCase):
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cnt", "cnt@x.x", "pw")
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.a = Object.objects.create(name="A", level=1, status="active", creator_id=self.user)  # 0 систем
-        self.b = Object.objects.create(name="B", level=1, status="active", creator_id=self.user)  # 2
-        self.c = Object.objects.create(name="C", level=1, status="active", creator_id=self.user)  # 1
+        self.a = Object.objects.create(object_name="A", hierarchy_level=1, status="active", creator_id=self.user)  # 0 систем
+        self.b = Object.objects.create(object_name="B", hierarchy_level=1, status="active", creator_id=self.user)  # 2
+        self.c = Object.objects.create(object_name="C", hierarchy_level=1, status="active", creator_id=self.user)  # 1
         self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)  # 2 объекта
         self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)  # 1 объект
         ObjectSystem.objects.create(object=self.b, system=self.s1)
@@ -212,7 +212,7 @@ class CountSortingTests(TestCase):
         ObjectSystem.objects.create(object=self.c, system=self.s1)
 
     def _objs(self, url):
-        return [o.name for o in self.client.get(url).context["objects"]]
+        return [o.object_name for o in self.client.get(url).context["objects"]]
 
     def _syss(self, url):
         return [s.autosystem_name for s in self.client.get(url).context["systems"]]

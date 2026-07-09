@@ -12,15 +12,15 @@
         {% csrf_token %}
         <div class="form-group">
             <label>Название</label>
-            <input type="text" name="name" value="{{ category.name|default:'' }}" required>
+            <input type="text" name="category_name" value="{{ category.category_name|default:'' }}" required>
         </div>
 
         <div class="form-group">
             <label>Уровень</label>
-            <select name="level" required>
-                <option value="1" {% if category.level == 1 %}selected{% endif %}>Уровень 1</option>
-                <option value="2" {% if category.level == 2 %}selected{% endif %}>Уровень 2</option>
-                <option value="3" {% if category.level == 3 %}selected{% endif %}>Уровень 3</option>
+            <select name="object_level" required>
+                <option value="1" {% if category.object_level == 1 %}selected{% endif %}>Уровень 1</option>
+                <option value="2" {% if category.object_level == 2 %}selected{% endif %}>Уровень 2</option>
+                <option value="3" {% if category.object_level == 3 %}selected{% endif %}>Уровень 3</option>
             </select>
         </div>
 

@@ -37,9 +37,9 @@
                             <span class="system-name">— Все категории —</span>
                         </div>
                         {% for cat in all_categories %}
-                        <div class="system-item {% if cat.pk|stringformat:"s" in selected_categories %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}">
-                            <span class="system-name">{{ cat.name }}</span>
-                            <span class="system-info">Уровень {{ cat.level }}</span>
+                        <div class="system-item {% if cat.pk|stringformat:"s" in selected_categories %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.category_name|lower }}">
+                            <span class="system-name">{{ cat.category_name }}</span>
+                            <span class="system-info">Уровень {{ cat.object_level }}</span>
                         </div>
                         {% endfor %}
                         <div id="categoryFilterNoResults" class="picker-empty">

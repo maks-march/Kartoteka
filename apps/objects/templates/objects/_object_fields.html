@@ -17,7 +17,7 @@
     <h2>Основная информация</h2>
     <div class="form-group">
         <label>Полное название</label>
-        <input type="text" name="name" value="{{ object.name|default:'' }}" required>
+        <input type="text" name="object_name" value="{{ object.object_name|default:'' }}" required>
     </div>
     <div class="form-group">
         <label>Короткое название</label>
@@ -38,21 +38,21 @@
 
     <div class="form-group">
         <label>Уровень</label>
-        <select name="level" id="levelSelect" required>
+        <select name="hierarchy_level" id="levelSelect" required>
             {% if child_levels %}
                 {% for lvl in child_levels %}
-                <option value="{{ lvl }}" {% if object.level == lvl %}selected{% endif %}>Уровень {{ lvl }}</option>
+                <option value="{{ lvl }}" {% if object.hierarchy_level == lvl %}selected{% endif %}>Уровень {{ lvl }}</option>
                 {% endfor %}
             {% else %}
-                <option value="1" {% if object.level == 1 %}selected{% endif %}>Уровень 1</option>
-                <option value="2" {% if object.level == 2 %}selected{% endif %}>Уровень 2</option>
-                <option value="3" {% if object.level == 3 %}selected{% endif %}>Уровень 3</option>
+                <option value="1" {% if object.hierarchy_level == 1 %}selected{% endif %}>Уровень 1</option>
+                <option value="2" {% if object.hierarchy_level == 2 %}selected{% endif %}>Уровень 2</option>
+                <option value="3" {% if object.hierarchy_level == 3 %}selected{% endif %}>Уровень 3</option>
             {% endif %}
         </select>
     </div>
 
     {% if not hide_parent %}
-    <div class="form-group" id="parentGroup" style="{% if not object.level or object.level == 1 %}display:none{% endif %}">
+    <div class="form-group" id="parentGroup" style="{% if not object.hierarchy_level or object.hierarchy_level == 1 %}display:none{% endif %}">
         <label>Родитель</label>
         <div class="picker collapsible" data-target="#selectedParentId" data-empty-text="Не указано">
             <div class="picker-header">
@@ -65,19 +65,19 @@
                     <input type="text" class="picker-search" placeholder="Введите название родителя...">
                 </div>
                 <div class="system-results-container" id="parentPicker">
-                    <div class="system-item {% if not object.parent_id %}selected{% endif %}" data-id="" data-keep data-name="">
+                    <div class="system-item {% if not object.parent_object_id %}selected{% endif %}" data-id="" data-keep data-name="">
                         <span class="system-name">— Нет родителя —</span>
                     </div>
                     {% for p in possible_parents %}
-                    <div class="system-item {% if object.parent_id == p.pk %}selected{% endif %}" data-id="{{ p.pk }}" data-name="{{ p.name|lower }}" data-level="{{ p.level }}">
-                        <span class="system-name">{{ p.name }}</span>
-                        <span class="system-info">Уровень {{ p.level }}</span>
+                    <div class="system-item {% if object.parent_object_id == p.pk %}selected{% endif %}" data-id="{{ p.pk }}" data-name="{{ p.object_name|lower }}" data-level="{{ p.hierarchy_level }}">
+                        <span class="system-name">{{ p.object_name }}</span>
+                        <span class="system-info">Уровень {{ p.hierarchy_level }}</span>
                     </div>
                     {% endfor %}
                     <div class="picker-no-results" style="display:none">Родители не найдены</div>
                 </div>
             </div>
-            <input type="hidden" name="parent" id="selectedParentId" value="{{ object.parent_id|default:'' }}">
+            <input type="hidden" name="parent" id="selectedParentId" value="{{ object.parent_object_id|default:'' }}">
         </div>
     </div>
     {% endif %}
@@ -100,9 +100,9 @@
                         <span class="system-name">— Без категории —</span>
                     </div>
                     {% for cat in categories %}
-                    <div class="system-item {% if object.category_id == cat.pk %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.name|lower }}" data-level="{{ cat.level }}">
-                        <span class="system-name">{{ cat.name }}</span>
-                        <span class="system-info">Уровень {{ cat.level }}</span>
+                    <div class="system-item {% if object.category_id == cat.pk %}selected{% endif %}" data-id="{{ cat.pk }}" data-name="{{ cat.category_name|lower }}" data-level="{{ cat.object_level }}">
+                        <span class="system-name">{{ cat.category_name }}</span>
+                        <span class="system-info">Уровень {{ cat.object_level }}</span>
                     </div>
                     {% endfor %}
                     <div class="picker-no-results picker-empty">Категории не найдены</div>
@@ -214,7 +214,7 @@
     </div>
 
     <!-- title (кодовое расположение) — только для 3-го уровня -->
-    <div class="form-group" id="titleGroup" style="{% if object.level != 3 %}display:none{% endif %}">
+    <div class="form-group" id="titleGroup" style="{% if object.hierarchy_level != 3 %}display:none{% endif %}">
         <label>Кодовое расположение (только уровень 3)</label>
         <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
     </div>

@@ -38,7 +38,7 @@
  *   data-class-picker  — селектор пикера выбора основного класса
  *   data-list          — селектор контейнера со списком .system-item
  *   data-inputs        — селектор контейнера для скрытых input'ов подсистем
- *   data-search / data-search-btn / data-no-results — поиск (опционально)
+ *   data-search / data-no-results — поиск (опционально)
  * Блок виден только для составного основного класса (data-composite="1").
  * Доступны только классы того же уровня, кроме самого основного и других
  * составных. При выборе составного авто-отмечается includes (MOM -> MES).
@@ -51,7 +51,6 @@ function initSubsystemsBlock(block) {
     if (!classHidden || !list || !inputs) return;
 
     const searchInput = document.querySelector(block.getAttribute('data-search') || '');
-    const searchBtn = document.querySelector(block.getAttribute('data-search-btn') || '');
     const noResults = document.querySelector(block.getAttribute('data-no-results') || '');
     const classItems = Array.from(
         document.querySelectorAll((block.getAttribute('data-class-picker') || '') + ' .system-item')
@@ -114,7 +113,6 @@ function initSubsystemsBlock(block) {
         });
     });
 
-    if (searchBtn) searchBtn.addEventListener('click', applyEligibility);
     if (searchInput) {
         // Автопоиск по мере ввода
         searchInput.addEventListener('input', applyEligibility);

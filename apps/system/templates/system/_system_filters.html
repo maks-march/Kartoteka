@@ -57,9 +57,9 @@
                             <span class="system-name">— Все объекты —</span>
                         </div>
                         {% for o in all_objects %}
-                        <div class="system-item {% if o.pk|stringformat:"s" in selected_objects %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}">
-                            <span class="system-name">{{ o.name }}</span>
-                            <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}</span>
+                        <div class="system-item {% if o.pk|stringformat:"s" in selected_objects %}selected{% endif %}" data-id="{{ o.pk }}" data-name="{{ o.object_name|lower }}">
+                            <span class="system-name">{{ o.object_name }}</span>
+                            <span class="system-info">Уровень {{ o.hierarchy_level }}{% if o.category %} · {{ o.category.category_name }}{% endif %}</span>
                         </div>
                         {% endfor %}
                         <div id="objectFilterNoResults" class="picker-empty">

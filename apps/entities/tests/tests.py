@@ -42,8 +42,8 @@ class EntityWebEndpointTests(TestCase):
     def test_industry_picker_is_multiselect_without_search(self):
         """Форма: отрасли выбираются множественно (пикер), без поля поиска."""
         from apps.categories.models import Category
-        Category.objects.create(name="Химия", level=1)
-        Category.objects.create(name="Металлургия", level=1)
+        Category.objects.create(category_name="Химия", object_level=1)
+        Category.objects.create(category_name="Металлургия", object_level=1)
         self.client.force_login(self.user)
         h = self.client.get("/entities/create/").content.decode()
         # мультивыбор через пикер, значение пишется в скрытый input с прежним именем
@@ -60,8 +60,8 @@ class EntityWebEndpointTests(TestCase):
 
     def test_industry_picker_preselects_on_edit(self):
         from apps.categories.models import Category
-        Category.objects.create(name="Химия", level=1)
-        Category.objects.create(name="Нефтехимия", level=1)
+        Category.objects.create(category_name="Химия", object_level=1)
+        Category.objects.create(category_name="Нефтехимия", object_level=1)
         e = Entity.objects.create(entity_name="Ред", industries=["Химия"])
         self.client.force_login(self.user)
         h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
@@ -197,10 +197,10 @@ class EntityCountsAndViewsTests(TestCase):
         # sys_role: интегратор — ИнтеграторБ
         self.sys_role = AutomationSystem.objects.create(
             autosystem_name="СистемаСвязь", system_class=self.cls, creator_id=self.user)
-        obj = Object.objects.create(name="Объект", level=1, creator_id=self.user)
+        obj = Object.objects.create(object_name="Объект", hierarchy_level=1, creator_id=self.user)
         ObjectSystem.objects.create(object=obj, system=self.sys_role, integrator=self.integ)
         # интегратор также интегрирует систему на продукте вендора
-        obj2 = Object.objects.create(name="Объект2", level=1, creator_id=self.user)
+        obj2 = Object.objects.create(object_name="Объект2", hierarchy_level=1, creator_id=self.user)
         ObjectSystem.objects.create(object=obj2, system=self.sys_prod, integrator=self.integ)
 
     def _entities(self):
@@ -282,9 +282,9 @@ class DetailSummaryPanelTests(TestCase):
         self.product = VendorProduct.objects.create(product_name="ПродуктП", vendor=self.vendor_profile)
         self.system = AutomationSystem.objects.create(
             autosystem_name="СистемаП", system_class=self.cls, product=self.product, creator_id=self.user)
-        self.obj = Object.objects.create(name="ОбъектП", level=1, creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ОбъектП", hierarchy_level=1, creator_id=self.user)
         ObjectSystem.objects.create(
-            object=self.obj, system=self.system, integrator=self.integ, implimentor=self.impl)
+            object=self.obj, system=self.system, integrator=self.integ, implementor=self.impl)
 
     def test_object_summary_panel(self):
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
@@ -333,7 +333,7 @@ class SummaryLimitTests(TestCase):
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("lim", "lim@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.obj = Object.objects.create(name="ОбъектЛ", level=1, creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ОбъектЛ", hierarchy_level=1, creator_id=self.user)
         # 7 разных интеграторов -> в сводке максимум 5 + «ещё 2»
         for i in range(7):
             e = Entity.objects.create(entity_name=f"Инт{i}", entity_type="system_integrator")
@@ -360,7 +360,7 @@ class EntityTypingProfilesTests(TestCase):
         self.user = User.objects.create_user("typ", "typ@x.x", "pw")
         self.client.force_login(self.user)
         self.cls = AutomationClass.objects.create(level=3, system_class="MES")
-        self.obj = Object.objects.create(name="ЗаводТ", level=1, region="Урал", creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ЗаводТ", hierarchy_level=1, region="Урал", creator_id=self.user)
 
     def _uc(self):
         from apps.entities.usecases.entity_usecase import EntityUseCase
@@ -527,7 +527,7 @@ class EngineeringProfileAPITests(TestCase):
         self.user = User.objects.create_user("api", "api@x.x", "pw")
         self.api = APIClient()
         self.cls = AutomationClass.objects.create(level=3, system_class="MES")
-        self.obj = Object.objects.create(name="ОбъектAPI", level=1, creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ОбъектAPI", hierarchy_level=1, creator_id=self.user)
         vend = EntityUseCase().create(entity_name="ВендAPI", entity_type="vendor")
         self.product = VendorProduct.objects.create(
             product_name="ProdAPI", vendor=VendorProfile.objects.get(entity=vend))

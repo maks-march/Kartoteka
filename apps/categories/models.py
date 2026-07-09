@@ -9,8 +9,8 @@ class Category(models.Model):
         (3, "Level 3"),
     ]
 
-    name = models.CharField(max_length=255)
-    level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
+    category_name = models.CharField(max_length=255)
+    object_level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
     creator_id = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -18,7 +18,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = "Категория объекта"
         verbose_name_plural = "Категории"
-        ordering = ["level", "name"]
+        ordering = ["object_level", "category_name"]
 
     def __str__(self):
-        return f"{self.name} (L{self.level})"
+        return f"{self.category_name} (L{self.object_level})"

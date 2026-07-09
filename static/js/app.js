@@ -45,7 +45,7 @@ window.addEventListener('load', function() {
    - data-target       — селектор скрытого input, куда пишется id выбранного элемента
    - data-enable       — селектор кнопки submit, активируемой после выбора (опционально)
    - data-level-source — селектор внешнего <select> уровня, фильтрующего список (опционально)
-   Внутри: .picker-search, .picker-search-btn, .picker-level-filter (опционально),
+   Внутри: .picker-search, .picker-level-filter (опционально),
    .picker-list со строками .system-item (data-id, data-name, data-level, data-keep)
    и заглушкой .picker-no-results */
 function initPicker(picker) {
@@ -57,7 +57,6 @@ function initPicker(picker) {
     const levelSource = picker.getAttribute('data-level-source')
         ? document.querySelector(picker.getAttribute('data-level-source')) : null;
     const searchInput = picker.querySelector('.picker-search');
-    const searchBtn = picker.querySelector('.picker-search-btn');
     const levelFilter = picker.querySelector('.picker-level-filter');
     const items = Array.from(picker.querySelectorAll('.system-item'));
     const noResults = picker.querySelector('.picker-no-results');
@@ -101,9 +100,6 @@ function initPicker(picker) {
         const keepItem = items.find(function(i) { return i.getAttribute('data-id') === ''; });
         if (keepItem) keepItem.classList.add('selected');
     }
-
-    // Поиск по нажатию кнопки (если кнопка ещё присутствует)
-    if (searchBtn) searchBtn.addEventListener('click', applyFilter);
 
     // Автопоиск: фильтруем по мере ввода (+ Enter не отправляет форму)
     if (searchInput) {

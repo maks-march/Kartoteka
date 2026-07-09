@@ -42,8 +42,8 @@ def category_create(request):
         try:
             usecase.create(
                 user=request.user,
-                name=request.POST.get("name"),
-                level=int(request.POST.get("level")),
+                category_name=request.POST.get("category_name"),
+                object_level=int(request.POST.get("object_level")),
             )
             return redirect("category-list")
         except (ValidationError, Exception) as e:
@@ -63,8 +63,8 @@ def category_edit(request, pk):
             usecase.update(
                 pk=pk,
                 user=request.user,
-                name=request.POST.get("name"),
-                level=int(request.POST.get("level")),
+                category_name=request.POST.get("category_name"),
+                object_level=int(request.POST.get("object_level")),
             )
             return redirect("category-list")
         except (ValidationError, Exception) as e:

@@ -21,7 +21,7 @@ class Object(models.Model):
         ("stopped", "Остановлен"),
     ]
 
-    name = models.CharField(max_length=255, verbose_name="Полное название объекта")
+    object_name = models.CharField(max_length=255, verbose_name="Полное название объекта")
     object_short_name = models.CharField(
         max_length=255, blank=True, default="", verbose_name="Короткое название объекта"
     )
@@ -38,14 +38,13 @@ class Object(models.Model):
         verbose_name="Классификация объекта",
         help_text="Завод, цех, очередь, установка",
     )
-    level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
-    parent = models.ForeignKey(
+    hierarchy_level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
+    parent_object = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="children",
-        limit_choices_to={"is_deleted": False},
     )
     category = models.ForeignKey(
         "categories.Category",
@@ -104,7 +103,6 @@ class Object(models.Model):
         max_length=255, blank=True, default="", verbose_name="Код ФИАС"
     )
 
-    is_deleted = models.BooleanField(default=False)
     creator_id = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -112,11 +110,11 @@ class Object(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["level", "name"]
+        ordering = ["hierarchy_level", "object_name"]
         verbose_name = "Объект производства"
         verbose_name_plural = "Объекты производства"
     def __str__(self):
-        return f"{self.name} (L{self.level})"
+        return f"{self.object_name} (L{self.hierarchy_level})"
 
     @property
     def address_line(self):
@@ -127,7 +125,7 @@ class Object(models.Model):
         """
         parts = [self.country, self.region, self.city, self.street, self.house]
         line = ", ".join(p.strip() for p in parts if p and p.strip())
-        if self.level == 3 and self.title and self.title.strip():
+        if self.hierarchy_level == 3 and self.title and self.title.strip():
             extra = self.title.strip()
             line = f"{line}, {extra}" if line else extra
         return line
@@ -175,7 +173,7 @@ class ObjectSystem(models.Model):
         related_name="integrated_object_systems",
         verbose_name="Интегратор",
     )
-    implimentor = models.ForeignKey(
+    implementor = models.ForeignKey(
         Entity,
         on_delete=models.SET_NULL,
         null=True,

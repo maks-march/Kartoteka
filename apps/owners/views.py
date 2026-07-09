@@ -25,7 +25,7 @@ def owner_entity_detail(request, pk):
     usecase = OwnerEntityUseCase()
     owner_entity = usecase.get(pk)
     child_entities = owner_entity.subsidiaries.all().order_by("owner_name")
-    objects = owner_entity.owned_objects.filter(is_deleted=False).select_related("category", "parent")
+    objects = owner_entity.owned_objects.all().select_related("category", "parent_object")
     return render(request, "owners/owner_entity_detail.html", {
         "owner_entity": owner_entity,
         "child_entities": child_entities,

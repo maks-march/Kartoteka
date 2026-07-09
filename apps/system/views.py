@@ -123,13 +123,13 @@ def system_detail(request, pk):
     integrators = _summary_group(
         (os.integrator for os in system_objects if os.integrator), key=lambda e: e.pk
     )
-    implimentors = _summary_group(
-        (os.implimentor for os in system_objects if os.implimentor), key=lambda e: e.pk
+    implementors = _summary_group(
+        (os.implementor for os in system_objects if os.implementor), key=lambda e: e.pk
     )
     summary = {
         "objects_count": len(system_objects),
         "integrators": integrators,
-        "implimentors": implimentors,
+        "implementors": implementors,
     }
     return render(request, "system/system_detail.html", {
         "system": obj,
@@ -232,7 +232,7 @@ def system_attach_object(request, pk):
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
                 integrator=request.POST.get("integrator") or None,
-                implimentor=request.POST.get("implimentor") or None,
+                implementor=request.POST.get("implementor") or None,
             )
             return redirect("system-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -301,7 +301,7 @@ def _product_form_context(**extra):
         "classes": AutomationClassUseCase().list(),
         "product_type_choices": VendorProduct.PRODUCT_TYPE_CHOICES,
         # Отрасли-подсказки: категории 1-го уровня (без связи, только значения).
-        "industry_suggestions": [c.name for c in CategoryUseCase().list(level=1)],
+        "industry_suggestions": [c.category_name for c in CategoryUseCase().list(level=1)],
     }
     ctx.update(extra)
     return ctx

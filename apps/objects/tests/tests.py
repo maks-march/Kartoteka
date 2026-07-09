@@ -11,8 +11,8 @@ from apps.system.models import AutomationSystem, AutomationClass
 class ObjectsEndpointTestMixin:
     def create_base_data(self):
         self.user = User.objects.create_user(username="user", password="password")
-        self.category_l1 = Category.objects.create(name="Площадка", level=1, creator_id=self.user)
-        self.category_l2 = Category.objects.create(name="Цех", level=2, creator_id=self.user)
+        self.category_l1 = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
+        self.category_l2 = Category.objects.create(category_name="Цех", object_level=2, creator_id=self.user)
         self.owner_entity = OwnerEntity.objects.create(owner_name="ООО Ромашка")
         self.automation_class = AutomationClass.objects.create(
             level=2,
@@ -30,16 +30,16 @@ class ObjectsEndpointTestMixin:
             creator_id=self.user,
         )
         self.object = Object.objects.create(
-            name="Завод",
-            level=1,
+            object_name="Завод",
+            hierarchy_level=1,
             category=self.category_l1,
             owner_entity=self.owner_entity,
             creator_id=self.user,
         )
         self.child = Object.objects.create(
-            name="Цех 1",
-            level=2,
-            parent=self.object,
+            object_name="Цех 1",
+            hierarchy_level=2,
+            parent_object=self.object,
             category=self.category_l2,
             owner_entity=self.owner_entity,
             creator_id=self.user,
@@ -78,29 +78,29 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post("/objects/create/", {
-            "name": "Новый завод",
-            "level": "1",
+            "object_name": "Новый завод",
+            "hierarchy_level": "1",
             "parent": "",
             "category": str(self.category_l1.pk),
             "owner_entity": str(self.owner_entity.pk),
         })
         self.assertEqual(response.status_code, 302)
-        created = Object.objects.get(name="Новый завод")
+        created = Object.objects.get(object_name="Новый завод")
         self.assertEqual(created.owner_entity_id, self.owner_entity.pk)
 
         response = self.client.get(f"/objects/{created.pk}/edit/")
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(f"/objects/{created.pk}/edit/", {
-            "name": "Новый завод 2",
-            "level": "1",
+            "object_name": "Новый завод 2",
+            "hierarchy_level": "1",
             "parent": "",
             "category": str(self.category_l1.pk),
             "owner_entity": str(self.owner_entity.pk),
         })
         self.assertEqual(response.status_code, 302)
         created.refresh_from_db()
-        self.assertEqual(created.name, "Новый завод 2")
+        self.assertEqual(created.object_name, "Новый завод 2")
 
     def test_authenticated_object_add_child_endpoint(self):
         self.client.force_login(self.user)
@@ -110,13 +110,13 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
 
         response = self.client.post(f"/objects/{self.object.pk}/add-child/", {
             "mode": "create",
-            "name": "Цех 2",
-            "level": "2",
+            "object_name": "Цех 2",
+            "hierarchy_level": "2",
             "category": str(self.category_l2.pk),
             "owner_entity": str(self.owner_entity.pk),
         })
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(Object.objects.filter(name="Цех 2", parent=self.object).exists())
+        self.assertTrue(Object.objects.filter(object_name="Цех 2", parent_object=self.object).exists())
 
     def test_authenticated_object_system_attach_edit_delete_endpoints(self):
         self.client.force_login(self.user)
@@ -151,12 +151,12 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ObjectSystem.objects.filter(pk=link.pk).exists())
 
-    def test_authenticated_object_delete_endpoint_soft_deletes(self):
+    def test_authenticated_object_delete_endpoint_deletes(self):
         self.client.force_login(self.user)
-        response = self.client.post(f"/objects/{self.child.pk}/delete/")
+        child_pk = self.child.pk
+        response = self.client.post(f"/objects/{child_pk}/delete/")
         self.assertEqual(response.status_code, 302)
-        self.child.refresh_from_db()
-        self.assertTrue(self.child.is_deleted)
+        self.assertFalse(Object.objects.filter(pk=child_pk).exists())
 
 
 class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
@@ -178,8 +178,8 @@ class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
 
     def test_object_api_create_requires_authentication(self):
         response = self.api_client.post("/api/objects/objects/", {
-            "name": "API объект",
-            "level": 1,
+            "object_name": "API объект",
+            "hierarchy_level": 1,
             "category": self.category_l1.pk,
             "owner_entity": self.owner_entity.pk,
         }, format="json")
@@ -189,8 +189,8 @@ class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.api_client.force_authenticate(user=self.user)
 
         response = self.api_client.post("/api/objects/objects/", {
-            "name": "API объект",
-            "level": 1,
+            "object_name": "API объект",
+            "hierarchy_level": 1,
             "category": self.category_l1.pk,
             "owner_entity": self.owner_entity.pk,
         }, format="json")
@@ -199,18 +199,17 @@ class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.data["owner_entity"], self.owner_entity.pk)
 
         response = self.api_client.patch(f"/api/objects/objects/{object_id}/", {
-            "name": "API объект изменен",
-            "level": 1,
+            "object_name": "API объект изменен",
+            "hierarchy_level": 1,
             "category": self.category_l1.pk,
             "owner_entity": self.owner_entity.pk,
         }, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], "API объект изменен")
+        self.assertEqual(response.data["object_name"], "API объект изменен")
 
         response = self.api_client.delete(f"/api/objects/objects/{object_id}/")
         self.assertEqual(response.status_code, 204)
-        deleted = Object.objects.get(pk=object_id)
-        self.assertTrue(deleted.is_deleted)
+        self.assertFalse(Object.objects.filter(pk=object_id).exists())
 
 
 class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
@@ -306,7 +305,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="user", password="password")
-        self.category = Category.objects.create(name="Площадка", level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
 
         # Дерево владельцев: holding -> daughter -> grandchild
         self.holding = OwnerEntity.objects.create(owner_name="АО Холдинг")
@@ -324,24 +323,24 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         self.other = OwnerEntity.objects.create(owner_name="ПАО Чужой")
 
         self.obj_holding = Object.objects.create(
-            name="Объект холдинга", level=1, category=self.category,
+            object_name="Объект холдинга", hierarchy_level=1, category=self.category,
             owner_entity=self.holding, creator_id=self.user,
         )
         self.obj_daughter = Object.objects.create(
-            name="Объект дочки", level=1, category=self.category,
+            object_name="Объект дочки", hierarchy_level=1, category=self.category,
             owner_entity=self.daughter, creator_id=self.user,
         )
         self.obj_grandchild = Object.objects.create(
-            name="Объект внучки", level=1, category=self.category,
+            object_name="Объект внучки", hierarchy_level=1, category=self.category,
             owner_entity=self.grandchild, creator_id=self.user,
         )
         self.obj_other = Object.objects.create(
-            name="Чужой объект", level=1, category=self.category,
+            object_name="Чужой объект", hierarchy_level=1, category=self.category,
             owner_entity=self.other, creator_id=self.user,
         )
 
     def _names(self, qs):
-        return set(qs.values_list("name", flat=True))
+        return set(qs.values_list("object_name", flat=True))
 
     def test_filter_by_root_includes_all_descendants(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
@@ -384,7 +383,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         self.assertEqual(response.status_code, 200)
         objects = response.context["objects"]
         self.assertEqual(
-            set(o.name for o in objects),
+            set(o.object_name for o in objects),
             {"Объект холдинга", "Объект дочки", "Объект внучки"},
         )
 
@@ -394,7 +393,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
             "/api/objects/objects/", {"owner_entity": str(self.holding.pk)}
         )
         self.assertEqual(response.status_code, 200)
-        names = set(item["name"] for item in response.data)
+        names = set(item["object_name"] for item in response.data)
         self.assertEqual(
             names, {"Объект холдинга", "Объект дочки", "Объект внучки"}
         )
@@ -406,9 +405,9 @@ class ObjectNewFieldsTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="user", password="password")
-        self.cat1 = Category.objects.create(name="Площадка", level=1, creator_id=self.user)
-        self.cat2 = Category.objects.create(name="Цех", level=2, creator_id=self.user)
-        self.cat3 = Category.objects.create(name="Установка", level=3, creator_id=self.user)
+        self.cat1 = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
+        self.cat2 = Category.objects.create(category_name="Цех", object_level=2, creator_id=self.user)
+        self.cat3 = Category.objects.create(category_name="Установка", object_level=3, creator_id=self.user)
         self.api_client = APIClient()
 
     # ---------- usecase: создание с новыми полями ----------
@@ -416,8 +415,8 @@ class ObjectNewFieldsTests(TestCase):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         obj = ObjectUseCase().create(
             user=self.user,
-            name="Завод №1",
-            level=1,
+            object_name="Завод №1",
+            hierarchy_level=1,
             category=self.cat1.pk,
             object_short_name="З1",
             object_class="завод",
@@ -438,7 +437,7 @@ class ObjectNewFieldsTests(TestCase):
 
     def test_status_defaults_to_active(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
-        obj = ObjectUseCase().create(user=self.user, name="Без статуса", level=1)
+        obj = ObjectUseCase().create(user=self.user, object_name="Без статуса", hierarchy_level=1)
         self.assertEqual(obj.status, "active")
 
     # ---------- наследование адреса от родителя ----------
@@ -446,12 +445,12 @@ class ObjectNewFieldsTests(TestCase):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
-            user=self.user, name="Завод", level=1, category=self.cat1.pk,
+            user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk,
             country="Россия", region="МО", city="Подольск", street="Ленина",
             house="1", fias_code="ABC", title="",
         )
         child = uc.create(
-            user=self.user, name="Цех 1", level=2, parent=parent.pk, category=self.cat2.pk,
+            user=self.user, object_name="Цех 1", hierarchy_level=2, parent=parent.pk, category=self.cat2.pk,
         )
         child.refresh_from_db()
         self.assertEqual(child.country, "Россия")
@@ -463,10 +462,10 @@ class ObjectNewFieldsTests(TestCase):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
-            user=self.user, name="Завод", level=1, category=self.cat1.pk, city="Подольск",
+            user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk, city="Подольск",
         )
         child = uc.create(
-            user=self.user, name="Цех 1", level=2, parent=parent.pk,
+            user=self.user, object_name="Цех 1", hierarchy_level=2, parent=parent.pk,
             category=self.cat2.pk, city="Климовск",
         )
         child.refresh_from_db()
@@ -476,7 +475,7 @@ class ObjectNewFieldsTests(TestCase):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
-            user=self.user, name="Установка", level=3, parent=None,
+            user=self.user, object_name="Установка", hierarchy_level=3, parent=None,
             category=self.cat3.pk, city="Тула", title="Цех-А-стойка-3",
         )
         defaults = uc.get_parent_address_defaults(parent.pk)
@@ -489,14 +488,14 @@ class ObjectNewFieldsTests(TestCase):
         from django.core.exceptions import ValidationError as DjangoValidationError
         with self.assertRaises(DjangoValidationError):
             ObjectUseCase().create(
-                user=self.user, name="Цех", level=2, category=self.cat2.pk,
+                user=self.user, object_name="Цех", hierarchy_level=2, category=self.cat2.pk,
                 title="недопустимо",
             )
 
     def test_title_allowed_for_level_3_on_create(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         obj = ObjectUseCase().create(
-            user=self.user, name="Установка", level=3, category=self.cat3.pk,
+            user=self.user, object_name="Установка", hierarchy_level=3, category=self.cat3.pk,
             title="Цех-А-стойка-3",
         )
         self.assertEqual(obj.title, "Цех-А-стойка-3")
@@ -505,7 +504,7 @@ class ObjectNewFieldsTests(TestCase):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from django.core.exceptions import ValidationError as DjangoValidationError
         uc = ObjectUseCase()
-        obj = uc.create(user=self.user, name="Цех", level=2, category=self.cat2.pk)
+        obj = uc.create(user=self.user, object_name="Цех", hierarchy_level=2, category=self.cat2.pk)
         with self.assertRaises(DjangoValidationError):
             uc.update(pk=obj.pk, user=self.user, title="нельзя")
 
@@ -513,8 +512,8 @@ class ObjectNewFieldsTests(TestCase):
     def test_web_create_with_new_fields_and_title_level3(self):
         self.client.force_login(self.user)
         response = self.client.post("/objects/create/", {
-            "name": "Установка X",
-            "level": "3",
+            "object_name": "Установка X",
+            "hierarchy_level": "3",
             "category": str(self.cat3.pk),
             "object_class": "установка",
             "status": "active",
@@ -522,7 +521,7 @@ class ObjectNewFieldsTests(TestCase):
             "title": "Цех-Б-3",
         })
         self.assertEqual(response.status_code, 302)
-        obj = Object.objects.get(name="Установка X")
+        obj = Object.objects.get(object_name="Установка X")
         self.assertEqual(obj.object_class, "установка")
         self.assertEqual(obj.city, "Самара")
         self.assertEqual(obj.title, "Цех-Б-3")
@@ -531,21 +530,21 @@ class ObjectNewFieldsTests(TestCase):
         self.client.force_login(self.user)
         # title в POST есть, но уровень не 3 -> view не должен его сохранять (и не падать)
         response = self.client.post("/objects/create/", {
-            "name": "Цех Y",
-            "level": "2",
+            "object_name": "Цех Y",
+            "hierarchy_level": "2",
             "category": str(self.cat2.pk),
             "title": "проигнорируется",
         })
         self.assertEqual(response.status_code, 302)
-        obj = Object.objects.get(name="Цех Y")
+        obj = Object.objects.get(object_name="Цех Y")
         self.assertEqual(obj.title, "")
 
     # ---------- API ----------
     def test_api_create_with_new_fields(self):
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/objects/objects/", {
-            "name": "API Установка",
-            "level": 3,
+            "object_name": "API Установка",
+            "hierarchy_level": 3,
             "category": self.cat3.pk,
             "object_class": "установка",
             "status": "stopped",
@@ -561,8 +560,8 @@ class ObjectNewFieldsTests(TestCase):
     def test_api_create_title_rejected_for_non_level3(self):
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/objects/objects/", {
-            "name": "API Цех",
-            "level": 2,
+            "object_name": "API Цех",
+            "hierarchy_level": 2,
             "category": self.cat2.pk,
             "title": "недопустимо",
         }, format="json")
@@ -571,14 +570,14 @@ class ObjectNewFieldsTests(TestCase):
     def test_api_create_inherits_parent_address(self):
         self.api_client.force_authenticate(user=self.user)
         parent_resp = self.api_client.post("/api/objects/objects/", {
-            "name": "API Завод", "level": 1, "category": self.cat1.pk,
+            "object_name": "API Завод", "hierarchy_level": 1, "category": self.cat1.pk,
             "city": "Уфа", "country": "Россия",
         }, format="json")
         self.assertEqual(parent_resp.status_code, 201)
         parent_id = parent_resp.data["id"]
 
         child_resp = self.api_client.post("/api/objects/objects/", {
-            "name": "API Цех", "level": 2, "parent": parent_id, "category": self.cat2.pk,
+            "object_name": "API Цех", "hierarchy_level": 2, "parent": parent_id, "category": self.cat2.pk,
         }, format="json")
         self.assertEqual(child_resp.status_code, 201)
         self.assertEqual(child_resp.data["city"], "Уфа")
@@ -591,21 +590,21 @@ class ObjectAddressLineTests(TestCase):
 
     def test_address_line_joins_nonempty_parts(self):
         obj = Object.objects.create(
-            name="O", level=1, country="Россия", region="", city="Москва",
+            object_name="O", hierarchy_level=1, country="Россия", region="", city="Москва",
             street="Ленина", house="1", creator_id=self.user,
         )
         self.assertEqual(obj.address_line, "Россия, Москва, Ленина, 1")
 
     def test_address_line_empty_when_no_address(self):
-        obj = Object.objects.create(name="O", level=1, creator_id=self.user)
+        obj = Object.objects.create(object_name="O", hierarchy_level=1, creator_id=self.user)
         self.assertEqual(obj.address_line, "")
 
     def test_address_line_appends_title_only_for_level_3(self):
         l3 = Object.objects.create(
-            name="O3", level=3, city="Казань", title="Цех-А-3", creator_id=self.user,
+            object_name="O3", hierarchy_level=3, city="Казань", title="Цех-А-3", creator_id=self.user,
         )
         self.assertEqual(l3.address_line, "Казань, Цех-А-3")
         # на уровне != 3 title в строку не попадает (даже если каким-то образом задан)
-        l2 = Object.objects.create(name="O2", level=2, city="Казань", creator_id=self.user)
+        l2 = Object.objects.create(object_name="O2", hierarchy_level=2, city="Казань", creator_id=self.user)
         l2.title = "не должен показаться"
         self.assertEqual(l2.address_line, "Казань")

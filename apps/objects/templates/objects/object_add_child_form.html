@@ -1,14 +1,14 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Добавить ребенка — {{ parent.name }}{% endblock %}
+{% block title %}Добавить ребенка — {{ parent.object_name }}{% endblock %}
 
 {% block content %}
 <div class="card form-card">
     <h1>Добавить ребенка</h1>
     <p style="margin-bottom:15px; color:#666">
-        Родитель: <a href="{% url 'object-detail' parent.pk %}">{{ parent.name }}</a>
-        <span class="tag tag-{{ parent.level }}">Уровень {{ parent.level }}</span>
+        Родитель: <a href="{% url 'object-detail' parent.pk %}">{{ parent.object_name }}</a>
+        <span class="tag tag-{{ parent.hierarchy_level }}">Уровень {{ parent.hierarchy_level }}</span>
     </p>
 
     {% if error %}<p class="error">{{ error }}</p>{% endif %}
@@ -37,14 +37,14 @@
                         </select>
                         <input type="text" class="picker-search" placeholder="Введите название объекта..." style="margin-bottom:0">
                     </div>
-                    <p class="hint" style="margin-top:5px">Доступны только объекты уровнем ниже родителя (уровень &gt; {{ parent.level }}).</p>
+                    <p class="hint" style="margin-top:5px">Доступны только объекты уровнем ниже родителя (уровень &gt; {{ parent.hierarchy_level }}).</p>
                 </div>
 
                 <div class="system-results-container">
                     {% for o in possible_children %}
-                    <div class="system-item" data-id="{{ o.pk }}" data-name="{{ o.name|lower }}" data-level="{{ o.level }}">
-                        <span class="system-name">{{ o.name }}</span>
-                        <span class="system-info">Уровень {{ o.level }}{% if o.category %} · {{ o.category.name }}{% endif %}{% if o.parent %} · Родитель: {{ o.parent.name }}{% endif %}</span>
+                    <div class="system-item" data-id="{{ o.pk }}" data-name="{{ o.object_name|lower }}" data-level="{{ o.hierarchy_level }}">
+                        <span class="system-name">{{ o.object_name }}</span>
+                        <span class="system-info">Уровень {{ o.hierarchy_level }}{% if o.category %} · {{ o.category.category_name }}{% endif %}{% if o.parent_object %} · Родитель: {{ o.parent_object.object_name }}{% endif %}</span>
                     </div>
                     {% endfor %}
                     <div class="picker-no-results" style="{% if possible_children %}display:none; {% endif %}padding:20px; text-align:center; color:#999;">

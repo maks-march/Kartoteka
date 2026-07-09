@@ -35,13 +35,13 @@
 
     <table>
         <thead>
-            <tr><th>{% sort_header "name" "Название" %}</th><th>{% sort_header "level" "Уровень" %}</th></tr>
+            <tr><th>{% sort_header "category_name" "Название" %}</th><th>{% sort_header "object_level" "Уровень" %}</th></tr>
         </thead>
         <tbody>
             {% for cat in categories %}
             <tr>
-                <td><a href="{% url 'category-detail' cat.pk %}">{{ cat.name }}</a></td>
-                <td><span class="tag tag-{{ cat.level }}">Уровень {{ cat.level }}</span></td>
+                <td><a href="{% url 'category-detail' cat.pk %}">{{ cat.category_name }}</a></td>
+                <td><span class="tag tag-{{ cat.object_level }}">Уровень {{ cat.object_level }}</span></td>
             </tr>
             {% empty %}
             <tr><td colspan="2" class="empty">Категории не найдены</td></tr>

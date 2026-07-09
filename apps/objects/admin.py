@@ -5,14 +5,14 @@ from apps.objects.models import Object, ObjectSystem
 
 @admin.register(Object)
 class ObjectAdmin(admin.ModelAdmin):
-    list_display = ["name", "object_class", "level", "parent", "category", "owner_entity", "status", "city", "is_deleted", "created_at"]
-    list_filter = ["level", "status", "is_reconstructed", "is_deleted", "created_at"]
-    search_fields = ["name", "object_short_name", "object_law_name", "city", "title"]
-    raw_id_fields = ["parent", "owner_entity"]
+    list_display = ["object_name", "object_class", "hierarchy_level", "parent_object", "category", "owner_entity", "status", "city", "created_at"]
+    list_filter = ["hierarchy_level", "status", "is_reconstructed", "created_at"]
+    search_fields = ["object_name", "object_short_name", "object_law_name", "city", "title"]
+    raw_id_fields = ["parent_object", "owner_entity"]
 
 
 @admin.register(ObjectSystem)
 class ObjectSystemAdmin(admin.ModelAdmin):
-    list_display = ["object", "system", "status", "implementation_date", "integrator", "implimentor"]
+    list_display = ["object", "system", "status", "implementation_date", "integrator", "implementor"]
     list_filter = ["status", "implementation_date"]
-    raw_id_fields = ["object", "system", "integrator", "implimentor"]
+    raw_id_fields = ["object", "system", "integrator", "implementor"]
