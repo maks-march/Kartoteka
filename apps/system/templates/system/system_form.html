@@ -40,7 +40,6 @@
                     <div class="picker-body">
                         <div class="search-wrapper">
                             <input type="text" class="picker-search" placeholder="Введите класс системы..." style="margin-bottom:0">
-                            <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                         </div>
                         <div class="system-results-container">
                             {% for cls in classes %}
@@ -70,7 +69,6 @@
                 <p class="hint" style="margin-top:-2px; margin-bottom:8px">Выберите классы того же уровня, которые входят в эту систему.</p>
                 <div class="search-wrapper">
                     <input type="text" id="subsystemSearch" placeholder="Введите класс..." style="margin-bottom:0">
-                    <button type="button" id="subsystemSearchBtn" class="btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container filter-list-160" id="subsystemList">
                     {% for cls in classes %}
@@ -102,7 +100,6 @@
                     <div class="picker-body">
                         <div class="search-wrapper">
                             <input type="text" class="picker-search" placeholder="Введите название продукта..." style="margin-bottom:0">
-                            <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                         </div>
                         <div class="system-results-container">
                             <div class="system-item {% if not system.product_id %}selected{% endif %}" data-id="" data-keep>

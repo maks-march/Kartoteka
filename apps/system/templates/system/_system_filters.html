@@ -22,16 +22,20 @@
                     <span class="fc-caret">▾</span>
                 </div>
                 <div class="filter-collapse-body">
+                    <div class="search-wrapper">
+                        <input type="text" id="classFilterSearch" placeholder="Введите класс..." style="margin-bottom:0">
+                    </div>
                     <div class="system-results-container filter-list-160" id="classFilterPicker">
-                        <div class="system-item {% if not request.GET.system_class %}selected{% endif %}" data-id="" data-name="">
+                        <div class="system-item {% if not request.GET.system_class %}selected{% endif %}" data-id="" data-keep data-name="">
                             <span class="system-name">— Все классы —</span>
                         </div>
                         {% for cls in classes %}
-                        <div class="system-item {% if request.GET.system_class == cls.pk|stringformat:"s" %}selected{% endif %}" data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }}">
+                        <div class="system-item {% if request.GET.system_class == cls.pk|stringformat:"s" %}selected{% endif %}" data-id="{{ cls.pk }}" data-name="{{ cls.system_class|lower }} {{ cls.name_ru|lower }} l{{ cls.level }}">
                             <span class="system-name">L{{ cls.level }} - {{ cls.system_class }}</span>
                             <span class="system-info">Уровень {{ cls.level }}</span>
                         </div>
                         {% endfor %}
+                        <div id="classFilterNoResults" class="picker-empty">Классы не найдены</div>
                     </div>
                     <input type="hidden" name="system_class" id="selectedClassFilter" value="{{ request.GET.system_class|default:'' }}">
                 </div>
@@ -47,7 +51,6 @@
                 <div class="filter-collapse-body">
                     <div class="search-wrapper">
                         <input type="text" id="objectFilterSearch" placeholder="Введите название объекта..." style="margin-bottom:0">
-                        <button type="button" id="objectFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
                     <div class="system-results-container filter-list-160" id="objectFilterList">
                         <div class="system-item {% if not selected_objects %}selected{% endif %}" data-id="">
@@ -81,7 +84,6 @@
                 <div class="filter-collapse-body">
                     <div class="search-wrapper">
                         <input type="text" id="productFilterSearch" placeholder="Введите название продукта..." style="margin-bottom:0">
-                        <button type="button" id="productFilterBtn" class="btn btn-secondary">Найти</button>
                     </div>
                     <div class="system-results-container filter-list-160" id="productFilterList">
                         <div class="system-item {% if not selected_products %}selected{% endif %}" data-id="">

@@ -102,11 +102,12 @@ function initPicker(picker) {
         if (keepItem) keepItem.classList.add('selected');
     }
 
-    // Поиск по нажатию кнопки
+    // Поиск по нажатию кнопки (если кнопка ещё присутствует)
     if (searchBtn) searchBtn.addEventListener('click', applyFilter);
 
-    // Поиск по Enter в поле ввода
+    // Автопоиск: фильтруем по мере ввода (+ Enter не отправляет форму)
     if (searchInput) {
+        searchInput.addEventListener('input', applyFilter);
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -243,9 +244,9 @@ function initIndustryPicker(picker) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // .industry-picker и .multi-id-picker — множественный выбор, обрабатываются отдельно
-    document.querySelectorAll('.picker:not(.industry-picker):not(.multi-id-picker)').forEach(initPicker);
-    document.querySelectorAll('.picker.collapsible:not(.industry-picker)').forEach(initCollapsiblePicker);
+    // .industry-picker / .capsule-picker / .single-id-picker — обрабатываются в entity_form.js
+    document.querySelectorAll('.picker:not(.industry-picker):not(.capsule-picker):not(.single-id-picker)').forEach(initPicker);
+    document.querySelectorAll('.picker.collapsible:not(.industry-picker):not(.single-id-picker):not(.capsule-picker)').forEach(initCollapsiblePicker);
     document.querySelectorAll('.industry-picker').forEach(initIndustryPicker);
     document.querySelectorAll('.mode-toggle').forEach(initModeToggle);
 });
@@ -308,6 +309,8 @@ function setupMultiFilterPicker(searchId, btnId, listId, inputsContainerId, noRe
 
     if (searchBtn) searchBtn.addEventListener('click', filterItems);
     if (searchInput) {
+        // Автопоиск по мере ввода
+        searchInput.addEventListener('input', filterItems);
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') { e.preventDefault(); filterItems(); }
         });

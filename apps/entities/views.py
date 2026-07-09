@@ -95,13 +95,48 @@ def _form_context(**extra):
     regions = sorted({
         r for r in Object.objects.exclude(region="").values_list("region", flat=True) if r
     })
+    from apps.system.models import VendorProduct
+
+    entity = extra.get("entity")
+    # Для блока вендора: сначала продукты этого вендора (own), затем свободные (free).
+    own_products = []
+    if entity is not None and getattr(entity, "is_vendor_type", False):
+        vp = getattr(entity, "vendor_profile", None)
+        if vp is not None:
+            own_products = list(vp.products.select_related("system_class"))
+    free_products = list(
+        VendorProduct.objects.filter(vendor__isnull=True).select_related("system_class")
+    )
+    classes = AutomationClassUseCase().list()
+    # Справочник классов для combobox компетенции по функции: [{id, label, desc}]
+    competency_classes_json = [
+        {
+            "id": c.pk,
+            "label": "L{0} - {1}".format(c.level, c.system_class),
+            "desc": c.description or "",
+        }
+        for c in classes
+    ]
+    # Существующие пары компетенции (для предзаполнения строк в JS).
+    competency_pairs_json = []
+    if entity is not None and getattr(entity, "is_engineering_type", False):
+        prof = getattr(entity, "engineering_profile", None)
+        if prof is not None:
+            competency_pairs_json = [
+                {"class_id": fc.system_class_id, "industry": fc.industry}
+                for fc in prof.function_competencies.all()
+            ]
     ctx = {
         "entity_type_choices": Entity.ENTITY_TYPE_CHOICES,
         "industry_suggestions": industries,
         "region_suggestions": regions,
         "all_objects": ObjectUseCase().list(),
         "all_products": VendorProductUseCase().list(),
-        "all_classes": AutomationClassUseCase().list(),
+        "all_classes": classes,
+        "own_products": own_products,
+        "free_products": free_products,
+        "competency_classes_json": competency_classes_json,
+        "competency_pairs_json": competency_pairs_json,
     }
     ctx.update(extra)
     return ctx
@@ -192,6 +227,7 @@ def entity_create(request):
                 **_extract_entity_fields(request.POST),
             )
             usecase.save_engineering_profile(entity, **_extract_engineering_fields(request.POST))
+            usecase.save_vendor_products(entity, product_ids=request.POST.getlist("vendor_products"))
             return redirect("entity-detail", pk=entity.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
@@ -213,6 +249,7 @@ def entity_edit(request, pk):
                 **_extract_entity_fields(request.POST),
             )
             usecase.save_engineering_profile(entity, **_extract_engineering_fields(request.POST))
+            usecase.save_vendor_products(entity, product_ids=request.POST.getlist("vendor_products"))
             return redirect("entity-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)

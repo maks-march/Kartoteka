@@ -63,7 +63,6 @@
             <div class="picker-body">
                 <div class="search-wrapper">
                     <input type="text" class="picker-search" placeholder="Введите название родителя...">
-                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container" id="parentPicker">
                     <div class="system-item {% if not object.parent_id %}selected{% endif %}" data-id="" data-keep data-name="">
@@ -95,7 +94,6 @@
             <div class="picker-body">
                 <div class="search-wrapper">
                     <input type="text" class="picker-search" placeholder="Введите название категории..." style="margin-bottom:0">
-                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container">
                     <div class="system-item {% if not object.category_id %}selected{% endif %}" data-id="" data-keep data-name="">
@@ -126,7 +124,6 @@
             <div class="picker-body">
                 <div class="search-wrapper">
                     <input type="text" class="picker-search" placeholder="Введите название компании..." style="margin-bottom:0">
-                    <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container">
                     <div class="system-item {% if not object.owner_entity_id %}selected{% endif %}" data-id="" data-keep>

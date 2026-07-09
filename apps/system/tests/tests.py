@@ -620,6 +620,18 @@ class VendorProductFieldsTests(TestCase):
         self.assertIn('id="specsList"', h)
         self.assertIn('id="specsAddBtn"', h)
 
+    def test_form_vendor_is_picker_with_autosearch(self):
+        """Вендор в форме продукта — раскрываемый пикер с поиском, не <select>."""
+        self.client.force_login(self.user)
+        h = self.client.get("/system/products/create/").content.decode()
+        self.assertIn('id="selectedVendorId"', h)
+        self.assertIn('data-target="#selectedVendorId"', h)
+        self.assertIn('name="vendor"', h)
+        # старого select быть не должно
+        self.assertNotIn('<select name="vendor"', h)
+        # в списке — вендор из setUp, с полем поиска
+        self.assertIn('data-name="вендор а"', h)
+
     def test_detail_shows_specs_and_industries(self):
         p = self._uc().create(
             product_name="ShowProd", industries=["Химия"],

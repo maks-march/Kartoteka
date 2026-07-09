@@ -116,6 +116,8 @@ function initSubsystemsBlock(block) {
 
     if (searchBtn) searchBtn.addEventListener('click', applyEligibility);
     if (searchInput) {
+        // Автопоиск по мере ввода
+        searchInput.addEventListener('input', applyEligibility);
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') { e.preventDefault(); applyEligibility(); }
         });

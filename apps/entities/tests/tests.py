@@ -422,13 +422,86 @@ class EntityTypingProfilesTests(TestCase):
         self.assertEqual(fc.system_class_id, self.cls.pk)
         self.assertEqual(fc.industry, "Нефтехимия")
 
-    def test_form_shows_engineering_section(self):
+    def test_web_vendor_assigns_free_products(self):
+        """Вендор через форму назначает свободные продукты; при снятии — освобождает."""
+        from apps.system.models import VendorProduct
+        from apps.entities.models import Entity, VendorProfile
+        # свободный продукт (без вендора)
+        free = VendorProduct.objects.create(product_name="Свободный")
+        r = self.client.post("/entities/create/", {
+            "entity_name": "ВендорФорма", "entity_type": "vendor",
+            "vendor_products": [str(free.pk)],
+        })
+        self.assertEqual(r.status_code, 302)
+        e = Entity.objects.get(entity_name="ВендорФорма")
+        free.refresh_from_db()
+        self.assertEqual(free.vendor, VendorProfile.objects.get(entity=e))
+        # правка: снимаем продукт -> освобождается
+        r = self.client.post(f"/entities/{e.pk}/edit/", {
+            "entity_name": "ВендорФорма", "entity_type": "vendor",
+            "vendor_products": [],
+        })
+        self.assertEqual(r.status_code, 302)
+        free.refresh_from_db()
+        self.assertIsNone(free.vendor)
+
+    def test_vendorless_products_in_context(self):
+        """В блоке вендора показаны только продукты без вендора."""
+        from apps.system.models import VendorProduct
+        from apps.entities.models import VendorProfile
+        VendorProduct.objects.create(product_name="Свободный1")
+        other = Entity.objects.create(entity_name="ДругойВендор", entity_type="vendor")
+        VendorProduct.objects.create(product_name="Занятый", vendor=VendorProfile.objects.create(entity=other))
         h = self.client.get("/entities/create/").content.decode()
-        self.assertIn('id="engineeringSection"', h)
+        # вырезаем только блок пикера вендорских продуктов
+        start = h.index('id="vendorProductsPicker"')
+        block = h[start:h.index("vendorProductsInputs")]
+        self.assertIn("Свободный1", block)
+        self.assertNotIn("Занятый", block)
+        # новый формат: капсульный пикер с группами и автопоиском
+        self.assertIn("capsule-picker", h)
+        self.assertIn('data-group="free"', block)
+        self.assertIn("picker-chips", block)
+
+    def test_vendor_own_products_shown_first_and_selected(self):
+        """В режиме правки продукты этого вендора идут первыми и предвыбраны."""
+        from apps.system.models import VendorProduct
+        from apps.entities.models import VendorProfile
+        e = self._uc().create(entity_name="ВендорСвои", entity_type="vendor")
+        VendorProduct.objects.create(product_name="Мой продукт", vendor=VendorProfile.objects.get(entity=e))
+        VendorProduct.objects.create(product_name="Свободный2")
+        h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
+        block = h[h.index('id="vendorProductsPicker"'):h.index("vendorProductsInputs")]
+        self.assertIn('data-group="own"', block)
+        # «свои» идут раньше «свободных» в разметке
+        self.assertLess(block.index("Мой продукт"), block.index("Свободный2"))
+
+    def test_form_shows_engineering_section(self):
+        from apps.system.models import VendorProduct
+        VendorProduct.objects.create(product_name="Продукт для блока")  # чтобы блок вендора отрисовался
+        h = self.client.get("/entities/create/").content.decode()
+        # блок инж. компании (через data-for) + его поля
+        self.assertIn('data-for="engineering_company"', h)
         self.assertIn('name="region"', h)
         self.assertIn('name="resident_object"', h)
-        self.assertIn('id="competencyClassTemplate"', h)
+        self.assertIn('id="residentObjectPicker"', h)
         self.assertIn('id="competencyAddBtn"', h)
+        # combobox-данные для класса/индустрии
+        self.assertIn('id="competencyClassesData"', h)
+        self.assertIn('id="competencyIndustriesData"', h)
+        # блок вендора со свободными продуктами
+        self.assertIn('data-for="vendor full_cycle_vendor"', h)
+        self.assertIn('name="vendor_products"', h)
+        # переключатель партнёрства в нашем стиле
+        self.assertIn('id="partnerToggle"', h)
+
+    def test_vendor_block_empty_when_no_products(self):
+        """Если продуктов нет — пикер и пояснение не показываются (пустое поле)."""
+        from apps.system.models import VendorProduct
+        VendorProduct.objects.all().delete()
+        h = self.client.get("/entities/create/").content.decode()
+        self.assertNotIn('id="vendorProductsPicker"', h)
+        self.assertNotIn("затем свободные", h)
 
     def test_detail_shows_engineering_block(self):
         e = self._uc().create(entity_name="ИК2", entity_type="engineering_company")

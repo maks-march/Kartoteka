@@ -96,6 +96,34 @@ class EntityUseCase:
                 )
         return profile
 
+    def save_vendor_products(self, entity, product_ids=None):
+        """Привязывает выбранные продукты к VendorProfile участника.
+
+        Вызывать только для вендора / вендора полного цикла. Продукты, ранее
+        привязанные к этому вендору и снятые в форме, освобождаются
+        (vendor=None). Продукты, уже принадлежащие ДРУГОМУ вендору, не трогаем.
+        """
+        if not entity.is_vendor_type:
+            return None
+        from apps.entities.models import VendorProfile
+        from apps.system.models import VendorProduct
+
+        profile, _ = VendorProfile.objects.get_or_create(entity=entity)
+        selected = set(
+            int(p) for p in (product_ids or []) if p not in (None, "", "None")
+        )
+        # Снять отвязанные (были у нас, но не выбраны)
+        for prod in VendorProduct.objects.filter(vendor=profile):
+            if prod.pk not in selected:
+                prod.vendor = None
+                prod.save(update_fields=["vendor"])
+        # Привязать выбранные свободные продукты (чужие не трогаем)
+        for prod in VendorProduct.objects.filter(pk__in=selected):
+            if prod.vendor_id is None or prod.vendor_id == profile.pk:
+                prod.vendor = profile
+                prod.save(update_fields=["vendor"])
+        return profile
+
     def delete(self, pk):
         obj = self.get(pk)
         return self.repo.delete(obj)

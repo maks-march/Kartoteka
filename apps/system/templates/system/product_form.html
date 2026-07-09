@@ -21,20 +21,40 @@
             </div>
             <div class="form-group">
                 <label>Вендор</label>
-                <select name="vendor">
-                    <option value="">— Вендор не указан —</option>
-                    {% for v in vendors %}
-                    <option value="{{ v.pk }}" {% if product.vendor and product.vendor.entity_id == v.pk %}selected{% endif %}>{{ v.entity_name }}</option>
-                    {% endfor %}
-                </select>
+                <div class="picker collapsible" data-target="#selectedVendorId" data-empty-text="Не указан">
+                    <div class="picker-header">
+                        <span class="picker-header-label">Вендор</span>
+                        <span class="picker-header-value empty-value">Не указан</span>
+                        <span class="picker-caret">▾</span>
+                    </div>
+                    <div class="picker-body">
+                        <div class="search-wrapper">
+                            <input type="text" class="picker-search" placeholder="Название вендора..." style="margin-bottom:0">
+                        </div>
+                        <div class="system-results-container">
+                            <div class="system-item {% if not product.vendor %}selected{% endif %}" data-id="" data-keep>
+                                <span class="system-name">— Вендор не указан —</span>
+                            </div>
+                            {% for v in vendors %}
+                            <div class="system-item {% if product.vendor and product.vendor.entity_id == v.pk %}selected{% endif %}"
+                                 data-id="{{ v.pk }}" data-name="{{ v.entity_name|lower }}">
+                                <span class="system-name">{{ v.entity_name }}</span>
+                                <span class="system-info">{{ v.get_entity_type_display }}</span>
+                            </div>
+                            {% endfor %}
+                            <div class="picker-no-results picker-empty">Вендоры не найдены</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="vendor" id="selectedVendorId" value="{{ product.vendor.entity_id|default:'' }}">
+                </div>
+                <p class="hint" style="margin-top:4px">Только вендоры и вендоры полного цикла.</p>
             </div>
         </div>
 
         <!-- ===== Классификация ===== -->
         <div class="form-section">
             <h2>Классификация</h2>
-            <div class="form-grid two">
-                <div class="form-group">
+            <div class="form-group">
                     <label>Класс системы</label>
                     <div class="picker collapsible" data-target="#selectedProductClassId" data-empty-text="Не указан">
                         <div class="picker-header">
@@ -45,7 +65,6 @@
                         <div class="picker-body">
                             <div class="search-wrapper">
                                 <input type="text" class="picker-search" placeholder="Класс, аббревиатура или описание..." style="margin-bottom:0">
-                                <button type="button" class="picker-search-btn btn btn-secondary">Найти</button>
                             </div>
                             <div class="system-results-container">
                                 <div class="system-item {% if not product.system_class_id %}selected{% endif %}" data-id="" data-keep>
@@ -77,7 +96,6 @@
                         {% endfor %}
                     </select>
                 </div>
-            </div>
 
             <!-- Классы подсистем (только для составного класса) -->
             <div class="form-group subsystems-block" id="productSubsystemsBlock" style="display:none"
@@ -89,7 +107,6 @@
                 <p class="hint" style="margin-top:-2px; margin-bottom:8px">Выберите классы того же уровня, которые входят в этот продукт.</p>
                 <div class="search-wrapper">
                     <input type="text" id="productSubsystemSearch" placeholder="Введите класс..." style="margin-bottom:0">
-                    <button type="button" id="productSubsystemSearchBtn" class="btn btn-secondary">Найти</button>
                 </div>
                 <div class="system-results-container filter-list-160" id="productSubsystemList">
                     {% for cls in classes %}
