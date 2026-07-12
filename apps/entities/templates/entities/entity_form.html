@@ -36,7 +36,7 @@
 
             <!-- Вендор / вендор полного цикла: назначить свободные продукты -->
             <div class="type-block" data-for="vendor full_cycle_vendor"
-                 {% if entity.entity_type != 'vendor' and entity.entity_type != 'full_cycle_vendor' %}style="display:none"{% endif %}>
+                 {% if not entity.is_vendor_type %}style="display:none"{% endif %}>
                 <div class="form-group">
                     <label>Продукты этого вендора</label>
                     {% if own_products or free_products %}
@@ -80,8 +80,8 @@
             </div>
 
             <!-- Инжиниринговая компания -->
-            <div class="type-block" data-for="engineering_company"
-                 {% if entity.entity_type != 'engineering_company' %}style="display:none"{% endif %}>
+            <div class="type-block" data-for="engineering_company full_cycle_vendor"
+                 {% if not entity.is_engineering_type %}style="display:none"{% endif %}>
 
                 <!-- 1) Вхожий объект: раскрываемое меню с поиском, выбор ОДНОГО -->
                 <div class="form-group">
@@ -172,9 +172,91 @@
             </div>
 
             <!-- Системный интегратор / поставщик: спец. полей нет -->
-            <div class="type-block" data-for="system_integrator supplier"
-                 {% if entity.entity_type != 'system_integrator' and entity.entity_type != 'supplier' %}style="display:none"{% endif %}>
-                <p class="hint">Для этого типа дополнительных полей нет.</p>
+            <!-- Поставщик: множественная связь с продуктами (поставляемые продукты) -->
+            <div class="type-block" data-for="supplier full_cycle_vendor"
+                 {% if not entity.is_supplier_type %}style="display:none"{% endif %}>
+                <div class="form-group">
+                    <label>Поставляемые продукты</label>
+                    {% if all_products %}
+                    <div class="picker collapsible capsule-picker" id="supplierProductsPicker" data-empty-text="Не выбрано">
+                        <div class="picker-header">
+                            <span class="picker-header-label">Продукты</span>
+                            <div class="picker-chips"><span class="empty-value">Не выбрано</span></div>
+                            <span class="picker-caret">▾</span>
+                        </div>
+                        <div class="picker-body">
+                            <div class="search-wrapper">
+                                <input type="text" class="picker-search" placeholder="Введите название продукта...">
+                            </div>
+                            <div class="system-results-container filter-list-160">
+                                {% for p in all_products %}
+                                <div class="system-item{% if p.pk in supplier_product_ids %} selected{% endif %}" data-id="{{ p.pk }}" data-name="{{ p.product_name|lower }}">
+                                    <span class="system-name">{{ p.product_name }}</span>
+                                    {% if p.system_class %}<span class="system-info">{{ p.system_class.system_class }}</span>{% endif %}
+                                </div>
+                                {% endfor %}
+                                <div class="picker-empty">Продукты не найдены</div>
+                            </div>
+                        </div>
+                        <div id="supplierProductsInputs" data-name="supplier_products">
+                            {% for p in all_products %}{% if p.pk in supplier_product_ids %}
+                            <input type="hidden" name="supplier_products" value="{{ p.pk }}">
+                            {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <p class="hint" style="margin-top:4px">Продукты, которые поставляет эта компания (может поставлять продукты разных вендоров).</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Системный интегратор: управляющая компания + вендоры-партнёры -->
+            <div class="type-block" data-for="system_integrator"
+                 {% if entity.entity_type != 'system_integrator' %}style="display:none"{% endif %}>
+                <div class="form-group">
+                    <label>Управляющая компания</label>
+                    <select name="managing_owner">
+                        <option value="">— Не указана (внешний интегратор) —</option>
+                        {% for oe in owner_entities %}
+                        <option value="{{ oe.pk }}" {% if integrator_owner_id == oe.pk %}selected{% endif %}>{{ oe.owner_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="hint" style="margin-top:4px">Заполняется, если это внутренний интегратор холдинга (из OwnerEntity).</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Вендоры-партнёры</label>
+                    {% if vendor_profiles %}
+                    <div class="picker collapsible capsule-picker" id="vendorPartnersPicker" data-empty-text="Не выбрано">
+                        <div class="picker-header">
+                            <span class="picker-header-label">Вендоры</span>
+                            <div class="picker-chips"><span class="empty-value">Не выбрано</span></div>
+                            <span class="picker-caret">▾</span>
+                        </div>
+                        <div class="picker-body">
+                            <div class="search-wrapper">
+                                <input type="text" class="picker-search" placeholder="Введите название вендора...">
+                            </div>
+                            <div class="system-results-container filter-list-160">
+                                {% for vp in vendor_profiles %}
+                                <div class="system-item{% if vp.pk in integrator_partner_ids %} selected{% endif %}" data-id="{{ vp.pk }}" data-name="{{ vp.entity_name|lower }}">
+                                    <span class="system-name">{{ vp.entity_name }}</span>
+                                    <span class="system-info">{{ vp.entity.get_entity_type_display }}</span>
+                                </div>
+                                {% endfor %}
+                                <div class="picker-empty">Вендоры не найдены</div>
+                            </div>
+                        </div>
+                        <div id="vendorPartnersInputs" data-name="vendor_partners">
+                            {% for vp in vendor_profiles %}{% if vp.pk in integrator_partner_ids %}
+                            <input type="hidden" name="vendor_partners" value="{{ vp.pk }}">
+                            {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <p class="hint" style="margin-top:4px">Вендоры, с которыми интегратор работает как партнёр.</p>
+                    {% else %}
+                    <p class="hint">Нет вендоров для выбора. Сначала добавьте участников типа «Вендор».</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
 

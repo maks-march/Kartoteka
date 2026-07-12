@@ -26,7 +26,10 @@ class EntityUseCase:
         Профиль вендора НЕ удаляем, если на него ещё ссылаются продукты
         (иначе потеряли бы связь) — вместо этого оставляем.
         """
-        from apps.entities.models import VendorProfile, EngineeringCompanyProfile
+        from apps.entities.models import (
+            VendorProfile, EngineeringCompanyProfile, SupplierProfile,
+            SystemIntegratorProfile,
+        )
 
         # Профиль вендора
         if entity.is_vendor_type:
@@ -41,6 +44,19 @@ class EntityUseCase:
             EngineeringCompanyProfile.objects.get_or_create(entity=entity)
         else:
             EngineeringCompanyProfile.objects.filter(entity=entity).delete()
+
+        # Профиль поставщика (связь с продуктами — M2M со стороны поставщика,
+        # не эксклюзивная, поэтому при смене типа профиль можно удалять).
+        if entity.is_supplier_type:
+            SupplierProfile.objects.get_or_create(entity=entity)
+        else:
+            SupplierProfile.objects.filter(entity=entity).delete()
+
+        # Профиль системного интегратора (управляющая компания + вендоры-партнёры).
+        if entity.is_system_integrator_type:
+            SystemIntegratorProfile.objects.get_or_create(entity=entity)
+        else:
+            SystemIntegratorProfile.objects.filter(entity=entity).delete()
 
     def create(self, **data):
         entity = self.repo.create(**data)
@@ -122,6 +138,49 @@ class EntityUseCase:
             if prod.vendor_id is None or prod.vendor_id == profile.pk:
                 prod.vendor = profile
                 prod.save(update_fields=["vendor"])
+        return profile
+
+    def save_supplier_products(self, entity, product_ids=None):
+        """Сохраняет поставляемые продукты (M2M) для профиля поставщика.
+
+        В отличие от вендора, это ненэксклюзивная связь: продукт может
+        поставляться многими поставщиками, поэтому просто пересобираем M2M.
+        Вызывать только для типа supplier.
+        """
+        if not entity.is_supplier_type:
+            return None
+        from apps.entities.models import SupplierProfile
+        from apps.system.models import VendorProduct
+
+        profile, _ = SupplierProfile.objects.get_or_create(entity=entity)
+        valid_products = VendorProduct.objects.filter(
+            pk__in=[p for p in (product_ids or []) if p not in (None, "", "None")]
+        )
+        profile.products.set(valid_products)
+        return profile
+
+    def save_system_integrator_profile(self, entity, managing_owner_id=None,
+                                       vendor_partner_ids=None):
+        """Сохраняет профиль системного интегратора: управляющую компанию
+        (FK OwnerEntity, необязательно) и вендоров-партнёров (M2M VendorProfile).
+        Вызывать только для типа system_integrator.
+        """
+        if not entity.is_system_integrator_type:
+            return None
+        from apps.entities.models import SystemIntegratorProfile, VendorProfile
+        from apps.owners.models import OwnerEntity
+
+        profile, _ = SystemIntegratorProfile.objects.get_or_create(entity=entity)
+        if managing_owner_id in (None, "", "None"):
+            profile.managing_owner = None
+        else:
+            profile.managing_owner = OwnerEntity.objects.filter(pk=managing_owner_id).first()
+        profile.save()
+
+        valid = VendorProfile.objects.filter(
+            pk__in=[p for p in (vendor_partner_ids or []) if p not in (None, "", "None")]
+        )
+        profile.vendor_partners.set(valid)
         return profile
 
     def delete(self, pk):

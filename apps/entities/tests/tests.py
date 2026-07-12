@@ -389,6 +389,140 @@ class EntityTypingProfilesTests(TestCase):
         e = self._uc().create(entity_name="ИК", entity_type="engineering_company")
         self.assertTrue(EngineeringCompanyProfile.objects.filter(entity=e).exists())
 
+    def test_supplier_profile_autocreated_and_removed(self):
+        from apps.entities.models import SupplierProfile
+        e = self._uc().create(entity_name="Пост1", entity_type="supplier")
+        self.assertTrue(SupplierProfile.objects.filter(entity=e).exists())
+        # смена типа удаляет профиль поставщика (связь неэксклюзивная)
+        self._uc().update(e.pk, entity_name="Пост1", entity_type="system_integrator")
+        self.assertFalse(SupplierProfile.objects.filter(entity=e).exists())
+
+    def test_supplier_products_are_multiple_and_independent_of_vendor(self):
+        from apps.entities.models import SupplierProfile, VendorProfile
+        from apps.system.models import VendorProduct
+        # продукт с автором-вендором
+        vend = self._uc().create(entity_name="ВендорА", entity_type="vendor")
+        p1 = VendorProduct.objects.create(product_name="Прод1", vendor=VendorProfile.objects.get(entity=vend))
+        p2 = VendorProduct.objects.create(product_name="Прод2")
+        # поставщик поставляет оба (в т.ч. чужой продукт p1)
+        sup = self._uc().create(entity_name="ПоставщикА", entity_type="supplier")
+        self._uc().save_supplier_products(sup, product_ids=[p1.pk, p2.pk])
+        prof = SupplierProfile.objects.get(entity=sup)
+        self.assertEqual(set(prof.products.values_list("pk", flat=True)), {p1.pk, p2.pk})
+        # авторство p1 не изменилось (остался у вендора)
+        p1.refresh_from_db()
+        self.assertEqual(p1.vendor.entity_id, vend.pk)
+        # один продукт может поставляться несколькими поставщиками
+        sup2 = self._uc().create(entity_name="ПоставщикБ", entity_type="supplier")
+        self._uc().save_supplier_products(sup2, product_ids=[p1.pk])
+        self.assertEqual(set(p1.suppliers.values_list("entity__entity_name", flat=True)),
+                         {"ПоставщикА", "ПоставщикБ"})
+
+    def test_web_supplier_saves_products(self):
+        from apps.entities.models import Entity, SupplierProfile
+        from apps.system.models import VendorProduct
+        prod = VendorProduct.objects.create(product_name="ПродФорма")
+        r = self.client.post("/entities/create/", {
+            "entity_name": "ПостФорма", "entity_type": "supplier",
+            "supplier_products": [str(prod.pk)],
+        })
+        self.assertEqual(r.status_code, 302)
+        e = Entity.objects.get(entity_name="ПостФорма")
+        self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
+
+    def test_form_shows_supplier_block(self):
+        from apps.system.models import VendorProduct
+        VendorProduct.objects.create(product_name="ПродДляБлока")
+        h = self.client.get("/entities/create/").content.decode()
+        self.assertIn('data-for="supplier full_cycle_vendor"', h)
+        self.assertIn('id="supplierProductsPicker"', h)
+        self.assertIn('name="supplier_products"', h)
+
+    def test_full_cycle_vendor_has_all_three_profiles(self):
+        """Вендор полного цикла = вендор + поставщик + инж. компания."""
+        from apps.entities.models import (
+            VendorProfile, SupplierProfile, EngineeringCompanyProfile,
+        )
+        e = self._uc().create(entity_name="ФПЦ", entity_type="full_cycle_vendor")
+        self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
+        self.assertTrue(SupplierProfile.objects.filter(entity=e).exists())
+        self.assertTrue(EngineeringCompanyProfile.objects.filter(entity=e).exists())
+        # признаки типа охватывают full_cycle_vendor
+        self.assertTrue(e.is_vendor_type)
+        self.assertTrue(e.is_supplier_type)
+        self.assertTrue(e.is_engineering_type)
+
+    def test_full_cycle_vendor_saves_supplier_and_engineering(self):
+        from apps.entities.models import Entity
+        from apps.system.models import VendorProduct
+        prod = VendorProduct.objects.create(product_name="ФПЦпрод")
+        r = self.client.post("/entities/create/", {
+            "entity_name": "ФПЦФорма", "entity_type": "full_cycle_vendor",
+            "supplier_products": [str(prod.pk)],
+            "region": "Урал",
+            "comp_class": [str(self.cls.pk)], "comp_industry": ["Химия"],
+        })
+        self.assertEqual(r.status_code, 302)
+        e = Entity.objects.get(entity_name="ФПЦФорма")
+        # поставщик
+        self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
+        # инж. компания
+        self.assertEqual(e.engineering_profile.region, "Урал")
+        self.assertEqual(e.engineering_profile.function_competencies.count(), 1)
+
+    def test_system_integrator_profile_autocreated_and_removed(self):
+        from apps.entities.models import SystemIntegratorProfile
+        e = self._uc().create(entity_name="СИ1", entity_type="system_integrator")
+        self.assertTrue(SystemIntegratorProfile.objects.filter(entity=e).exists())
+        self._uc().update(e.pk, entity_name="СИ1", entity_type="supplier")
+        self.assertFalse(SystemIntegratorProfile.objects.filter(entity=e).exists())
+
+    def test_system_integrator_partners_and_owner(self):
+        from apps.entities.models import SystemIntegratorProfile, VendorProfile
+        from apps.owners.models import OwnerEntity
+        owner = OwnerEntity.objects.create(owner_name="Холдинг")
+        v1 = self._uc().create(entity_name="Вен1", entity_type="vendor")
+        v2 = self._uc().create(entity_name="Вен2", entity_type="full_cycle_vendor")
+        vp1 = VendorProfile.objects.get(entity=v1)
+        vp2 = VendorProfile.objects.get(entity=v2)
+        si = self._uc().create(entity_name="Интегр", entity_type="system_integrator")
+        self._uc().save_system_integrator_profile(
+            si, managing_owner_id=owner.pk, vendor_partner_ids=[vp1.pk, vp2.pk])
+        prof = SystemIntegratorProfile.objects.get(entity=si)
+        self.assertEqual(prof.managing_owner_id, owner.pk)
+        self.assertEqual(set(prof.vendor_partners.values_list("pk", flat=True)), {vp1.pk, vp2.pk})
+        # «карта партнёров»: у вендора виден интегратор через reverse M2M
+        self.assertIn("Интегр", vp1.partner_integrators.values_list("entity__entity_name", flat=True))
+        # внутренний интегратор виден у OwnerEntity
+        self.assertIn(si.pk, owner.internal_integrators.values_list("entity_id", flat=True))
+
+    def test_web_system_integrator_saves_profile(self):
+        from apps.entities.models import Entity, VendorProfile
+        from apps.owners.models import OwnerEntity
+        owner = OwnerEntity.objects.create(owner_name="ХолдингФорма")
+        v = self._uc().create(entity_name="ВенФорма", entity_type="vendor")
+        vp = VendorProfile.objects.get(entity=v)
+        r = self.client.post("/entities/create/", {
+            "entity_name": "ИнтегрФорма", "entity_type": "system_integrator",
+            "managing_owner": str(owner.pk),
+            "vendor_partners": [str(vp.pk)],
+        })
+        self.assertEqual(r.status_code, 302)
+        e = Entity.objects.get(entity_name="ИнтегрФорма")
+        sip = e.system_integrator_profile
+        self.assertEqual(sip.managing_owner_id, owner.pk)
+        self.assertEqual(list(sip.vendor_partners.values_list("pk", flat=True)), [vp.pk])
+
+    def test_form_shows_integrator_block(self):
+        from apps.owners.models import OwnerEntity
+        OwnerEntity.objects.create(owner_name="Х")
+        v = self._uc().create(entity_name="ВенДляБлока", entity_type="vendor")
+        h = self.client.get("/entities/create/").content.decode()
+        self.assertIn('data-for="system_integrator"', h)
+        self.assertIn('name="managing_owner"', h)
+        self.assertIn('id="vendorPartnersPicker"', h)
+        self.assertIn('name="vendor_partners"', h)
+
     def test_product_only_for_vendor_types(self):
         from django.core.exceptions import ValidationError
         from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
@@ -481,7 +615,7 @@ class EntityTypingProfilesTests(TestCase):
         VendorProduct.objects.create(product_name="Продукт для блока")  # чтобы блок вендора отрисовался
         h = self.client.get("/entities/create/").content.decode()
         # блок инж. компании (через data-for) + его поля
-        self.assertIn('data-for="engineering_company"', h)
+        self.assertIn('data-for="engineering_company full_cycle_vendor"', h)
         self.assertIn('name="region"', h)
         self.assertIn('name="resident_object"', h)
         self.assertIn('id="residentObjectPicker"', h)

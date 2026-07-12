@@ -117,6 +117,13 @@ def _form_context(**extra):
         }
         for c in classes
     ]
+    # Id продуктов, уже поставляемых этим поставщиком (для предвыбора в форме).
+    supplier_product_ids = set()
+    if entity is not None and getattr(entity, "is_supplier_type", False):
+        sp = getattr(entity, "supplier_profile", None)
+        if sp is not None:
+            supplier_product_ids = set(sp.products.values_list("pk", flat=True))
+
     # Существующие пары компетенции (для предзаполнения строк в JS).
     competency_pairs_json = []
     if entity is not None and getattr(entity, "is_engineering_type", False):
@@ -126,6 +133,21 @@ def _form_context(**extra):
                 {"class_id": fc.system_class_id, "industry": fc.industry}
                 for fc in prof.function_competencies.all()
             ]
+
+    # Системный интегратор: вендоры-партнёры (VendorProfile) + управляющая компания.
+    from apps.entities.models import VendorProfile
+    from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
+    vendor_profiles = list(
+        VendorProfile.objects.select_related("entity").order_by("entity__entity_name")
+    )
+    owner_entities = OwnerEntityUseCase().list()
+    integrator_partner_ids = set()
+    integrator_owner_id = None
+    if entity is not None and getattr(entity, "is_system_integrator_type", False):
+        sip = getattr(entity, "system_integrator_profile", None)
+        if sip is not None:
+            integrator_partner_ids = set(sip.vendor_partners.values_list("pk", flat=True))
+            integrator_owner_id = sip.managing_owner_id
     ctx = {
         "entity_type_choices": Entity.ENTITY_TYPE_CHOICES,
         "industry_suggestions": industries,
@@ -135,8 +157,13 @@ def _form_context(**extra):
         "all_classes": classes,
         "own_products": own_products,
         "free_products": free_products,
+        "supplier_product_ids": supplier_product_ids,
         "competency_classes_json": competency_classes_json,
         "competency_pairs_json": competency_pairs_json,
+        "vendor_profiles": vendor_profiles,
+        "owner_entities": owner_entities,
+        "integrator_partner_ids": integrator_partner_ids,
+        "integrator_owner_id": integrator_owner_id,
     }
     ctx.update(extra)
     return ctx
@@ -228,6 +255,12 @@ def entity_create(request):
             )
             usecase.save_engineering_profile(entity, **_extract_engineering_fields(request.POST))
             usecase.save_vendor_products(entity, product_ids=request.POST.getlist("vendor_products"))
+            usecase.save_supplier_products(entity, product_ids=request.POST.getlist("supplier_products"))
+            usecase.save_system_integrator_profile(
+                entity,
+                managing_owner_id=request.POST.get("managing_owner") or None,
+                vendor_partner_ids=request.POST.getlist("vendor_partners"),
+            )
             return redirect("entity-detail", pk=entity.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
@@ -250,6 +283,12 @@ def entity_edit(request, pk):
             )
             usecase.save_engineering_profile(entity, **_extract_engineering_fields(request.POST))
             usecase.save_vendor_products(entity, product_ids=request.POST.getlist("vendor_products"))
+            usecase.save_supplier_products(entity, product_ids=request.POST.getlist("supplier_products"))
+            usecase.save_system_integrator_profile(
+                entity,
+                managing_owner_id=request.POST.get("managing_owner") or None,
+                vendor_partner_ids=request.POST.getlist("vendor_partners"),
+            )
             return redirect("entity-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)

@@ -105,7 +105,7 @@
     </div><!-- /.detail-body -->
 </div>
 
-{% if entity.can_have_products %}
+{% if entity.is_vendor_type %}
 <div class="card">
     <div class="card-title-row">
         <h2 style="margin:0">Вендорские продукты</h2>
@@ -126,6 +126,49 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
+{% endif %}
+
+{% if entity.is_supplier_type %}
+<div class="card">
+    <h2>Поставляемые продукты</h2>
+    <table>
+        <thead>
+            <tr><th>Продукт</th><th>Вендор</th></tr>
+        </thead>
+        <tbody>
+            {% for product in entity.supplier_profile.products.all %}
+            <tr>
+                <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
+                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="empty">Нет продуктов</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if entity.is_system_integrator_type %}
+<div class="card">
+    <h2>Системный интегратор</h2>
+    {% with sip=entity.system_integrator_profile %}
+    <div class="info-cards">
+        <div class="info-card">
+            <span class="info-label">Управляющая компания</span>
+            <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
+        </div>
+        <div class="info-card full">
+            <span class="info-label">Вендоры-партнёры</span>
+            {% if sip.vendor_partners.all %}
+            <div class="card-tags">
+                {% for vp in sip.vendor_partners.all %}<a class="tag tag-blue" href="{% url 'entity-detail' vp.entity.pk %}">{{ vp.entity_name }}</a>{% endfor %}
+            </div>
+            {% else %}<span class="info-value">—</span>{% endif %}
+        </div>
+    </div>
+    {% endwith %}
 </div>
 {% endif %}
 

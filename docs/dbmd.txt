@@ -1,3 +1,5 @@
+// Юридическое лицо / владелец объектов. Иерархия владения
+// (материнская компания → дочерние). is_root проставляется автоматически.
 Table OwnerEntity {
   id integer [primary key]
   owner_name varchar [note: 'Название юр. лица']
@@ -5,12 +7,12 @@ Table OwnerEntity {
   owner_id integer [ref: > OwnerEntity.id, note: 'Следующий в иерархии владелец']
   ultimate_owner_id integer [ref: > OwnerEntity.id, note: 'Корневой владелец.']
 
-  // еще не реализовано
-  inn varchar [unique, note: 'ИНН']
-  ownership_percentage decimal [note: 'Доля владения']
+  inn varchar [note: 'ИНН']
 }
 
 
+// Справочник категорий объектов по уровням
+// (1: отраслевые, 2: назначения, 3: технология).
 Table Category {
   id integer [primary key]
   object_level integer [note: 'Уровень объекта']
@@ -27,6 +29,8 @@ Enum object_status {
 }
 
 
+// Объект производства. Иерархия: производство → цех → установка
+// (уровни 1..3). Содержит адрес, категорию и владельца (OwnerEntity).
 Table Object {
   id integer [primary key]
   object_name varchar [note: 'Полное название объекта']
@@ -73,15 +77,15 @@ Enum auto_status {
 }
 
 
+// Связь «система на объекте»: какая AutomationSystem установлена на каком
+// Object, статус и дата ввода, внедряющая компания.
 Table ObjectSystem {
   id integer [primary key]
   object_id integer [ref: > Object.id]
   system_id integer [ref: > AutomationSystem.id]
   status auto_status [note: 'Статус ввода системы в эксплуатацию']
   implementation_date date [note: 'Дата ввода системы в эксплуатацию']
-  integrator_id integer [ref: > Entity.id, note: 'Интегратор системы']
   implementor_id integer [ref: > Entity.id, note: 'Внедряющая компания']
-  notes text [note: 'Дополнительные пояснения']
 }
 
 
@@ -93,6 +97,8 @@ Enum system_status {
 }
 
 
+// Автоматизированная система: экземпляр класса автоматизации, построенный
+// на продукте вендора. Хранит техданные, модули и интерфейсы.
 Table AutomationSystem {
   id integer [primary key]
   autosystem_name varchar [note: 'Полное название системы автоматизации']
@@ -113,6 +119,8 @@ Table AutomationSystem {
 }
 
 
+// Справочник классов автоматизации (уровень + класс, напр. L2 SCADA).
+// Поддерживает составные классы (MES/MOM/АСУТП) с авто-подстановкой подсистем.
 Table AutomationClass {
   id integer [primary key]
   level integer [note: 'Уровень автоматизации: L0 | L1 | L2 | L3 | L4']
@@ -125,6 +133,7 @@ Table AutomationClass {
 }
 
 
+// M2M: классы-подсистемы системы (для составных классов вроде MES/MOM/АСУТП).
 Table AutomationSystem_subsystem_classes {
   id integer [primary key]
   automationsystem_id integer [ref: > AutomationSystem.id]
@@ -132,6 +141,7 @@ Table AutomationSystem_subsystem_classes {
 }
 
 
+// M2M: классы-подсистемы продукта (для составных классов).
 Table VendorProduct_subsystem_classes {
   id integer [primary key]
   vendorproduct_id integer [ref: > VendorProduct.id]
@@ -146,10 +156,12 @@ Enum product_type {
 }
 
 
+// Справочник (каталог) продуктов вендоров: ПО / технические средства / ПАК,
+// на которых строятся системы автоматизации.
 Table VendorProduct {
   id integer [primary key]
   product_name varchar [note: 'Название вендорского продукта']
-  vendor_id integer [ref: > VendorProfile.entity_id, note: 'Вендор (только vendor / full_cycle_vendor — через VendorProfile)']
+  vendor_id integer [ref: > VendorProfile.id, note: 'Вендор (только vendor / full_cycle_vendor — через VendorProfile)']
   product_type product_type [note: 'Тип продукта']
   system_class_id integer [ref: > AutomationClass.id, note: 'Класс (ссылка на один конкретный уровень класса систем)']
   description text [note: 'Описание']
@@ -170,8 +182,9 @@ Enum entity_type {
 }
 
 
-// Entity — общая («зонтичная») таблица с полями, общими для всех типов.
-// Специфичные для типа поля вынесены в профили (см. ниже).
+// Участник рынка (вендор / системный интегратор / инжиниринговая компания /
+// вендор полного цикла / поставщик). «Зонтичная» таблица: общие поля для всех
+// типов, специфика типа вынесена в профили (см. ниже).
 Table Entity {
   id integer [primary key]
   entity_name varchar
@@ -195,12 +208,55 @@ Table Entity {
 }
 
 
+// Профиль вендора (типы vendor / full_cycle_vendor).
+// Почти пустой по полям, но служит точкой привязки продуктов:
+// VendorProduct.vendor ссылается именно на VendorProfile.
 Table VendorProfile {
   id integer [primary key]
   entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип vendor / full_cycle_vendor)']
 }
 
 
+// Профиль поставщика (типы supplier / full_cycle_vendor).
+// В отличие от вендора (авторство продукта через VendorProduct.vendor),
+// поставщик связан с продуктами МНОЖЕСТВЕННОЙ связью со своей стороны:
+// один поставщик поставляет много продуктов, один продукт может
+// поставляться многими поставщиками (независимо от автора-вендора).
+Table SupplierProfile {
+  id integer [primary key]
+  entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип supplier / full_cycle_vendor)']
+}
+
+
+// Поставляемые продукты — множественная связь (M2M) со стороны поставщика.
+Table SupplierProfile_products {
+  id integer [primary key]
+  supplierprofile_id integer [ref: > SupplierProfile.id]
+  vendorproduct_id integer [ref: > VendorProduct.id]
+}
+
+
+// Профиль системного интегратора (тип system_integrator).
+// managing_owner — управляющая компания из OwnerEntity (внутренний интегратор
+// холдинга), необязательная. vendor_partners — вендоры-партнёры (M2M к
+// VendorProfile); обратная связь даёт «карту партнёров» для вендора.
+Table SystemIntegratorProfile {
+  id integer [primary key]
+  entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип system_integrator)']
+  managing_owner_id integer [ref: > OwnerEntity.id, note: 'Управляющая компания (необязательно; внутренний интегратор холдинга)']
+}
+
+
+// Вендоры-партнёры системного интегратора — множественная связь (M2M) с VendorProfile.
+Table SystemIntegratorProfile_vendor_partners {
+  id integer [primary key]
+  systemintegratorprofile_id integer [ref: > SystemIntegratorProfile.id]
+  vendorprofile_id integer [ref: > VendorProfile.id]
+}
+
+
+// Профиль инжиниринговой компании (типы engineering_company / full_cycle_vendor).
+// Регион деятельности, вхожий объект и узкие компетенции (по продуктам и по функции).
 Table EngineeringCompanyProfile {
   id integer [primary key]
   entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип engineering_company)']
@@ -218,9 +274,9 @@ Table EngineeringCompanyProfile_product_competencies {
 }
 
 
-// Узкая компетенция инж. компании по функции — совокупность
-// «класс систем + индустрия». Каждая строка = одна связанная пара
-// (напр. MES · Нефтехимия). Компания может иметь несколько таких пар.
+// Узкая компетенция инж. компании по функции — совокупность «класс систем +
+// индустрия». Каждая строка = одна связанная пара (напр. MES · Нефтехимия);
+// компания может иметь несколько таких пар.
 Table FunctionCompetency {
   id integer [primary key]
   profile_id integer [ref: > EngineeringCompanyProfile.id, note: 'Профиль инж. компании']
@@ -229,87 +285,102 @@ Table FunctionCompetency {
 }
 
 
-// ============================================================
-//  НЕ РЕАЛИЗОВАНО
-// ============================================================
-
-// [НЕ РЕАЛИЗОВАНО]
-Table ObjectCharacteristic {
-  id integer [primary key]
-  // object_id integer [ref: > Object.id]
-  characteristic_name varchar [note: 'Название характеристики']
-  code varchar [note: 'Код характеристики']
-  unit varchar [note: 'Единица измерения']
-  description text [note: 'Описание']
-  is_required boolean [note: 'Обязательная характеристика']
+// Группы таблиц: справочники (оранжевый), связи (берёзовый), другое (синий).
+TableGroup "Справочники" [color:  #316896] {
+  OwnerEntity
+  Object
+  AutomationSystem
+  Entity
+  VendorProfile
+  SupplierProfile
+  SystemIntegratorProfile
+  EngineeringCompanyProfile
+  Category
+  AutomationClass
+  VendorProduct
 }
 
-// [НЕ РЕАЛИЗОВАНО]
-Table ObjectCharacteristicValue {
-  id integer [primary key]
-  // characteristic_id integer [ref: > ObjectCharacteristic.id]
-  value double [note: 'Значение']
-  measurement_date date [note: 'Дата измерения']
-  notes text [note: 'Дополнительная информация']
+TableGroup "Связи" [color:  #316896] {
+  ObjectSystem
+  AutomationSystem_subsystem_classes
+  VendorProduct_subsystem_classes
+  SupplierProfile_products
+  SystemIntegratorProfile_vendor_partners
+  EngineeringCompanyProfile_product_competencies
+  FunctionCompetency
 }
 
-// [НЕ РЕАЛИЗОВАНО]
-Table AutomationRequirement {
-  id integer [primary key]
-  // automation_id varchar [ref: > ObjectSystem.id]
-  requirement text [note: 'Требование']
-  is_mandatory boolean [note: 'Обязательность']
-  regulation varchar [note: 'Нормативный документ']
-}
 
-// [НЕ РЕАЛИЗОВАНО]
-Table Project {
-  id integer [primary key]
-  // participant_id integer [ref: > Entity.id, not null, note: 'Участник']
-  // object_id integer [ref: > Object.id, not null, note: 'Объект внедрения']
-  name varchar(200) [not null, note: 'Название проекта']
-  year integer [not null, note: 'Год реализации']
-  successful boolean [not null, default: true, note: 'Успешный пуск']
-  description text [null, note: 'Описание']
-  created_at datetime [not null, note: 'Дата создания']
-  updated_at datetime [not null, note: 'Дата обновления']
-}
+// Table ObjectCharacteristic {
+//   id integer [primary key]
+//   // object_id integer [ref: > Object.id]
+//   characteristic_name varchar [note: 'Название характеристики']
+//   code varchar [note: 'Код характеристики']
+//   unit varchar [note: 'Единица измерения']
+//   description text [note: 'Описание']
+//   is_required boolean [note: 'Обязательная характеристика']
+// }
 
-// [НЕ РЕАЛИЗОВАНО]
-Table Certificate {
-  id integer [primary key]
-  // participant_id integer [ref: > Entity.id, not null, note: 'Участник']
-  name varchar(200) [not null, note: 'Название сертификата']
-  certificate_type varchar(20) [not null, note: 'Тип сертификата: ISO / AUTHORIZED / SPECIALIST / OTHER']
-  issued_by varchar(200) [not null, note: 'Кем выдан']
-  issued_date date [not null, note: 'Дата выдачи']
-  expiry_date date [null, note: 'Срок действия']
-  file varchar [null, note: 'Файл сертификата']
-  created_at datetime [not null, note: 'Дата создания']
-  updated_at datetime [not null, note: 'Дата обновления']
-}
+// Table ObjectCharacteristicValue {
+//   id integer [primary key]
+//   // characteristic_id integer [ref: > ObjectCharacteristic.id]
+//   value double [note: 'Значение']
+//   measurement_date date [note: 'Дата измерения']
+//   notes text [note: 'Дополнительная информация']
+// }
 
-// [НЕ РЕАЛИЗОВАНО]
-Table Review {
-  id integer [primary key]
-  // participant_id integer [ref: > Entity.id, not null, note: 'Участник']
-  text text [not null, note: 'Текст отзыва']
-  rating integer [not null, note: 'Оценка 1..5']
-  date date [not null, note: 'Дата отзыва']
-  source varchar(200) [null, note: 'Источник']
-  created_at datetime [not null, note: 'Дата создания']
-  updated_at datetime [not null, note: 'Дата обновления']
-}
+// Table AutomationRequirement {
+//   id integer [primary key]
+//   // automation_id varchar [ref: > ObjectSystem.id]
+//   requirement text [note: 'Требование']
+//   is_mandatory boolean [note: 'Обязательность']
+//   regulation varchar [note: 'Нормативный документ']
+// }
 
-// [НЕ РЕАЛИЗОВАНО]
-Table TCOAnalysis {
-  id integer [primary key]
-  //  participant_id integer [ref: > Entity.id, not null, note: 'Участник']
-  capex decimal(15,2) [not null, note: 'CAPEX (млн руб)']
-  opex_per_year decimal(15,2) [not null, note: 'OPEX в год (млн руб)']
-  period_years integer [not null, default: 5, note: 'Период анализа (лет)']
-  discount_rate decimal(5,2) [not null, default: 10.0, note: 'Ставка дисконтирования %']
-  notes text [null, note: 'Примечания']
-  created_at datetime [not null, note: 'Дата создания']
-  updated_at datetime [not null, note: 'Дата обновления']
-}
+// Table Project {
+//   id integer [primary key]
+//   // participant_id integer [ref: > Entity.id, not null, note: 'Участник']
+//   // object_id integer [ref: > Object.id, not null, note: 'Объект внедрения']
+//   name varchar(200) [not null, note: 'Название проекта']
+//   year integer [not null, note: 'Год реализации']
+//   successful boolean [not null, default: true, note: 'Успешный пуск']
+//   description text [null, note: 'Описание']
+//   created_at datetime [not null, note: 'Дата создания']
+//   updated_at datetime [not null, note: 'Дата обновления']
+// }
+
+// Table Certificate {
+//   id integer [primary key]
+//   // participant_id integer [ref: > Entity.id, not null, note: 'Участник']
+//   name varchar(200) [not null, note: 'Название сертификата']
+//   certificate_type varchar(20) [not null, note: 'Тип сертификата: ISO / AUTHORIZED / SPECIALIST / OTHER']
+//   issued_by varchar(200) [not null, note: 'Кем выдан']
+//   issued_date date [not null, note: 'Дата выдачи']
+//   expiry_date date [null, note: 'Срок действия']
+//   file varchar [null, note: 'Файл сертификата']
+//   created_at datetime [not null, note: 'Дата создания']
+//   updated_at datetime [not null, note: 'Дата обновления']
+// }
+
+// Table Review {
+//   id integer [primary key]
+//   // participant_id integer [ref: > Entity.id, not null, note: 'Участник']
+//   text text [not null, note: 'Текст отзыва']
+//   rating integer [not null, note: 'Оценка 1..5']
+//   date date [not null, note: 'Дата отзыва']
+//   source varchar(200) [null, note: 'Источник']
+//   created_at datetime [not null, note: 'Дата создания']
+//   updated_at datetime [not null, note: 'Дата обновления']
+// }
+
+// Table TCOAnalysis {
+//   id integer [primary key]
+//   //  participant_id integer [ref: > Entity.id, not null, note: 'Участник']
+//   capex decimal(15,2) [not null, note: 'CAPEX (млн руб)']
+//   opex_per_year decimal(15,2) [not null, note: 'OPEX в год (млн руб)']
+//   period_years integer [not null, default: 5, note: 'Период анализа (лет)']
+//   discount_rate decimal(5,2) [not null, default: 10.0, note: 'Ставка дисконтирования %']
+//   notes text [null, note: 'Примечания']
+//   created_at datetime [not null, note: 'Дата создания']
+//   updated_at datetime [not null, note: 'Дата обновления']
+// }

@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from apps.entities.models import (
-    Entity, VendorProfile, EngineeringCompanyProfile, FunctionCompetency,
+    Entity, VendorProfile, SupplierProfile, SystemIntegratorProfile,
+    EngineeringCompanyProfile, FunctionCompetency,
 )
 
 
@@ -16,6 +17,20 @@ class EntityAdmin(admin.ModelAdmin):
 class VendorProfileAdmin(admin.ModelAdmin):
     list_display = ["entity"]
     raw_id_fields = ["entity"]
+
+
+@admin.register(SupplierProfile)
+class SupplierProfileAdmin(admin.ModelAdmin):
+    list_display = ["entity"]
+    raw_id_fields = ["entity"]
+    filter_horizontal = ["products"]
+
+
+@admin.register(SystemIntegratorProfile)
+class SystemIntegratorProfileAdmin(admin.ModelAdmin):
+    list_display = ["entity", "managing_owner"]
+    raw_id_fields = ["entity", "managing_owner"]
+    filter_horizontal = ["vendor_partners"]
 
 
 class FunctionCompetencyInline(admin.TabularInline):

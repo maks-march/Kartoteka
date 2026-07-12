@@ -124,6 +124,10 @@ class Entity(models.Model):
 
     # Типы, у которых заводится профиль вендора (точка привязки продуктов).
     VENDOR_TYPES = ("vendor", "full_cycle_vendor")
+    # Типы с профилем поставщика (множественная связь с продуктами).
+    SUPPLIER_TYPES = ("supplier", "full_cycle_vendor")
+    # Типы с профилем инжиниринговой компании (регион/объект/компетенции).
+    ENGINEERING_TYPES = ("engineering_company", "full_cycle_vendor")
 
     @property
     def can_have_products(self):
@@ -137,7 +141,18 @@ class Entity(models.Model):
 
     @property
     def is_engineering_type(self):
-        return self.entity_type == "engineering_company"
+        """Тип с профилем инж. компании (engineering_company / full_cycle_vendor)."""
+        return self.entity_type in self.ENGINEERING_TYPES
+
+    @property
+    def is_supplier_type(self):
+        """Тип с профилем поставщика (supplier / full_cycle_vendor)."""
+        return self.entity_type in self.SUPPLIER_TYPES
+
+    @property
+    def is_system_integrator_type(self):
+        """Тип, для которого заводится SystemIntegratorProfile."""
+        return self.entity_type == "system_integrator"
 
     @property
     def products(self):
@@ -212,6 +227,84 @@ class VendorProfile(models.Model):
     @property
     def entity_name(self):
         """Имя участника — для удобного доступа из шаблонов (product.vendor.entity_name)."""
+        return self.entity.entity_name
+
+
+class SupplierProfile(models.Model):
+    """Профиль поставщика (тип supplier).
+
+    Поставщик, в отличие от вендора (связь через авторство продукта —
+    VendorProduct.vendor), связан с продуктами МНОЖЕСТВЕННОЙ связью со своей
+    стороны: один поставщик поставляет много продуктов, один продукт может
+    поставляться многими поставщиками (независимо от того, кто его автор-вендор).
+    """
+
+    entity = models.OneToOneField(
+        Entity,
+        on_delete=models.CASCADE,
+        related_name="supplier_profile",
+        verbose_name="Участник",
+    )
+    products = models.ManyToManyField(
+        "system.VendorProduct",
+        blank=True,
+        related_name="suppliers",
+        verbose_name="Поставляемые продукты",
+    )
+
+    class Meta:
+        verbose_name = "Профиль поставщика"
+        verbose_name_plural = "Профили поставщиков"
+
+    def __str__(self):
+        return f"SupplierProfile: {self.entity.entity_name}"
+
+    @property
+    def entity_name(self):
+        return self.entity.entity_name
+
+
+class SystemIntegratorProfile(models.Model):
+    """Профиль системного интегратора (тип system_integrator).
+
+    Особенности типа:
+    - managing_owner — управляющая компания из OwnerEntity (внутренний
+      интегратор холдинга); необязательная.
+    - vendor_partners — вендоры-партнёры (M2M к VendorProfile). Обратная связь
+      vendor_profile.partner_integrators даёт «карту партнёров» для вендора.
+    """
+
+    entity = models.OneToOneField(
+        Entity,
+        on_delete=models.CASCADE,
+        related_name="system_integrator_profile",
+        verbose_name="Участник",
+    )
+    managing_owner = models.ForeignKey(
+        "owners.OwnerEntity",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="internal_integrators",
+        verbose_name="Управляющая компания",
+        help_text="Компания из OwnerEntity, если это внутренний интегратор.",
+    )
+    vendor_partners = models.ManyToManyField(
+        "entities.VendorProfile",
+        blank=True,
+        related_name="partner_integrators",
+        verbose_name="Вендоры-партнёры",
+    )
+
+    class Meta:
+        verbose_name = "Профиль системного интегратора"
+        verbose_name_plural = "Профили системных интеграторов"
+
+    def __str__(self):
+        return f"SystemIntegratorProfile: {self.entity.entity_name}"
+
+    @property
+    def entity_name(self):
         return self.entity.entity_name
 
 
