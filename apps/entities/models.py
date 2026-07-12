@@ -379,3 +379,80 @@ class FunctionCompetency(models.Model):
 
     def __str__(self):
         return f"{self.system_class.system_class} · {self.industry}"
+
+
+class FullCycleVendorProfile(models.Model):
+    """Профиль вендора полного цикла (тип full_cycle_vendor).
+
+    Dedicated OneToOne profile (region + resident_object) + products M2M
+    + separate FullCycleFunctionCompetency (аналогично EngineeringCompanyProfile + FunctionCompetency).
+    """
+
+    entity = models.OneToOneField(
+        Entity,
+        on_delete=models.CASCADE,
+        related_name="full_cycle_profile",
+        verbose_name="Участник",
+    )
+    region = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Локация (регион)",
+        help_text="Регион деятельности. Подсказки — регионы существующих объектов.",
+    )
+    resident_object = models.ForeignKey(
+        "objects.Object",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="resident_full_cycle_vendors",
+        verbose_name="Вхожий объект",
+        help_text="Объект, на котором компания уже закрепилась и работает.",
+    )
+    products = models.ManyToManyField(
+        "system.VendorProduct",
+        blank=True,
+        related_name="full_cycle_competent_vendors",
+        verbose_name="Узкая компетенция по продуктам",
+    )
+
+    class Meta:
+        verbose_name = "Профиль вендора полного цикла"
+        verbose_name_plural = "Профили вендоров полного цикла"
+
+    def __str__(self):
+        return f"FullCycleVendorProfile: {self.entity.entity_name}"
+
+
+class FullCycleFunctionCompetency(models.Model):
+    """Узкая компетенция вендора полного цикла по функции: пара «класс + индустрия».
+
+    Каждая строка — одна связанная пара (напр. MES · Нефтехимия).
+    """
+
+    profile = models.ForeignKey(
+        FullCycleVendorProfile,
+        on_delete=models.CASCADE,
+        related_name="function_competencies",
+        verbose_name="Профиль вендора полного цикла",
+    )
+    system_class = models.ForeignKey(
+        "system.AutomationClass",
+        on_delete=models.CASCADE,
+        related_name="full_cycle_function_competencies",
+        verbose_name="Класс систем",
+    )
+    industry = models.CharField(
+        max_length=255,
+        verbose_name="Индустрия",
+        help_text="Значение из категорий 1-го уровня (без жёсткой связи).",
+    )
+
+    class Meta:
+        verbose_name = "Компетенция по функции (полный цикл)"
+        verbose_name_plural = "Компетенции по функции (полный цикл)"
+        ordering = ["system_class__level", "system_class__system_class", "industry"]
+
+    def __str__(self):
+        return f"{self.system_class.system_class} · {self.industry}"

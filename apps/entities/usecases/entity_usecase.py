@@ -22,13 +22,14 @@ class EntityUseCase:
 
         - vendor / full_cycle_vendor → есть VendorProfile;
         - engineering_company → есть EngineeringCompanyProfile;
+        - full_cycle_vendor → + dedicated FullCycleVendorProfile;
         - при смене типа лишний профиль удаляется.
         Профиль вендора НЕ удаляем, если на него ещё ссылаются продукты
         (иначе потеряли бы связь) — вместо этого оставляем.
         """
         from apps.entities.models import (
             VendorProfile, EngineeringCompanyProfile, SupplierProfile,
-            SystemIntegratorProfile,
+            SystemIntegratorProfile, FullCycleVendorProfile,
         )
 
         # Профиль вендора
@@ -57,6 +58,12 @@ class EntityUseCase:
             SystemIntegratorProfile.objects.get_or_create(entity=entity)
         else:
             SystemIntegratorProfile.objects.filter(entity=entity).delete()
+
+        # Dedicated профиль вендора полного цикла (только для exact типа)
+        if entity.entity_type == "full_cycle_vendor":
+            FullCycleVendorProfile.objects.get_or_create(entity=entity)
+        else:
+            FullCycleVendorProfile.objects.filter(entity=entity).delete()
 
     def create(self, **data):
         entity = self.repo.create(**data)
@@ -186,3 +193,46 @@ class EntityUseCase:
     def delete(self, pk):
         obj = self.get(pk)
         return self.repo.delete(obj)
+
+    def save_full_cycle_profile(self, entity, region=None, resident_object_id=None,
+                                 product_ids=None, competencies=None):
+        """Сохраняет поля dedicated профиля вендора полного цикла.
+
+        competencies — список пар (system_class_id, industry).
+        Вызывать только для entity типа full_cycle_vendor (профиль уже создан
+        в _sync_profiles). Для остальных типов — ничего не делает.
+        """
+        if entity.entity_type != "full_cycle_vendor":
+            return None
+        from apps.entities.models import (
+            FullCycleVendorProfile, FullCycleFunctionCompetency,
+        )
+        from apps.objects.models import Object
+        from apps.system.models import VendorProduct, AutomationClass
+
+        profile, _ = FullCycleVendorProfile.objects.get_or_create(entity=entity)
+        profile.region = region or ""
+        if resident_object_id in (None, "", "None"):
+            profile.resident_object = None
+        else:
+            profile.resident_object = Object.objects.filter(pk=resident_object_id).first()
+        profile.save()
+
+        # Компетенция по продуктам (M2M)
+        valid_products = VendorProduct.objects.filter(
+            pk__in=[p for p in (product_ids or []) if p not in (None, "", "None")]
+        )
+        profile.products.set(valid_products)
+
+        # Компетенция по функции (пары класс+индустрия) — пересобираем целиком
+        profile.function_competencies.all().delete()
+        for class_id, industry in (competencies or []):
+            industry = (industry or "").strip()
+            if class_id in (None, "", "None") or not industry:
+                continue
+            klass = AutomationClass.objects.filter(pk=class_id).first()
+            if klass:
+                FullCycleFunctionCompetency.objects.create(
+                    profile=profile, system_class=klass, industry=industry
+                )
+        return profile

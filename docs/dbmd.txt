@@ -284,6 +284,30 @@ Table FunctionCompetency {
   industry varchar [note: 'Индустрия (значение из категорий 1го уровня, без жёсткой связи)']
 }
 
+// Вендор полного цикла — dedicated профиль
+Table FullCycleVendorProfile {
+  id integer [primary key]
+  entity_id integer [ref: - Entity.id, unique, note: 'OneToOne к Entity (тип full_cycle_vendor)']
+
+  region varchar [note: 'Локация — регион (значения-подсказки из Object.region, без жёсткой связи)']
+  resident_object_id integer [ref: > Object.id, note: 'Вхожий объект']
+}
+
+// Отдельная таблица компетенций по функции для full_cycle_vendor
+Table FullCycleFunctionCompetency {
+  id integer [primary key]
+  profile_id integer [ref: > FullCycleVendorProfile.id, note: 'Профиль вендора полного цикла']
+  system_class_id integer [ref: > AutomationClass.id]
+  industry varchar [note: 'Индустрия (значение из категорий 1го уровня)']
+}
+
+// Поставляемые продукты (M2M)
+Table FullCycleVendorProfile_products {
+  id integer [primary key]
+  fullcycle_vendor_profile_id integer [ref: > FullCycleVendorProfile.id]
+  vendor_product_id integer [ref: > VendorProduct.id]
+}
+
 
 // Группы таблиц: справочники (оранжевый), связи (берёзовый), другое (синий).
 TableGroup "Справочники" [color:  #316896] {

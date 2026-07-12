@@ -439,18 +439,21 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIn('name="supplier_products"', h)
 
     def test_full_cycle_vendor_has_all_three_profiles(self):
-        """Вендор полного цикла = вендор + поставщик + инж. компания."""
+        """Вендор полного цикла = vendor + supplier + engineering + dedicated full_cycle_profile."""
         from apps.entities.models import (
-            VendorProfile, SupplierProfile, EngineeringCompanyProfile,
+            VendorProfile, SupplierProfile, EngineeringCompanyProfile, FullCycleVendorProfile,
         )
         e = self._uc().create(entity_name="ФПЦ", entity_type="full_cycle_vendor")
         self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
         self.assertTrue(SupplierProfile.objects.filter(entity=e).exists())
         self.assertTrue(EngineeringCompanyProfile.objects.filter(entity=e).exists())
+        self.assertTrue(FullCycleVendorProfile.objects.filter(entity=e).exists())
         # признаки типа охватывают full_cycle_vendor
         self.assertTrue(e.is_vendor_type)
         self.assertTrue(e.is_supplier_type)
         self.assertTrue(e.is_engineering_type)
+        # dedicated profile only via direct entity_type check
+        self.assertEqual(e.entity_type, "full_cycle_vendor")
 
     def test_full_cycle_vendor_saves_supplier_and_engineering(self):
         from apps.entities.models import Entity
@@ -466,9 +469,16 @@ class EntityTypingProfilesTests(TestCase):
         e = Entity.objects.get(entity_name="ФПЦФорма")
         # поставщик
         self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
-        # инж. компания
+        # инж. компания (всегда для full_cycle_vendor)
         self.assertEqual(e.engineering_profile.region, "Урал")
         self.assertEqual(e.engineering_profile.function_competencies.count(), 1)
+        # dedicated full cycle profile (новый dedicated)
+        from apps.entities.models import FullCycleVendorProfile
+        self.assertTrue(FullCycleVendorProfile.objects.filter(entity=e).exists())
+        fcp = e.full_cycle_profile
+        self.assertEqual(fcp.region, "Урал")
+        self.assertEqual(fcp.function_competencies.count(), 1)
+        self.assertEqual(fcp.function_competencies.first().industry, "Химия")
 
     def test_system_integrator_profile_autocreated_and_removed(self):
         from apps.entities.models import SystemIntegratorProfile

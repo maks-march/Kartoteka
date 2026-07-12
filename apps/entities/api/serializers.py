@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from apps.entities.models import (
     Entity, EngineeringCompanyProfile, FunctionCompetency,
+    FullCycleVendorProfile, FullCycleFunctionCompetency,
 )
 
 
@@ -11,6 +12,14 @@ class FunctionCompetencySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FunctionCompetency
+        fields = ["id", "system_class", "system_class_name", "industry"]
+
+
+class FullCycleFunctionCompetencySerializer(serializers.ModelSerializer):
+    system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
+
+    class Meta:
+        model = FullCycleFunctionCompetency
         fields = ["id", "system_class", "system_class_name", "industry"]
 
 
@@ -28,10 +37,25 @@ class EngineeringProfileSerializer(serializers.ModelSerializer):
         ]
 
 
+class FullCycleProfileSerializer(serializers.ModelSerializer):
+    """Чтение dedicated профиля вендора полного цикла."""
+    resident_object_name = serializers.CharField(source="resident_object.name", read_only=True)
+    products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    function_competencies = FullCycleFunctionCompetencySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = FullCycleVendorProfile
+        fields = [
+            "id", "region", "resident_object", "resident_object_name",
+            "products", "function_competencies",
+        ]
+
+
 class EntitySerializer(serializers.ModelSerializer):
     entity_type_display = serializers.CharField(source="get_entity_type_display", read_only=True)
     # Профили типов (только чтение, показываются при наличии).
     engineering_profile = EngineeringProfileSerializer(read_only=True)
+    full_cycle_profile = FullCycleProfileSerializer(read_only=True)
     products = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,7 +65,7 @@ class EntitySerializer(serializers.ModelSerializer):
             "financial_data", "entity_type", "entity_type_display", "is_partner",
             "website", "kam_name", "kam_phone", "contact_person", "contact_phone",
             "presentation_url", "profile", "industries",
-            "engineering_profile", "products",
+            "engineering_profile", "full_cycle_profile", "products",
         ]
 
     def get_products(self, obj):

@@ -3,6 +3,7 @@ from django.contrib import admin
 from apps.entities.models import (
     Entity, VendorProfile, SupplierProfile, SystemIntegratorProfile,
     EngineeringCompanyProfile, FunctionCompetency,
+    FullCycleVendorProfile, FullCycleFunctionCompetency,
 )
 
 
@@ -45,3 +46,17 @@ class EngineeringCompanyProfileAdmin(admin.ModelAdmin):
     raw_id_fields = ["entity", "resident_object"]
     filter_horizontal = ["product_competencies"]
     inlines = [FunctionCompetencyInline]
+
+
+class FullCycleFunctionCompetencyInline(admin.TabularInline):
+    model = FullCycleFunctionCompetency
+    extra = 0
+    raw_id_fields = ["system_class"]
+
+
+@admin.register(FullCycleVendorProfile)
+class FullCycleVendorProfileAdmin(admin.ModelAdmin):
+    list_display = ["entity", "region", "resident_object"]
+    raw_id_fields = ["entity", "resident_object"]
+    filter_horizontal = ["products"]
+    inlines = [FullCycleFunctionCompetencyInline]

@@ -133,6 +133,14 @@ def _form_context(**extra):
                 {"class_id": fc.system_class_id, "industry": fc.industry}
                 for fc in prof.function_competencies.all()
             ]
+    # Для full_cycle_vendor используем dedicated full_cycle_profile
+    if entity is not None and entity.entity_type == "full_cycle_vendor":
+        prof = getattr(entity, "full_cycle_profile", None)
+        if prof is not None:
+            competency_pairs_json = [
+                {"class_id": fc.system_class_id, "industry": fc.industry}
+                for fc in prof.function_competencies.all()
+            ]
 
     # Системный интегратор: вендоры-партнёры (VendorProfile) + управляющая компания.
     from apps.entities.models import VendorProfile
@@ -261,6 +269,7 @@ def entity_create(request):
                 managing_owner_id=request.POST.get("managing_owner") or None,
                 vendor_partner_ids=request.POST.getlist("vendor_partners"),
             )
+            usecase.save_full_cycle_profile(entity, **_extract_engineering_fields(request.POST))
             return redirect("entity-detail", pk=entity.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
@@ -289,6 +298,7 @@ def entity_edit(request, pk):
                 managing_owner_id=request.POST.get("managing_owner") or None,
                 vendor_partner_ids=request.POST.getlist("vendor_partners"),
             )
+            usecase.save_full_cycle_profile(entity, **_extract_engineering_fields(request.POST))
             return redirect("entity-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)
