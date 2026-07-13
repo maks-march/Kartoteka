@@ -1102,6 +1102,7 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .entity-card .card-title a { color: #1a1a1a; text-decoration: none; }
 .entity-card .card-title a:hover { color: #007bff; }
 .entity-card .card-tags { display: flex; align-items: flex-start; gap: 5px; }
+.entity-card .card-tags-column { flex-direction: column; }
 .entity-card .card-tags .tag { overflow-wrap: anywhere; }
 .entity-card .card-rows { display: flex; flex-direction: column; gap: 3px; }
 .entity-card .card-row {

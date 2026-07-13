@@ -304,13 +304,19 @@ Table FullCycleFunctionCompetency {
 // Поставляемые продукты (M2M)
 Table FullCycleVendorProfile_products {
   id integer [primary key]
-  fullcycle_vendor_profile_id integer [ref: > FullCycleVendorProfile.id]
-  vendor_product_id integer [ref: > VendorProduct.id]
+  fullcyclevendorprofile_id integer [ref: > FullCycleVendorProfile.id]
+  vendorproduct_id integer [ref: > VendorProduct.id]
 }
 
 
-// Группы таблиц: справочники (оранжевый), связи (берёзовый), другое (синий).
-TableGroup "Справочники" [color:  #316896] {
+// Группы таблиц: справочники (оранжевый), сущности (синий), связи (зелёный).
+TableGroup "Справочники" [color: #B86A00] {
+  Category
+  AutomationClass
+  VendorProduct
+}
+
+TableGroup "Сущности" [color: #316896] {
   OwnerEntity
   Object
   AutomationSystem
@@ -319,12 +325,10 @@ TableGroup "Справочники" [color:  #316896] {
   SupplierProfile
   SystemIntegratorProfile
   EngineeringCompanyProfile
-  Category
-  AutomationClass
-  VendorProduct
+  FullCycleVendorProfile
 }
 
-TableGroup "Связи" [color:  #316896] {
+TableGroup "Связи" [color: #2E6B2E] {
   ObjectSystem
   AutomationSystem_subsystem_classes
   VendorProduct_subsystem_classes
@@ -332,6 +336,8 @@ TableGroup "Связи" [color:  #316896] {
   SystemIntegratorProfile_vendor_partners
   EngineeringCompanyProfile_product_competencies
   FunctionCompetency
+  FullCycleFunctionCompetency
+  FullCycleVendorProfile_products
 }
 
 

@@ -24,7 +24,7 @@
         {% for obj in objects %}
         <div class="entity-card" data-href="{% url 'object-detail' obj.pk %}">
             <div class="card-title"><a href="{% url 'object-detail' obj.pk %}">{{ obj.object_name }}</a></div>
-            <div class="card-tags">
+            <div class="card-tags card-tags-column">
                 <span class="tag tag-{{ obj.hierarchy_level }}">Уровень {{ obj.hierarchy_level }}</span>
                 <span class="tag {{ obj.status_tag_class }}">{{ obj.get_status_display }}</span>
                 {% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% endif %}
