@@ -11,7 +11,7 @@ class CategoriesWebEndpointTests(TestCase):
         self.category = Category.objects.create(
             category_name="Производство",
             object_level=1,
-            creator_id=self.user,
+            creator=self.user,
         )
 
     def test_category_list_page_is_available(self):
@@ -62,7 +62,7 @@ class CategoriesWebEndpointTests(TestCase):
 class CategoriesApiEndpointTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="api-user", password="password")
-        self.category = Category.objects.create(category_name="Цех", object_level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Цех", object_level=1, creator=self.user)
         self.api_client = APIClient()
 
     def test_category_api_list_and_detail_are_public(self):

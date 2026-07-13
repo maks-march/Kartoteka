@@ -12,9 +12,9 @@ from apps.entities.models import Entity
 class ObjectApiOrderingTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("ord", "ord@x.x", "pw")
-        Object.objects.create(object_name="Бета", hierarchy_level=1, creator_id=self.user)
-        Object.objects.create(object_name="Альфа", hierarchy_level=1, creator_id=self.user)
-        Object.objects.create(object_name="Гамма", hierarchy_level=1, creator_id=self.user)
+        Object.objects.create(object_name="Бета", hierarchy_level=1, creator=self.user)
+        Object.objects.create(object_name="Альфа", hierarchy_level=1, creator=self.user)
+        Object.objects.create(object_name="Гамма", hierarchy_level=1, creator=self.user)
         self.api = APIClient()
 
     def _names(self, ordering=None):
@@ -31,7 +31,7 @@ class ObjectApiOrderingTests(TestCase):
 
     def test_invalid_ordering_falls_back(self):
         # произвольное поле игнорируется -> сортировка по умолчанию
-        self.assertEqual(self._names("creator_id__password"), ["Альфа", "Бета", "Гамма"])
+        self.assertEqual(self._names("creator__password"), ["Альфа", "Бета", "Гамма"])
 
 
 class OtherEntitiesApiOrderingTests(TestCase):
@@ -41,8 +41,8 @@ class OtherEntitiesApiOrderingTests(TestCase):
         OwnerEntity.objects.create(owner_name="Альфа")
         Entity.objects.create(entity_name="Бета")
         Entity.objects.create(entity_name="Альфа")
-        Category.objects.create(category_name="Бета", object_level=1, creator_id=self.user)
-        Category.objects.create(category_name="Альфа", object_level=1, creator_id=self.user)
+        Category.objects.create(category_name="Бета", object_level=1, creator=self.user)
+        Category.objects.create(category_name="Альфа", object_level=1, creator=self.user)
         self.api = APIClient()
 
     def test_owners_ordering_desc(self):

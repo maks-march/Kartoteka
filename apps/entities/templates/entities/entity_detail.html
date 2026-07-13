@@ -105,6 +105,40 @@
     </div><!-- /.detail-body -->
 </div>
 
+{% if entity.is_engineering_type %}
+<div class="card">
+    <h2>Инжиниринговая компания</h2>
+    {% with prof=entity.engineering_profile %}
+    <div class="info-cards">
+        <div class="info-card">
+            <span class="info-label">Локация (регион)</span>
+            <span class="info-value">{{ prof.region|default:'—' }}</span>
+        </div>
+        <div class="info-card">
+            <span class="info-label">Вхожий объект</span>
+            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
+        </div>
+        <div class="info-card full">
+            <span class="info-label">Узкая компетенция по продуктам</span>
+            {% if prof.product_competencies.all %}
+            <div class="card-tags">
+                {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+            </div>
+            {% else %}<span class="info-value">—</span>{% endif %}
+        </div>
+        <div class="info-card full">
+            <span class="info-label">Узкая компетенция по функции</span>
+            {% if prof.function_competencies.all %}
+            <div class="card-tags">
+                {% for fc in prof.function_competencies.all %}<span class="tag tag-muted">{{ fc.system_class.system_class }} · {{ fc.industry }}</span>{% endfor %}
+            </div>
+            {% else %}<span class="info-value">—</span>{% endif %}
+        </div>
+    </div>
+    {% endwith %}
+</div>
+{% endif %}
+
 {% if entity.is_vendor_type %}
 <div class="card">
     <div class="card-title-row">
@@ -171,60 +205,6 @@
     {% endwith %}
 </div>
 {% endif %}
-
-{% if entity.is_engineering_type %}
-<div class="card">
-    <h2>Инжиниринговая компания</h2>
-    {% with prof=entity.engineering_profile %}
-    <div class="info-cards">
-        <div class="info-card">
-            <span class="info-label">Локация (регион)</span>
-            <span class="info-value">{{ prof.region|default:'—' }}</span>
-        </div>
-        <div class="info-card">
-            <span class="info-label">Вхожий объект</span>
-            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
-        </div>
-        <div class="info-card full">
-            <span class="info-label">Узкая компетенция по продуктам</span>
-            {% if prof.product_competencies.all %}
-            <div class="card-tags">
-                {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
-            </div>
-            {% else %}<span class="info-value">—</span>{% endif %}
-        </div>
-        <div class="info-card full">
-            <span class="info-label">Узкая компетенция по функции</span>
-            {% if prof.function_competencies.all %}
-            <div class="card-tags">
-                {% for fc in prof.function_competencies.all %}<span class="tag tag-muted">{{ fc.system_class.system_class }} · {{ fc.industry }}</span>{% endfor %}
-            </div>
-            {% else %}<span class="info-value">—</span>{% endif %}
-        </div>
-    </div>
-    {% endwith %}
-</div>
-{% endif %}
-
-<div class="card">
-    <h2>Интегрированные системы</h2>
-    <table>
-        <thead>
-            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
-        </thead>
-        <tbody>
-            {% for link in integrated_links %}
-            <tr>
-                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.object_name }}</a></td>
-                <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
-                <td>{{ link.get_status_display }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="3" class="empty">Нет связей</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 
 <div class="card">
     <h2>Внедренные системы</h2>

@@ -32,12 +32,9 @@ class ObjectSystemUseCase:
         return entity
 
     def _resolve_entities(self, data):
-        if "integrator" in data:
-            integrator_id = data.pop("integrator")
-            data["integrator"] = self._get_optional_entity(integrator_id, "Интегратор")
-        if "implimentor" in data:
-            implimentor_id = data.pop("implimentor")
-            data["implimentor"] = self._get_optional_entity(implimentor_id, "Исполнитель внедрения")
+        if "implementor" in data:
+            implementor_id = data.pop("implementor")
+            data["implementor"] = self._get_optional_entity(implementor_id, "Исполнитель внедрения")
         return data
 
     def attach(self, object_pk=None, system_pk=None, **data):

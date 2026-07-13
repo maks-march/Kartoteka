@@ -21,7 +21,7 @@ class CategoryUseCase:
 
     def create(self, user=None, **data):
         if user is not None:
-            data["creator_id"] = user
+            data["creator"] = user
         return self.repo.create(**data)
 
     def update(self, pk, user, **data):

@@ -92,7 +92,7 @@ class SystemUseCase:
         data["subsystem_classes"] = self._resolve_subsystem_classes(raw_subsystems, primary_class)
 
         if user is not None:
-            data['creator_id'] = user
+            data['creator'] = user
         return self.repo.create(**data)
 
     def update(self, pk, user, **data):

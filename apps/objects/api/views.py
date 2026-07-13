@@ -105,7 +105,7 @@ class ObjectSystemListCreateView(APIView):
         else:
             from apps.objects.models import ObjectSystem
             links = ObjectSystem.objects.select_related(
-                "object", "system", "integrator", "implementor"
+                "object", "system", "implementor"
             ).all()
 
         serializer = ObjectSystemSerializer(links, many=True)

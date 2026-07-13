@@ -193,15 +193,15 @@ class EntityCountsAndViewsTests(TestCase):
 
         # sys_on_product использует продукт вендора -> связан с вендором через product
         self.sys_prod = AutomationSystem.objects.create(
-            autosystem_name="СистемаНаПродукте", system_class=self.cls, product=self.p1, creator_id=self.user)
+            autosystem_name="СистемаНаПродукте", system_class=self.cls, product=self.p1, creator=self.user)
         # sys_role: интегратор — ИнтеграторБ
         self.sys_role = AutomationSystem.objects.create(
-            autosystem_name="СистемаСвязь", system_class=self.cls, creator_id=self.user)
-        obj = Object.objects.create(object_name="Объект", hierarchy_level=1, creator_id=self.user)
-        ObjectSystem.objects.create(object=obj, system=self.sys_role, integrator=self.integ)
+            autosystem_name="СистемаСвязь", system_class=self.cls, creator=self.user)
+        obj = Object.objects.create(object_name="Объект", hierarchy_level=1, creator=self.user)
+        ObjectSystem.objects.create(object=obj, system=self.sys_role, implementor=self.integ)
         # интегратор также интегрирует систему на продукте вендора
-        obj2 = Object.objects.create(object_name="Объект2", hierarchy_level=1, creator_id=self.user)
-        ObjectSystem.objects.create(object=obj2, system=self.sys_prod, integrator=self.integ)
+        obj2 = Object.objects.create(object_name="Объект2", hierarchy_level=1, creator=self.user)
+        ObjectSystem.objects.create(object=obj2, system=self.sys_prod, implementor=self.integ)
 
     def _entities(self):
         from apps.entities.usecases.entity_usecase import EntityUseCase
@@ -281,38 +281,36 @@ class DetailSummaryPanelTests(TestCase):
         self.vendor_profile = VendorProfile.objects.create(entity=self.vendor)
         self.product = VendorProduct.objects.create(product_name="ПродуктП", vendor=self.vendor_profile)
         self.system = AutomationSystem.objects.create(
-            autosystem_name="СистемаП", system_class=self.cls, product=self.product, creator_id=self.user)
-        self.obj = Object.objects.create(object_name="ОбъектП", hierarchy_level=1, creator_id=self.user)
+            autosystem_name="СистемаП", system_class=self.cls, product=self.product, creator=self.user)
+        self.obj = Object.objects.create(object_name="ОбъектП", hierarchy_level=1, creator=self.user)
         ObjectSystem.objects.create(
-            object=self.obj, system=self.system, integrator=self.integ, implementor=self.impl)
+            object=self.obj, system=self.system, implementor=self.impl)
 
     def test_object_summary_panel(self):
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         self.assertIn("summary-panel", h)
         self.assertIn("Сводка связанности", h)
         # агрегаты из таблицы систем: класс, вендор (через product.vendor),
-        # интегратор, исполнитель
+        # исполнитель
         self.assertIn("SCADA", h)
         self.assertIn("Вендоры", h)
         self.assertIn("ВендорП", h)
-        self.assertIn("ИнтегП", h)
         self.assertIn("ИсполП", h)
 
     def test_system_summary_panel(self):
         h = self.client.get(f"/system/{self.system.pk}/").content.decode()
         self.assertIn("summary-panel", h)
         self.assertIn("Сводка связанности", h)
-        self.assertIn("Интеграторы", h)
-        self.assertIn("ИнтегП", h)
+        self.assertIn("Исполнители", h)
         self.assertIn("ИсполП", h)
 
     def test_entity_summary_panel(self):
-        # у интегратора сводка показывает классы интегрированных систем
-        h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
+        # у исполнителя сводка показывает классы внедрённых систем
+        h = self.client.get(f"/entities/{self.impl.pk}/").content.decode()
         self.assertIn("summary-panel", h)
-        self.assertIn("Классы интегрированных систем", h)
+        self.assertIn("Классы внедрённых систем", h)
         self.assertIn("SCADA", h)
-        self.assertIn("Интегр. систем", h)
+        self.assertIn("Внедр. систем", h)
 
     def test_entity_summary_products_only_for_vendor_types(self):
         hv = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
@@ -333,13 +331,13 @@ class SummaryLimitTests(TestCase):
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("lim", "lim@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.obj = Object.objects.create(object_name="ОбъектЛ", hierarchy_level=1, creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ОбъектЛ", hierarchy_level=1, creator=self.user)
         # 7 разных интеграторов -> в сводке максимум 5 + «ещё 2»
         for i in range(7):
             e = Entity.objects.create(entity_name=f"Инт{i}", entity_type="system_integrator")
             s = AutomationSystem.objects.create(
-                autosystem_name=f"С{i}", system_class=self.cls, creator_id=self.user)
-            ObjectSystem.objects.create(object=self.obj, system=s, integrator=e)
+                autosystem_name=f"С{i}", system_class=self.cls, creator=self.user)
+            ObjectSystem.objects.create(object=self.obj, system=s, implementor=e)
 
     def test_object_summary_caps_at_five(self):
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
@@ -360,7 +358,7 @@ class EntityTypingProfilesTests(TestCase):
         self.user = User.objects.create_user("typ", "typ@x.x", "pw")
         self.client.force_login(self.user)
         self.cls = AutomationClass.objects.create(level=3, system_class="MES")
-        self.obj = Object.objects.create(object_name="ЗаводТ", hierarchy_level=1, region="Урал", creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ЗаводТ", hierarchy_level=1, region="Урал", creator=self.user)
 
     def _uc(self):
         from apps.entities.usecases.entity_usecase import EntityUseCase
@@ -439,9 +437,10 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIn('name="supplier_products"', h)
 
     def test_full_cycle_vendor_has_all_three_profiles(self):
-        """Вендор полного цикла = vendor + supplier + engineering + dedicated full_cycle_profile."""
+        """Вендор полного цикла = вендор + поставщик + инж. компания + dedicated профиль."""
         from apps.entities.models import (
-            VendorProfile, SupplierProfile, EngineeringCompanyProfile, FullCycleVendorProfile,
+            VendorProfile, SupplierProfile, EngineeringCompanyProfile,
+            FullCycleVendorProfile,
         )
         e = self._uc().create(entity_name="ФПЦ", entity_type="full_cycle_vendor")
         self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
@@ -452,8 +451,23 @@ class EntityTypingProfilesTests(TestCase):
         self.assertTrue(e.is_vendor_type)
         self.assertTrue(e.is_supplier_type)
         self.assertTrue(e.is_engineering_type)
-        # dedicated profile only via direct entity_type check
-        self.assertEqual(e.entity_type, "full_cycle_vendor")
+
+    def test_full_cycle_competency_preselects_own_products(self):
+        """Продукты этого вендора предвыбраны в специализации по продуктам (форма)."""
+        from apps.entities.models import VendorProfile
+        from apps.system.models import VendorProduct
+        e = self._uc().create(entity_name="ФПЦпред", entity_type="full_cycle_vendor")
+        vp = VendorProfile.objects.get(entity=e)
+        own = VendorProduct.objects.create(product_name="СвойПрод", vendor=vp)
+        other = VendorProduct.objects.create(product_name="ЧужойПрод")
+        h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
+        # свой продукт — группа "own" и отмечен selected
+        self.assertIn('data-group="own"', h)
+        self.assertIn("Продукты этого вендора", h)
+        # предвыбор: свой продукт попал в скрытые input'ы компетенции
+        self.assertIn(f'name="product_competencies" value="{own.pk}"', h)
+        # чужой продукт есть в списке, но НЕ предвыбран
+        self.assertNotIn(f'name="product_competencies" value="{other.pk}"', h)
 
     def test_full_cycle_vendor_saves_supplier_and_engineering(self):
         from apps.entities.models import Entity
@@ -469,16 +483,9 @@ class EntityTypingProfilesTests(TestCase):
         e = Entity.objects.get(entity_name="ФПЦФорма")
         # поставщик
         self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
-        # инж. компания (всегда для full_cycle_vendor)
+        # инж. компания
         self.assertEqual(e.engineering_profile.region, "Урал")
         self.assertEqual(e.engineering_profile.function_competencies.count(), 1)
-        # dedicated full cycle profile (новый dedicated)
-        from apps.entities.models import FullCycleVendorProfile
-        self.assertTrue(FullCycleVendorProfile.objects.filter(entity=e).exists())
-        fcp = e.full_cycle_profile
-        self.assertEqual(fcp.region, "Урал")
-        self.assertEqual(fcp.function_competencies.count(), 1)
-        self.assertEqual(fcp.function_competencies.first().industry, "Химия")
 
     def test_system_integrator_profile_autocreated_and_removed(self):
         from apps.entities.models import SystemIntegratorProfile
@@ -640,12 +647,14 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIn('id="partnerToggle"', h)
 
     def test_vendor_block_empty_when_no_products(self):
-        """Если продуктов нет — пикер и пояснение не показываются (пустое поле)."""
+        """Если продуктов нет — пикер всё равно есть, показывается пояснение."""
         from apps.system.models import VendorProduct
         VendorProduct.objects.all().delete()
         h = self.client.get("/entities/create/").content.decode()
-        self.assertNotIn('id="vendorProductsPicker"', h)
-        self.assertNotIn("затем свободные", h)
+        # Поле (пикер) присутствует всегда — label без него «висел» бы пустым.
+        self.assertIn('id="vendorProductsPicker"', h)
+        # Пояснение для пустого списка продуктов.
+        self.assertIn("Доступных продуктов нет, создайте их после вендора.", h)
 
     def test_detail_shows_engineering_block(self):
         e = self._uc().create(entity_name="ИК2", entity_type="engineering_company")
@@ -671,7 +680,7 @@ class EngineeringProfileAPITests(TestCase):
         self.user = User.objects.create_user("api", "api@x.x", "pw")
         self.api = APIClient()
         self.cls = AutomationClass.objects.create(level=3, system_class="MES")
-        self.obj = Object.objects.create(object_name="ОбъектAPI", hierarchy_level=1, creator_id=self.user)
+        self.obj = Object.objects.create(object_name="ОбъектAPI", hierarchy_level=1, creator=self.user)
         vend = EntityUseCase().create(entity_name="ВендAPI", entity_type="vendor")
         self.product = VendorProduct.objects.create(
             product_name="ProdAPI", vendor=VendorProfile.objects.get(entity=vend))
@@ -725,3 +734,119 @@ class EngineeringProfileAPITests(TestCase):
         r = self.api.put(f"/api/entities/{self.eng.pk}/engineering-profile/",
                          {"region": "X"}, format="json")
         self.assertIn(r.status_code, (401, 403))
+
+
+class EntityProfileAPICoverageTests(TestCase):
+    """API-паритет с HTML: продукты вендора/поставщика, профили интегратора и ФПЦ."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, VendorProduct
+        from apps.objects.models import Object
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        from apps.entities.models import VendorProfile
+        from apps.owners.models import OwnerEntity
+        self.user = User.objects.create_user("apicov", "apicov@x.x", "pw")
+        self.api = APIClient()
+        self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.obj = Object.objects.create(object_name="ОбъектП", hierarchy_level=1, creator=self.user)
+        self.owner = OwnerEntity.objects.create(owner_name="Холдинг")
+        self.free_product = VendorProduct.objects.create(product_name="Свободный")
+        # вендор с продуктом (будет партнёром интегратора)
+        self.vend = EntityUseCase().create(entity_name="ВендП", entity_type="vendor")
+        self.vendor_profile = VendorProfile.objects.get(entity=self.vend)
+
+    # ---- vendor products ----
+    def test_vendor_products_put_and_get(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(
+            f"/api/entities/{self.vend.pk}/vendor-products/",
+            {"product_ids": [self.free_product.pk]}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["product_ids"], [self.free_product.pk])
+        r = self.api.get(f"/api/entities/{self.vend.pk}/vendor-products/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["product_ids"], [self.free_product.pk])
+
+    def test_vendor_products_rejected_for_non_vendor(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        sup = EntityUseCase().create(entity_name="ПостВ", entity_type="supplier")
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(f"/api/entities/{sup.pk}/vendor-products/",
+                         {"product_ids": []}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_vendor_products_put_requires_auth(self):
+        r = self.api.put(f"/api/entities/{self.vend.pk}/vendor-products/",
+                         {"product_ids": []}, format="json")
+        self.assertIn(r.status_code, (401, 403))
+
+    # ---- supplier products ----
+    def test_supplier_products_put_and_get(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        sup = EntityUseCase().create(entity_name="ПостП", entity_type="supplier")
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(
+            f"/api/entities/{sup.pk}/supplier-products/",
+            {"product_ids": [self.free_product.pk]}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["products"], [self.free_product.pk])
+        r = self.api.get(f"/api/entities/{sup.pk}/supplier-products/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["products"], [self.free_product.pk])
+
+    def test_supplier_products_rejected_for_non_supplier(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(f"/api/entities/{self.vend.pk}/supplier-products/",
+                         {"product_ids": []}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    # ---- system integrator profile ----
+    def test_system_integrator_profile_put_and_get(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        integ = EntityUseCase().create(entity_name="ИнтП", entity_type="system_integrator")
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(
+            f"/api/entities/{integ.pk}/system-integrator-profile/",
+            {"managing_owner": self.owner.pk,
+             "vendor_partner_ids": [self.vendor_profile.pk]}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["managing_owner"], self.owner.pk)
+        self.assertEqual(r.data["vendor_partners"], [self.vendor_profile.pk])
+        r = self.api.get(f"/api/entities/{integ.pk}/system-integrator-profile/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["managing_owner"], self.owner.pk)
+
+    def test_system_integrator_profile_rejected_for_non_integrator(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(f"/api/entities/{self.vend.pk}/system-integrator-profile/",
+                         {}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    # ---- full cycle profile ----
+    def test_full_cycle_profile_put_and_get(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        fc = EntityUseCase().create(entity_name="ФПЦП", entity_type="full_cycle_vendor")
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(
+            f"/api/entities/{fc.pk}/full-cycle-profile/",
+            {"region": "Урал", "resident_object": self.obj.pk,
+             "product_competencies": [self.free_product.pk],
+             "function_competencies": [{"system_class": self.cls.pk, "industry": "Химия"}]},
+            format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["region"], "Урал")
+        self.assertEqual(r.data["products"], [self.free_product.pk])
+        self.assertEqual(len(r.data["function_competencies"]), 1)
+        r = self.api.get(f"/api/entities/{fc.pk}/full-cycle-profile/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["region"], "Урал")
+
+    def test_full_cycle_profile_rejected_for_non_full_cycle(self):
+        self.api.force_authenticate(user=self.user)
+        r = self.api.put(f"/api/entities/{self.vend.pk}/full-cycle-profile/",
+                         {"region": "X"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_full_cycle_profile_404_when_no_profile(self):
+        r = self.api.get(f"/api/entities/{self.vend.pk}/full-cycle-profile/")
+        self.assertEqual(r.status_code, 404)

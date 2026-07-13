@@ -107,6 +107,38 @@ def _form_context(**extra):
     free_products = list(
         VendorProduct.objects.filter(vendor__isnull=True).select_related("system_class")
     )
+
+    # --- Компетенция по продуктам (для инж. компании / вендора полного цикла) ---
+    # Полный справочник продуктов; для full_cycle_vendor продукты этого вендора
+    # выносим отдельной группой сверху и предвыбираем по умолчанию.
+    all_products_list = list(VendorProductUseCase().list())
+    own_product_ids = {p.pk for p in own_products}
+    competency_own_products = [p for p in all_products_list if p.pk in own_product_ids]
+    competency_other_products = [p for p in all_products_list if p.pk not in own_product_ids]
+
+    # Id продуктов, уже отмеченных как компетенция (для предвыбора при редактировании).
+    product_competency_ids = set()
+    if entity is not None:
+        if entity.entity_type == "full_cycle_vendor":
+            fcp = getattr(entity, "full_cycle_profile", None)
+            if fcp is not None:
+                product_competency_ids = set(fcp.products.values_list("pk", flat=True))
+            eng = getattr(entity, "engineering_profile", None)
+            if eng is not None:
+                product_competency_ids |= set(
+                    eng.product_competencies.values_list("pk", flat=True)
+                )
+        elif getattr(entity, "is_engineering_type", False):
+            eng = getattr(entity, "engineering_profile", None)
+            if eng is not None:
+                product_competency_ids = set(
+                    eng.product_competencies.values_list("pk", flat=True)
+                )
+    # Вендор полного цикла: продукты этого вендора входят в специализацию
+    # по умолчанию (предвыбраны на уровне подсказок интерфейса).
+    if entity is not None and entity.entity_type == "full_cycle_vendor":
+        product_competency_ids |= own_product_ids
+
     classes = AutomationClassUseCase().list()
     # Справочник классов для combobox компетенции по функции: [{id, label, desc}]
     competency_classes_json = [
@@ -165,6 +197,9 @@ def _form_context(**extra):
         "all_classes": classes,
         "own_products": own_products,
         "free_products": free_products,
+        "competency_own_products": competency_own_products,
+        "competency_other_products": competency_other_products,
+        "product_competency_ids": product_competency_ids,
         "supplier_product_ids": supplier_product_ids,
         "competency_classes_json": competency_classes_json,
         "competency_pairs_json": competency_pairs_json,
@@ -203,9 +238,6 @@ def _entity_list_render(request, template, view_mode):
 def entity_detail(request, pk):
     usecase = EntityUseCase()
     entity = usecase.get(pk)
-    integrated_links = entity.integrated_object_systems.select_related(
-        "object", "system", "system__system_class"
-    )
     implemented_links = entity.implemented_object_systems.select_related(
         "object", "system", "system__system_class"
     )
@@ -214,16 +246,11 @@ def entity_detail(request, pk):
         "systems__system_class"
     )
 
-    integrated = list(integrated_links)
     implemented = list(implemented_links)
     # Системы, созданные на продуктах этого вендора
     vendor_systems = [s for p in vendor_products for s in p.systems.all()]
 
     # ---- Сводка связанности (агрегат из таблиц ниже) ----
-    integrated_classes = _summary_group(
-        (l.system.system_class for l in integrated if l.system and l.system.system_class),
-        key=lambda c: c.pk,
-    )
     implemented_classes = _summary_group(
         (l.system.system_class for l in implemented if l.system and l.system.system_class),
         key=lambda c: c.pk,
@@ -233,17 +260,14 @@ def entity_detail(request, pk):
         key=lambda c: c.pk,
     )
     summary = {
-        "integrated_count": len(integrated),
         "implemented_count": len(implemented),
         "products_count": vendor_products.count() if entity.can_have_products else None,
-        "integrated_classes": integrated_classes,
         "implemented_classes": implemented_classes,
         "vendor_classes": vendor_classes,
         "is_vendor": entity.can_have_products,
     }
     return render(request, "entities/entity_detail.html", {
         "entity": entity,
-        "integrated_links": integrated_links,
         "implemented_links": implemented_links,
         "vendor_products": vendor_products,
         "summary": summary,

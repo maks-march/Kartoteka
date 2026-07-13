@@ -12,7 +12,7 @@
             <span class="tag {{ system.status_tag_class }}" style="margin-left:6px">{{ system.get_system_status_display }}</span>
 
             <div class="detail-meta">
-                <p>Автор: {% if system.creator_id %}{{ system.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+                <p>Автор: {% if system.creator %}{{ system.creator.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
             </div>
         </div>
         {% if user.is_authenticated %}
@@ -142,7 +142,7 @@
     <div class="table-wrap">
     <table>
         <thead>
-            <tr><th>Объект</th><th>Уровень</th><th>Статус</th><th>Дата ввода</th><th>Интегратор</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+            <tr><th>Объект</th><th>Уровень</th><th>Статус</th><th>Дата ввода</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
         </thead>
         <tbody>
             {% for os in system_objects %}
@@ -151,7 +151,6 @@
                 <td><span class="tag tag-{{ os.object.hierarchy_level }}">Уровень {{ os.object.hierarchy_level }}</span></td>
                 <td>{{ os.get_status_display }}</td>
                 <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.integrator %}<a href="{% url 'entity-detail' os.integrator.pk %}">{{ os.integrator.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 <td>{% if os.implementor %}<a href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                 {% if user.is_authenticated %}
                 <td>

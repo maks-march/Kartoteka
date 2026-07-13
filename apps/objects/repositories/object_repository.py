@@ -66,13 +66,13 @@ class ObjectRepository:
     def get_by_id(self, pk):
         return (
             Object.objects.filter(pk=pk)
-            .select_related("parent_object", "category", "owner_entity", "creator_id")
+            .select_related("parent_object", "category", "owner_entity", "creator")
             .prefetch_related("children")
             .first()
         )
 
     def get_by_creator(self, user, search=None):
-        qs = Object.objects.filter(creator_id=user).select_related("parent_object", "category", "owner_entity")
+        qs = Object.objects.filter(creator=user).select_related("parent_object", "category", "owner_entity")
         if search:
             qs = qs.filter(object_name__iregex=re.escape(search))
         return qs

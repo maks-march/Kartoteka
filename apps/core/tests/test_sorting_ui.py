@@ -12,9 +12,9 @@ from apps.objects.models import Object
 class ObjectListSortingTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("s", "s@s.s", "pw")
-        Object.objects.create(object_name="Бета", hierarchy_level=2, status="active", city="Б", creator_id=self.user)
-        Object.objects.create(object_name="Альфа", hierarchy_level=1, status="stopped", city="А", creator_id=self.user)
-        Object.objects.create(object_name="Гамма", hierarchy_level=1, status="active", city="В", creator_id=self.user)
+        Object.objects.create(object_name="Бета", hierarchy_level=2, status="active", city="Б", creator=self.user)
+        Object.objects.create(object_name="Альфа", hierarchy_level=1, status="stopped", city="А", creator=self.user)
+        Object.objects.create(object_name="Гамма", hierarchy_level=1, status="active", city="В", creator=self.user)
 
     def _order(self, url):
         resp = self.client.get(url)
@@ -39,7 +39,7 @@ class ObjectListSortingTests(TestCase):
         )
 
     def test_invalid_field_ignored(self):
-        self.assertEqual(self._order("/objects/?ordering=creator_id__password"), ["Альфа", "Гамма", "Бета"])
+        self.assertEqual(self._order("/objects/?ordering=creator__password"), ["Альфа", "Гамма", "Бета"])
 
 
 class SortHeaderTagTests(TestCase):
@@ -47,7 +47,7 @@ class SortHeaderTagTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("h", "h@h.h", "pw")
-        Object.objects.create(object_name="A", hierarchy_level=1, creator_id=self.user)
+        Object.objects.create(object_name="A", hierarchy_level=1, creator=self.user)
 
     def test_no_sort_links_to_desc(self):
         html = self.client.get("/objects/").content.decode().replace("&amp;", "&")
@@ -83,19 +83,19 @@ class RelatedFieldSortingTests(TestCase):
         from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         self.user = User.objects.create_user("rel", "r@r.r", "pw")
 
-        cat_b = Category.objects.create(category_name="Бета", object_level=1, creator_id=self.user)
-        cat_a = Category.objects.create(category_name="Альфа", object_level=1, creator_id=self.user)
+        cat_b = Category.objects.create(category_name="Бета", object_level=1, creator=self.user)
+        cat_a = Category.objects.create(category_name="Альфа", object_level=1, creator=self.user)
         own_b = OwnerEntity.objects.create(owner_name="Бета-Холдинг")
         own_a = OwnerEntity.objects.create(owner_name="Альфа-Холдинг")
-        Object.objects.create(object_name="O1", hierarchy_level=1, category=cat_b, owner_entity=own_b, creator_id=self.user)
-        Object.objects.create(object_name="O2", hierarchy_level=1, category=cat_a, owner_entity=own_a, creator_id=self.user)
+        Object.objects.create(object_name="O1", hierarchy_level=1, category=cat_b, owner_entity=own_b, creator=self.user)
+        Object.objects.create(object_name="O2", hierarchy_level=1, category=cat_a, owner_entity=own_a, creator=self.user)
 
         self.cls_b = AutomationClass.objects.create(level=2, system_class="Бета-класс")
         self.cls_a = AutomationClass.objects.create(level=2, system_class="Альфа-класс")
         self.p_b = VendorProduct.objects.create(product_name="Бета-продукт")
         self.p_a = VendorProduct.objects.create(product_name="Альфа-продукт")
-        AutomationSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, product=self.p_b, creator_id=self.user)
-        AutomationSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, product=self.p_b, creator=self.user)
+        AutomationSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator=self.user)
 
     def test_objects_sort_by_category_name(self):
         resp = self.client.get("/objects/?ordering=category__category_name")
@@ -126,9 +126,9 @@ class ViewModeAndNavTests(TestCase):
     def setUp(self):
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("vm", "vm@x.x", "pw")
-        Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", city="Омск", creator_id=self.user)
+        Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", city="Омск", creator=self.user)
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        AutomationSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator=self.user)
 
     def test_object_cards_page(self):
         r = self.client.get("/objects/cards/")
@@ -144,7 +144,7 @@ class ViewModeAndNavTests(TestCase):
         self.assertContains(r, "Sys A")
 
     def test_cards_respect_filters(self):
-        Object.objects.create(object_name="Другой", hierarchy_level=1, status="stopped", creator_id=self.user)
+        Object.objects.create(object_name="Другой", hierarchy_level=1, status="stopped", creator=self.user)
         r = self.client.get("/objects/cards/?search=Объект")
         self.assertContains(r, "Объект A")
         # "Другой" не должен попасть в сетку карточек
@@ -164,11 +164,11 @@ class CardCountsTests(TestCase):
         from apps.objects.models import Object, ObjectSystem
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cc", "cc@x.x", "pw")
-        self.o = Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", creator_id=self.user)
-        self.o2 = Object.objects.create(object_name="Объект B", hierarchy_level=1, status="active", creator_id=self.user)
+        self.o = Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", creator=self.user)
+        self.o2 = Object.objects.create(object_name="Объект B", hierarchy_level=1, status="active", creator=self.user)
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)
-        self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)
+        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator=self.user)
+        self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator=self.user)
         ObjectSystem.objects.create(object=self.o, system=self.s1)
         ObjectSystem.objects.create(object=self.o, system=self.s2)
         ObjectSystem.objects.create(object=self.o2, system=self.s1)
@@ -202,11 +202,11 @@ class CountSortingTests(TestCase):
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cnt", "cnt@x.x", "pw")
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.a = Object.objects.create(object_name="A", hierarchy_level=1, status="active", creator_id=self.user)  # 0 систем
-        self.b = Object.objects.create(object_name="B", hierarchy_level=1, status="active", creator_id=self.user)  # 2
-        self.c = Object.objects.create(object_name="C", hierarchy_level=1, status="active", creator_id=self.user)  # 1
-        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator_id=self.user)  # 2 объекта
-        self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator_id=self.user)  # 1 объект
+        self.a = Object.objects.create(object_name="A", hierarchy_level=1, status="active", creator=self.user)  # 0 систем
+        self.b = Object.objects.create(object_name="B", hierarchy_level=1, status="active", creator=self.user)  # 2
+        self.c = Object.objects.create(object_name="C", hierarchy_level=1, status="active", creator=self.user)  # 1
+        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator=self.user)  # 2 объекта
+        self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator=self.user)  # 1 объект
         ObjectSystem.objects.create(object=self.b, system=self.s1)
         ObjectSystem.objects.create(object=self.b, system=self.s2)
         ObjectSystem.objects.create(object=self.c, system=self.s1)

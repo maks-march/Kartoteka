@@ -264,7 +264,7 @@ class AutomationSystem(models.Model):
         verbose_name="Интерфейсы системы",
     )
 
-    creator_id = models.ForeignKey(
+    creator = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,

@@ -103,7 +103,7 @@ class Object(models.Model):
         max_length=255, blank=True, default="", verbose_name="Код ФИАС"
     )
 
-    creator_id = models.ForeignKey(
+    creator = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -164,14 +164,6 @@ class ObjectSystem(models.Model):
         null=True,
         blank=True,
         verbose_name="Дата ввода в эксплуатацию"
-    )
-    integrator = models.ForeignKey(
-        Entity,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="integrated_object_systems",
-        verbose_name="Интегратор",
     )
     implementor = models.ForeignKey(
         Entity,

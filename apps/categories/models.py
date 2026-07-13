@@ -11,7 +11,7 @@ class Category(models.Model):
 
     category_name = models.CharField(max_length=255)
     object_level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES)
-    creator_id = models.ForeignKey(
+    creator = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
     )
 

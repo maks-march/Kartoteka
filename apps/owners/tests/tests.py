@@ -16,13 +16,13 @@ class OwnersEndpointTestMixin:
             owner=self.root_owner,
             ultimate_owner=self.root_owner,
         )
-        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
         self.object = Object.objects.create(
             object_name="Завод",
             hierarchy_level=1,
             category=self.category,
             owner_entity=self.owner,
-            creator_id=self.user,
+            creator=self.user,
         )
 
 
@@ -56,7 +56,7 @@ class OwnersWebEndpointTests(OwnersEndpointTestMixin, TestCase):
             object_name="Непривязанный объект",
             hierarchy_level=1,
             category=self.category,
-            creator_id=self.user,
+            creator=self.user,
         )
 
         response = self.client.get(f"/owners/{self.owner.pk}/attach-object/")
@@ -155,7 +155,7 @@ class OwnersApiEndpointTests(OwnersEndpointTestMixin, TestCase):
             object_name="Непривязанный объект",
             hierarchy_level=1,
             category=self.category,
-            creator_id=self.user,
+            creator=self.user,
         )
         response = self.api_client.post(
             f"/api/owners/{self.owner.pk}/attach-object/",
@@ -170,7 +170,7 @@ class OwnersApiEndpointTests(OwnersEndpointTestMixin, TestCase):
             object_name="Непривязанный объект",
             hierarchy_level=1,
             category=self.category,
-            creator_id=self.user,
+            creator=self.user,
         )
 
         response = self.api_client.post(
@@ -275,11 +275,11 @@ class ObjectFilterByMotherTests(TestCase):
         self.mother = OwnerEntity.objects.create(owner_name="Мать-Холдинг")
         self.sub = OwnerEntity.objects.create(owner_name="Дочка-Упр", owner=self.mother)
         self.obj_sub = Object.objects.create(
-            object_name="Объект дочки", hierarchy_level=1, owner_entity=self.sub, creator_id=self.user)
+            object_name="Объект дочки", hierarchy_level=1, owner_entity=self.sub, creator=self.user)
         self.obj_mother = Object.objects.create(
-            object_name="Объект матери", hierarchy_level=1, owner_entity=self.mother, creator_id=self.user)
+            object_name="Объект матери", hierarchy_level=1, owner_entity=self.mother, creator=self.user)
         self.obj_other = Object.objects.create(
-            object_name="Чужой объект", hierarchy_level=1, creator_id=self.user)
+            object_name="Чужой объект", hierarchy_level=1, creator=self.user)
 
     def test_filter_by_mother_includes_subsidiary_objects(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase

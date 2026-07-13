@@ -20,10 +20,10 @@ class CategoryRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
-        return Category.objects.filter(pk=pk).select_related("creator_id").first()
+        return Category.objects.filter(pk=pk).select_related("creator").first()
 
     def get_by_creator(self, user, search=None):
-        qs = Category.objects.filter(creator_id=user)
+        qs = Category.objects.filter(creator=user)
         if search:
             qs = qs.filter(category_name__iregex=re.escape(search))
         return qs

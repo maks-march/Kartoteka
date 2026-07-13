@@ -137,9 +137,6 @@ def object_detail(request, pk):
          if os.system and os.system.product and os.system.product.vendor),
         key=lambda e: e.pk,
     )
-    integrators = _summary_group(
-        (os.integrator for os in object_systems if os.integrator), key=lambda e: e.pk
-    )
     implementors = _summary_group(
         (os.implementor for os in object_systems if os.implementor), key=lambda e: e.pk
     )
@@ -148,7 +145,6 @@ def object_detail(request, pk):
         "children_count": children.count(),
         "system_classes": system_classes,
         "vendors": vendors,
-        "integrators": integrators,
         "implementors": implementors,
     }
     return render(request, "objects/object_detail.html", {
@@ -339,7 +335,6 @@ def object_attach_system(request, pk):
                 system=int(request.POST.get("system")),
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
-                integrator=request.POST.get("integrator") or None,
                 implementor=request.POST.get("implementor") or None,
             )
             return redirect("object-detail", pk=pk)
@@ -383,7 +378,6 @@ def object_system_edit(request, pk):
                 system_pk=int(request.POST.get("system")) if request.POST.get("system") else None,
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
-                integrator=request.POST.get("integrator") or None,
                 implementor=request.POST.get("implementor") or None,
             )
             return _object_system_redirect(link, next_page)

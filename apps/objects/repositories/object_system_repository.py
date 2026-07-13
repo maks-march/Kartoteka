@@ -6,14 +6,14 @@ class ObjectSystemRepository:
     def get_for_object(self, obj):
         return (
             ObjectSystem.objects.filter(object=obj)
-            .select_related("system", "system__system_class", "system__product", "integrator", "implementor")
+            .select_related("system", "system__system_class", "system__product", "implementor")
             .order_by("system__autosystem_name")
         )
 
     def get_for_system(self, system):
         return (
             ObjectSystem.objects.filter(system=system)
-            .select_related("object", "object__category", "integrator", "implementor")
+            .select_related("object", "object__category", "implementor")
             .order_by("object__hierarchy_level", "object__object_name")
         )
 
@@ -26,7 +26,7 @@ class ObjectSystemRepository:
     def get_by_id(self, pk):
         return (
             ObjectSystem.objects.filter(pk=pk)
-            .select_related("object", "system", "system__system_class", "system__product", "integrator", "implementor")
+            .select_related("object", "system", "system__system_class", "system__product", "implementor")
             .first()
         )
 

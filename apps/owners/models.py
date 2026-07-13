@@ -27,6 +27,12 @@ class OwnerEntity(models.Model):
         verbose_name="Материнская компания",
         help_text="Выставляется автоматически: True, если у компании нет владельца.",
     )
+    inn = models.CharField(
+        max_length=12,
+        blank=True,
+        default="",
+        verbose_name="ИНН",
+    )
 
     class Meta:
         verbose_name = "Юридическое лицо"

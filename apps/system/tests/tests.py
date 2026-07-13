@@ -18,14 +18,14 @@ class SystemEndpointTestMixin:
         self.system = AutomationSystem.objects.create(
             autosystem_name="АСУ ТП",
             system_class=self.automation_class,
-            creator_id=self.user,
+            creator=self.user,
         )
-        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
         self.object = Object.objects.create(
             object_name="Завод",
             hierarchy_level=1,
             category=self.category,
-            creator_id=self.user,
+            creator=self.user,
         )
 
 
@@ -302,7 +302,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
             product=product,
             system_status="active",
             interfaces=["OPC UA"],
-            creator_id=self.user,
+            creator=self.user,
         )
         response = self.api_client.get(f"/api/system/{s.pk}/")
         self.assertEqual(response.status_code, 200)
@@ -357,11 +357,11 @@ class SystemListFilterTests(TestCase):
         self.p2 = VendorProduct.objects.create(product_name="Experion")
         self.s1 = AutomationSystem.objects.create(
             autosystem_name="S1", system_class=self.cls, product=self.p1,
-            system_status="active", creator_id=self.user,
+            system_status="active", creator=self.user,
         )
         self.s2 = AutomationSystem.objects.create(
             autosystem_name="S2", system_class=self.cls, product=self.p2,
-            system_status="planned", creator_id=self.user,
+            system_status="planned", creator=self.user,
         )
 
     def _names(self, params):

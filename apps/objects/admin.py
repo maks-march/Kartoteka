@@ -13,6 +13,6 @@ class ObjectAdmin(admin.ModelAdmin):
 
 @admin.register(ObjectSystem)
 class ObjectSystemAdmin(admin.ModelAdmin):
-    list_display = ["object", "system", "status", "implementation_date", "integrator", "implementor"]
+    list_display = ["object", "system", "status", "implementation_date", "implementor"]
     list_filter = ["status", "implementation_date"]
-    raw_id_fields = ["object", "system", "integrator", "implementor"]
+    raw_id_fields = ["object", "system", "implementor"]

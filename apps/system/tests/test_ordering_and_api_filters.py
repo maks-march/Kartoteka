@@ -18,9 +18,9 @@ class SystemOrderingTests(TestCase):
         self.pb = VendorProduct.objects.create(product_name="Бета-продукт")
         self.pa = VendorProduct.objects.create(product_name="Альфа-продукт")
         self.pg = VendorProduct.objects.create(product_name="Гамма-продукт")
-        AutomationSystem.objects.create(autosystem_name="Бета", system_class=self.cls, product=self.pb, creator_id=self.user)
-        AutomationSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, product=self.pa, creator_id=self.user)
-        AutomationSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator_id=self.user)
+        AutomationSystem.objects.create(autosystem_name="Бета", system_class=self.cls, product=self.pb, creator=self.user)
+        AutomationSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, product=self.pa, creator=self.user)
+        AutomationSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator=self.user)
 
     def _names(self, ordering):
         return [s.autosystem_name for s in SystemUseCase().list(ordering=ordering)]
@@ -37,7 +37,7 @@ class SystemOrderingTests(TestCase):
 
     def test_invalid_ordering_field_falls_back_to_default(self):
         # Защита от инъекции произвольного поля: берётся сортировка по умолчанию.
-        self.assertEqual(self._names("creator_id__password"), ["Альфа", "Бета", "Гамма"])
+        self.assertEqual(self._names("creator__password"), ["Альфа", "Бета", "Гамма"])
 
     def test_api_ordering(self):
         c = APIClient()
@@ -57,11 +57,11 @@ class SystemApiFilterParityTests(TestCase):
         self.p2 = VendorProduct.objects.create(product_name="Experion")
         self.s1 = AutomationSystem.objects.create(
             autosystem_name="S1", system_class=self.cls, product=self.p1,
-            system_status="active", creator_id=self.user,
+            system_status="active", creator=self.user,
         )
         self.s2 = AutomationSystem.objects.create(
             autosystem_name="S2", system_class=self.cls, product=self.p2,
-            system_status="planned", creator_id=self.user,
+            system_status="planned", creator=self.user,
         )
         self.client_api = APIClient()
 

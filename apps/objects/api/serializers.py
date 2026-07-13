@@ -35,7 +35,7 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
     owner_entity_name = serializers.CharField(source="owner_entity.owner_name", read_only=True)
     children = serializers.SerializerMethodField()
     creator_id_username = serializers.CharField(
-        source="creator_id.username", read_only=True
+        source="creator.username", read_only=True
     )
 
     status_display = serializers.CharField(source="get_status_display", read_only=True)
@@ -126,7 +126,6 @@ class ObjectSystemSerializer(serializers.ModelSerializer):
     object_name = serializers.CharField(source="object.object_name", read_only=True)
     system_name = serializers.CharField(source="system.autosystem_name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
-    integrator_name = serializers.CharField(source="integrator.entity_name", read_only=True)
     implementor_name = serializers.CharField(source="implementor.entity_name", read_only=True)
 
     class Meta:
@@ -140,8 +139,6 @@ class ObjectSystemSerializer(serializers.ModelSerializer):
             "status",
             "status_display",
             "implementation_date",
-            "integrator",
-            "integrator_name",
             "implementor",
             "implementor_name",
         ]
@@ -154,7 +151,6 @@ class ObjectSystemCreateSerializer(serializers.Serializer):
         choices=ObjectSystem.STATUS_CHOICES, required=False, default="planned"
     )
     implementation_date = serializers.DateField(required=False, allow_null=True)
-    integrator = serializers.IntegerField(required=False, allow_null=True)
     implementor = serializers.IntegerField(required=False, allow_null=True)
 
 
@@ -163,5 +159,4 @@ class ObjectSystemUpdateSerializer(serializers.Serializer):
     system = serializers.IntegerField(required=False)
     status = serializers.ChoiceField(choices=ObjectSystem.STATUS_CHOICES, required=False)
     implementation_date = serializers.DateField(required=False, allow_null=True)
-    integrator = serializers.IntegerField(required=False, allow_null=True)
     implementor = serializers.IntegerField(required=False, allow_null=True)

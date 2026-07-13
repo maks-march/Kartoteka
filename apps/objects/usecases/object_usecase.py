@@ -67,7 +67,7 @@ class ObjectUseCase:
             data["category_id"] = category_id
         if owner_entity_id is not None:
             data["owner_entity_id"] = owner_entity_id
-        data["creator_id"] = user
+        data["creator"] = user
         return self.repo.create(**data)
 
     def update(self, pk, user, **data):

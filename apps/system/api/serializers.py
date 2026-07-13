@@ -114,5 +114,4 @@ class SystemAttachObjectSerializer(serializers.Serializer):
         choices=ObjectSystem.STATUS_CHOICES, required=False, default="planned"
     )
     implementation_date = serializers.DateField(required=False, allow_null=True)
-    integrator = serializers.IntegerField(required=False, allow_null=True)
-    implimentor = serializers.IntegerField(required=False, allow_null=True)
+    implementor = serializers.IntegerField(required=False, allow_null=True)

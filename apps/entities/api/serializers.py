@@ -4,6 +4,7 @@ from rest_framework import serializers
 from apps.entities.models import (
     Entity, EngineeringCompanyProfile, FunctionCompetency,
     FullCycleVendorProfile, FullCycleFunctionCompetency,
+    SupplierProfile, SystemIntegratorProfile,
 )
 
 
@@ -23,9 +24,27 @@ class FullCycleFunctionCompetencySerializer(serializers.ModelSerializer):
         fields = ["id", "system_class", "system_class_name", "industry"]
 
 
+class SupplierProfileSerializer(serializers.ModelSerializer):
+    """Чтение профиля поставщика."""
+    products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = SupplierProfile
+        fields = ["id", "products"]
+
+
+class SystemIntegratorProfileSerializer(serializers.ModelSerializer):
+    """Чтение профиля системного интегратора."""
+    vendor_partners = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = SystemIntegratorProfile
+        fields = ["id", "managing_owner", "vendor_partners"]
+
+
 class EngineeringProfileSerializer(serializers.ModelSerializer):
     """Чтение профиля инжиниринговой компании."""
-    resident_object_name = serializers.CharField(source="resident_object.name", read_only=True)
+    resident_object_name = serializers.CharField(source="resident_object.object_name", read_only=True)
     product_competencies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     function_competencies = FunctionCompetencySerializer(many=True, read_only=True)
 
@@ -39,7 +58,7 @@ class EngineeringProfileSerializer(serializers.ModelSerializer):
 
 class FullCycleProfileSerializer(serializers.ModelSerializer):
     """Чтение dedicated профиля вендора полного цикла."""
-    resident_object_name = serializers.CharField(source="resident_object.name", read_only=True)
+    resident_object_name = serializers.CharField(source="resident_object.object_name", read_only=True)
     products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     function_competencies = FullCycleFunctionCompetencySerializer(many=True, read_only=True)
 
@@ -104,6 +123,40 @@ class FunctionCompetencyWriteSerializer(serializers.Serializer):
 
 class EngineeringProfileWriteSerializer(serializers.Serializer):
     """Запись профиля инжиниринговой компании (region + связи + компетенции)."""
+    region = serializers.CharField(required=False, allow_blank=True, default="")
+    resident_object = serializers.IntegerField(required=False, allow_null=True)
+    product_competencies = serializers.ListField(
+        child=serializers.IntegerField(), required=False, default=list
+    )
+    function_competencies = FunctionCompetencyWriteSerializer(
+        many=True, required=False, default=list
+    )
+
+
+class VendorProductsWriteSerializer(serializers.Serializer):
+    """Запись продуктов вендора (id продуктов, привязываемых к VendorProfile)."""
+    product_ids = serializers.ListField(
+        child=serializers.IntegerField(), required=False, default=list
+    )
+
+
+class SupplierProductsWriteSerializer(serializers.Serializer):
+    """Запись поставляемых продуктов (M2M со стороны поставщика)."""
+    product_ids = serializers.ListField(
+        child=serializers.IntegerField(), required=False, default=list
+    )
+
+
+class SystemIntegratorProfileWriteSerializer(serializers.Serializer):
+    """Запись профиля системного интегратора."""
+    managing_owner = serializers.IntegerField(required=False, allow_null=True)
+    vendor_partner_ids = serializers.ListField(
+        child=serializers.IntegerField(), required=False, default=list
+    )
+
+
+class FullCycleProfileWriteSerializer(serializers.Serializer):
+    """Запись dedicated профиля вендора полного цикла."""
     region = serializers.CharField(required=False, allow_blank=True, default="")
     resident_object = serializers.IntegerField(required=False, allow_null=True)
     product_competencies = serializers.ListField(

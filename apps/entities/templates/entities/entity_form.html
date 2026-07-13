@@ -39,7 +39,6 @@
                  {% if not entity.is_vendor_type %}style="display:none"{% endif %}>
                 <div class="form-group">
                     <label>Продукты этого вендора</label>
-                    {% if own_products or free_products %}
                     <div class="picker collapsible capsule-picker" id="vendorProductsPicker" data-empty-text="Не выбрано">
                         <div class="picker-header">
                             <span class="picker-header-label">Продукты</span>
@@ -51,6 +50,9 @@
                                 <input type="text" class="picker-search" placeholder="Введите название продукта...">
                             </div>
                             <div class="system-results-container filter-list-160">
+                                {% if not own_products and not free_products %}
+                                    <div class="system-name" style="margin:10px">Доступных продуктов нет, создайте их после вендора.</div>
+                                {% endif %}
                                 {% if own_products %}<div class="group-label" data-group="own">Продукты этого вендора</div>{% endif %}
                                 {% for p in own_products %}
                                 <div class="system-item selected" data-id="{{ p.pk }}" data-group="own" data-name="{{ p.product_name|lower }}">
@@ -75,7 +77,7 @@
                         </div>
                     </div>
                     <p class="hint" style="margin-top:4px">Сначала продукты этого вендора, затем свободные (у которых вендор ещё не назначен).</p>
-                    {% endif %}
+
                 </div>
             </div>
 
@@ -140,9 +142,17 @@
                                 <input type="text" class="picker-search" placeholder="Введите название продукта...">
                             </div>
                             <div class="system-results-container filter-list-160">
-                                {% for p in all_products %}
-                                <div class="system-item{% if p in entity.engineering_profile.product_competencies.all %} selected{% endif %}"
-                                     data-id="{{ p.pk }}" data-name="{{ p.product_name|lower }}">
+                                {% if competency_own_products %}<div class="group-label" data-group="own">Продукты этого вендора</div>{% endif %}
+                                {% for p in competency_own_products %}
+                                <div class="system-item{% if p.pk in product_competency_ids %} selected{% endif %}"
+                                     data-id="{{ p.pk }}" data-group="own" data-name="{{ p.product_name|lower }}">
+                                    <span class="system-name">{{ p.product_name }}</span>
+                                </div>
+                                {% endfor %}
+                                {% if competency_own_products and competency_other_products %}<div class="group-label" data-group="other">Остальные продукты</div>{% endif %}
+                                {% for p in competency_other_products %}
+                                <div class="system-item{% if p.pk in product_competency_ids %} selected{% endif %}"
+                                     data-id="{{ p.pk }}" data-group="other" data-name="{{ p.product_name|lower }}">
                                     <span class="system-name">{{ p.product_name }}</span>
                                 </div>
                                 {% endfor %}
@@ -150,11 +160,15 @@
                             </div>
                         </div>
                         <div id="productCompetenciesInputs" data-name="product_competencies">
-                            {% for p in entity.engineering_profile.product_competencies.all %}
+                            {% for p in competency_own_products %}{% if p.pk in product_competency_ids %}
                             <input type="hidden" name="product_competencies" value="{{ p.pk }}">
-                            {% endfor %}
+                            {% endif %}{% endfor %}
+                            {% for p in competency_other_products %}{% if p.pk in product_competency_ids %}
+                            <input type="hidden" name="product_competencies" value="{{ p.pk }}">
+                            {% endif %}{% endfor %}
                         </div>
                     </div>
+                    <p class="hint" style="margin-top:4px">Продукты этого вендора включены в специализацию по умолчанию — их можно снять.</p>
                 </div>
 
                 <!-- 4) Компетенция по функции: пары «класс + индустрия» -->

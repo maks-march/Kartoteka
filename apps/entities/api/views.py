@@ -12,6 +12,13 @@ from apps.entities.api.serializers import (
     EntityCreateUpdateSerializer,
     EngineeringProfileSerializer,
     EngineeringProfileWriteSerializer,
+    FullCycleProfileSerializer,
+    FullCycleProfileWriteSerializer,
+    SupplierProfileSerializer,
+    SupplierProductsWriteSerializer,
+    SystemIntegratorProfileSerializer,
+    SystemIntegratorProfileWriteSerializer,
+    VendorProductsWriteSerializer,
 )
 from apps.entities.usecases.entity_usecase import EntityUseCase
 
@@ -106,3 +113,163 @@ class EngineeringProfileView(APIView):
             raise DRFValidationError(str(e))
         entity = usecase.get(pk)
         return Response(EngineeringProfileSerializer(entity.engineering_profile).data)
+
+
+class VendorProductsView(APIView):
+    """Продукты вендора участника (привязка к VendorProfile).
+
+    GET — id продуктов вендора (404, если участник не вендорского типа).
+    PUT — задать список продуктов вендора.
+    """
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request, pk):
+        entity = EntityUseCase().get(pk)
+        if not entity.is_vendor_type:
+            raise NotFound("У участника нет профиля вендора")
+        return Response({"product_ids": list(entity.products.values_list("id", flat=True))})
+
+    def put(self, request, pk):
+        usecase = EntityUseCase()
+        entity = usecase.get(pk)
+        if not entity.is_vendor_type:
+            raise DRFValidationError("Продукты доступны только для вендорских типов")
+        serializer = VendorProductsWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            usecase.save_vendor_products(
+                entity, product_ids=serializer.validated_data["product_ids"]
+            )
+        except ValidationError as e:
+            raise DRFValidationError(str(e))
+        entity = usecase.get(pk)
+        return Response({"product_ids": list(entity.products.values_list("id", flat=True))})
+
+
+class SupplierProductsView(APIView):
+    """Поставляемые продукты участника (профиль поставщика).
+
+    GET — профиль поставщика (404, если участник не поставщикского типа).
+    PUT — задать список поставляемых продуктов.
+    """
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request, pk):
+        entity = EntityUseCase().get(pk)
+        profile = getattr(entity, "supplier_profile", None)
+        if profile is None:
+            raise NotFound("У участника нет профиля поставщика")
+        return Response(SupplierProfileSerializer(profile).data)
+
+    def put(self, request, pk):
+        usecase = EntityUseCase()
+        entity = usecase.get(pk)
+        if not entity.is_supplier_type:
+            raise DRFValidationError("Профиль доступен только для типа «Поставщик»")
+        serializer = SupplierProductsWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            usecase.save_supplier_products(
+                entity, product_ids=serializer.validated_data["product_ids"]
+            )
+        except ValidationError as e:
+            raise DRFValidationError(str(e))
+        entity = usecase.get(pk)
+        return Response(SupplierProfileSerializer(entity.supplier_profile).data)
+
+
+class SystemIntegratorProfileView(APIView):
+    """Профиль системного интегратора участника.
+
+    GET — профиль (404, если участник не системный интегратор).
+    PUT — управляющая компания + вендоры-партнёры.
+    """
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request, pk):
+        entity = EntityUseCase().get(pk)
+        profile = getattr(entity, "system_integrator_profile", None)
+        if profile is None:
+            raise NotFound("У участника нет профиля системного интегратора")
+        return Response(SystemIntegratorProfileSerializer(profile).data)
+
+    def put(self, request, pk):
+        usecase = EntityUseCase()
+        entity = usecase.get(pk)
+        if not entity.is_system_integrator_type:
+            raise DRFValidationError(
+                "Профиль доступен только для типа «Системный интегратор»"
+            )
+        serializer = SystemIntegratorProfileWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        try:
+            usecase.save_system_integrator_profile(
+                entity,
+                managing_owner_id=data.get("managing_owner"),
+                vendor_partner_ids=data.get("vendor_partner_ids", []),
+            )
+        except ValidationError as e:
+            raise DRFValidationError(str(e))
+        entity = usecase.get(pk)
+        return Response(
+            SystemIntegratorProfileSerializer(entity.system_integrator_profile).data
+        )
+
+
+class FullCycleProfileView(APIView):
+    """Dedicated профиль вендора полного цикла участника.
+
+    GET — профиль (404, если участник не вендор полного цикла).
+    PUT — region + вхожий объект + компетенции (продукты и функции).
+    """
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request, pk):
+        entity = EntityUseCase().get(pk)
+        profile = getattr(entity, "full_cycle_profile", None)
+        if profile is None:
+            raise NotFound("У участника нет профиля вендора полного цикла")
+        return Response(FullCycleProfileSerializer(profile).data)
+
+    def put(self, request, pk):
+        usecase = EntityUseCase()
+        entity = usecase.get(pk)
+        if entity.entity_type != "full_cycle_vendor":
+            raise DRFValidationError(
+                "Профиль доступен только для типа «Вендор полного цикла»"
+            )
+        serializer = FullCycleProfileWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        competencies = [
+            (c["system_class"], c["industry"]) for c in data.get("function_competencies", [])
+        ]
+        try:
+            usecase.save_full_cycle_profile(
+                entity,
+                region=data.get("region", ""),
+                resident_object_id=data.get("resident_object"),
+                product_ids=data.get("product_competencies", []),
+                competencies=competencies,
+            )
+        except ValidationError as e:
+            raise DRFValidationError(str(e))
+        entity = usecase.get(pk)
+        return Response(FullCycleProfileSerializer(entity.full_cycle_profile).data)

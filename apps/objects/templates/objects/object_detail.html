@@ -15,7 +15,7 @@
 
 
             <div class="detail-meta">
-                <p>Автор: {% if object.creator_id %}{{ object.creator_id.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+                <p>Автор: {% if object.creator %}{{ object.creator.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
             </div>
         </div>
         {% if user.is_authenticated %}
@@ -122,7 +122,7 @@
     <div class="table-wrap">
         <table>
             <thead>
-                <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Интегратор</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+                <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
             </thead>
             <tbody>
                 {% for os in object_systems %}
@@ -131,7 +131,6 @@
                     <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
                     <td>{{ os.get_status_display }}</td>
                     <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
-                    <td>{% if os.integrator %}<a class="link" href="{% url 'entity-detail' os.integrator.pk %}">{{ os.integrator.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                     <td>{% if os.implementor %}<a class="link" href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                     {% if user.is_authenticated %}
                     <td>

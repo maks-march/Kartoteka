@@ -62,13 +62,13 @@ class SystemRepository:
     def get_by_id(self, pk):
         return (
             AutomationSystem.objects.filter(pk=pk)
-            .select_related("system_class", "product", "creator_id")
+            .select_related("system_class", "product", "creator")
             .prefetch_related("subsystem_classes")
             .first()
         )
 
     def get_by_creator(self, user, search=None):
-        qs = AutomationSystem.objects.filter(creator_id=user).select_related("system_class", "product")
+        qs = AutomationSystem.objects.filter(creator=user).select_related("system_class", "product")
         if search:
             qs = qs.filter(autosystem_name__iregex=re.escape(search))
         return qs

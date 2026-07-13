@@ -120,15 +120,11 @@ def system_detail(request, pk):
     system_objects = os_usecase.list_for_system(obj)
 
     # ---- Сводка связанности (агрегат из таблицы «Подключенные объекты») ----
-    integrators = _summary_group(
-        (os.integrator for os in system_objects if os.integrator), key=lambda e: e.pk
-    )
     implementors = _summary_group(
         (os.implementor for os in system_objects if os.implementor), key=lambda e: e.pk
     )
     summary = {
         "objects_count": len(system_objects),
-        "integrators": integrators,
         "implementors": implementors,
     }
     return render(request, "system/system_detail.html", {
@@ -231,7 +227,6 @@ def system_attach_object(request, pk):
                 system_pk=pk,
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
-                integrator=request.POST.get("integrator") or None,
                 implementor=request.POST.get("implementor") or None,
             )
             return redirect("system-detail", pk=pk)

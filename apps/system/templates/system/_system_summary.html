@@ -5,8 +5,6 @@
         <div class="summary-metrics">
             <div class="metric"><span class="metric-num">{{ summary.objects_count }}</span><span class="metric-label">Объектов</span></div>
         </div>
-
-        {% include "core/_summary_group.html" with title="Интеграторы" group=summary.integrators kind="entity" tag="tag-ok" %}
-        {% include "core/_summary_group.html" with title="Исполнители" group=summary.implimentors kind="entity" tag="tag-warn" %}
+        {% include "core/_summary_group.html" with title="Исполнители" group=summary.implementors kind="entity" tag="tag-warn" %}
     </div>
 </aside>

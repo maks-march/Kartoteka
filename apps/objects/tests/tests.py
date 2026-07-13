@@ -11,8 +11,8 @@ from apps.system.models import AutomationSystem, AutomationClass
 class ObjectsEndpointTestMixin:
     def create_base_data(self):
         self.user = User.objects.create_user(username="user", password="password")
-        self.category_l1 = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
-        self.category_l2 = Category.objects.create(category_name="Цех", object_level=2, creator_id=self.user)
+        self.category_l1 = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
+        self.category_l2 = Category.objects.create(category_name="Цех", object_level=2, creator=self.user)
         self.owner_entity = OwnerEntity.objects.create(owner_name="ООО Ромашка")
         self.automation_class = AutomationClass.objects.create(
             level=2,
@@ -22,19 +22,19 @@ class ObjectsEndpointTestMixin:
         self.system = AutomationSystem.objects.create(
             autosystem_name="АСУ ТП",
             system_class=self.automation_class,
-            creator_id=self.user,
+            creator=self.user,
         )
         self.second_system = AutomationSystem.objects.create(
             autosystem_name="MES",
             system_class=self.automation_class,
-            creator_id=self.user,
+            creator=self.user,
         )
         self.object = Object.objects.create(
             object_name="Завод",
             hierarchy_level=1,
             category=self.category_l1,
             owner_entity=self.owner_entity,
-            creator_id=self.user,
+            creator=self.user,
         )
         self.child = Object.objects.create(
             object_name="Цех 1",
@@ -42,7 +42,7 @@ class ObjectsEndpointTestMixin:
             parent_object=self.object,
             category=self.category_l2,
             owner_entity=self.owner_entity,
-            creator_id=self.user,
+            creator=self.user,
         )
 
 
@@ -305,7 +305,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="user", password="password")
-        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
+        self.category = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
 
         # Дерево владельцев: holding -> daughter -> grandchild
         self.holding = OwnerEntity.objects.create(owner_name="АО Холдинг")
@@ -324,19 +324,19 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
 
         self.obj_holding = Object.objects.create(
             object_name="Объект холдинга", hierarchy_level=1, category=self.category,
-            owner_entity=self.holding, creator_id=self.user,
+            owner_entity=self.holding, creator=self.user,
         )
         self.obj_daughter = Object.objects.create(
             object_name="Объект дочки", hierarchy_level=1, category=self.category,
-            owner_entity=self.daughter, creator_id=self.user,
+            owner_entity=self.daughter, creator=self.user,
         )
         self.obj_grandchild = Object.objects.create(
             object_name="Объект внучки", hierarchy_level=1, category=self.category,
-            owner_entity=self.grandchild, creator_id=self.user,
+            owner_entity=self.grandchild, creator=self.user,
         )
         self.obj_other = Object.objects.create(
             object_name="Чужой объект", hierarchy_level=1, category=self.category,
-            owner_entity=self.other, creator_id=self.user,
+            owner_entity=self.other, creator=self.user,
         )
 
     def _names(self, qs):
@@ -405,9 +405,9 @@ class ObjectNewFieldsTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="user", password="password")
-        self.cat1 = Category.objects.create(category_name="Площадка", object_level=1, creator_id=self.user)
-        self.cat2 = Category.objects.create(category_name="Цех", object_level=2, creator_id=self.user)
-        self.cat3 = Category.objects.create(category_name="Установка", object_level=3, creator_id=self.user)
+        self.cat1 = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
+        self.cat2 = Category.objects.create(category_name="Цех", object_level=2, creator=self.user)
+        self.cat3 = Category.objects.create(category_name="Установка", object_level=3, creator=self.user)
         self.api_client = APIClient()
 
     # ---------- usecase: создание с новыми полями ----------
@@ -591,20 +591,20 @@ class ObjectAddressLineTests(TestCase):
     def test_address_line_joins_nonempty_parts(self):
         obj = Object.objects.create(
             object_name="O", hierarchy_level=1, country="Россия", region="", city="Москва",
-            street="Ленина", house="1", creator_id=self.user,
+            street="Ленина", house="1", creator=self.user,
         )
         self.assertEqual(obj.address_line, "Россия, Москва, Ленина, 1")
 
     def test_address_line_empty_when_no_address(self):
-        obj = Object.objects.create(object_name="O", hierarchy_level=1, creator_id=self.user)
+        obj = Object.objects.create(object_name="O", hierarchy_level=1, creator=self.user)
         self.assertEqual(obj.address_line, "")
 
     def test_address_line_appends_title_only_for_level_3(self):
         l3 = Object.objects.create(
-            object_name="O3", hierarchy_level=3, city="Казань", title="Цех-А-3", creator_id=self.user,
+            object_name="O3", hierarchy_level=3, city="Казань", title="Цех-А-3", creator=self.user,
         )
         self.assertEqual(l3.address_line, "Казань, Цех-А-3")
         # на уровне != 3 title в строку не попадает (даже если каким-то образом задан)
-        l2 = Object.objects.create(object_name="O2", hierarchy_level=2, city="Казань", creator_id=self.user)
+        l2 = Object.objects.create(object_name="O2", hierarchy_level=2, city="Казань", creator=self.user)
         l2.title = "не должен показаться"
         self.assertEqual(l2.address_line, "Казань")
