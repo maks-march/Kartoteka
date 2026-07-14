@@ -215,7 +215,7 @@
 
     <!-- title (кодовое расположение) — только для 3-го уровня -->
     <div class="form-group" id="titleGroup" style="{% if object.hierarchy_level != 3 %}display:none{% endif %}">
-        <label>Кодовое расположение (только уровень 3)</label>
+        <label>Титульный номер (только уровень 3)</label>
         <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
     </div>
 </div>

@@ -157,7 +157,7 @@
 <div class="card">
     <div class="card-title-row">
         <h2 style="margin:0">Дочерние объекты</h2>
-        {% if user.is_authenticated and object.hierarchy_level < 3 %}<a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить ребёнка</a>{% endif %}
+        {% if user.is_authenticated and object.hierarchy_level < 3 %}<a href="{% url 'object-add-child' object.pk %}" class="btn btn-primary">+ Добавить объект</a>{% endif %}
     </div>
     {% if children %}
     <div class="table-wrap">

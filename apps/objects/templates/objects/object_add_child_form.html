@@ -1,11 +1,11 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Добавить ребенка — {{ parent.object_name }}{% endblock %}
+{% block title %}Добавить объект — {{ parent.object_name }}{% endblock %}
 
 {% block content %}
 <div class="card form-card">
-    <h1>Добавить ребенка</h1>
+    <h1>Добавить объект</h1>
     <p style="margin-bottom:15px; color:#666">
         Родитель: <a href="{% url 'object-detail' parent.pk %}">{{ parent.object_name }}</a>
         <span class="tag tag-{{ parent.hierarchy_level }}">Уровень {{ parent.hierarchy_level }}</span>
@@ -56,7 +56,7 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="existingSubmitBtn" disabled>Сделать ребенком</button>
+                <button type="submit" class="btn btn-primary" id="existingSubmitBtn" disabled>Привязать как дочерний</button>
                 <a href="{% url 'object-detail' parent.pk %}" class="btn btn-secondary">Отмена</a>
             </div>
         </form>
