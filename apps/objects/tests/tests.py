@@ -447,7 +447,7 @@ class ObjectNewFieldsTests(TestCase):
         parent = uc.create(
             user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk,
             country="Россия", region="МО", city="Подольск", street="Ленина",
-            house="1", fias_code="ABC", title="",
+            house="1", title="",
         )
         child = uc.create(
             user=self.user, object_name="Цех 1", hierarchy_level=2, parent=parent.pk, category=self.cat2.pk,
@@ -456,7 +456,90 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(child.country, "Россия")
         self.assertEqual(child.city, "Подольск")
         self.assertEqual(child.house, "1")
-        self.assertEqual(child.fias_code, "ABC")
+        self.assertEqual(child.street, "Ленина")
+
+    # ---------- наследование юр. лица (owner_entity) от родителя ----------
+    def test_child_inherits_owner_entity_from_parent(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from apps.owners.models import OwnerEntity
+        uc = ObjectUseCase()
+        owner = OwnerEntity.objects.create(owner_name="ЮЛ-Родитель")
+        parent = uc.create(
+            user=self.user, object_name="Завод", hierarchy_level=1,
+            category=self.cat1.pk, owner_entity=owner.pk,
+        )
+        child = uc.create(
+            user=self.user, object_name="Цех", hierarchy_level=2,
+            parent=parent.pk, category=self.cat2.pk,
+        )
+        child.refresh_from_db()
+        self.assertEqual(child.owner_entity_id, owner.pk)
+
+    def test_child_owner_entity_ignores_form_value_for_l2_l3(self):
+        """Для L2/L3 значение из формы игнорируется — берётся от родителя."""
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from apps.owners.models import OwnerEntity
+        uc = ObjectUseCase()
+        owner = OwnerEntity.objects.create(owner_name="ЮЛ-Родитель")
+        other = OwnerEntity.objects.create(owner_name="ЮЛ-Чужой")
+        parent = uc.create(
+            user=self.user, object_name="Завод", hierarchy_level=1,
+            category=self.cat1.pk, owner_entity=owner.pk,
+        )
+        child = uc.create(
+            user=self.user, object_name="Цех", hierarchy_level=2, parent=parent.pk,
+            category=self.cat2.pk, owner_entity=other.pk,  # попытка задать вручную
+        )
+        child.refresh_from_db()
+        self.assertEqual(child.owner_entity_id, owner.pk)
+
+    def test_child_owner_entity_empty_when_parent_has_none(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        uc = ObjectUseCase()
+        parent = uc.create(
+            user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk,
+        )
+        child = uc.create(
+            user=self.user, object_name="Цех", hierarchy_level=2,
+            parent=parent.pk, category=self.cat2.pk,
+        )
+        child.refresh_from_db()
+        self.assertIsNone(child.owner_entity_id)
+
+    def test_update_reinherits_owner_entity_from_parent(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from apps.owners.models import OwnerEntity
+        uc = ObjectUseCase()
+        o1 = OwnerEntity.objects.create(owner_name="ЮЛ-1")
+        o2 = OwnerEntity.objects.create(owner_name="ЮЛ-2")
+        parent1 = uc.create(
+            user=self.user, object_name="Завод1", hierarchy_level=1,
+            category=self.cat1.pk, owner_entity=o1.pk,
+        )
+        parent2 = uc.create(
+            user=self.user, object_name="Завод2", hierarchy_level=1,
+            category=self.cat1.pk, owner_entity=o2.pk,
+        )
+        child = uc.create(
+            user=self.user, object_name="Цех", hierarchy_level=2,
+            parent=parent1.pk, category=self.cat2.pk,
+        )
+        # переносим ребёнка под другого родителя — владелец должен обновиться
+        uc.update(pk=child.pk, user=self.user, parent=parent2.pk)
+        child.refresh_from_db()
+        self.assertEqual(child.owner_entity_id, o2.pk)
+
+    def test_level1_keeps_form_owner_entity(self):
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from apps.owners.models import OwnerEntity
+        uc = ObjectUseCase()
+        owner = OwnerEntity.objects.create(owner_name="ЮЛ-1ур")
+        obj = uc.create(
+            user=self.user, object_name="Завод", hierarchy_level=1,
+            category=self.cat1.pk, owner_entity=owner.pk,
+        )
+        obj.refresh_from_db()
+        self.assertEqual(obj.owner_entity_id, owner.pk)
 
     def test_create_does_not_override_explicit_address(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
@@ -483,28 +566,34 @@ class ObjectNewFieldsTests(TestCase):
         self.assertNotIn("title", defaults)
 
     # ---------- ограничение title только уровнем 3 ----------
-    def test_title_rejected_for_non_level_3_on_create(self):
+    def test_title_rejected_for_level_1_on_create(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from django.core.exceptions import ValidationError as DjangoValidationError
         with self.assertRaises(DjangoValidationError):
             ObjectUseCase().create(
-                user=self.user, object_name="Цех", hierarchy_level=2, category=self.cat2.pk,
+                user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk,
                 title="недопустимо",
             )
 
-    def test_title_allowed_for_level_3_on_create(self):
+    def test_title_allowed_for_level_2_and_3_on_create(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
-        obj = ObjectUseCase().create(
+        uc = ObjectUseCase()
+        l2 = uc.create(
+            user=self.user, object_name="Цех", hierarchy_level=2, category=self.cat2.pk,
+            title="Титул-2",
+        )
+        self.assertEqual(l2.title, "Титул-2")
+        l3 = uc.create(
             user=self.user, object_name="Установка", hierarchy_level=3, category=self.cat3.pk,
             title="Цех-А-стойка-3",
         )
-        self.assertEqual(obj.title, "Цех-А-стойка-3")
+        self.assertEqual(l3.title, "Цех-А-стойка-3")
 
-    def test_title_rejected_on_update_for_non_level_3(self):
+    def test_title_rejected_on_update_for_level_1(self):
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from django.core.exceptions import ValidationError as DjangoValidationError
         uc = ObjectUseCase()
-        obj = uc.create(user=self.user, object_name="Цех", hierarchy_level=2, category=self.cat2.pk)
+        obj = uc.create(user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk)
         with self.assertRaises(DjangoValidationError):
             uc.update(pk=obj.pk, user=self.user, title="нельзя")
 
@@ -526,17 +615,30 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(obj.city, "Самара")
         self.assertEqual(obj.title, "Цех-Б-3")
 
-    def test_web_create_ignores_title_for_non_level3(self):
+    def test_web_create_saves_title_for_level2(self):
         self.client.force_login(self.user)
-        # title в POST есть, но уровень не 3 -> view не должен его сохранять (и не падать)
+        # title теперь допустим и для уровня 2
         response = self.client.post("/objects/create/", {
             "object_name": "Цех Y",
             "hierarchy_level": "2",
             "category": str(self.cat2.pk),
-            "title": "проигнорируется",
+            "title": "Титул-Цех-Y",
         })
         self.assertEqual(response.status_code, 302)
         obj = Object.objects.get(object_name="Цех Y")
+        self.assertEqual(obj.title, "Титул-Цех-Y")
+
+    def test_web_create_ignores_title_for_level1(self):
+        self.client.force_login(self.user)
+        # title в POST есть, но уровень 1 -> view не должен его сохранять (и не падать)
+        response = self.client.post("/objects/create/", {
+            "object_name": "Завод Y",
+            "hierarchy_level": "1",
+            "category": str(self.cat1.pk),
+            "title": "проигнорируется",
+        })
+        self.assertEqual(response.status_code, 302)
+        obj = Object.objects.get(object_name="Завод Y")
         self.assertEqual(obj.title, "")
 
     # ---------- API ----------
@@ -557,12 +659,23 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(response.data["city"], "Казань")
         self.assertEqual(response.data["title"], "Цех-В-7")
 
-    def test_api_create_title_rejected_for_non_level3(self):
+    def test_api_create_title_allowed_for_level2(self):
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/objects/objects/", {
             "object_name": "API Цех",
             "hierarchy_level": 2,
             "category": self.cat2.pk,
+            "title": "Титул-API-2",
+        }, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["title"], "Титул-API-2")
+
+    def test_api_create_title_rejected_for_level1(self):
+        self.api_client.force_authenticate(user=self.user)
+        response = self.api_client.post("/api/objects/objects/", {
+            "object_name": "API Завод",
+            "hierarchy_level": 1,
+            "category": self.cat1.pk,
             "title": "недопустимо",
         }, format="json")
         self.assertIn(response.status_code, (400, 422))
@@ -599,12 +712,67 @@ class ObjectAddressLineTests(TestCase):
         obj = Object.objects.create(object_name="O", hierarchy_level=1, creator=self.user)
         self.assertEqual(obj.address_line, "")
 
-    def test_address_line_appends_title_only_for_level_3(self):
+    def test_address_line_appends_title_for_level_2_and_3(self):
         l3 = Object.objects.create(
             object_name="O3", hierarchy_level=3, city="Казань", title="Цех-А-3", creator=self.user,
         )
         self.assertEqual(l3.address_line, "Казань, Цех-А-3")
-        # на уровне != 3 title в строку не попадает (даже если каким-то образом задан)
-        l2 = Object.objects.create(object_name="O2", hierarchy_level=2, city="Казань", creator=self.user)
-        l2.title = "не должен показаться"
-        self.assertEqual(l2.address_line, "Казань")
+        # title теперь попадает в строку и для уровня 2
+        l2 = Object.objects.create(
+            object_name="O2", hierarchy_level=2, city="Казань", title="Титул-2", creator=self.user,
+        )
+        self.assertEqual(l2.address_line, "Казань, Титул-2")
+        # на уровне 1 title в строку не попадает
+        l1 = Object.objects.create(object_name="O1", hierarchy_level=1, city="Казань", creator=self.user)
+        l1.title = "не должен показаться"
+        self.assertEqual(l1.address_line, "Казань")
+
+
+class ObjectSummaryExtendedTests(TestCase):
+    """Расширенная сводка объекта: статусы внедрения и покрытие по уровням."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="sum", password="pw")
+        self.client.force_login(self.user)
+        self.cls_l1 = AutomationClass.objects.create(level=1, system_class="ПЛК")
+        self.cls_l2 = AutomationClass.objects.create(level=2, system_class="SCADA")
+        self.cls_l3 = AutomationClass.objects.create(level=3, system_class="MES")
+        self.obj = Object.objects.create(
+            object_name="Завод", hierarchy_level=1, creator=self.user
+        )
+        self.s1 = AutomationSystem.objects.create(
+            autosystem_name="С1", system_class=self.cls_l2, creator=self.user)
+        self.s2 = AutomationSystem.objects.create(
+            autosystem_name="С2", system_class=self.cls_l2, creator=self.user)
+        self.s3 = AutomationSystem.objects.create(
+            autosystem_name="С3", system_class=self.cls_l3, creator=self.user)
+        # 2 системы active (одна L2, одна L3), 1 planned (L2)
+        ObjectSystem.objects.create(object=self.obj, system=self.s1, status="active")
+        ObjectSystem.objects.create(object=self.obj, system=self.s3, status="active")
+        ObjectSystem.objects.create(object=self.obj, system=self.s2, status="planned")
+
+    def test_status_breakdown_counts(self):
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        panel = h.split("summary-panel", 1)[1]
+        self.assertIn("Статусы внедрения", panel)
+        self.assertIn("В эксплуатации: 2", panel)
+        self.assertIn("Планируется: 1", panel)
+        # статусы без систем не показываются
+        self.assertNotIn("Обслуживание", panel)
+
+    def test_level_coverage_counts(self):
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        panel = h.split("summary-panel", 1)[1]
+        self.assertIn("Покрытие по уровням", panel)
+        # L2: 2 системы, L3: 1 система, остальные уровни — 0
+        self.assertIn("L2: 2", panel)
+        self.assertIn("L3: 1", panel)
+        self.assertIn("L0: 0", panel)
+        self.assertIn("L1: 0", panel)
+        self.assertIn("L4: 0", panel)
+
+    def test_zero_levels_dimmed(self):
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        panel = h.split("summary-panel", 1)[1]
+        # уровень без систем помечен приглушённым классом
+        self.assertIn("tag-off", panel)

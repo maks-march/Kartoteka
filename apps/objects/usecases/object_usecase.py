@@ -31,7 +31,7 @@ class ObjectUseCase:
         return self.repo.get_by_creator(user, search=search)
 
     # Адресные поля, которые наследуются от родителя (title — исключение, он свой)
-    INHERITED_ADDRESS_FIELDS = ("country", "region", "city", "street", "house", "fias_code")
+    INHERITED_ADDRESS_FIELDS = ("country", "region", "city", "street", "house")
 
     def get_parent_address_defaults(self, parent_id):
         """Возвращает наследуемые адресные поля родителя для предзаполнения формы."""
@@ -42,11 +42,29 @@ class ObjectUseCase:
             return {}
         return {field: getattr(parent, field, "") for field in self.INHERITED_ADDRESS_FIELDS}
 
+    def get_parent_owner_entity_id(self, parent_id):
+        """Возвращает id юр. лица (OwnerEntity) родителя.
+
+        Для объектов 2-го и 3-го уровня юр. лицо не выбирается вручную,
+        а наследуется от родителя (если родитель есть). Нет родителя — None.
+        """
+        if parent_id in (None, "", "None"):
+            return None
+        parent = self.repo.get_by_id(parent_id)
+        if not parent:
+            return None
+        return parent.owner_entity_id
+
     def create(self, user, **data):
         parent_id = data.pop("parent", None)
         category_id = data.pop("category", None)
         owner_entity_id = data.pop("owner_entity", None)
         level = data.get("hierarchy_level")
+
+        # Юр. лицо (владелец) для L2/L3 наследуется от родителя, а не из формы.
+        # У объектов 1-го уровня — выбирается вручную.
+        if level in (2, 3, "2", "3"):
+            owner_entity_id = self.get_parent_owner_entity_id(parent_id)
 
         self.validator.validate_parent(parent_id, level)
         self.validator.validate_category(category_id, level)
@@ -83,7 +101,17 @@ class ObjectUseCase:
         if category_id != "__missing__":
             self.validator.validate_category(category_id, level)
             data["category_id"] = category_id
-        if owner_entity_id != "__missing__":
+
+        # Юр. лицо (владелец): для L2/L3 наследуется от родителя (эффективного —
+        # с учётом возможной смены родителя), для L1 берётся из формы.
+        effective_parent_id = (
+            parent_id if parent_id != "__missing__" else obj.parent_object_id
+        )
+        if level in (2, 3, "2", "3"):
+            inherited_owner_id = self.get_parent_owner_entity_id(effective_parent_id)
+            self.validator.validate_owner_entity(inherited_owner_id)
+            data["owner_entity_id"] = inherited_owner_id
+        elif owner_entity_id != "__missing__":
             self.validator.validate_owner_entity(owner_entity_id)
             data["owner_entity_id"] = owner_entity_id
 

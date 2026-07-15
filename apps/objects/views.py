@@ -12,6 +12,7 @@ from apps.system.usecases.system_usecase import SystemUseCase
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
 from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.objects.models import Object, ObjectSystem
+from apps.system.models import AutomationClass
 from common.summary import summary_group as _summary_group
 
 
@@ -30,7 +31,6 @@ _OBJECT_TEXT_FIELDS = (
     "street",
     "house",
     "title",
-    "fias_code",
 )
 
 
@@ -43,8 +43,8 @@ def _extract_object_fields(post, level):
     """
     data = {}
     for field in _OBJECT_TEXT_FIELDS:
-        if field == "title" and level != 3:
-            # На не-3 уровне title не принимаем во внимание.
+        if field == "title" and level not in (2, 3):
+            # Титульный номер применим только к уровням 2 и 3.
             continue
         data[field] = post.get(field, "") or ""
 
@@ -55,10 +55,10 @@ def _extract_object_fields(post, level):
 
 
 # Адресные поля, наследуемые от родителя (синхронно с ObjectUseCase).
-_INHERITED_ADDRESS_FIELDS = ("country", "region", "city", "street", "house", "fias_code")
+_INHERITED_ADDRESS_FIELDS = ("country", "region", "city", "street", "house")
 
 
-_EMPTY_ADDRESS_DEFAULTS = {f: "" for f in ("country", "region", "city", "street", "house", "fias_code")}
+_EMPTY_ADDRESS_DEFAULTS = {f: "" for f in ("country", "region", "city", "street", "house")}
 
 
 def _parent_address_map(parents):
@@ -140,12 +140,46 @@ def object_detail(request, pk):
     implementors = _summary_group(
         (os.implementor for os in object_systems if os.implementor), key=lambda e: e.pk
     )
+
+    # ---- Разбивка систем по статусу внедрения (счётчики по категориям) ----
+    _STATUS_TAG = {
+        "active": "tag-ok",
+        "planned": "tag-blue",
+        "maintenance": "tag-warn",
+        "decommissioned": "tag-danger",
+    }
+    status_counts = {}
+    for os in object_systems:
+        status_counts[os.status] = status_counts.get(os.status, 0) + 1
+    status_breakdown = [
+        {
+            "label": label,
+            "count": status_counts.get(code, 0),
+            "tag": _STATUS_TAG.get(code, "tag-muted"),
+        }
+        for code, label in ObjectSystem.STATUS_CHOICES
+        if status_counts.get(code, 0) > 0
+    ]
+
+    # ---- Покрытие по уровням автоматизации L0..L4 (счётчики) ----
+    level_counts = {}
+    for os in object_systems:
+        cls = os.system.system_class if os.system else None
+        if cls is not None:
+            level_counts[cls.level] = level_counts.get(cls.level, 0) + 1
+    level_coverage = [
+        {"level": lvl, "label": label, "count": level_counts.get(lvl, 0)}
+        for lvl, label in AutomationClass.LEVEL_CHOICES
+    ]
+
     summary = {
         "systems_count": len(object_systems),
         "children_count": children.count(),
         "system_classes": system_classes,
         "vendors": vendors,
         "implementors": implementors,
+        "status_breakdown": status_breakdown,
+        "level_coverage": level_coverage,
     }
     return render(request, "objects/object_detail.html", {
         "object": obj,

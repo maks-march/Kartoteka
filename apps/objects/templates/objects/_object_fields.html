@@ -112,22 +112,23 @@
         </div>
     </div>
 
-    <!-- Управляющая компания -->
-    <div class="form-group">
-        <label>Управляющая компания</label>
-        <div class="picker collapsible" data-target="#selectedOwnerEntityId" data-empty-text="Без управляющей компании">
+    <!-- Юридическое лицо (владелец): выбирается только для объектов 1-го уровня.
+         Для L2/L3 наследуется от родителя автоматически (без интерфейса). -->
+    <div class="form-group" id="ownerGroup">
+        <label>Юридическое лицо</label>
+        <div class="picker collapsible" data-target="#selectedOwnerEntityId" data-empty-text="Без юридического лица">
             <div class="picker-header">
-                <span class="picker-header-label">Управляющая компания</span>
-                <span class="picker-header-value empty-value">Без управляющей компании</span>
+                <span class="picker-header-label">Юридическое лицо</span>
+                <span class="picker-header-value empty-value">Без юридического лица</span>
                 <span class="picker-caret">▾</span>
             </div>
             <div class="picker-body">
                 <div class="search-wrapper">
-                    <input type="text" class="picker-search" placeholder="Введите название компании..." style="margin-bottom:0">
+                    <input type="text" class="picker-search" placeholder="Введите название ЮЛ..." style="margin-bottom:0">
                 </div>
                 <div class="system-results-container">
                     <div class="system-item {% if not object.owner_entity_id %}selected{% endif %}" data-id="" data-keep>
-                        <span class="system-name">— Без управляющей компании —</span>
+                        <span class="system-name">— Без юридического лица —</span>
                     </div>
                     {% for owner in owner_entities %}
                     <div class="system-item {% if object.owner_entity_id == owner.pk %}selected{% endif %}" data-id="{{ owner.pk }}" data-name="{{ owner.owner_name|lower }}">
@@ -135,11 +136,17 @@
                         <span class="system-info">{% if owner.is_root %}Материнская компания{% elif owner.ultimate_owner %}Материнская: {{ owner.ultimate_owner.owner_name }}{% else %}Материнская не указана{% endif %}</span>
                     </div>
                     {% endfor %}
-                    <div class="picker-no-results picker-empty">Компании не найдены</div>
+                    <div class="picker-no-results picker-empty">ЮЛ не найдены</div>
                 </div>
             </div>
             <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">
         </div>
+    </div>
+
+    <!-- Для L2/L3 юр. лицо не выбирается — наследуется от родителя. -->
+    <div class="form-group" id="ownerInheritHint" style="display:none">
+        <label>Юридическое лицо</label>
+        <p class="hint">Наследуется от родителя. Указывается только у объектов 1-го уровня.</p>
     </div>
 </div>
 
@@ -202,20 +209,14 @@
             <input type="text" name="street" class="addr-field" data-addr="street" value="{{ object.street|default:address_defaults.street|default:'' }}">
         </div>
     </div>
-    <div class="form-grid two">
-        <div class="form-group">
-            <label>Дом</label>
-            <input type="text" name="house" class="addr-field" data-addr="house" value="{{ object.house|default:address_defaults.house|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Код ФИАС</label>
-            <input type="text" name="fias_code" class="addr-field" data-addr="fias_code" value="{{ object.fias_code|default:address_defaults.fias_code|default:'' }}">
-        </div>
+    <div class="form-group">
+        <label>Дом</label>
+        <input type="text" name="house" class="addr-field" data-addr="house" value="{{ object.house|default:address_defaults.house|default:'' }}">
     </div>
 
-    <!-- title (кодовое расположение) — только для 3-го уровня -->
-    <div class="form-group" id="titleGroup" style="{% if object.hierarchy_level != 3 %}display:none{% endif %}">
-        <label>Титульный номер (только уровень 3)</label>
-        <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Расположение установки внутри цеха">
+    <!-- title (титульный номер) — для 2-го и 3-го уровня -->
+    <div class="form-group" id="titleGroup" style="{% if object.hierarchy_level != 2 and object.hierarchy_level != 3 %}display:none{% endif %}">
+        <label>Титульный номер (уровни 2 и 3)</label>
+        <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Титульный номер объекта">
     </div>
 </div>

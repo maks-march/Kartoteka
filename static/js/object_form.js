@@ -17,6 +17,9 @@
     const parentInput = document.getElementById('selectedParentId');
     const titleGroup = document.getElementById('titleGroup');
     const titleInput = document.getElementById('titleInput');
+    const ownerGroup = document.getElementById('ownerGroup');
+    const ownerInheritHint = document.getElementById('ownerInheritHint');
+    const ownerInput = document.getElementById('selectedOwnerEntityId');
 
     let parentAddresses = {};
     const paEl = document.getElementById('parentAddresses');
@@ -38,11 +41,11 @@
         }
     }
 
-    /** title (кодовое расположение) редактируется только на 3-м уровне. */
+    /** title (титульный номер) редактируется на 2-м и 3-м уровне. */
     function toggleTitle() {
         if (!titleGroup) return;
         const level = parseInt(levelSelect.value, 10);
-        if (level === 3) {
+        if (level === 2 || level === 3) {
             titleGroup.style.display = '';
             if (titleInput) titleInput.disabled = false;
         } else {
@@ -54,20 +57,59 @@
         }
     }
 
-    /** Подставляет адрес выбранного родителя в пустые адресные поля. */
+    /** Юр. лицо выбирается только на 1-м уровне; для L2/L3 наследуется от родителя. */
+    function toggleOwner() {
+        if (!ownerGroup) return;
+        const level = parseInt(levelSelect.value, 10);
+        if (level === 1) {
+            ownerGroup.style.display = '';
+            if (ownerInheritHint) ownerInheritHint.style.display = 'none';
+        } else {
+            ownerGroup.style.display = 'none';
+            if (ownerInheritHint) ownerInheritHint.style.display = '';
+            // Значение из формы не отправляем — владелец берётся от родителя на бэкенде.
+            if (ownerInput) ownerInput.value = '';
+        }
+    }
+
+    /** Подставляет адрес выбранного родителя в адресные поля.
+     *
+     * Отслеживает поля, заполненные автоматически (не тронутые пользователем):
+     * при смене родителя они перезаписываются адресом нового родителя, а поля,
+     * которые пользователь редактировал вручную, остаются без изменений.
+     */
+    const addrFields = Array.from(document.querySelectorAll('.addr-field'));
+
+    // Помечаем поле как «тронутое вручную» при пользовательском вводе.
+    addrFields.forEach(function (field) {
+        field.addEventListener('input', function () {
+            field.dataset.userEdited = '1';
+        });
+    });
+
     function applyParentAddress() {
         if (!parentInput) return;
-        const addr = parentAddresses[parentInput.value];
-        if (!addr) return;
-        document.querySelectorAll('.addr-field').forEach(function (field) {
+        const addr = parentAddresses[parentInput.value] || {};
+        addrFields.forEach(function (field) {
             const key = field.getAttribute('data-addr');
-            if (!field.value && addr[key]) field.value = addr[key];
+            const inherited = addr[key] || '';
+            // Не трогаем поля, которые пользователь ввёл/изменил вручную,
+            // а также непустые значения самого объекта (реальный адрес при
+            // редактировании). Перезаписываем только пустые и ранее
+            // автозаполненные поля — это чинит повторное заполнение при
+            // смене родителя.
+            const overwritable = !field.dataset.userEdited &&
+                (field.value === '' || field.dataset.autofilled === '1');
+            if (!overwritable) return;
+            field.value = inherited;
+            field.dataset.autofilled = inherited ? '1' : '';
         });
     }
 
     levelSelect.addEventListener('change', function () {
         toggleParent();
         toggleTitle();
+        toggleOwner();
     });
 
     // Пикер родителя пишет в скрытый input не через change, поэтому реагируем на клик.
@@ -80,4 +122,5 @@
 
     toggleParent();
     toggleTitle();
+    toggleOwner();
 })();

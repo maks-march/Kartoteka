@@ -96,11 +96,8 @@ class Object(models.Model):
         max_length=255,
         blank=True,
         default="",
-        verbose_name="Кодовое расположение",
-        help_text="Адрес/расположение установки внутри цеха (только уровень 3)",
-    )
-    fias_code = models.CharField(
-        max_length=255, blank=True, default="", verbose_name="Код ФИАС"
+        verbose_name="Титульный номер",
+        help_text="Титульный номер объекта (уровни 2 и 3)",
     )
 
     creator = models.ForeignKey(
@@ -120,12 +117,11 @@ class Object(models.Model):
     def address_line(self):
         """Адрес одной строкой через запятую (без пустых частей).
 
-        title (кодовое расположение установки, только уровень 3) добавляется
-        в конце, если задан.
+        title (титульный номер, уровни 2 и 3) добавляется в конце, если задан.
         """
         parts = [self.country, self.region, self.city, self.street, self.house]
         line = ", ".join(p.strip() for p in parts if p and p.strip())
-        if self.hierarchy_level == 3 and self.title and self.title.strip():
+        if self.hierarchy_level in (2, 3) and self.title and self.title.strip():
             extra = self.title.strip()
             line = f"{line}, {extra}" if line else extra
         return line

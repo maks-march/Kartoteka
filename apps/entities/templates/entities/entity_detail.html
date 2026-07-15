@@ -190,7 +190,7 @@
     {% with sip=entity.system_integrator_profile %}
     <div class="info-cards">
         <div class="info-card">
-            <span class="info-label">Управляющая компания</span>
+            <span class="info-label">Юридическое лицо</span>
             <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
         </div>
         <div class="info-card full">

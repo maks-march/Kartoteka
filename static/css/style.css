@@ -310,6 +310,11 @@ h1, h2, h3 {
     background: #efe5dc;
     color: #6d4c33;
 }
+/* Уровень без покрытия (0 систем) в сводке — приглушённый */
+.tag-off {
+    background: #f2f3f5 !important;
+    color: #aeb4bd !important;
+}
 /* ===== Table ===== */
 table {
     width: 100%;
@@ -582,20 +587,22 @@ td a:hover {
     color: #c62828;
 }
 
-/* ===== Detail: секции карточек с информацией (ширина 60%) ===== */
-/* Двухколоночная раскладка детальной карточки: данные слева, сводка справа */
+/* ===== Detail: секции карточек с информацией ===== */
+/* Двухколоночная раскладка детальной карточки: данные слева (70%),
+   сводка связанности справа (30%). */
 .detail-body {
     display: flex;
     gap: 22px;
     align-items: flex-start;
 }
 .detail-body > .detail-main {
-    flex: 1 1 auto;
+    flex: 1 1 70%;
     min-width: 0;
 }
 .detail-body > .summary-panel {
-    flex: 0 0 300px;
-    width: 300px;
+    flex: 0 0 30%;
+    width: 30%;
+    max-width: 30%;
     position: sticky;
     top: 16px;
 }
@@ -655,7 +662,7 @@ td a:hover {
     gap: 10px;
 }
 .summary-metrics .metric {
-    flex: 1 1 auto;
+    flex: 1 1;
     min-width: 70px;
     background: #f6f8fb;
     border: 1px solid #eef0f4;

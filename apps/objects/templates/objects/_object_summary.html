@@ -4,7 +4,32 @@
     <div class="summary-body">
         <div class="summary-metrics">
             <div class="metric"><span class="metric-num">{{ summary.systems_count }}</span><span class="metric-label">Систем</span></div>
-            <div class="metric"><span class="metric-num">{{ summary.children_count }}</span><span class="metric-label">Дочерних</span></div>
+            <div class="metric">
+                <span class="metric-num">{{ summary.children_count }}</span>
+                <span class="metric-label">Дочерние об.</span>
+            </div>
+        </div>
+
+        {% comment %}Статусы внедрения систем на объекте (счётчики по статусу).{% endcomment %}
+        <div class="summary-group">
+            <div class="summary-group-title">Статусы внедрения</div>
+            {% if summary.status_breakdown %}
+            <div class="summary-tags">
+                {% for s in summary.status_breakdown %}
+                <span class="tag {{ s.tag }}">{{ s.label }}: {{ s.count }}</span>
+                {% endfor %}
+            </div>
+            {% else %}<div class="summary-empty">—</div>{% endif %}
+        </div>
+
+        {% comment %}Покрытие по уровням автоматизации L0–L4.{% endcomment %}
+        <div class="summary-group">
+            <div class="summary-group-title">Покрытие по уровням</div>
+            <div class="summary-tags level-coverage">
+                {% for l in summary.level_coverage %}
+                <span class="tag tag-{{ l.level }}{% if not l.count %} tag-off{% endif %}">{{ l.label }}: {{ l.count }}</span>
+                {% endfor %}
+            </div>
         </div>
 
         {% include "core/_summary_group.html" with title="Классы систем" group=summary.system_classes kind="class" %}
