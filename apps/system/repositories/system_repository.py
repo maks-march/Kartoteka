@@ -1,3 +1,4 @@
+"""Репозиторий доступа к данным автоматизированных систем."""
 import re
 
 from django.db.models import Count, Q
@@ -32,6 +33,7 @@ class SystemRepository:
 
     def get_all(self, system_class=None, search=None, obj=None,
                 product=None, system_status=None, ordering=None):
+        """Возвращает системы с фильтрами, сортировкой и подгрузкой связей."""
         qs = AutomationSystem.objects.all().select_related("system_class", "product")
         if system_class is not None:
             # Класс совпал, если это основной класс системы ЛИБО он есть среди
@@ -60,6 +62,7 @@ class SystemRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
+        """Возвращает систему по id с подгруженными связями (или None)."""
         return (
             AutomationSystem.objects.filter(pk=pk)
             .select_related("system_class", "product", "creator")
@@ -68,6 +71,7 @@ class SystemRepository:
         )
 
     def get_by_creator(self, user, search=None):
+        """Возвращает системы, созданные пользователем."""
         qs = AutomationSystem.objects.filter(creator=user).select_related("system_class", "product")
         if search:
             qs = qs.filter(autosystem_name__iregex=re.escape(search))
@@ -75,6 +79,7 @@ class SystemRepository:
 
     def create(self, **kwargs):
         # M2M нельзя передать в create() — сохраняем отдельно после создания.
+        """Создаёт и возвращает новую систему."""
         subsystem_classes = kwargs.pop("subsystem_classes", None)
         instance = AutomationSystem.objects.create(**kwargs)
         if subsystem_classes is not None:
@@ -82,6 +87,7 @@ class SystemRepository:
         return instance
 
     def update(self, instance, **kwargs):
+        """Обновляет переданные поля системы и сохраняет её."""
         subsystem_classes = kwargs.pop("subsystem_classes", "__keep__")
         for key, value in kwargs.items():
             setattr(instance, key, value)
@@ -91,5 +97,6 @@ class SystemRepository:
         return instance
 
     def delete(self, instance):
+        """Удаляет систему из БД."""
         instance.delete()
         return instance

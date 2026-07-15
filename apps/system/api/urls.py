@@ -1,3 +1,4 @@
+"""URL-маршруты REST API систем, классов и продуктов."""
 from django.urls import path
 
 from apps.system.api.views import (

@@ -1,3 +1,4 @@
+"""Middleware перевода доменных исключений в JSON-ответы (для не-DRF путей)."""
 import logging
 from django.http import JsonResponse
 
@@ -21,13 +22,18 @@ _ERROR_MAP = {
 
 
 class DomainExceptionMiddleware:
+    """Ловит доменные исключения и отдаёт единый JSON с нужным HTTP-кодом."""
+
     def __init__(self, get_response):
+        """Сохраняет следующий обработчик в цепочке middleware."""
         self.get_response = get_response
 
     def __call__(self, request):
+        """Пропускает запрос дальше по цепочке обработчиков."""
         return self.get_response(request)
 
     def process_exception(self, request, exception):
+        """Переводит доменное исключение в JSON-ответ; иначе возвращает None."""
         status_code = _ERROR_MAP.get(type(exception))
         if status_code is None:
             return None

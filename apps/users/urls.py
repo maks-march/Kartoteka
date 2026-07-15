@@ -1,3 +1,4 @@
+"""URL-маршруты HTML-представлений пользователей."""
 from django.urls import path
 
 from apps.users.views import (

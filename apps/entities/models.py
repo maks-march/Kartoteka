@@ -1,3 +1,4 @@
+"""Модели участников рынка (Entity) и их типовых профилей."""
 from django.db import models
 
 
@@ -110,11 +111,13 @@ class Entity(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Участник рынка"
         verbose_name_plural = "Участники рынка"
         ordering = ["entity_name"]
 
     def __str__(self):
+        """Строковое представление объекта."""
         return self.entity_name
 
     @property
@@ -197,6 +200,7 @@ class Entity(models.Model):
 
     @property
     def financial_data_items(self):
+        """Финансовые показатели как список пар (ключ, значение) для шаблонов."""
         if isinstance(self.financial_data, dict):
             return list(self.financial_data.items())
         return []
@@ -218,10 +222,12 @@ class VendorProfile(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Профиль вендора"
         verbose_name_plural = "Профили вендоров"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"VendorProfile: {self.entity.entity_name}"
 
     @property
@@ -253,14 +259,17 @@ class SupplierProfile(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Профиль поставщика"
         verbose_name_plural = "Профили поставщиков"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"SupplierProfile: {self.entity.entity_name}"
 
     @property
     def entity_name(self):
+        """Имя участника — для удобного доступа из шаблонов."""
         return self.entity.entity_name
 
 
@@ -297,14 +306,17 @@ class SystemIntegratorProfile(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Профиль системного интегратора"
         verbose_name_plural = "Профили системных интеграторов"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"SystemIntegratorProfile: {self.entity.entity_name}"
 
     @property
     def entity_name(self):
+        """Имя участника — для удобного доступа из шаблонов."""
         return self.entity.entity_name
 
 
@@ -341,10 +353,12 @@ class EngineeringCompanyProfile(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Профиль инжиниринговой компании"
         verbose_name_plural = "Профили инжиниринговых компаний"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"EngineeringCompanyProfile: {self.entity.entity_name}"
 
 
@@ -373,11 +387,13 @@ class FunctionCompetency(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Компетенция по функции"
         verbose_name_plural = "Компетенции по функции"
         ordering = ["system_class__level", "system_class__system_class", "industry"]
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"{self.system_class.system_class} · {self.industry}"
 
 
@@ -418,10 +434,12 @@ class FullCycleVendorProfile(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Профиль вендора полного цикла"
         verbose_name_plural = "Профили вендоров полного цикла"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"FullCycleVendorProfile: {self.entity.entity_name}"
 
 
@@ -450,9 +468,11 @@ class FullCycleFunctionCompetency(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Компетенция по функции (полный цикл)"
         verbose_name_plural = "Компетенции по функции (полный цикл)"
         ordering = ["system_class__level", "system_class__system_class", "industry"]
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"{self.system_class.system_class} · {self.industry}"

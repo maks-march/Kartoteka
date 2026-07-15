@@ -1,3 +1,8 @@
+"""Сценарии (use cases) управления связью «система на объекте».
+
+Отвечают за привязку/изменение/отвязку систем к объектам с проверкой
+существования участников и уникальности связи (объект, система).
+"""
 from django.core.exceptions import ValidationError
 
 from apps.objects.repositories.object_system_repository import ObjectSystemRepository
@@ -12,18 +17,27 @@ class ObjectSystemUseCase:
     """Сценарии управления связью «система на объекте» (привязка, изменение,
     отвязка) с проверкой участников и уникальности связи."""
     def __init__(self, repo=None, object_repo=None, system_repo=None, entity_repo=None):
+        """Инициализирует use case; репозитории можно подменить (для тестов)."""
         self.repo = repo or ObjectSystemRepository()
         self.object_repo = object_repo or ObjectRepository()
         self.system_repo = system_repo or SystemRepository()
         self.entity_repo = entity_repo or EntityRepository()
 
     def list_for_object(self, obj):
+        """Возвращает связи (системы), привязанные к данному объекту."""
         return self.repo.get_for_object(obj)
 
     def list_for_system(self, system):
+        """Возвращает связи (объекты), к которым привязана данная система."""
         return self.repo.get_for_system(system)
 
     def _get_optional_entity(self, pk, field_name):
+        """Разрешает id участника в объект Entity (вспомогательный).
+
+        Возвращает None для пустого значения, бросает ValidationError, если
+        участник с таким id не найден. Используется для необязательных FK
+        (например, исполнитель внедрения).
+        """
         if pk in (None, "", "None"):
             return None
         entity = self.entity_repo.get_by_id(pk)
@@ -32,12 +46,18 @@ class ObjectSystemUseCase:
         return entity
 
     def _resolve_entities(self, data):
+        """Заменяет id участников в data на объекты Entity (вспомогательный).
+
+        Нужен, чтобы attach/update принимали как id, так и объекты, а в
+        репозиторий уходили уже разрешённые связи.
+        """
         if "implementor" in data:
             implementor_id = data.pop("implementor")
             data["implementor"] = self._get_optional_entity(implementor_id, "Исполнитель внедрения")
         return data
 
     def attach(self, object_pk=None, system_pk=None, **data):
+        """Привязывает систему к объекту, проверяя существование и уникальность связи."""
         if object_pk is None:
             object_pk = data.pop("object", None)
         if system_pk is None:
@@ -63,12 +83,14 @@ class ObjectSystemUseCase:
         return self.repo.create(object=obj, system=system, **data)
 
     def get(self, pk):
+        """Возвращает связь по id или бросает NotFoundException."""
         link = self.repo.get_by_id(pk)
         if not link:
             raise NotFoundException("Привязка не найдена")
         return link
 
     def update(self, pk, object_pk=None, system_pk=None, **data):
+        """Обновляет связь: при смене объекта/системы проверяет уникальность пары."""
         link = self.get(pk)
 
         obj = link.object
@@ -90,5 +112,6 @@ class ObjectSystemUseCase:
         return self.repo.update(link, object=obj, system=system, **data)
 
     def detach(self, pk):
+        """Отвязывает систему от объекта (удаляет связь)."""
         link = self.get(pk)
         return self.repo.delete(link)

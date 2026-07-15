@@ -1,3 +1,8 @@
+"""Сценарии (use cases) работы с объектами производства.
+
+Слой между представлениями/API и репозиторием: применяет доменную
+валидацию и правила наследования (адрес, юр. лицо) перед сохранением.
+"""
 from apps.objects.repositories.object_repository import ObjectRepository
 from apps.objects.usecases.validators import ObjectValidator
 from rest_framework.exceptions import NotFound
@@ -5,13 +10,15 @@ from rest_framework.exceptions import NotFound
 
 class ObjectUseCase:
     """Сценарии работы с объектами производства: список с фильтрами/сортировкой,
-    получение, создание, обновление и мягкое удаление с доменной валидацией."""
+    получение, создание, обновление и удаление с доменной валидацией."""
     def __init__(self, repo=None):
+        """Инициализирует use case, позволяя подменить репозиторий (для тестов)."""
         self.repo = repo or ObjectRepository()
         self.validator = ObjectValidator()
 
     def list(self, level=None, search=None, category=None, system=None,
              owner_entity=None, ordering=None):
+        """Возвращает объекты с учётом фильтров и сортировки."""
         return self.repo.get_all(
             level=level,
             search=search,
@@ -22,12 +29,14 @@ class ObjectUseCase:
         )
 
     def get(self, pk):
+        """Возвращает объект по id или бросает NotFound, если его нет."""
         obj = self.repo.get_by_id(pk)
         if not obj:
             raise NotFound("Object not found")
         return obj
 
     def list_by_user(self, user, search=None):
+        """Возвращает объекты, созданные указанным пользователем."""
         return self.repo.get_by_creator(user, search=search)
 
     # Адресные поля, которые наследуются от родителя (title — исключение, он свой)
@@ -56,6 +65,11 @@ class ObjectUseCase:
         return parent.owner_entity_id
 
     def create(self, user, **data):
+        """Создаёт объект: валидирует связи, наследует адрес и юр. лицо от родителя.
+
+        Для L2/L3 юр. лицо берётся от родителя (значение из формы игнорируется),
+        а пустые адресные поля дозаполняются из родителя.
+        """
         parent_id = data.pop("parent", None)
         category_id = data.pop("category", None)
         owner_entity_id = data.pop("owner_entity", None)
@@ -89,6 +103,11 @@ class ObjectUseCase:
         return self.repo.create(**data)
 
     def update(self, pk, user, **data):
+        """Обновляет объект: валидирует изменённые связи и уровень.
+
+        Обновляются только переданные поля. Для L2/L3 юр. лицо пере-наследуется
+        от эффективного родителя (в т.ч. при переносе под другого родителя).
+        """
         obj = self.get(pk)
         parent_id = data.pop("parent", "__missing__")
         category_id = data.pop("category", "__missing__")
@@ -133,5 +152,6 @@ class ObjectUseCase:
         return self.repo.update(obj, **data)
 
     def delete(self, pk, user):
+        """Удаляет объект по id."""
         obj = self.get(pk)
         return self.repo.delete(obj)

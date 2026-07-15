@@ -1,3 +1,4 @@
+"""Тесты приложения систем: системы, классы, продукты — HTML/API, подсистемы, фильтры."""
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -8,7 +9,9 @@ from apps.system.models import AutomationSystem, AutomationClass
 
 
 class SystemEndpointTestMixin:
+    """Общие фикстуры для тестов систем автоматизации."""
     def create_base_data(self):
+        """Создаёт базовые фикстуры (класс, продукт, системы, объекты)."""
         self.user = User.objects.create_user(username="user", password="password")
         self.automation_class = AutomationClass.objects.create(
             level=2,
@@ -30,14 +33,18 @@ class SystemEndpointTestMixin:
 
 
 class SystemWebEndpointTests(SystemEndpointTestMixin, TestCase):
+    """Тесты HTML-эндпоинтов систем (список, детали, CRUD, привязка объекта)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
 
     def test_system_list_page_is_available(self):
+        """Страница списка систем открывается (200)."""
         response = self.client.get("/system/")
         self.assertEqual(response.status_code, 200)
 
     def test_system_list_supports_filters(self):
+        """Список систем поддерживает фильтры."""
         response = self.client.get("/system/", {
             "system_class": str(self.automation_class.pk),
             "search": "асу",
@@ -45,14 +52,17 @@ class SystemWebEndpointTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_system_detail_page_is_available(self):
+        """Страница деталей системы открывается (200)."""
         response = self.client.get(f"/system/{self.system.pk}/")
         self.assertEqual(response.status_code, 200)
 
     def test_system_create_page_requires_authentication(self):
+        """Страница создания системы требует авторизации."""
         response = self.client.get("/system/create/")
         self.assertEqual(response.status_code, 302)
 
     def test_authenticated_system_crud_and_attach_object_endpoints(self):
+        """CRUD системы и привязка объекта через HTML."""
         self.client.force_login(self.user)
 
         response = self.client.get("/system/create/")
@@ -93,11 +103,14 @@ class SystemWebEndpointTests(SystemEndpointTestMixin, TestCase):
 
 
 class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
+    """Тесты REST API систем (список, детали, CRUD, привязка объекта)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
         self.api_client = APIClient()
 
     def test_system_api_list_detail_and_classes_are_public(self):
+        """Список/детали систем и классы доступны без авторизации (API)."""
         response = self.api_client.get("/api/system/classes/")
         self.assertEqual(response.status_code, 200)
 
@@ -112,6 +125,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(response.data["id"], self.system.pk)
 
     def test_system_api_create_requires_authentication(self):
+        """Создание системы через API требует авторизации."""
         response = self.api_client.post("/api/system/", {
             "autosystem_name": "API MES",
             "system_class": self.automation_class.pk,
@@ -119,6 +133,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         self.assertIn(response.status_code, (401, 403))
 
     def test_authenticated_system_api_crud(self):
+        """Полный CRUD системы через API."""
         self.api_client.force_authenticate(user=self.user)
 
         response = self.api_client.post("/api/system/", {
@@ -140,6 +155,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         self.assertFalse(AutomationSystem.objects.filter(pk=system_id).exists())
 
     def test_system_api_attach_object_requires_authentication(self):
+        """Привязка объекта через API требует авторизации."""
         response = self.api_client.post(
             f"/api/system/{self.system.pk}/attach-object/",
             {"object": self.object.pk},
@@ -148,6 +164,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         self.assertIn(response.status_code, (401, 403))
 
     def test_authenticated_system_api_attach_object(self):
+        """Привязка объекта к системе через API."""
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post(
             f"/api/system/{self.system.pk}/attach-object/",
@@ -167,6 +184,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         )
 
     def test_system_api_attach_object_duplicate_is_rejected(self):
+        """Повторная привязка объекта к системе отклоняется."""
         self.api_client.force_authenticate(user=self.user)
         ObjectSystem.objects.create(object=self.object, system=self.system, status="planned")
         response = self.api_client.post(
@@ -177,6 +195,7 @@ class SystemApiEndpointTests(SystemEndpointTestMixin, TestCase):
         self.assertIn(response.status_code, (400, 422))
 
     def test_system_api_attach_object_unknown_system_returns_404(self):
+        """Привязка к несуществующей системе возвращает 404."""
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post(
             "/api/system/999999/attach-object/",
@@ -190,11 +209,13 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
     """Новые поля системы: идентификация, состояние, жизненный цикл, JSON-данные."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
         self.api_client = APIClient()
 
     # ---------- usecase / web ----------
     def test_web_create_persists_new_fields(self):
+        """HTML-создание сохраняет модули/интерфейсы/характеристики."""
         from apps.system.models import VendorProduct
         product = VendorProduct.objects.create(product_name="PCS 7")
         self.client.force_login(self.user)
@@ -223,6 +244,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertIsNone(s.interfaces)
 
     def test_status_defaults_to_active(self):
+        """Статус системы по умолчанию — active."""
         from apps.system.usecases.system_usecase import SystemUseCase
         s = SystemUseCase().create(
             user=self.user,
@@ -233,6 +255,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(s.status_tag_class, "tag-ok")
 
     def test_create_without_product_stores_null(self):
+        """Создание без продукта сохраняет NULL."""
         from apps.system.usecases.system_usecase import SystemUseCase
         uc = SystemUseCase()
         a = uc.create(user=self.user, autosystem_name="A", system_class=self.automation_class.pk)
@@ -241,6 +264,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertIsNone(b.product)
 
     def test_web_create_lists_support_comma_and_semicolon(self):
+        """Списки принимают разделители запятая и точка с запятой."""
         self.client.force_login(self.user)
         response = self.client.post("/system/create/", {
             "autosystem_name": "ListSep",
@@ -254,6 +278,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(s.interfaces, ["OPC UA", "Modbus"])
 
     def test_web_create_empty_lists_and_specs_stored_as_null(self):
+        """Пустые списки и характеристики сохраняются как NULL."""
         self.client.force_login(self.user)
         response = self.client.post("/system/create/", {
             "autosystem_name": "Empties",
@@ -268,11 +293,13 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertIsNone(s.technical_specs)
 
     def test_status_tag_class_mapping(self):
+        """Соответствие статуса системы css-классу тега."""
         s = AutomationSystem(autosystem_name="x", system_class=self.automation_class, system_status="unsupported")
         self.assertEqual(s.status_tag_class, "tag-danger")
 
     # ---------- API ----------
     def test_api_create_with_new_fields(self):
+        """API-создание сохраняет новые поля системы."""
         from apps.system.models import VendorProduct
         product = VendorProduct.objects.create(product_name="API Product")
         self.api_client.force_authenticate(user=self.user)
@@ -294,6 +321,7 @@ class SystemNewFieldsTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(response.data["modules"], ["x"])
 
     def test_api_detail_exposes_new_fields(self):
+        """Детали системы в API отдают новые поля."""
         from apps.system.models import VendorProduct
         product = VendorProduct.objects.create(product_name="Detail Product")
         s = AutomationSystem.objects.create(
@@ -315,10 +343,12 @@ class SystemApiPartialUpdateTests(SystemEndpointTestMixin, TestCase):
     """Регресс: частичный PATCH без system_class не должен ломать связь с классом."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
         self.api_client = APIClient()
 
     def test_partial_patch_without_class_preserves_class_and_other_fields(self):
+        """PATCH без класса сохраняет класс и прочие поля."""
         self.api_client.force_authenticate(user=self.user)
         create = self.api_client.post("/api/system/", {
             "autosystem_name": "Partial",
@@ -337,6 +367,7 @@ class SystemApiPartialUpdateTests(SystemEndpointTestMixin, TestCase):
         self.assertEqual(resp.data["technical_specs"], {"cpu": "x86"})
 
     def test_patch_invalid_class_returns_validation_error(self):
+        """PATCH с недопустимым классом возвращает ошибку валидации."""
         self.api_client.force_authenticate(user=self.user)
         create = self.api_client.post("/api/system/", {
             "autosystem_name": "P2", "system_class": self.automation_class.pk,
@@ -350,6 +381,7 @@ class SystemListFilterTests(TestCase):
     """Дополнительные критерии поиска систем: продукт, статус."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import VendorProduct
         self.user = User.objects.create_user(username="flt", password="pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
@@ -365,23 +397,29 @@ class SystemListFilterTests(TestCase):
         )
 
     def _names(self, params):
+        """Возвращает имена сущностей из ответа в порядке следования (вспомогательная)."""
         from apps.system.usecases.system_usecase import SystemUseCase
         return sorted(s.autosystem_name for s in SystemUseCase().list(**params))
 
     def test_filter_by_product(self):
+        """Фильтр систем по продукту."""
         self.assertEqual(self._names({"product": [self.p1.pk]}), ["S1"])
 
     def test_filter_by_status(self):
+        """Фильтр систем по статусу."""
         self.assertEqual(self._names({"system_status": ["planned"]}), ["S2"])
 
     def test_filters_combine_with_and(self):
+        """Несколько фильтров комбинируются по И."""
         self.assertEqual(self._names({"product": [self.p1.pk], "system_status": ["active"]}), ["S1"])
         self.assertEqual(self._names({"product": [self.p1.pk], "system_status": ["planned"]}), [])
 
     def test_multiselect_product_is_or(self):
+        """Мультивыбор продуктов работает по ИЛИ."""
         self.assertEqual(self._names({"product": [self.p1.pk, self.p2.pk]}), ["S1", "S2"])
 
     def test_web_list_renders_new_filters(self):
+        """HTML-список отрисовывает новые фильтры."""
         from django.test import Client
         c = Client()
         h = c.get("/system/").content.decode()
@@ -389,6 +427,7 @@ class SystemListFilterTests(TestCase):
         self.assertIn("Статус системы", h)
 
     def test_web_list_filter_by_product_narrows_rows(self):
+        """Фильтр по продукту сужает список строк."""
         from django.test import Client
         c = Client()
         h = c.get("/system/", {"product": str(self.p1.pk)}).content.decode()
@@ -401,6 +440,7 @@ class SubsystemClassesTests(TestCase):
     очистка при смене класса, отображение label (ENG (РУС))."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("sub", "s@s.s", "pw")
         # Классы: MOM (составной, includes=MES), MES (составной), WMS, SCADA,
         # АСУТП (составной), обычный ERP.
@@ -414,21 +454,25 @@ class SubsystemClassesTests(TestCase):
         self.erp = AutomationClass.objects.create(level=4, system_class="ERP")
 
     def _uc(self):
+        """Возвращает нужный use case (вспомогательная)."""
         from apps.system.usecases.system_usecase import SystemUseCase
         return SystemUseCase()
 
     def test_label_eng_and_ru(self):
+        """Отображается англ. и рус. аббревиатура класса."""
         self.assertEqual(self.dcs.label, "DCS (РСУ)")
         self.assertEqual(self.mes.label, "MES")
 
     def test_create_composite_auto_adds_includes(self):
         # MOM без явных подсистем -> автоматически появляется MES
+        """Составной класс авто-добавляет включаемую подсистему."""
         s = self._uc().create(user=self.user, autosystem_name="MOM-1",
                               system_class=self.mom.pk, subsystem_classes=[])
         subs = set(s.subsystem_classes.values_list("system_class", flat=True))
         self.assertIn("MES", subs)
 
     def test_create_composite_keeps_selected_and_adds_includes(self):
+        """Составной класс сохраняет выбранные подсистемы и добавляет включаемую."""
         s = self._uc().create(user=self.user, autosystem_name="MOM-2",
                               system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
         subs = set(s.subsystem_classes.values_list("system_class", flat=True))
@@ -436,11 +480,13 @@ class SubsystemClassesTests(TestCase):
 
     def test_non_composite_class_clears_subsystems(self):
         # обычный класс (WMS) -> подсистемы игнорируются
+        """Несоставной класс очищает подсистемы."""
         s = self._uc().create(user=self.user, autosystem_name="Wms-only",
                               system_class=self.wms.pk, subsystem_classes=[self.mes.pk])
         self.assertEqual(s.subsystem_classes.count(), 0)
 
     def test_change_to_non_composite_clears_on_update(self):
+        """Смена на несоставной класс очищает подсистемы при обновлении."""
         s = self._uc().create(user=self.user, autosystem_name="X",
                               system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
         self.assertTrue(s.subsystem_classes.exists())
@@ -451,6 +497,7 @@ class SubsystemClassesTests(TestCase):
 
     def test_filter_by_composite_matches_subsystem(self):
         # система MES с подсистемой WMS
+        """Фильтр по составному классу находит по подсистеме."""
         self._uc().create(user=self.user, autosystem_name="MES-sys",
                          system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         # отдельная WMS-система
@@ -460,6 +507,7 @@ class SubsystemClassesTests(TestCase):
 
     def test_filter_by_ordinary_class_also_matches_subsystem(self):
         # B-б: фильтр по WMS находит и отдельную WMS, и MES где WMS в подсистемах
+        """Фильтр по обычному классу находит и по подсистеме."""
         self._uc().create(user=self.user, autosystem_name="MES-sys",
                          system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         self._uc().create(user=self.user, autosystem_name="WMS-sys", system_class=self.wms.pk)
@@ -468,6 +516,7 @@ class SubsystemClassesTests(TestCase):
 
     def test_filter_no_duplicates(self):
         # система, где класс совпадает и как основной, и (случайно) в подсистемах
+        """Фильтр по подсистемам не даёт дубликатов."""
         s = self._uc().create(user=self.user, autosystem_name="MES-dup",
                              system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         # добавим сам MES в подсистемы вручную не даём (self скрыт), проверяем что
@@ -476,6 +525,7 @@ class SubsystemClassesTests(TestCase):
         self.assertEqual(len([x for x in results if x.pk == s.pk]), 1)
 
     def test_form_shows_subsystem_block(self):
+        """Форма показывает блок подсистем для составного класса."""
         from django.test import Client
         c = Client(); c.force_login(self.user)
         h = c.get("/system/create/").content.decode()
@@ -521,6 +571,7 @@ class ClassLabelDisplayTests(TestCase):
     а в списках/тегах — только англ. код без скобок."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("lbl", "l@l.l", "pw")
         self.cls = AutomationClass.objects.create(
             level=2, system_class="DCS", name_ru="РСУ",
@@ -530,6 +581,7 @@ class ClassLabelDisplayTests(TestCase):
             user=self.user, autosystem_name="DCS-система", system_class=self.cls.pk)
 
     def test_detail_shows_ru_and_description_under_class(self):
+        """Деталь показывает рус. аббревиатуру и описание класса."""
         h = self.client.get(f"/system/{self.sys.pk}/").content.decode()
         self.assertIn("class-subinfo", h)
         self.assertIn("РСУ", h)
@@ -540,12 +592,14 @@ class ClassLabelDisplayTests(TestCase):
         self.assertNotIn("DCS (РСУ)", h)
 
     def test_list_shows_code_only(self):
+        """Список показывает только код класса."""
         h = self.client.get("/system/").content.decode()
         self.assertIn("DCS", h)
         self.assertNotIn("DCS (РСУ)", h)
         self.assertNotIn("class-subinfo", h)
 
     def test_cards_show_code_only(self):
+        """Карточки показывают только код класса."""
         h = self.client.get("/system/cards/").content.decode()
         self.assertIn("DCS", h)
         self.assertNotIn("DCS (РСУ)", h)
@@ -555,6 +609,7 @@ class VendorProductFieldsTests(TestCase):
     """Новые поля продукта: тип, класс, версия, даты, описание."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.entities.models import Entity
         self.user = User.objects.create_user("vp", "vp@x.x", "pw")
         self.vendor = Entity.objects.create(entity_name="Вендор А", entity_type="vendor")
@@ -562,10 +617,12 @@ class VendorProductFieldsTests(TestCase):
         self.api = APIClient()
 
     def _uc(self):
+        """Возвращает нужный use case (вспомогательная)."""
         from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
         return VendorProductUseCase()
 
     def test_web_create_with_all_fields(self):
+        """HTML-создание продукта со всеми полями."""
         self.client.force_login(self.user)
         r = self.client.post("/system/products/create/", {
             "product_name": "PCS 7",
@@ -589,6 +646,7 @@ class VendorProductFieldsTests(TestCase):
         self.assertEqual(p.description, "Демо-описание")
 
     def test_web_create_with_specs_and_industries(self):
+        """HTML-создание продукта с характеристиками и отраслями."""
         self.client.force_login(self.user)
         r = self.client.post("/system/products/create/", {
             "product_name": "SpecProd",
@@ -607,6 +665,7 @@ class VendorProductFieldsTests(TestCase):
         self.assertIn(("Протокол", "OPC UA"), p.specs_items)
 
     def test_form_shows_specs_and_industries(self):
+        """Форма продукта показывает характеристики и отрасли."""
         from apps.categories.models import Category
         Category.objects.create(category_name="Химия", object_level=1)
         self.client.force_login(self.user)
@@ -633,6 +692,7 @@ class VendorProductFieldsTests(TestCase):
         self.assertIn('data-name="вендор а"', h)
 
     def test_detail_shows_specs_and_industries(self):
+        """Деталь продукта показывает характеристики и отрасли."""
         p = self._uc().create(
             product_name="ShowProd", industries=["Химия"],
             technical_specs={"CPU": "x86"})
@@ -661,6 +721,7 @@ class VendorProductFieldsTests(TestCase):
         self.assertEqual(p.vendor.entity_id, self.vendor.pk)
 
     def test_api_create_with_specs_and_industries(self):
+        """API-создание продукта с характеристиками и отраслями."""
         self.api.force_authenticate(user=self.user)
         r = self.api.post("/api/system/products/", {
             "product_name": "ApiSpec",
@@ -673,11 +734,13 @@ class VendorProductFieldsTests(TestCase):
         self.assertEqual(r.data["industries"], ["Нефтехимия", "Газопереработка"])
 
     def test_usecase_invalid_class_rejected(self):
+        """Use case отклоняет продукт с недопустимым классом."""
         from django.core.exceptions import ValidationError
         with self.assertRaises(ValidationError):
             self._uc().create(product_name="X", system_class=999999)
 
     def test_form_shows_new_fields(self):
+        """Форма продукта показывает новые поля."""
         self.client.force_login(self.user)
         h = self.client.get("/system/products/create/").content.decode()
         self.assertIn('name="product_type"', h)
@@ -691,6 +754,7 @@ class VendorProductFieldsTests(TestCase):
         self.assertIn("Технические средства", h)
 
     def test_detail_shows_new_fields(self):
+        """Деталь продукта показывает новые поля."""
         p = self._uc().create(
             product_name="Experion", vendor=self.vendor.pk, product_type="complex",
             system_class=self.cls.pk, version="R520", description="desc")
@@ -700,6 +764,7 @@ class VendorProductFieldsTests(TestCase):
         self.assertIn("desc", h)
 
     def test_api_create_and_detail(self):
+        """API-создание продукта и получение деталей."""
         self.api.force_authenticate(user=self.user)
         r = self.api.post("/api/system/products/", {
             "product_name": "ApiProd", "vendor": self.vendor.pk,
@@ -719,6 +784,7 @@ class VendorProductSubsystemTests(TestCase):
     """Классы подсистем у продукта: как у систем — авто-MES, фильтр, очистка."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.entities.models import Entity
         self.user = User.objects.create_user("vps", "vps@x.x", "pw")
         self.vendor = Entity.objects.create(entity_name="V", entity_type="vendor")
@@ -728,24 +794,29 @@ class VendorProductSubsystemTests(TestCase):
         self.wms = AutomationClass.objects.create(level=3, system_class="WMS")
 
     def _uc(self):
+        """Возвращает нужный use case (вспомогательная)."""
         from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
         return VendorProductUseCase()
 
     def test_composite_auto_adds_includes(self):
+        """Составной класс продукта авто-добавляет включаемую подсистему."""
         p = self._uc().create(product_name="MOM prod", system_class=self.mom.pk, subsystem_classes=[])
         subs = set(p.subsystem_classes.values_list("system_class", flat=True))
         self.assertIn("MES", subs)
 
     def test_composite_keeps_selected_plus_includes(self):
+        """Составной класс продукта сохраняет выбранные подсистемы и добавляет включаемую."""
         p = self._uc().create(product_name="MOM+", system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
         subs = set(p.subsystem_classes.values_list("system_class", flat=True))
         self.assertEqual(subs, {"WMS", "MES"})
 
     def test_non_composite_clears_subsystems(self):
+        """Несоставной класс продукта очищает подсистемы."""
         p = self._uc().create(product_name="Wms", system_class=self.wms.pk, subsystem_classes=[self.mes.pk])
         self.assertEqual(p.subsystem_classes.count(), 0)
 
     def test_change_to_non_composite_clears_on_update(self):
+        """Смена на несоставной класс очищает подсистемы при обновлении."""
         p = self._uc().create(product_name="X", system_class=self.mom.pk, subsystem_classes=[self.wms.pk])
         self.assertTrue(p.subsystem_classes.exists())
         p = self._uc().update(pk=p.pk, product_name="X", system_class=self.wms.pk)
@@ -753,6 +824,7 @@ class VendorProductSubsystemTests(TestCase):
 
     def test_filter_by_class_matches_subsystem(self):
         # продукт класса MES с подсистемой WMS
+        """Фильтр продуктов по классу находит по подсистеме."""
         self._uc().create(product_name="MES-prod", system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         self._uc().create(product_name="WMS-prod", system_class=self.wms.pk)
         names = sorted(p.product_name for p in self._uc().list(system_class=self.wms.pk))
@@ -760,6 +832,7 @@ class VendorProductSubsystemTests(TestCase):
         self.assertEqual(names, ["MES-prod", "WMS-prod"])
 
     def test_form_shows_subsystem_block(self):
+        """Форма показывает блок подсистем для составного класса."""
         self.client.force_login(self.user)
         h = self.client.get("/system/products/create/").content.decode()
         self.assertIn("productSubsystemsBlock", h)
@@ -767,5 +840,6 @@ class VendorProductSubsystemTests(TestCase):
         self.assertIn('data-class-input="#selectedProductClassId"', h)
 
     def test_list_class_filter_present(self):
+        """В списке присутствует фильтр по классу."""
         h = self.client.get("/system/products/").content.decode()
         self.assertIn('name="system_class"', h)

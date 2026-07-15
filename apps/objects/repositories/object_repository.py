@@ -1,3 +1,8 @@
+"""Репозиторий доступа к данным объектов производства.
+
+Инкапсулирует запросы ORM: выборки с фильтрами и сортировкой, счётчик
+подключённых систем и CRUD-операции.
+"""
 import re
 
 from django.db.models import Count
@@ -19,7 +24,7 @@ def _as_id_list(value):
 
 class ObjectRepository:
     """Доступ к данным объектов: выборки с фильтрами, сортировкой и счётчиком
-    подключённых систем, а также CRUD и мягкое удаление."""
+    подключённых систем, а также CRUD-операции."""
     ORDERING_FIELDS = {
         "object_name", "hierarchy_level", "status", "city", "created_at", "start_date",
         "category__category_name", "owner_entity__owner_name",
@@ -30,6 +35,12 @@ class ObjectRepository:
 
     def get_all(self, level=None, search=None, category=None, system=None,
                 owner_entity=None, ordering=None):
+        """Возвращает объекты с учётом фильтров, сортировки и счётчика систем.
+
+        Фильтр по юр. лицу иерархический — включает объекты дочерних юр. лиц.
+        Поиск через iregex, т.к. на SQLite icontains не игнорирует регистр
+        для кириллицы.
+        """
         qs = Object.objects.all().select_related("parent_object", "category", "owner_entity")
         if level is not None:
             qs = qs.filter(hierarchy_level=level)
@@ -64,6 +75,7 @@ class ObjectRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
+        """Возвращает объект по id с подгруженными связями и детьми (или None)."""
         return (
             Object.objects.filter(pk=pk)
             .select_related("parent_object", "category", "owner_entity", "creator")
@@ -72,20 +84,24 @@ class ObjectRepository:
         )
 
     def get_by_creator(self, user, search=None):
+        """Возвращает объекты, созданные пользователем (с опциональным поиском)."""
         qs = Object.objects.filter(creator=user).select_related("parent_object", "category", "owner_entity")
         if search:
             qs = qs.filter(object_name__iregex=re.escape(search))
         return qs
 
     def create(self, **kwargs):
+        """Создаёт и возвращает новый объект."""
         return Object.objects.create(**kwargs)
 
     def update(self, instance, **kwargs):
+        """Обновляет переданные поля объекта и сохраняет его."""
         for key, value in kwargs.items():
             setattr(instance, key, value)
         instance.save()
         return instance
 
     def delete(self, instance):
+        """Удаляет объект из БД."""
         instance.delete()
         return instance

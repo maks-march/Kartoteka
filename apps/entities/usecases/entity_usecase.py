@@ -1,3 +1,4 @@
+"""Сценарии (use cases) работы с участниками рынка и их профилями."""
 from rest_framework.exceptions import NotFound
 
 from apps.entities.repositories.entity_repository import EntityRepository
@@ -6,12 +7,15 @@ from apps.entities.repositories.entity_repository import EntityRepository
 class EntityUseCase:
     """Сценарии работы с участниками рынка."""
     def __init__(self, repo=None):
+        """Инициализирует объект, позволяя подменить зависимости (для тестов)."""
         self.repo = repo or EntityRepository()
 
     def list(self, search=None, ordering=None):
+        """Возвращает участников с учётом фильтров и сортировки."""
         return self.repo.get_all(search=search, ordering=ordering)
 
     def get(self, pk):
+        """Возвращает участника по id или бросает NotFound."""
         obj = self.repo.get_by_id(pk)
         if not obj:
             raise NotFound("Entity not found")
@@ -66,11 +70,13 @@ class EntityUseCase:
             FullCycleVendorProfile.objects.filter(entity=entity).delete()
 
     def create(self, **data):
+        """Создаёт участника и синхронизирует профили по типу."""
         entity = self.repo.create(**data)
         self._sync_profiles(entity)
         return entity
 
     def update(self, pk, **data):
+        """Обновляет участника и синхронизирует профили по типу."""
         obj = self.get(pk)
         entity = self.repo.update(obj, **data)
         self._sync_profiles(entity)
@@ -191,6 +197,7 @@ class EntityUseCase:
         return profile
 
     def delete(self, pk):
+        """Удаляет участника по id."""
         obj = self.get(pk)
         return self.repo.delete(obj)
 

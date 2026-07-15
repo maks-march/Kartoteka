@@ -10,35 +10,43 @@ from apps.objects.models import Object
 
 
 class ObjectListSortingTests(TestCase):
+    """Тесты серверной многоуровневой сортировки списка объектов."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("s", "s@s.s", "pw")
         Object.objects.create(object_name="Бета", hierarchy_level=2, status="active", city="Б", creator=self.user)
         Object.objects.create(object_name="Альфа", hierarchy_level=1, status="stopped", city="А", creator=self.user)
         Object.objects.create(object_name="Гамма", hierarchy_level=1, status="active", city="В", creator=self.user)
 
     def _order(self, url):
+        """Возвращает порядок элементов из ответа (вспомогательная)."""
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         return [o.object_name for o in resp.context["objects"]]
 
     def test_default_order(self):
         # дефолт репозитория: level, name
+        """Применяется сортировка по умолчанию без параметров."""
         self.assertEqual(self._order("/objects/"), ["Альфа", "Гамма", "Бета"])
 
     def test_single_desc(self):
+        """Одноуровневая сортировка по убыванию."""
         self.assertEqual(self._order("/objects/?ordering=-object_name"), ["Гамма", "Бета", "Альфа"])
 
     def test_single_asc(self):
+        """Одноуровневая сортировка по возрастанию."""
         self.assertEqual(self._order("/objects/?ordering=object_name"), ["Альфа", "Бета", "Гамма"])
 
     def test_multi_level_then_name_desc(self):
         # level asc, внутри уровня name desc
+        """Многоуровневая сортировка: уровень, затем имя по убыванию."""
         self.assertEqual(
             self._order("/objects/?ordering=hierarchy_level&ordering=-object_name"),
             ["Гамма", "Альфа", "Бета"],
         )
 
     def test_invalid_field_ignored(self):
+        """Недопустимое поле сортировки игнорируется."""
         self.assertEqual(self._order("/objects/?ordering=creator__password"), ["Альфа", "Гамма", "Бета"])
 
 
@@ -46,20 +54,24 @@ class SortHeaderTagTests(TestCase):
     """Поведение ссылок в заголовках (цикл none->desc->asc->off)."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("h", "h@h.h", "pw")
         Object.objects.create(object_name="A", hierarchy_level=1, creator=self.user)
 
     def test_no_sort_links_to_desc(self):
+        """Несортированный заголовок ссылается на сортировку по убыванию."""
         html = self.client.get("/objects/").content.decode().replace("&amp;", "&")
         self.assertIn('href="?ordering=-object_name"', html)
 
     def test_desc_shows_arrow_and_links_to_asc(self):
+        """Заголовок desc показывает стрелку и ведёт к asc."""
         html = self.client.get("/objects/?ordering=-object_name").content.decode().replace("&amp;", "&")
         self.assertIn("▼", html)
         self.assertIn('href="?ordering=object_name"', html)
 
     def test_asc_links_to_removed(self):
         # при возрастании следующий клик убирает сортировку по столбцу
+        """Заголовок asc ведёт к снятию сортировки по столбцу."""
         html = self.client.get("/objects/?ordering=object_name").content.decode().replace("&amp;", "&")
         self.assertIn("▲", html)
         # ссылка заголовка "Название" не должна содержать ordering для name
@@ -68,6 +80,7 @@ class SortHeaderTagTests(TestCase):
         self.assertNotIn('ordering=object_name"', html[start - 250:start + 20])
 
     def test_other_params_preserved(self):
+        """Прочие GET-параметры сохраняются в ссылке сортировки."""
         html = self.client.get("/objects/?search=abc").content.decode().replace("&amp;", "&")
         # ссылка сортировки сохраняет search
         self.assertIn("search=abc", html)
@@ -78,6 +91,7 @@ class RelatedFieldSortingTests(TestCase):
     """Сортировка по связанным колонкам (категория/владелец, класс/вендор)."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.categories.models import Category
         from apps.owners.models import OwnerEntity
         from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
@@ -98,22 +112,27 @@ class RelatedFieldSortingTests(TestCase):
         AutomationSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator=self.user)
 
     def test_objects_sort_by_category_name(self):
+        """Сортировка объектов по имени категории."""
         resp = self.client.get("/objects/?ordering=category__category_name")
         self.assertEqual([o.object_name for o in resp.context["objects"]], ["O2", "O1"])
 
     def test_objects_sort_by_owner_name_desc(self):
+        """Сортировка объектов по имени юр. лица (убыв.)."""
         resp = self.client.get("/objects/?ordering=-owner_entity__owner_name")
         self.assertEqual([o.object_name for o in resp.context["objects"]], ["O1", "O2"])
 
     def test_systems_sort_by_class_name(self):
+        """Сортировка систем по имени класса."""
         resp = self.client.get("/system/?ordering=system_class__system_class")
         self.assertEqual([s.autosystem_name for s in resp.context["systems"]], ["S2", "S1"])
 
     def test_systems_sort_by_product_name_desc(self):
+        """Сортировка систем по имени продукта (убыв.)."""
         resp = self.client.get("/system/?ordering=-product__product_name")
         self.assertEqual([s.autosystem_name for s in resp.context["systems"]], ["S1", "S2"])
 
     def test_related_sort_header_links_present(self):
+        """Кликабельные заголовки сортировки по связанным полям присутствуют."""
         oh = self.client.get("/objects/").content.decode().replace("&amp;", "&")
         self.assertIn("ordering=-category__category_name", oh)
         self.assertIn("ordering=-owner_entity__owner_name", oh)
@@ -123,7 +142,9 @@ class RelatedFieldSortingTests(TestCase):
 
 
 class ViewModeAndNavTests(TestCase):
+    """Тесты режимов представления (таблица/карточки) и навигации."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("vm", "vm@x.x", "pw")
         Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", city="Омск", creator=self.user)
@@ -131,6 +152,7 @@ class ViewModeAndNavTests(TestCase):
         AutomationSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator=self.user)
 
     def test_object_cards_page(self):
+        """Страница карточек объектов открывается."""
         r = self.client.get("/objects/cards/")
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "cards-grid")
@@ -138,12 +160,14 @@ class ViewModeAndNavTests(TestCase):
         self.assertContains(r, "Объект A")
 
     def test_system_cards_page(self):
+        """Страница карточек систем открывается."""
         r = self.client.get("/system/cards/")
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "cards-grid")
         self.assertContains(r, "Sys A")
 
     def test_cards_respect_filters(self):
+        """Карточное представление учитывает фильтры."""
         Object.objects.create(object_name="Другой", hierarchy_level=1, status="stopped", creator=self.user)
         r = self.client.get("/objects/cards/?search=Объект")
         self.assertContains(r, "Объект A")
@@ -152,6 +176,7 @@ class ViewModeAndNavTests(TestCase):
         self.assertNotIn("Другой", grid)
 
     def test_nav_has_dropdown_and_renamed_owners(self):
+        """Навигация содержит выпадающее меню и раздел владельцев."""
         r = self.client.get("/objects/")
         self.assertContains(r, "nav-dropdown")
         self.assertContains(r, "Владельцы")
@@ -160,7 +185,9 @@ class ViewModeAndNavTests(TestCase):
 
 
 class CardCountsTests(TestCase):
+    """Тесты карточного представления и счётчиков связей."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.objects.models import Object, ObjectSystem
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cc", "cc@x.x", "pw")
@@ -174,18 +201,21 @@ class CardCountsTests(TestCase):
         ObjectSystem.objects.create(object=self.o2, system=self.s1)
 
     def test_object_systems_count(self):
+        """Счётчик подключённых систем у объекта верен."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         counts = {o.object_name: o.systems_count for o in ObjectUseCase().list()}
         self.assertEqual(counts["Объект A"], 2)
         self.assertEqual(counts["Объект B"], 1)
 
     def test_system_objects_count(self):
+        """Счётчик объектов у системы верен."""
         from apps.system.usecases.system_usecase import SystemUseCase
         counts = {s.autosystem_name: s.objects_count for s in SystemUseCase().list()}
         self.assertEqual(counts["S1"], 2)
         self.assertEqual(counts["S2"], 1)
 
     def test_cards_render_counts_and_datahref(self):
+        """Карточки отображают счётчики и data-href."""
         ho = self.client.get("/objects/cards/").content.decode()
         self.assertIn("data-href=", ho)
         self.assertRegex(ho, r'Систем</span><span class="v">\d+')
@@ -198,6 +228,7 @@ class CountSortingTests(TestCase):
     """Сортировка по количеству подключённых сущностей (systems_count / objects_count)."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.objects.models import Object, ObjectSystem
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cnt", "cnt@x.x", "pw")
@@ -212,21 +243,27 @@ class CountSortingTests(TestCase):
         ObjectSystem.objects.create(object=self.c, system=self.s1)
 
     def _objs(self, url):
+        """Возвращает объекты из ответа (вспомогательная)."""
         return [o.object_name for o in self.client.get(url).context["objects"]]
 
     def _syss(self, url):
+        """Возвращает системы из ответа (вспомогательная)."""
         return [s.autosystem_name for s in self.client.get(url).context["systems"]]
 
     def test_objects_sort_by_systems_count_asc(self):
+        """Сортировка объектов по числу систем (возр.)."""
         self.assertEqual(self._objs("/objects/?ordering=systems_count"), ["A", "C", "B"])
 
     def test_objects_sort_by_systems_count_desc(self):
+        """Сортировка объектов по числу систем (убыв.)."""
         self.assertEqual(self._objs("/objects/?ordering=-systems_count"), ["B", "C", "A"])
 
     def test_systems_sort_by_objects_count_desc(self):
+        """Сортировка систем по числу объектов (убыв.)."""
         self.assertEqual(self._syss("/system/?ordering=-objects_count"), ["S1", "S2"])
 
     def test_count_headers_are_clickable(self):
+        """Заголовки столбцов-счётчиков кликабельны для сортировки."""
         ho = self.client.get("/objects/").content.decode().replace("&amp;", "&")
         self.assertIn("ordering=-systems_count", ho)
         hs = self.client.get("/system/").content.decode().replace("&amp;", "&")

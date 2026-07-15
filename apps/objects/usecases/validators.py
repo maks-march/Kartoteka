@@ -1,3 +1,9 @@
+"""Доменные валидаторы объектов производства.
+
+Проверки, которые не выражаются ограничениями модели: корректность
+иерархии родитель–потомок, соответствие уровней категории и объекта,
+существование связанных сущностей.
+"""
 from django.core.exceptions import ValidationError
 
 from apps.objects.models import Object
@@ -9,6 +15,12 @@ class ObjectValidator:
     """Доменная валидация объектов: корректность родителя (уровни, циклы),
     соответствие категории уровню и допустимость поля title."""
     def validate_parent(self, parent_id, level, instance=None):
+        """Проверяет корректность родителя для объекта уровня ``level``.
+
+        Гарантирует, что у L1 нет родителя, уровень родителя строго выше
+        (меньше числом) уровня потомка, и что назначение не создаёт цикл
+        в иерархии (нужно при редактировании существующего ``instance``).
+        """
         if parent_id is None:
             return
 
@@ -38,6 +50,7 @@ class ObjectValidator:
                 current = current.parent_object
 
     def validate_category(self, category_id, object_level):
+        """Проверяет, что уровень категории совпадает с уровнем объекта."""
         if category_id is None:
             return
 
@@ -52,6 +65,7 @@ class ObjectValidator:
             )
 
     def validate_owner_entity(self, owner_entity_id):
+        """Проверяет существование указанного юридического лица (OwnerEntity)."""
         if owner_entity_id is None:
             return
 

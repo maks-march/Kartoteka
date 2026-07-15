@@ -1,3 +1,4 @@
+"""URL-маршруты HTML-представлений участников рынка."""
 from django.urls import path
 
 from apps.entities.views import (

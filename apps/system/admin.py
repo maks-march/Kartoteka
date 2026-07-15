@@ -1,3 +1,4 @@
+"""Регистрация моделей систем, классов и продуктов в админ-панели."""
 from django.contrib import admin
 
 from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
@@ -5,6 +6,7 @@ from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
 
 @admin.register(AutomationClass)
 class AutomationClassAdmin(admin.ModelAdmin):
+    """Админ-настройки класса автоматизации."""
     list_display = ["level", "system_class", "name_ru", "is_composite", "includes", "description"]
     list_filter = ["level", "is_composite"]
     search_fields = ["system_class", "name_ru"]
@@ -13,6 +15,7 @@ class AutomationClassAdmin(admin.ModelAdmin):
 
 @admin.register(VendorProduct)
 class VendorProductAdmin(admin.ModelAdmin):
+    """Админ-настройки продукта вендора."""
     list_display = ["product_name", "vendor", "product_type", "system_class", "version"]
     list_filter = ["product_type", "system_class__level"]
     search_fields = ["product_name", "version"]
@@ -22,6 +25,7 @@ class VendorProductAdmin(admin.ModelAdmin):
 
 @admin.register(AutomationSystem)
 class AutomationSystemAdmin(admin.ModelAdmin):
+    """Админ-настройки автоматизированной системы."""
     list_display = ["autosystem_name", "autosystem_short_name", "system_class", "product", "system_status"]
     list_filter = ["system_class__level", "system_status"]
     search_fields = ["autosystem_name", "autosystem_short_name"]

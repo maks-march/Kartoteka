@@ -10,6 +10,7 @@ from apps.objects.usecases.object_usecase import ObjectUseCase
 
 @require_http_methods(["GET"])
 def owner_entity_list(request):
+    """Список юр. лиц с поиском и сортировкой."""
     search = request.GET.get("search") or None
     ordering = request.GET.getlist("ordering") or None
     usecase = OwnerEntityUseCase()
@@ -22,6 +23,7 @@ def owner_entity_list(request):
 
 @require_http_methods(["GET"])
 def owner_entity_detail(request, pk):
+    """Детали юр. лица: дочерние юр. лица и принадлежащие объекты."""
     usecase = OwnerEntityUseCase()
     owner_entity = usecase.get(pk)
     child_entities = owner_entity.subsidiaries.all().order_by("owner_name")
@@ -36,6 +38,7 @@ def owner_entity_detail(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def owner_entity_create(request):
+    """Создание юр. лица: GET — форма, POST — сохранение."""
     usecase = OwnerEntityUseCase()
     error = None
 
@@ -63,6 +66,7 @@ def owner_entity_create(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def owner_entity_edit(request, pk):
+    """Редактирование юр. лица: GET — форма, POST — обновление."""
     usecase = OwnerEntityUseCase()
     owner_entity = usecase.get(pk)
     error = None
@@ -92,6 +96,7 @@ def owner_entity_edit(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def owner_entity_attach_object(request, pk):
+    """Привязка объекта к юр. лицу: GET — форма, POST — привязка."""
     owner_usecase = OwnerEntityUseCase()
     object_usecase = ObjectUseCase()
     owner_entity = owner_usecase.get(pk)
@@ -122,6 +127,7 @@ def owner_entity_attach_object(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def owner_entity_delete(request, pk):
+    """Удаление юр. лица и возврат к списку."""
     usecase = OwnerEntityUseCase()
     usecase.delete(pk)
     return redirect("owner-entity-list")

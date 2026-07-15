@@ -24,12 +24,15 @@ from apps.entities.usecases.entity_usecase import EntityUseCase
 
 
 class EntityListCreateView(APIView):
+    """API списка участников (GET) и создания участника (POST)."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def get(self, request):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         search = request.query_params.get("search")
         ordering = request.query_params.getlist("ordering") or None
         usecase = EntityUseCase()
@@ -38,6 +41,7 @@ class EntityListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Создаёт участника и возвращает его представление."""
         serializer = EntityCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usecase = EntityUseCase()
@@ -46,17 +50,21 @@ class EntityListCreateView(APIView):
 
 
 class EntityDetailView(APIView):
+    """API одного участника: получение, обновление, удаление."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         usecase = EntityUseCase()
         obj = usecase.get(pk)
         return Response(EntitySerializer(obj).data)
 
     def patch(self, request, pk):
+        """Частично обновляет участника переданными полями."""
         serializer = EntityCreateUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         usecase = EntityUseCase()
@@ -64,6 +72,7 @@ class EntityDetailView(APIView):
         return Response(EntitySerializer(obj).data)
 
     def delete(self, request, pk):
+        """Удаляет участника."""
         usecase = EntityUseCase()
         usecase.delete(pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -77,11 +86,13 @@ class EngineeringProfileView(APIView):
     """
 
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         entity = EntityUseCase().get(pk)
         profile = getattr(entity, "engineering_profile", None)
         if profile is None:
@@ -89,6 +100,7 @@ class EngineeringProfileView(APIView):
         return Response(EngineeringProfileSerializer(profile).data)
 
     def put(self, request, pk):
+        """Сохраняет профиль участника переданными данными."""
         usecase = EntityUseCase()
         entity = usecase.get(pk)
         if not entity.is_engineering_type:
@@ -123,17 +135,20 @@ class VendorProductsView(APIView):
     """
 
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         entity = EntityUseCase().get(pk)
         if not entity.is_vendor_type:
             raise NotFound("У участника нет профиля вендора")
         return Response({"product_ids": list(entity.products.values_list("id", flat=True))})
 
     def put(self, request, pk):
+        """Сохраняет профиль участника переданными данными."""
         usecase = EntityUseCase()
         entity = usecase.get(pk)
         if not entity.is_vendor_type:
@@ -158,11 +173,13 @@ class SupplierProductsView(APIView):
     """
 
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         entity = EntityUseCase().get(pk)
         profile = getattr(entity, "supplier_profile", None)
         if profile is None:
@@ -170,6 +187,7 @@ class SupplierProductsView(APIView):
         return Response(SupplierProfileSerializer(profile).data)
 
     def put(self, request, pk):
+        """Сохраняет профиль участника переданными данными."""
         usecase = EntityUseCase()
         entity = usecase.get(pk)
         if not entity.is_supplier_type:
@@ -194,11 +212,13 @@ class SystemIntegratorProfileView(APIView):
     """
 
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         entity = EntityUseCase().get(pk)
         profile = getattr(entity, "system_integrator_profile", None)
         if profile is None:
@@ -206,6 +226,7 @@ class SystemIntegratorProfileView(APIView):
         return Response(SystemIntegratorProfileSerializer(profile).data)
 
     def put(self, request, pk):
+        """Сохраняет профиль участника переданными данными."""
         usecase = EntityUseCase()
         entity = usecase.get(pk)
         if not entity.is_system_integrator_type:
@@ -237,11 +258,13 @@ class FullCycleProfileView(APIView):
     """
 
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные участника(ов)/профиля в ответе API."""
         entity = EntityUseCase().get(pk)
         profile = getattr(entity, "full_cycle_profile", None)
         if profile is None:
@@ -249,6 +272,7 @@ class FullCycleProfileView(APIView):
         return Response(FullCycleProfileSerializer(profile).data)
 
     def put(self, request, pk):
+        """Сохраняет профиль участника переданными данными."""
         usecase = EntityUseCase()
         entity = usecase.get(pk)
         if entity.entity_type != "full_cycle_vendor":

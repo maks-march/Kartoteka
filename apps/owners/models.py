@@ -1,7 +1,9 @@
+"""Модель юридических лиц (владельцев объектов)."""
 from django.db import models
 
 
 class OwnerEntity(models.Model):
+    """Юридическое лицо-владелец с иерархией владения (материнская → дочерние)."""
     owner_name = models.CharField(
         max_length=255,
         verbose_name="Название юр. лица",
@@ -35,6 +37,7 @@ class OwnerEntity(models.Model):
     )
 
     class Meta:
+        """Мета-настройки: имена и сортировка."""
         verbose_name = "Юридическое лицо"
         verbose_name_plural = "Юридические лица"
         ordering = ["owner_name"]
@@ -42,8 +45,10 @@ class OwnerEntity(models.Model):
     def save(self, *args, **kwargs):
         # Материнская компания — та, которой никто не владеет.
         # Флаг всегда синхронизируется с наличием владельца (только авто).
+        """Сохраняет юр. лицо, авто-выставляя is_root по наличию владельца."""
         self.is_root = self.owner_id is None
         super().save(*args, **kwargs)
 
     def __str__(self):
+        """Строковое представление: название юр. лица."""
         return self.owner_name

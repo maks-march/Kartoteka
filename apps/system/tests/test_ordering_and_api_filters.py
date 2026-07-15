@@ -12,7 +12,9 @@ from apps.system.usecases.system_usecase import SystemUseCase
 
 
 class SystemOrderingTests(TestCase):
+    """Тесты сортировки систем (репозиторий и API)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("o", "o@o.o", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
         self.pb = VendorProduct.objects.create(product_name="Бета-продукт")
@@ -23,23 +25,29 @@ class SystemOrderingTests(TestCase):
         AutomationSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator=self.user)
 
     def _names(self, ordering):
+        """Возвращает имена сущностей из ответа в порядке следования (вспомогательная)."""
         return [s.autosystem_name for s in SystemUseCase().list(ordering=ordering)]
 
     def test_default_ordering_by_name(self):
+        """Сортировка по умолчанию — по имени."""
         self.assertEqual(self._names(None), ["Альфа", "Бета", "Гамма"])
 
     def test_ordering_desc_by_name(self):
+        """Сортировка по имени по убыванию."""
         self.assertEqual(self._names("-autosystem_name"), ["Гамма", "Бета", "Альфа"])
 
     def test_ordering_by_product_name(self):
         # Альфа-продукт < Бета-продукт < Гамма-продукт
+        """Сортировка по имени продукта."""
         self.assertEqual(self._names("product__product_name"), ["Альфа", "Бета", "Гамма"])
 
     def test_invalid_ordering_field_falls_back_to_default(self):
         # Защита от инъекции произвольного поля: берётся сортировка по умолчанию.
+        """Недопустимое поле сортировки откатывается к умолчанию."""
         self.assertEqual(self._names("creator__password"), ["Альфа", "Бета", "Гамма"])
 
     def test_api_ordering(self):
+        """Сортировка систем через API."""
         c = APIClient()
         resp = c.get("/api/system/", {"ordering": "-autosystem_name"})
         self.assertEqual(resp.status_code, 200)
@@ -51,6 +59,7 @@ class SystemApiFilterParityTests(TestCase):
     """Новые критерии фильтрации должны работать и через REST API."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("p", "p@p.p", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA", description="")
         self.p1 = VendorProduct.objects.create(product_name="Simatic")
@@ -66,21 +75,26 @@ class SystemApiFilterParityTests(TestCase):
         self.client_api = APIClient()
 
     def _names(self, params):
+        """Возвращает имена сущностей из ответа в порядке следования (вспомогательная)."""
         resp = self.client_api.get("/api/system/", params)
         self.assertEqual(resp.status_code, 200)
         return sorted(row["autosystem_name"] for row in resp.data)
 
     def test_api_filter_by_product(self):
+        """API-фильтр систем по продукту."""
         self.assertEqual(self._names({"product": self.p1.pk}), ["S1"])
 
     def test_api_filter_by_status(self):
+        """API-фильтр систем по статусу."""
         self.assertEqual(self._names({"system_status": "planned"}), ["S2"])
 
     def test_api_filters_combine_with_and(self):
+        """API-фильтры комбинируются по И."""
         self.assertEqual(self._names({"product": self.p1.pk, "system_status": "active"}), ["S1"])
         self.assertEqual(self._names({"product": self.p1.pk, "system_status": "planned"}), [])
 
     def test_api_multiselect_product_is_or(self):
+        """API-мультивыбор продуктов по ИЛИ."""
         resp = self.client_api.get(f"/api/system/?product={self.p1.pk}&product={self.p2.pk}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(sorted(r["autosystem_name"] for r in resp.data), ["S1", "S2"])

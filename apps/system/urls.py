@@ -1,3 +1,4 @@
+"""URL-маршруты HTML-представлений систем, классов и продуктов."""
 from django.urls import path
 
 from apps.system.views import (

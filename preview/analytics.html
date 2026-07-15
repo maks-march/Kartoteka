@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Аналитика — Kartoteka</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; width: 90%; min-width: 320px; margin: 0 auto; padding: 20px; background: #f0f2f5; color: #333; }
+header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+nav a { margin-right: 15px; text-decoration: none; color: #007bff; font-weight: 500; }
+nav a.active { color: #0056b3; font-weight: 700; text-decoration: underline; }
+.user-menu { display: flex; align-items: center; gap: 10px; }
+.user-menu span { color: #555; font-weight: 500; }
+.card { background: #fff; padding: 22px 25px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.08); margin-bottom: 20px; }
+h1 { font-size: 22px; color: #222; margin-bottom: 4px; }
+.subtitle { color: #667; font-size: 13.5px; margin-bottom: 18px; }
+.btn { display: inline-block; padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: 500; }
+.btn-primary { background: #007bff; color: #fff; }
+.btn-secondary { background: #6c757d; color: #fff; }
+
+/* строка поиска */
+.search-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.search-row input[type=text] { flex: 1; padding: 12px 16px; font-size: 15px; border: 1px solid #ced4da; border-radius: 8px; outline: none; }
+.search-row input[type=text]:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,.15); }
+
+/* расширенный поиск */
+.adv { border: 1px solid #e1e7ef; border-radius: 8px; margin-bottom: 16px; }
+.adv-head { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px 14px; background: #f8f9fb; }
+.adv-head .lbl { font-weight: 600; font-size: 14px; color: #444; }
+.adv-head .caret { margin-left: auto; color: #999; }
+.adv-body { padding: 14px; border-top: 1px solid #eef0f4; }
+.adv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .adv-grid { grid-template-columns: 1fr; } }
+.adv-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin-bottom: 8px; }
+.adv-col label { display: block; font-size: 12.5px; color: #555; margin: 6px 0 3px; }
+.adv-col input, .adv-col select { width: 100%; padding: 8px 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 13.5px; }
+.adv-actions { margin-top: 14px; display: flex; gap: 10px; }
+
+/* переключатель сущности + вид */
+.entity-switch { display: inline-flex; gap: 6px; }
+.entity-switch button { padding: 9px 18px; border: 1px solid #ced4da; border-radius: 8px; background: #f8f9fa; color: #444; font-size: 14px; font-weight: 600; cursor: pointer; }
+.entity-switch button.active { background: #007bff; border-color: #007bff; color: #fff; }
+.entity-switch button .count { font-weight: 400; opacity: .8; margin-left: 5px; }
+.view-toggle { display: inline-flex; gap: 6px; float: right; }
+.view-toggle a { padding: 7px 12px; border: 1px solid #ced4da; border-radius: 6px; text-decoration: none; color: #444; font-size: 13px; }
+.view-toggle a.active { background: #eef4ff; border-color: #9cc0ff; color: #1f4b8e; font-weight: 600; }
+
+/* аналитика по выборке */
+.analytics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 8px; }
+@media (max-width: 900px) { .analytics { grid-template-columns: repeat(2, 1fr); } }
+.metric { background: #f6f8fb; border: 1px solid #eef0f4; border-radius: 8px; padding: 12px 14px; text-align: center; }
+.metric .n { display: block; font-size: 24px; font-weight: 700; color: #1f4b8e; line-height: 1.1; }
+.metric .l { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: #8a909a; }
+.analytics-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+@media (max-width: 900px) { .analytics-groups { grid-template-columns: 1fr; } }
+.ag { background: #f8f9fb; border: 1px solid #eef0f4; border-radius: 8px; padding: 12px 14px; }
+.ag-title { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid #eceff3; }
+.bar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 12.5px; }
+.bar:last-child { margin-bottom: 0; }
+.bar .bar-label { flex: 0 0 100px; color: #445; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .bar-track { flex: 1; background: #e6eaf0; border-radius: 6px; height: 16px; overflow: hidden; }
+.bar .bar-fill { display: block; height: 100%; min-width: 3px; background: linear-gradient(90deg,#5b8fd6,#7aa7e0); border-radius: 6px; }
+.bar .bar-num { flex: 0 0 26px; text-align: right; color: #33415c; font-weight: 700; }
+
+/* таблица */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 10px; text-align: left; border-bottom: 1px solid #e9ecef; font-size: 13.5px; }
+th { background: #f8f9fa; font-weight: 600; color: #555; }
+td a { color: #007bff; text-decoration: none; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.tag-1 { background:#e3f2fd; color:#1565c0; } .tag-2 { background:#e8f5e9; color:#2e7d32; } .tag-3 { background:#fff3e0; color:#ef6c00; }
+.tag-ok { background:#e8f5e9; color:#2e7d32; } .tag-blue { background:#e3f2fd; color:#1565c0; } .tag-warn { background:#fff3e0; color:#ef6c00; }
+.section-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<header>
+    <nav>
+        <a href="#">Главная</a>
+        <a href="#">Объекты ▾</a>
+        <a href="#">Системы ▾</a>
+        <a href="#">Участники ▾</a>
+        <a href="#" class="active">Аналитика</a>
+    </nav>
+    <div class="user-menu">
+        <span>admin</span>
+        <a href="#" class="btn btn-secondary">Профиль</a>
+    </div>
+</header>
+
+<div class="card">
+    <h1>Аналитика связей</h1>
+    <p class="subtitle">Поиск по связям между объектами, системами и участниками.</p>
+
+    <div class="search-row">
+        <input type="text" value="башкортостан siemens" placeholder="Поиск: регион, вендор, класс систем, статус...">
+        <button class="btn btn-primary">Искать</button>
+    </div>
+
+    <div class="adv">
+        <div class="adv-head">
+            <span class="lbl">🔧 Расширенный поиск</span>
+            <span class="caret">▴</span>
+        </div>
+        <div class="adv-body">
+            <div class="adv-grid">
+                <div class="adv-col">
+                    <h4>Объект</h4>
+                    <label>Регион / город</label>
+                    <input type="text" value="Башкортостан">
+                    <label>Категория / отрасль</label>
+                    <select><option>— любая —</option><option>Нефтепереработка</option></select>
+                    <label>Уровень</label>
+                    <select><option>— любой —</option><option>1 — производство</option><option>3 — установка</option></select>
+                </div>
+                <div class="adv-col">
+                    <h4>Система</h4>
+                    <label>Класс автоматизации</label>
+                    <select><option>— любой —</option><option>L2 SCADA</option><option>L3 MES</option></select>
+                    <label>Статус внедрения</label>
+                    <select><option>— любой —</option><option>В эксплуатации</option><option>Планируется</option></select>
+                    <label>Продукт</label>
+                    <input type="text" placeholder="название продукта">
+                </div>
+                <div class="adv-col">
+                    <h4>Участник</h4>
+                    <label>Вендор / поставщик / интегратор</label>
+                    <input type="text" value="Siemens">
+                    <label>Роль в связи</label>
+                    <select><option>— любая —</option><option>Вендор продукта</option><option>Исполнитель внедрения</option><option>Поставщик</option></select>
+                    <label>Тип участника</label>
+                    <select><option>— любой —</option><option>Вендор</option><option>Системный интегратор</option></select>
+                </div>
+            </div>
+            <div class="adv-actions">
+                <button class="btn btn-primary">Применить</button>
+                <button class="btn btn-secondary">Сбросить</button>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="entity-switch">
+            <button class="active">Объекты <span class="count">4</span></button>
+            <button>Системы <span class="count">7</span></button>
+            <button>Участники <span class="count">3</span></button>
+        </div>
+        <div class="view-toggle">
+            <a href="#" class="active">☷ Таблица</a>
+            <a href="#">▦ Карточки</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="section-label">Аналитика по выборке</div>
+    <div class="analytics">
+        <div class="metric"><span class="n">4</span><span class="l">Объекта</span></div>
+        <div class="metric"><span class="n">7</span><span class="l">Систем</span></div>
+        <div class="metric"><span class="n">3</span><span class="l">Участника</span></div>
+        <div class="metric"><span class="n">5</span><span class="l">Продуктов</span></div>
+    </div>
+    <div class="analytics-groups">
+        <div class="ag">
+            <div class="ag-title">По статусу внедрения</div>
+            <div class="bar"><span class="bar-label">В эксплуатации</span><span class="bar-track"><span class="bar-fill" style="width:71%"></span></span><span class="bar-num">5</span></div>
+            <div class="bar"><span class="bar-label">Планируется</span><span class="bar-track"><span class="bar-fill" style="width:29%"></span></span><span class="bar-num">2</span></div>
+        </div>
+        <div class="ag">
+            <div class="ag-title">По классам систем</div>
+            <div class="bar"><span class="bar-label">L2 SCADA</span><span class="bar-track"><span class="bar-fill" style="width:57%"></span></span><span class="bar-num">4</span></div>
+            <div class="bar"><span class="bar-label">L1 ПЛК</span><span class="bar-track"><span class="bar-fill" style="width:29%"></span></span><span class="bar-num">2</span></div>
+            <div class="bar"><span class="bar-label">L3 MES</span><span class="bar-track"><span class="bar-fill" style="width:14%"></span></span><span class="bar-num">1</span></div>
+        </div>
+        <div class="ag">
+            <div class="ag-title">По уровням объектов</div>
+            <div class="bar"><span class="bar-label">Уровень 3</span><span class="bar-track"><span class="bar-fill" style="width:50%"></span></span><span class="bar-num">2</span></div>
+            <div class="bar"><span class="bar-label">Уровень 2</span><span class="bar-track"><span class="bar-fill" style="width:25%"></span></span><span class="bar-num">1</span></div>
+            <div class="bar"><span class="bar-label">Уровень 1</span><span class="bar-track"><span class="bar-fill" style="width:25%"></span></span><span class="bar-num">1</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Уровень</th><th>Категория</th><th>Статус</th><th>Регион</th><th>Систем</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="#">Установка ЭЛОУ-АВТ-6</a></td>
+                <td><span class="tag tag-3">Уровень 3</span></td>
+                <td><span class="tag tag-3">Крекинг каталитический</span></td>
+                <td><span class="tag tag-ok">В эксплуатации</span></td>
+                <td>Башкортостан, Уфа</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><a href="#">Цех первичной переработки №1</a></td>
+                <td><span class="tag tag-2">Уровень 2</span></td>
+                <td><span class="tag tag-2">Основное</span></td>
+                <td><span class="tag tag-ok">В эксплуатации</span></td>
+                <td>Башкортостан, Уфа</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td><a href="#">Газоперерабатывающий завод</a></td>
+                <td><span class="tag tag-1">Уровень 1</span></td>
+                <td><span class="tag tag-1">Газопереработка</span></td>
+                <td><span class="tag tag-ok">В эксплуатации</span></td>
+                <td>Башкортостан, Салават</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td><a href="#">Установка стабилизации</a></td>
+                <td><span class="tag tag-3">Уровень 3</span></td>
+                <td><span class="tag tag-3">Стабилизация</span></td>
+                <td><span class="tag tag-warn">Реконструкция</span></td>
+                <td>Башкортостан, Стерлитамак</td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:10px">
+    <a href="#" class="btn btn-secondary">← На главную</a>
+</div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b7c7108a4eb8cb',t:'MTc4NDEwODEzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

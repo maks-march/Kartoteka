@@ -5,11 +5,15 @@ from apps.objects.models import Object, ObjectSystem
 
 
 class ObjectListSerializer(serializers.ModelSerializer):
+    """Компактное представление объекта для списков API."""
+
     parent_name = serializers.CharField(source="parent_object.object_name", read_only=True)
     category_name = serializers.CharField(source="category.category_name", read_only=True)
     owner_entity_name = serializers.CharField(source="owner_entity.owner_name", read_only=True)
 
     class Meta:
+        """Поля объекта в списочном представлении."""
+
         model = Object
         fields = [
             "id",
@@ -30,6 +34,8 @@ class ObjectListSerializer(serializers.ModelSerializer):
 
 
 class ObjectDetailSerializer(serializers.ModelSerializer):
+    """Полное представление объекта (детали) с дочерними объектами."""
+
     parent_name = serializers.CharField(source="parent_object.object_name", read_only=True)
     category_name = serializers.CharField(source="category.category_name", read_only=True)
     owner_entity_name = serializers.CharField(source="owner_entity.owner_name", read_only=True)
@@ -41,6 +47,8 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
+        """Поля объекта в детальном представлении."""
+
         model = Object
         fields = [
             "id",
@@ -78,6 +86,7 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_children(self, obj):
+        """Сериализует дочерние объекты компактным сериализатором."""
         qs = obj.children.all()
         return ObjectListSerializer(qs, many=True).data
 
@@ -105,6 +114,8 @@ class _ObjectExtraFieldsMixin(serializers.Serializer):
 
 
 class ObjectCreateSerializer(_ObjectExtraFieldsMixin):
+    """Валидация входных данных при создании объекта через API."""
+
     object_name = serializers.CharField(max_length=255)
     hierarchy_level = serializers.IntegerField(min_value=1, max_value=3)
     parent = serializers.IntegerField(required=False, allow_null=True)
@@ -113,6 +124,8 @@ class ObjectCreateSerializer(_ObjectExtraFieldsMixin):
 
 
 class ObjectUpdateSerializer(_ObjectExtraFieldsMixin):
+    """Валидация входных данных при обновлении объекта (все поля опциональны)."""
+
     object_name = serializers.CharField(max_length=255, required=False)
     hierarchy_level = serializers.IntegerField(min_value=1, max_value=3, required=False)
     parent = serializers.IntegerField(required=False, allow_null=True)
@@ -121,12 +134,16 @@ class ObjectUpdateSerializer(_ObjectExtraFieldsMixin):
 
 
 class ObjectSystemSerializer(serializers.ModelSerializer):
+    """Представление связи «система на объекте» для чтения через API."""
+
     object_name = serializers.CharField(source="object.object_name", read_only=True)
     system_name = serializers.CharField(source="system.autosystem_name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     implementor_name = serializers.CharField(source="implementor.entity_name", read_only=True)
 
     class Meta:
+        """Поля связи «система на объекте»."""
+
         model = ObjectSystem
         fields = [
             "id",
@@ -143,6 +160,8 @@ class ObjectSystemSerializer(serializers.ModelSerializer):
 
 
 class ObjectSystemCreateSerializer(serializers.Serializer):
+    """Валидация входных данных при создании связи через API."""
+
     object = serializers.IntegerField()
     system = serializers.IntegerField()
     status = serializers.ChoiceField(
@@ -153,6 +172,8 @@ class ObjectSystemCreateSerializer(serializers.Serializer):
 
 
 class ObjectSystemUpdateSerializer(serializers.Serializer):
+    """Валидация входных данных при обновлении связи (поля опциональны)."""
+
     object = serializers.IntegerField(required=False)
     system = serializers.IntegerField(required=False)
     status = serializers.ChoiceField(choices=ObjectSystem.STATUS_CHOICES, required=False)

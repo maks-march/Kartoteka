@@ -1,3 +1,4 @@
+"""Тесты приложения участников рынка: модели, HTML/API эндпоинты, профили типов."""
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -6,36 +7,45 @@ from apps.entities.models import Entity
 
 
 class EntityModelTests(TestCase):
+    """Тесты модели участника: строковое представление и свойства."""
     def test_str_and_defaults(self):
+        """Строковое представление и значения по умолчанию."""
         e = Entity.objects.create(entity_name="Компания")
         self.assertEqual(str(e), "Компания")
         self.assertFalse(e.is_partner)
         self.assertEqual(e.entity_type, "")
 
     def test_industries_text_property(self):
+        """Свойство industries_text корректно собирает отрасли."""
         e = Entity.objects.create(entity_name="X", industries=["Химия", "Металлургия"])
         self.assertEqual(e.industries_text, "Химия, Металлургия")
 
     def test_contacts_items_property(self):
+        """Свойство contacts_items возвращает пары контактов."""
         e = Entity.objects.create(entity_name="Y", contacts={"email": "a@b.c"})
         self.assertEqual(e.contacts_items, [("email", "a@b.c")])
 
 
 class EntityWebEndpointTests(TestCase):
+    """Тесты HTML-эндпоинтов участников (список, детали, CRUD, форма)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user(username="u", password="pw")
         self.entity = Entity.objects.create(entity_name="АйтиКомпания", inn="1234567890")
 
     def test_list_page(self):
+        """Страница списка участников открывается."""
         r = self.client.get("/entities/")
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "АйтиКомпания")
 
     def test_detail_page(self):
+        """Страница деталей участника открывается."""
         r = self.client.get(f"/entities/{self.entity.pk}/")
         self.assertEqual(r.status_code, 200)
 
     def test_create_requires_auth(self):
+        """Создание участника требует авторизации."""
         r = self.client.get("/entities/create/")
         self.assertEqual(r.status_code, 302)
 
@@ -59,6 +69,7 @@ class EntityWebEndpointTests(TestCase):
         self.assertNotIn("picker-search", block)
 
     def test_industry_picker_preselects_on_edit(self):
+        """Пикер отраслей предвыбран при редактировании."""
         from apps.categories.models import Category
         Category.objects.create(category_name="Химия", object_level=1)
         Category.objects.create(category_name="Нефтехимия", object_level=1)
@@ -70,6 +81,7 @@ class EntityWebEndpointTests(TestCase):
         self.assertIn('value="Химия"', h)
 
     def test_authenticated_crud_with_full_fields(self):
+        """CRUD участника со всеми полями (авторизованный)."""
         self.client.force_login(self.user)
 
         r = self.client.get("/entities/create/")
@@ -121,6 +133,7 @@ class EntityWebEndpointTests(TestCase):
         self.assertFalse(Entity.objects.filter(pk=e.pk).exists())
 
     def test_empty_inn_stored_as_null_allows_multiple(self):
+        """Пустой ИНН хранится как NULL и допускает несколько записей."""
         self.client.force_login(self.user)
         self.client.post("/entities/create/", {"entity_name": "A", "inn": ""})
         self.client.post("/entities/create/", {"entity_name": "B", "inn": ""})
@@ -131,12 +144,15 @@ class EntityWebEndpointTests(TestCase):
 
 
 class EntityApiEndpointTests(TestCase):
+    """Тесты REST API участников (список, детали, CRUD)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user(username="api", password="pw")
         self.api = APIClient()
         self.entity = Entity.objects.create(entity_name="ApiEntity", entity_type="supplier")
 
     def test_list_and_detail_public(self):
+        """Список и детали участников доступны без авторизации (API)."""
         r = self.api.get("/api/entities/")
         self.assertEqual(r.status_code, 200)
 
@@ -146,10 +162,12 @@ class EntityApiEndpointTests(TestCase):
         self.assertEqual(r.data["entity_type_display"], "Поставщик")
 
     def test_create_requires_auth(self):
+        """Создание участника требует авторизации."""
         r = self.api.post("/api/entities/", {"entity_name": "X"}, format="json")
         self.assertIn(r.status_code, (401, 403))
 
     def test_authenticated_api_crud(self):
+        """Полный CRUD участника через API."""
         self.api.force_authenticate(user=self.user)
         r = self.api.post("/api/entities/", {
             "entity_name": "ApiNew",
@@ -177,6 +195,7 @@ class EntityCountsAndViewsTests(TestCase):
     """Счётчики (продукты, связанные системы), карточки, цветные типы, сортировка."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("cv", "cv@x.x", "pw")
@@ -204,64 +223,77 @@ class EntityCountsAndViewsTests(TestCase):
         ObjectSystem.objects.create(object=obj2, system=self.sys_prod, implementor=self.integ)
 
     def _entities(self):
+        """Возвращает участников по имени из use case (вспомогательная)."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         return {e.entity_name: e for e in EntityUseCase().list()}
 
     def test_products_count(self):
+        """Счётчик продуктов участника-вендора верен."""
         e = self._entities()
         self.assertEqual(e["ВендорА"].products_count, 2)
         self.assertEqual(e["ИнтеграторБ"].products_count, 0)
 
     def test_systems_count_via_product(self):
         # Вендор связан с 1 системой (через свой продукт p1)
+        """Счётчик систем через продукты вендора верен."""
         self.assertEqual(self._entities()["ВендорА"].systems_count, 1)
 
     def test_systems_count_via_roles_distinct(self):
         # Интегратор связан с 2 РАЗНЫМИ системами (роль в двух ObjectSystem)
+        """Счётчик систем по ролям считает уникальные системы."""
         self.assertEqual(self._entities()["ИнтеграторБ"].systems_count, 2)
 
     def test_entity_type_tag_class(self):
+        """CSS-класс тега соответствует типу участника."""
         self.assertEqual(self.vendor.entity_type_tag_class, "tag-blue")
         self.assertEqual(self.integ.entity_type_tag_class, "tag-ok")
 
     def test_can_have_products_flag(self):
+        """Флаг can_have_products верен для типов участника."""
         self.assertTrue(self.vendor.can_have_products)
         self.assertFalse(self.integ.can_have_products)
 
     def test_industries_helpers(self):
+        """Вспомогательные свойства отраслей работают корректно."""
         e = Entity.objects.create(entity_name="X", industries=["A", "B", "C", "D"])
         self.assertEqual(e.industries_first, "A")
         self.assertEqual(e.industries_first_three, "A, B, C")
 
     def test_list_page_shows_colored_type_and_counts(self):
+        """Список показывает цветной тип и счётчики."""
         h = self.client.get("/entities/").content.decode()
         self.assertIn("tag-blue", h)          # тип вендора цветной
         self.assertIn("ordering=-systems_count", h)  # колонка/сортировка счётчика систем
 
     def test_cards_page(self):
+        """Страница карточек участников открывается."""
         h = self.client.get("/entities/cards/").content.decode()
         self.assertEqual(self.client.get("/entities/cards/").status_code, 200)
         self.assertIn("cards-grid", h)
         self.assertIn("data-href=", h)
 
     def test_sort_by_is_partner(self):
+        """Сортировка участников по признаку партнёрства."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         # is_partner desc -> партнёр (ВендорА) первым среди этих двух
         names = [e.entity_name for e in EntityUseCase().list(ordering="-is_partner")]
         self.assertLess(names.index("ВендорА"), names.index("ИнтеграторБ"))
 
     def test_sort_by_systems_count(self):
+        """Сортировка участников по числу систем."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         names = [e.entity_name for e in EntityUseCase().list(ordering="-systems_count")]
         # ИнтеграторБ (2) должен быть раньше ВендорА (1)
         self.assertLess(names.index("ИнтеграторБ"), names.index("ВендорА"))
 
     def test_detail_shows_products_block_for_vendor(self):
+        """Деталь вендора показывает блок продуктов."""
         h = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
         self.assertIn("Вендорские продукты", h)
         self.assertIn("Продукт-1", h)
 
     def test_detail_no_products_block_for_integrator(self):
+        """Деталь интегратора не показывает блок продуктов."""
         h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
         self.assertNotIn("Вендорские продукты", h)
 
@@ -270,6 +302,7 @@ class DetailSummaryPanelTests(TestCase):
     """Сводная панель справа в детальных карточках (объект/система/участник)."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass, AutomationSystem, VendorProduct
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("sp", "sp@x.x", "pw")
@@ -287,6 +320,7 @@ class DetailSummaryPanelTests(TestCase):
             object=self.obj, system=self.system, implementor=self.impl)
 
     def test_object_summary_panel(self):
+        """Панель сводки в деталях объекта отображается корректно."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         self.assertIn("summary-panel", h)
         self.assertIn("Сводка связанности", h)
@@ -298,6 +332,7 @@ class DetailSummaryPanelTests(TestCase):
         self.assertIn("ИсполП", h)
 
     def test_system_summary_panel(self):
+        """Панель сводки в деталях системы отображается корректно."""
         h = self.client.get(f"/system/{self.system.pk}/").content.decode()
         self.assertIn("summary-panel", h)
         self.assertIn("Сводка связанности", h)
@@ -306,6 +341,7 @@ class DetailSummaryPanelTests(TestCase):
 
     def test_entity_summary_panel(self):
         # у исполнителя сводка показывает классы внедрённых систем
+        """Панель сводки в деталях участника отображается корректно."""
         h = self.client.get(f"/entities/{self.impl.pk}/").content.decode()
         self.assertIn("summary-panel", h)
         self.assertIn("Классы внедрённых систем", h)
@@ -313,6 +349,7 @@ class DetailSummaryPanelTests(TestCase):
         self.assertIn("Внедр. систем", h)
 
     def test_entity_summary_products_only_for_vendor_types(self):
+        """Блок продуктов в сводке — только для вендорских типов."""
         hv = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
         # у вендора в сводке есть метрика продуктов и классы вендорских систем
         self.assertIn("Продуктов", hv)
@@ -327,6 +364,7 @@ class SummaryLimitTests(TestCase):
     """Сводка обрезает группу до 5 элементов и показывает «ещё N»."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass, AutomationSystem
         from apps.objects.models import Object, ObjectSystem
         self.user = User.objects.create_user("lim", "lim@x.x", "pw")
@@ -340,6 +378,7 @@ class SummaryLimitTests(TestCase):
             ObjectSystem.objects.create(object=self.obj, system=s, implementor=e)
 
     def test_object_summary_caps_at_five(self):
+        """Сводка ограничивает группу пятью элементами и показывает «ещё N»."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         # блок сводки
         panel = h.split('summary-panel', 1)[1]
@@ -353,6 +392,7 @@ class EntityTypingProfilesTests(TestCase):
     """Типизация Entity через профили: авто-создание/удаление и данные инж. компании."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass
         from apps.objects.models import Object
         self.user = User.objects.create_user("typ", "typ@x.x", "pw")
@@ -361,10 +401,12 @@ class EntityTypingProfilesTests(TestCase):
         self.obj = Object.objects.create(object_name="ЗаводТ", hierarchy_level=1, region="Урал", creator=self.user)
 
     def _uc(self):
+        """Возвращает экземпляр EntityUseCase (вспомогательная)."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         return EntityUseCase()
 
     def test_vendor_profile_autocreated_and_removed(self):
+        """Профиль вендора авто-создаётся и удаляется при смене типа."""
         from apps.entities.models import VendorProfile
         e = self._uc().create(entity_name="В1", entity_type="vendor")
         self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
@@ -373,6 +415,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertFalse(VendorProfile.objects.filter(entity=e).exists())
 
     def test_vendor_profile_kept_if_has_products(self):
+        """Профиль вендора не удаляется, если на него ссылаются продукты."""
         from apps.entities.models import VendorProfile
         from apps.system.models import VendorProduct
         e = self._uc().create(entity_name="В2", entity_type="vendor")
@@ -383,11 +426,13 @@ class EntityTypingProfilesTests(TestCase):
         self.assertTrue(VendorProfile.objects.filter(entity=e).exists())
 
     def test_engineering_profile_autocreated(self):
+        """Профиль инж. компании авто-создаётся для нужного типа."""
         from apps.entities.models import EngineeringCompanyProfile
         e = self._uc().create(entity_name="ИК", entity_type="engineering_company")
         self.assertTrue(EngineeringCompanyProfile.objects.filter(entity=e).exists())
 
     def test_supplier_profile_autocreated_and_removed(self):
+        """Профиль поставщика авто-создаётся и удаляется при смене типа."""
         from apps.entities.models import SupplierProfile
         e = self._uc().create(entity_name="Пост1", entity_type="supplier")
         self.assertTrue(SupplierProfile.objects.filter(entity=e).exists())
@@ -396,6 +441,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertFalse(SupplierProfile.objects.filter(entity=e).exists())
 
     def test_supplier_products_are_multiple_and_independent_of_vendor(self):
+        """Продукты поставщика множественны и независимы от вендора."""
         from apps.entities.models import SupplierProfile, VendorProfile
         from apps.system.models import VendorProduct
         # продукт с автором-вендором
@@ -417,6 +463,7 @@ class EntityTypingProfilesTests(TestCase):
                          {"ПоставщикА", "ПоставщикБ"})
 
     def test_web_supplier_saves_products(self):
+        """HTML-форма поставщика сохраняет поставляемые продукты."""
         from apps.entities.models import Entity, SupplierProfile
         from apps.system.models import VendorProduct
         prod = VendorProduct.objects.create(product_name="ПродФорма")
@@ -429,6 +476,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
 
     def test_form_shows_supplier_block(self):
+        """Форма участника показывает блок поставщика для нужного типа."""
         from apps.system.models import VendorProduct
         VendorProduct.objects.create(product_name="ПродДляБлока")
         h = self.client.get("/entities/create/").content.decode()
@@ -470,6 +518,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertNotIn(f'name="product_competencies" value="{other.pk}"', h)
 
     def test_full_cycle_vendor_saves_supplier_and_engineering(self):
+        """ФПЦ через форму сохраняет данные поставщика и инж. компании."""
         from apps.entities.models import Entity
         from apps.system.models import VendorProduct
         prod = VendorProduct.objects.create(product_name="ФПЦпрод")
@@ -488,6 +537,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertEqual(e.engineering_profile.function_competencies.count(), 1)
 
     def test_system_integrator_profile_autocreated_and_removed(self):
+        """Профиль интегратора авто-создаётся и удаляется при смене типа."""
         from apps.entities.models import SystemIntegratorProfile
         e = self._uc().create(entity_name="СИ1", entity_type="system_integrator")
         self.assertTrue(SystemIntegratorProfile.objects.filter(entity=e).exists())
@@ -495,6 +545,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertFalse(SystemIntegratorProfile.objects.filter(entity=e).exists())
 
     def test_system_integrator_partners_and_owner(self):
+        """Профиль интегратора хранит партнёров и управляющую компанию."""
         from apps.entities.models import SystemIntegratorProfile, VendorProfile
         from apps.owners.models import OwnerEntity
         owner = OwnerEntity.objects.create(owner_name="Холдинг")
@@ -514,6 +565,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIn(si.pk, owner.internal_integrators.values_list("entity_id", flat=True))
 
     def test_web_system_integrator_saves_profile(self):
+        """HTML-форма интегратора сохраняет профиль."""
         from apps.entities.models import Entity, VendorProfile
         from apps.owners.models import OwnerEntity
         owner = OwnerEntity.objects.create(owner_name="ХолдингФорма")
@@ -531,6 +583,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertEqual(list(sip.vendor_partners.values_list("pk", flat=True)), [vp.pk])
 
     def test_form_shows_integrator_block(self):
+        """Форма участника показывает блок интегратора для нужного типа."""
         from apps.owners.models import OwnerEntity
         OwnerEntity.objects.create(owner_name="Х")
         v = self._uc().create(entity_name="ВенДляБлока", entity_type="vendor")
@@ -541,6 +594,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIn('name="vendor_partners"', h)
 
     def test_product_only_for_vendor_types(self):
+        """Блок продуктов доступен только для вендорских типов."""
         from django.core.exceptions import ValidationError
         from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
         integ = self._uc().create(entity_name="Инт", entity_type="system_integrator")
@@ -548,6 +602,7 @@ class EntityTypingProfilesTests(TestCase):
             VendorProductUseCase().create(product_name="X", vendor=integ.pk)
 
     def test_web_create_engineering_with_profile_fields(self):
+        """HTML-создание инж. компании сохраняет поля профиля."""
         from apps.entities.models import Entity, VendorProfile
         from apps.system.models import VendorProduct
         vend = self._uc().create(entity_name="ВендорПрод", entity_type="vendor")
@@ -628,6 +683,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertLess(block.index("Мой продукт"), block.index("Свободный2"))
 
     def test_form_shows_engineering_section(self):
+        """Форма участника показывает секцию инж. компании."""
         from apps.system.models import VendorProduct
         VendorProduct.objects.create(product_name="Продукт для блока")  # чтобы блок вендора отрисовался
         h = self.client.get("/entities/create/").content.decode()
@@ -657,6 +713,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIn("Доступных продуктов нет, создайте их после вендора.", h)
 
     def test_detail_shows_engineering_block(self):
+        """Деталь участника показывает блок инж. компании."""
         e = self._uc().create(entity_name="ИК2", entity_type="engineering_company")
         self._uc().save_engineering_profile(
             e, region="Сибирь", resident_object_id=self.obj.pk,
@@ -671,6 +728,7 @@ class EngineeringProfileAPITests(TestCase):
     """REST API профиля инжиниринговой компании."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from rest_framework.test import APIClient
         from apps.system.models import AutomationClass, VendorProduct
         from apps.objects.models import Object
@@ -687,6 +745,7 @@ class EngineeringProfileAPITests(TestCase):
         self.eng = EntityUseCase().create(entity_name="ИнжAPI", entity_type="engineering_company")
 
     def test_put_and_get_engineering_profile(self):
+        """PUT/GET профиля инж. компании через API."""
         self.api.force_authenticate(user=self.user)
         r = self.api.put(f"/api/entities/{self.eng.pk}/engineering-profile/", {
             "region": "Урал",
@@ -707,6 +766,7 @@ class EngineeringProfileAPITests(TestCase):
         self.assertEqual(r.data["region"], "Урал")
 
     def test_put_rejected_for_non_engineering(self):
+        """PUT профиля отклоняется для не-инж. компании."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         integ = EntityUseCase().create(entity_name="ИнтAPI", entity_type="system_integrator")
         self.api.force_authenticate(user=self.user)
@@ -715,12 +775,14 @@ class EngineeringProfileAPITests(TestCase):
         self.assertEqual(r.status_code, 400)
 
     def test_get_404_when_no_profile(self):
+        """GET профиля возвращает 404 при его отсутствии."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         sup = EntityUseCase().create(entity_name="ПостAPI", entity_type="supplier")
         r = self.api.get(f"/api/entities/{sup.pk}/engineering-profile/")
         self.assertEqual(r.status_code, 404)
 
     def test_entity_detail_api_includes_profile(self):
+        """Деталь участника в API включает профиль."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         EntityUseCase().save_engineering_profile(
             self.eng, region="Сибирь", resident_object_id=None,
@@ -731,6 +793,7 @@ class EngineeringProfileAPITests(TestCase):
         self.assertEqual(r.data["engineering_profile"]["region"], "Сибирь")
 
     def test_put_requires_auth(self):
+        """Запись профиля через API требует авторизации."""
         r = self.api.put(f"/api/entities/{self.eng.pk}/engineering-profile/",
                          {"region": "X"}, format="json")
         self.assertIn(r.status_code, (401, 403))
@@ -740,6 +803,7 @@ class EntityProfileAPICoverageTests(TestCase):
     """API-паритет с HTML: продукты вендора/поставщика, профили интегратора и ФПЦ."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass, VendorProduct
         from apps.objects.models import Object
         from apps.entities.usecases.entity_usecase import EntityUseCase
@@ -757,6 +821,7 @@ class EntityProfileAPICoverageTests(TestCase):
 
     # ---- vendor products ----
     def test_vendor_products_put_and_get(self):
+        """PUT/GET продуктов вендора через API."""
         self.api.force_authenticate(user=self.user)
         r = self.api.put(
             f"/api/entities/{self.vend.pk}/vendor-products/",
@@ -768,6 +833,7 @@ class EntityProfileAPICoverageTests(TestCase):
         self.assertEqual(r.data["product_ids"], [self.free_product.pk])
 
     def test_vendor_products_rejected_for_non_vendor(self):
+        """Продукты вендора отклоняются для не-вендора."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         sup = EntityUseCase().create(entity_name="ПостВ", entity_type="supplier")
         self.api.force_authenticate(user=self.user)
@@ -776,12 +842,14 @@ class EntityProfileAPICoverageTests(TestCase):
         self.assertEqual(r.status_code, 400)
 
     def test_vendor_products_put_requires_auth(self):
+        """Запись продуктов вендора требует авторизации."""
         r = self.api.put(f"/api/entities/{self.vend.pk}/vendor-products/",
                          {"product_ids": []}, format="json")
         self.assertIn(r.status_code, (401, 403))
 
     # ---- supplier products ----
     def test_supplier_products_put_and_get(self):
+        """PUT/GET продуктов поставщика через API."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         sup = EntityUseCase().create(entity_name="ПостП", entity_type="supplier")
         self.api.force_authenticate(user=self.user)
@@ -795,6 +863,7 @@ class EntityProfileAPICoverageTests(TestCase):
         self.assertEqual(r.data["products"], [self.free_product.pk])
 
     def test_supplier_products_rejected_for_non_supplier(self):
+        """Продукты поставщика отклоняются для не-поставщика."""
         self.api.force_authenticate(user=self.user)
         r = self.api.put(f"/api/entities/{self.vend.pk}/supplier-products/",
                          {"product_ids": []}, format="json")
@@ -802,6 +871,7 @@ class EntityProfileAPICoverageTests(TestCase):
 
     # ---- system integrator profile ----
     def test_system_integrator_profile_put_and_get(self):
+        """PUT/GET профиля системного интегратора через API."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         integ = EntityUseCase().create(entity_name="ИнтП", entity_type="system_integrator")
         self.api.force_authenticate(user=self.user)
@@ -817,6 +887,7 @@ class EntityProfileAPICoverageTests(TestCase):
         self.assertEqual(r.data["managing_owner"], self.owner.pk)
 
     def test_system_integrator_profile_rejected_for_non_integrator(self):
+        """Профиль интегратора отклоняется для не-интегратора."""
         self.api.force_authenticate(user=self.user)
         r = self.api.put(f"/api/entities/{self.vend.pk}/system-integrator-profile/",
                          {}, format="json")
@@ -824,6 +895,7 @@ class EntityProfileAPICoverageTests(TestCase):
 
     # ---- full cycle profile ----
     def test_full_cycle_profile_put_and_get(self):
+        """PUT/GET профиля вендора полного цикла через API."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         fc = EntityUseCase().create(entity_name="ФПЦП", entity_type="full_cycle_vendor")
         self.api.force_authenticate(user=self.user)
@@ -842,11 +914,13 @@ class EntityProfileAPICoverageTests(TestCase):
         self.assertEqual(r.data["region"], "Урал")
 
     def test_full_cycle_profile_rejected_for_non_full_cycle(self):
+        """Профиль ФПЦ отклоняется для не-ФПЦ."""
         self.api.force_authenticate(user=self.user)
         r = self.api.put(f"/api/entities/{self.vend.pk}/full-cycle-profile/",
                          {"region": "X"}, format="json")
         self.assertEqual(r.status_code, 400)
 
     def test_full_cycle_profile_404_when_no_profile(self):
+        """GET профиля ФПЦ возвращает 404 при его отсутствии."""
         r = self.api.get(f"/api/entities/{self.vend.pk}/full-cycle-profile/")
         self.assertEqual(r.status_code, 404)

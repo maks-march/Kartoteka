@@ -9,17 +9,21 @@ from apps.entities.models import (
 
 
 class FunctionCompetencySerializer(serializers.ModelSerializer):
+    """Представление компетенции по функции (инж. компания) для чтения."""
     system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = FunctionCompetency
         fields = ["id", "system_class", "system_class_name", "industry"]
 
 
 class FullCycleFunctionCompetencySerializer(serializers.ModelSerializer):
+    """Представление компетенции по функции (вендор полного цикла)."""
     system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = FullCycleFunctionCompetency
         fields = ["id", "system_class", "system_class_name", "industry"]
 
@@ -29,6 +33,7 @@ class SupplierProfileSerializer(serializers.ModelSerializer):
     products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = SupplierProfile
         fields = ["id", "products"]
 
@@ -38,6 +43,7 @@ class SystemIntegratorProfileSerializer(serializers.ModelSerializer):
     vendor_partners = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = SystemIntegratorProfile
         fields = ["id", "managing_owner", "vendor_partners"]
 
@@ -49,6 +55,7 @@ class EngineeringProfileSerializer(serializers.ModelSerializer):
     function_competencies = FunctionCompetencySerializer(many=True, read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = EngineeringCompanyProfile
         fields = [
             "id", "region", "resident_object", "resident_object_name",
@@ -63,6 +70,7 @@ class FullCycleProfileSerializer(serializers.ModelSerializer):
     function_competencies = FullCycleFunctionCompetencySerializer(many=True, read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = FullCycleVendorProfile
         fields = [
             "id", "region", "resident_object", "resident_object_name",
@@ -71,6 +79,7 @@ class FullCycleProfileSerializer(serializers.ModelSerializer):
 
 
 class EntitySerializer(serializers.ModelSerializer):
+    """Полное представление участника рынка с профилями для чтения."""
     entity_type_display = serializers.CharField(source="get_entity_type_display", read_only=True)
     # Профили типов (только чтение, показываются при наличии).
     engineering_profile = EngineeringProfileSerializer(read_only=True)
@@ -78,6 +87,7 @@ class EntitySerializer(serializers.ModelSerializer):
     products = serializers.SerializerMethodField()
 
     class Meta:
+        """Поля сериализатора."""
         model = Entity
         fields = [
             "id", "entity_name", "inn", "contacts", "registration_date",
@@ -93,6 +103,7 @@ class EntitySerializer(serializers.ModelSerializer):
 
 
 class EntityCreateUpdateSerializer(serializers.Serializer):
+    """Валидация данных при создании/обновлении участника."""
     entity_name = serializers.CharField(max_length=255)
     inn = serializers.CharField(max_length=12, required=False, allow_blank=True, allow_null=True)
     contacts = serializers.JSONField(required=False, allow_null=True)
@@ -111,12 +122,14 @@ class EntityCreateUpdateSerializer(serializers.Serializer):
 
     def validate_inn(self, value):
         # Пустой ИНН храним как NULL (unique допускает несколько NULL).
+        """Приводит пустой ИНН к None (несколько NULL допустимы уникальностью)."""
         if value in (None, ""):
             return None
         return value
 
 
 class FunctionCompetencyWriteSerializer(serializers.Serializer):
+    """Валидация пары «класс + индустрия» при записи компетенции."""
     system_class = serializers.IntegerField()
     industry = serializers.CharField(max_length=255)
 

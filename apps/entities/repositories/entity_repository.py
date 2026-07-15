@@ -1,3 +1,4 @@
+"""Репозиторий доступа к данным участников рынка."""
 import re
 
 from django.db.models import Count, Q, Subquery, OuterRef, IntegerField, Value
@@ -45,6 +46,7 @@ class EntityRepository:
         )
 
     def get_all(self, search=None, ordering=None):
+        """Возвращает участников с фильтром/сортировкой и счётчиками продуктов/систем."""
         qs = Entity.objects.all()
         if search:
             # iregex вместо icontains: на SQLite icontains не игнорирует
@@ -54,17 +56,21 @@ class EntityRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
+        """Возвращает участника по id с подгруженными профилями (или None)."""
         return self._annotate(Entity.objects.filter(pk=pk)).first()
 
     def create(self, **kwargs):
+        """Создаёт и возвращает нового участника."""
         return Entity.objects.create(**kwargs)
 
     def update(self, instance, **kwargs):
+        """Обновляет переданные поля участника и сохраняет его."""
         for key, value in kwargs.items():
             setattr(instance, key, value)
         instance.save()
         return instance
 
     def delete(self, instance):
+        """Удаляет участника из БД."""
         instance.delete()
         return instance

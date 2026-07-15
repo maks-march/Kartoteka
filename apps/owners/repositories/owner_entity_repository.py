@@ -1,3 +1,4 @@
+"""Репозиторий доступа к данным юр. лиц (включая обход дерева владения)."""
 import re
 
 from apps.owners.models import OwnerEntity
@@ -10,6 +11,7 @@ class OwnerEntityRepository:
     DEFAULT_ORDERING = "owner_name"
 
     def get_all(self, search=None, ordering=None, roots_only=False):
+        """Возвращает юр. лица с фильтром/поиском/сортировкой (опц. только корневые)."""
         qs = OwnerEntity.objects.all().select_related("owner", "ultimate_owner")
         if roots_only:
             qs = qs.filter(is_root=True)
@@ -24,6 +26,7 @@ class OwnerEntityRepository:
         return self.get_all(ordering=ordering, roots_only=True)
 
     def get_by_id(self, pk):
+        """Возвращает юр. лицо по id с подгруженными связями (или None)."""
         return (
             OwnerEntity.objects.filter(pk=pk)
             .select_related("owner", "ultimate_owner")
@@ -52,14 +55,17 @@ class OwnerEntityRepository:
         return seen
 
     def create(self, **kwargs):
+        """Создаёт и возвращает новое юр. лицо."""
         return OwnerEntity.objects.create(**kwargs)
 
     def update(self, instance, **kwargs):
+        """Обновляет переданные поля юр. лица и сохраняет его."""
         for key, value in kwargs.items():
             setattr(instance, key, value)
         instance.save()
         return instance
 
     def delete(self, instance):
+        """Удаляет юр. лицо из БД."""
         instance.delete()
         return instance

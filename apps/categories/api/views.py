@@ -9,12 +9,15 @@ from apps.categories.usecases.category_usecase import CategoryUseCase
 
 
 class CategoryListCreateView(APIView):
+    """API списка категорий (GET) и создания категории (POST)."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def get(self, request):
+        """Возвращает данные категории(й) в ответе API."""
         level = request.query_params.get("level")
         search = request.query_params.get("search")
         ordering = request.query_params.getlist("ordering") or None
@@ -24,6 +27,7 @@ class CategoryListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Создаёт категорию и возвращает её представление."""
         serializer = CategoryCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usecase = CategoryUseCase()
@@ -34,18 +38,22 @@ class CategoryListCreateView(APIView):
 
 
 class CategoryDetailView(APIView):
+    """API одной категории: получение, обновление, удаление."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные категории(й) в ответе API."""
         usecase = CategoryUseCase()
         obj = usecase.get(pk)
         serializer = CategorySerializer(obj)
         return Response(serializer.data)
 
     def patch(self, request, pk):
+        """Частично обновляет категорию переданными полями."""
         serializer = CategoryCreateUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         usecase = CategoryUseCase()
@@ -53,6 +61,7 @@ class CategoryDetailView(APIView):
         return Response(CategorySerializer(obj).data)
 
     def delete(self, request, pk):
+        """Удаляет категорию."""
         usecase = CategoryUseCase()
         usecase.delete(pk, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)

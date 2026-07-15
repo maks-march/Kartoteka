@@ -1,3 +1,4 @@
+"""URL-маршруты HTML-представлений категорий."""
 from django.urls import path
 
 from apps.categories.views import category_list, category_create, category_edit, category_delete, category_detail

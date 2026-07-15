@@ -21,9 +21,11 @@ from apps.objects.api.serializers import ObjectSystemSerializer
 
 
 class AutomationClassListView(APIView):
+    """API списка классов автоматизации (только чтение)."""
     permission_classes = [AllowAny]
 
     def get(self, request):
+        """Возвращает данные в ответе API."""
         usecase = AutomationClassUseCase()
         classes = usecase.list()
         serializer = AutomationClassSerializer(classes, many=True)
@@ -31,12 +33,15 @@ class AutomationClassListView(APIView):
 
 
 class VendorProductListCreateView(APIView):
+    """API списка продуктов (GET) и создания продукта (POST)."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def get(self, request):
+        """Возвращает данные в ответе API."""
         search = request.query_params.get("search")
         ordering = request.query_params.getlist("ordering") or None
         usecase = VendorProductUseCase()
@@ -45,6 +50,7 @@ class VendorProductListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Создаёт ресурс (или привязывает объект) и возвращает представление."""
         serializer = VendorProductCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usecase = VendorProductUseCase()
@@ -53,17 +59,21 @@ class VendorProductListCreateView(APIView):
 
 
 class VendorProductDetailView(APIView):
+    """API одного продукта: получение, обновление, удаление."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные в ответе API."""
         usecase = VendorProductUseCase()
         obj = usecase.get(pk)
         return Response(VendorProductSerializer(obj).data)
 
     def patch(self, request, pk):
+        """Частично обновляет ресурс переданными полями."""
         serializer = VendorProductCreateUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         usecase = VendorProductUseCase()
@@ -71,18 +81,22 @@ class VendorProductDetailView(APIView):
         return Response(VendorProductSerializer(obj).data)
 
     def delete(self, request, pk):
+        """Удаляет ресурс."""
         usecase = VendorProductUseCase()
         usecase.delete(pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SystemListCreateView(APIView):
+    """API списка систем (GET) и создания системы (POST)."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def get(self, request):
+        """Возвращает данные в ответе API."""
         system_class = request.query_params.get("system_class")
         search = request.query_params.get("search")
         obj = request.query_params.getlist("object") or None
@@ -102,6 +116,7 @@ class SystemListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Создаёт ресурс (или привязывает объект) и возвращает представление."""
         serializer = SystemCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usecase = SystemUseCase()
@@ -112,18 +127,22 @@ class SystemListCreateView(APIView):
 
 
 class SystemDetailView(APIView):
+    """API одной системы: получение, обновление, удаление."""
     def get_permissions(self):
+        """Права доступа: чтение — всем, изменение — аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает данные в ответе API."""
         usecase = SystemUseCase()
         obj = usecase.get(pk)
         serializer = SystemDetailSerializer(obj)
         return Response(serializer.data)
 
     def patch(self, request, pk):
+        """Частично обновляет ресурс переданными полями."""
         serializer = SystemCreateUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         usecase = SystemUseCase()
@@ -131,6 +150,7 @@ class SystemDetailView(APIView):
         return Response(SystemDetailSerializer(obj).data)
 
     def delete(self, request, pk):
+        """Удаляет ресурс."""
         usecase = SystemUseCase()
         usecase.delete(pk, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -142,6 +162,7 @@ class SystemAttachObjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
+        """Создаёт ресурс (или привязывает объект) и возвращает представление."""
         system_usecase = SystemUseCase()
         system = system_usecase.get(pk)
 

@@ -10,7 +10,9 @@ from apps.entities.models import Entity
 
 
 class ObjectApiOrderingTests(TestCase):
+    """Тесты сортировки объектов через API по разным полям."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("ord", "ord@x.x", "pw")
         Object.objects.create(object_name="Бета", hierarchy_level=1, creator=self.user)
         Object.objects.create(object_name="Альфа", hierarchy_level=1, creator=self.user)
@@ -18,24 +20,30 @@ class ObjectApiOrderingTests(TestCase):
         self.api = APIClient()
 
     def _names(self, ordering=None):
+        """Возвращает имена сущностей из ответа в порядке следования (вспомогательная)."""
         params = {"ordering": ordering} if ordering else {}
         resp = self.api.get("/api/objects/objects/", params)
         self.assertEqual(resp.status_code, 200)
         return [r["object_name"] for r in resp.data]
 
     def test_default_ordering(self):
+        """Сортировка по умолчанию применяется, если параметр не задан."""
         self.assertEqual(self._names(), ["Альфа", "Бета", "Гамма"])
 
     def test_desc_ordering(self):
+        """Сортировка по убыванию по указанному полю."""
         self.assertEqual(self._names("-object_name"), ["Гамма", "Бета", "Альфа"])
 
     def test_invalid_ordering_falls_back(self):
         # произвольное поле игнорируется -> сортировка по умолчанию
+        """Недопустимое поле сортировки откатывается к сортировке по умолчанию."""
         self.assertEqual(self._names("creator__password"), ["Альфа", "Бета", "Гамма"])
 
 
 class OtherEntitiesApiOrderingTests(TestCase):
+    """Тесты сортировки прочих сущностей через API."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user("ord2", "o2@x.x", "pw")
         OwnerEntity.objects.create(owner_name="Бета")
         OwnerEntity.objects.create(owner_name="Альфа")
@@ -46,16 +54,19 @@ class OtherEntitiesApiOrderingTests(TestCase):
         self.api = APIClient()
 
     def test_owners_ordering_desc(self):
+        """Сортировка юр. лиц по убыванию через API."""
         resp = self.api.get("/api/owners/", {"ordering": "-owner_name"})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual([r["owner_name"] for r in resp.data], ["Бета", "Альфа"])
 
     def test_entities_ordering_desc(self):
+        """Сортировка участников по убыванию через API."""
         resp = self.api.get("/api/entities/", {"ordering": "-entity_name"})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual([r["entity_name"] for r in resp.data], ["Бета", "Альфа"])
 
     def test_categories_ordering_desc(self):
+        """Сортировка категорий по убыванию через API."""
         resp = self.api.get("/api/categories/categories/", {"ordering": "-category_name"})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual([r["category_name"] for r in resp.data], ["Бета", "Альфа"])

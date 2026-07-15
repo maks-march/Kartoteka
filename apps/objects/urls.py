@@ -1,3 +1,4 @@
+"""URL-маршруты HTML-представлений объектов производства."""
 from django.urls import path
 
 from apps.objects.views import (

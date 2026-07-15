@@ -35,11 +35,11 @@ _OBJECT_TEXT_FIELDS = (
 
 
 def _extract_object_fields(post, level):
-    """Собирает дополнительные поля объекта из POST.
+    """Собирает дополнительные поля объекта из POST (вспомогательная).
 
-    title сохраняем только для 3-го уровня (для остальных уровней поле в форме
-    скрыто/disabled, а на бэкенде дополнительно валидируется).
-    start_date и is_reconstructed/status обрабатываются отдельно.
+    title принимаем только для уровней 2 и 3 (на остальных поле в форме скрыто,
+    на бэкенде дополнительно валидируется). Поля status/is_reconstructed/
+    start_date приводятся к нужным типам.
     """
     data = {}
     for field in _OBJECT_TEXT_FIELDS:
@@ -74,15 +74,22 @@ def _parent_address_map(parents):
 
 @require_http_methods(["GET"])
 def object_list(request):
+    """Список объектов в табличном представлении."""
     return _object_list_render(request, "objects/object_list.html", "table")
 
 
 @require_http_methods(["GET"])
 def object_cards(request):
+    """Список объектов в виде карточек."""
     return _object_list_render(request, "objects/object_cards.html", "cards")
 
 
 def _object_list_render(request, template, view_mode):
+    """Общий рендер списка объектов для таблицы и карточек (вспомогательная).
+
+    Считывает фильтры/сортировку из GET и передаёт в шаблон объекты и
+    справочники для фильтров. view_mode различает представления.
+    """
     level = request.GET.get("level") or None
     search = request.GET.get("search") or None
     category = request.GET.getlist("category") or None
@@ -121,6 +128,11 @@ def _object_list_render(request, template, view_mode):
 
 @require_http_methods(["GET"])
 def object_detail(request, pk):
+    """Подробная карточка объекта со сводкой связанности.
+
+    Сводка агрегирует подключённые системы: классы, вендоров, исполнителей,
+    разбивку по статусам внедрения и покрытие по уровням автоматизации.
+    """
     usecase = ObjectUseCase()
     os_usecase = ObjectSystemUseCase()
     obj = usecase.get(pk)
@@ -192,6 +204,7 @@ def object_detail(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def object_create(request):
+    """Создание объекта: GET — форма, POST — сохранение через use case."""
     repo = ObjectRepository()
     cat_usecase = CategoryUseCase()
     owner_usecase = OwnerEntityUseCase()
@@ -234,6 +247,7 @@ def object_create(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def object_edit(request, pk):
+    """Редактирование объекта: GET — форма с данными, POST — обновление."""
     repo = ObjectRepository()
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
@@ -276,6 +290,7 @@ def object_edit(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def object_delete(request, pk):
+    """Удаление объекта и возврат к списку."""
     usecase = ObjectUseCase()
     usecase.delete(pk, request.user)
     return redirect("object-list")
@@ -284,6 +299,11 @@ def object_delete(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def object_add_child(request, pk):
+    """Добавление дочернего объекта: привязка существующего или создание нового.
+
+    Список доступных детей ограничен объектами уровнем ниже родителя и очищен
+    от кандидатов, создающих цикл (сам родитель, его дети и предки).
+    """
     repo = ObjectRepository()
     usecase = ObjectUseCase()
     cat_usecase = CategoryUseCase()
@@ -355,6 +375,7 @@ def object_add_child(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def object_attach_system(request, pk):
+    """Привязка системы к объекту: GET — форма, POST — создание связи."""
     usecase = ObjectUseCase()
     os_usecase = ObjectSystemUseCase()
     system_usecase = SystemUseCase()
@@ -388,6 +409,10 @@ def object_attach_system(request, pk):
 
 
 def _object_system_redirect(link, next_page):
+    """Возвращает redirect после операции над связью (вспомогательная).
+
+    next_page задаёт, куда вернуться: на страницу системы или объекта.
+    """
     if next_page == "system":
         return redirect("system-detail", pk=link.system_id)
     return redirect("object-detail", pk=link.object_id)
@@ -396,6 +421,10 @@ def _object_system_redirect(link, next_page):
 @require_http_methods(["GET", "POST"])
 @login_required
 def object_system_edit(request, pk):
+    """Редактирование связи «система на объекте» с двух сторон (объект/система).
+
+    next_page определяет, какую форму показать и куда вернуться после сохранения.
+    """
     os_usecase = ObjectSystemUseCase()
     system_usecase = SystemUseCase()
     object_usecase = ObjectUseCase()
@@ -451,6 +480,7 @@ def object_system_edit(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def object_system_delete(request, pk):
+    """Отвязка системы от объекта с возвратом на исходную страницу."""
     os_usecase = ObjectSystemUseCase()
     link = os_usecase.get(pk)
     next_page = request.POST.get("next") or "object"

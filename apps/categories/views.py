@@ -10,6 +10,7 @@ from apps.objects.usecases.object_usecase import ObjectUseCase
 
 @require_http_methods(["GET"])
 def category_list(request):
+    """Список категорий с фильтрами и сортировкой."""
     level = request.GET.get("level") or None
     search = request.GET.get("search") or None
     ordering = request.GET.getlist("ordering") or None
@@ -23,6 +24,7 @@ def category_list(request):
 
 @require_http_methods(["GET"])
 def category_detail(request, pk):
+    """Детали категории и связанные с ней объекты."""
     cat_usecase = CategoryUseCase()
     obj_usecase = ObjectUseCase()
     category = cat_usecase.get(pk)
@@ -36,6 +38,7 @@ def category_detail(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def category_create(request):
+    """Создание категории: GET — форма, POST — сохранение."""
     error = None
     if request.method == "POST":
         usecase = CategoryUseCase()
@@ -54,6 +57,7 @@ def category_create(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def category_edit(request, pk):
+    """Редактирование категории: GET — форма, POST — обновление."""
     usecase = CategoryUseCase()
     obj = usecase.get(pk)
     error = None
@@ -76,6 +80,7 @@ def category_edit(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def category_delete(request, pk):
+    """Удаление категории и возврат к списку."""
     usecase = CategoryUseCase()
     usecase.delete(pk, request.user)
     return redirect("category-list")

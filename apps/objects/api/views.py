@@ -18,12 +18,16 @@ from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
 
 
 class ObjectListCreateView(APIView):
+    """API списка объектов (GET) и создания объекта (POST)."""
+
     def get_permissions(self):
+        """Чтение — всем, создание — только аутентифицированным."""
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def get(self, request):
+        """Возвращает список объектов с учётом фильтров и сортировки из query-параметров."""
         level = request.query_params.get("level") or None
         search = request.query_params.get("search") or None
         category = request.query_params.getlist("category") or None
@@ -43,6 +47,7 @@ class ObjectListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Создаёт объект и возвращает его детальное представление."""
         serializer = ObjectCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         usecase = ObjectUseCase()
@@ -53,18 +58,23 @@ class ObjectListCreateView(APIView):
 
 
 class ObjectDetailView(APIView):
+    """API одного объекта: получение (GET), обновление (PATCH), удаление (DELETE)."""
+
     def get_permissions(self):
+        """Чтение — всем, изменение/удаление — только аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает детальное представление объекта."""
         usecase = ObjectUseCase()
         obj = usecase.get(pk)
         serializer = ObjectDetailSerializer(obj)
         return Response(serializer.data)
 
     def patch(self, request, pk):
+        """Частично обновляет объект переданными полями."""
         serializer = ObjectUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         usecase = ObjectUseCase()
@@ -72,6 +82,7 @@ class ObjectDetailView(APIView):
         return Response(ObjectDetailSerializer(obj).data)
 
     def delete(self, request, pk):
+        """Удаляет объект."""
         usecase = ObjectUseCase()
         usecase.delete(pk, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -85,11 +96,13 @@ class ObjectSystemListCreateView(APIView):
     """
 
     def get_permissions(self):
+        """Чтение — всем, создание связи — только аутентифицированным."""
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def get(self, request):
+        """Возвращает связи, опционально отфильтрованные по объекту или системе."""
         object_id = request.query_params.get("object")
         system_id = request.query_params.get("system")
         os_usecase = ObjectSystemUseCase()
@@ -112,6 +125,7 @@ class ObjectSystemListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Привязывает систему к объекту (attach) и возвращает созданную связь."""
         serializer = ObjectSystemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -127,17 +141,22 @@ class ObjectSystemListCreateView(APIView):
 
 
 class ObjectSystemDetailView(APIView):
+    """API одной связи: получение (GET), обновление (PATCH), отвязка (DELETE)."""
+
     def get_permissions(self):
+        """Чтение — всем, изменение/отвязка — только аутентифицированным."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request, pk):
+        """Возвращает представление связи «система на объекте»."""
         os_usecase = ObjectSystemUseCase()
         link = os_usecase.get(pk)
         return Response(ObjectSystemSerializer(link).data)
 
     def patch(self, request, pk):
+        """Частично обновляет связь переданными полями."""
         serializer = ObjectSystemUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -151,6 +170,7 @@ class ObjectSystemDetailView(APIView):
         return Response(ObjectSystemSerializer(link).data)
 
     def delete(self, request, pk):
+        """Отвязывает систему от объекта."""
         os_usecase = ObjectSystemUseCase()
         os_usecase.detach(pk)
         return Response(status=status.HTTP_204_NO_CONTENT)

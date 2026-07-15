@@ -1,3 +1,4 @@
+"""Репозиторий доступа к данным продуктов вендоров."""
 import re
 
 from django.db.models import Count, Q
@@ -17,6 +18,7 @@ class VendorProductRepository:
     DEFAULT_ORDERING = "product_name"
 
     def get_all(self, search=None, system_class=None, ordering=None):
+        """Возвращает продукты с фильтрами и сортировкой."""
         qs = VendorProduct.objects.all().select_related("vendor", "system_class")
         if system_class is not None:
             # Класс совпал, если это основной класс продукта ЛИБО он среди
@@ -33,6 +35,7 @@ class VendorProductRepository:
         return apply_ordering(qs, ordering, self.ORDERING_FIELDS, self.DEFAULT_ORDERING)
 
     def get_by_id(self, pk):
+        """Возвращает продукт по id (или None)."""
         return (
             VendorProduct.objects.filter(pk=pk)
             .select_related("vendor", "system_class")
@@ -41,6 +44,7 @@ class VendorProductRepository:
         )
 
     def create(self, **kwargs):
+        """Создаёт и возвращает новый продукт."""
         subsystem_classes = kwargs.pop("subsystem_classes", None)
         instance = VendorProduct.objects.create(**kwargs)
         if subsystem_classes is not None:
@@ -48,6 +52,7 @@ class VendorProductRepository:
         return instance
 
     def update(self, instance, **kwargs):
+        """Обновляет переданные поля продукта и сохраняет его."""
         subsystem_classes = kwargs.pop("subsystem_classes", "__keep__")
         for key, value in kwargs.items():
             setattr(instance, key, value)
@@ -57,5 +62,6 @@ class VendorProductRepository:
         return instance
 
     def delete(self, instance):
+        """Удаляет продукт из БД."""
         instance.delete()
         return instance

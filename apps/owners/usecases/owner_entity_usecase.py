@@ -1,3 +1,4 @@
+"""Сценарии (use cases) работы с юр. лицами: иерархия владения и защита от циклов."""
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import NotFound
 
@@ -11,9 +12,11 @@ class OwnerEntityUseCase:
     """Сценарии работы с юридическими лицами (владельцами), включая контроль
     иерархии владения и защиту от циклов."""
     def __init__(self, repo=None):
+        """Инициализирует объект, позволяя подменить зависимости (для тестов)."""
         self.repo = repo or OwnerEntityRepository()
 
     def list(self, search=None, ordering=None, roots_only=False):
+        """Возвращает юр. лица с фильтром/сортировкой (опц. только корневые)."""
         return self.repo.get_all(search=search, ordering=ordering, roots_only=roots_only)
 
     def list_roots(self, ordering=None):
@@ -21,12 +24,14 @@ class OwnerEntityUseCase:
         return self.repo.get_roots(ordering=ordering)
 
     def get(self, pk):
+        """Возвращает юр. лицо по id или бросает NotFound."""
         obj = self.repo.get_by_id(pk)
         if not obj:
             raise NotFound("Owner entity not found")
         return obj
 
     def _get_optional_owner(self, pk, field_name):
+        """Разрешает id владельца в объект или None (вспомогательная)."""
         if pk in (None, "", "None"):
             return None
         obj = self.repo.get_by_id(pk)
@@ -35,6 +40,7 @@ class OwnerEntityUseCase:
         return obj
 
     def _validate_no_owner_cycle(self, owner, instance=None):
+        """Проверяет отсутствие цикла в иерархии владения (вспомогательная)."""
         if instance is None or owner is None:
             return
 
@@ -53,6 +59,7 @@ class OwnerEntityUseCase:
 
     def _resolve_ultimate_owner(self, owner, ultimate_owner, ultimate_owner_was_provided):
         # Если корневой владелец явно указан — используем его.
+        """Вычисляет корневого владельца по цепочке (вспомогательная)."""
         if ultimate_owner_was_provided:
             return ultimate_owner
         # Иначе при выборе следующего владельца наследуем его корневого владельца.
@@ -61,6 +68,7 @@ class OwnerEntityUseCase:
         return None
 
     def create(self, **data):
+        """Создаёт юр. лицо, разрешая владельца и корневого владельца."""
         owner_id = data.pop("owner", None)
         ultimate_owner_id = data.pop("ultimate_owner", _MISSING)
 
@@ -80,6 +88,7 @@ class OwnerEntityUseCase:
         return self.repo.create(**data)
 
     def update(self, pk, **data):
+        """Обновляет юр. лицо с проверкой цикла и пересчётом корневого владельца."""
         obj = self.get(pk)
         owner_id = data.pop("owner", _MISSING)
         ultimate_owner_id = data.pop("ultimate_owner", _MISSING)
@@ -104,5 +113,6 @@ class OwnerEntityUseCase:
         return self.repo.update(obj, **data)
 
     def delete(self, pk):
+        """Удаляет юр. лицо по id."""
         obj = self.get(pk)
         return self.repo.delete(obj)

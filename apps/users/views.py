@@ -12,6 +12,7 @@ from apps.categories.usecases.category_usecase import CategoryUseCase
 
 @require_http_methods(["GET", "POST"])
 def login_view(request):
+    """Вход пользователя: GET — форма, POST — авторизация и редирект в профиль."""
     if request.user.is_authenticated:
         return redirect("profile")
 
@@ -33,6 +34,7 @@ def login_view(request):
 
 @require_http_methods(["GET", "POST"])
 def register_view(request):
+    """Регистрация: GET — форма, POST — создание пользователя и вход."""
     if request.user.is_authenticated:
         return redirect("profile")
 
@@ -54,12 +56,14 @@ def register_view(request):
 
 @login_required
 def logout_view(request):
+    """Выход пользователя и редирект на страницу входа."""
     logout(request)
     return redirect("login")
 
 
 @login_required
 def profile_objects(request):
+    """Вкладка профиля: объекты, созданные пользователем."""
     search = request.GET.get("search") or None
     usecase = ObjectUseCase()
     objects = usecase.list_by_user(request.user, search=search)
@@ -73,6 +77,7 @@ def profile_objects(request):
 
 @login_required
 def profile_systems(request):
+    """Вкладка профиля: системы, созданные пользователем."""
     search = request.GET.get("search") or None
     usecase = SystemUseCase()
     systems = usecase.list_by_user(request.user, search=search)
@@ -86,6 +91,7 @@ def profile_systems(request):
 
 @login_required
 def profile_categories(request):
+    """Вкладка профиля: категории, созданные пользователем."""
     search = request.GET.get("search") or None
     usecase = CategoryUseCase()
     categories = usecase.list_by_user(request.user, search=search)

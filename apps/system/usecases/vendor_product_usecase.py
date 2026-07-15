@@ -1,3 +1,4 @@
+"""Сценарии (use cases) работы с продуктами вендоров."""
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ValidationError
 
@@ -9,14 +10,17 @@ from apps.entities.repositories.entity_repository import EntityRepository
 class VendorProductUseCase:
     """Сценарии работы с продуктами вендоров."""
     def __init__(self, repo=None, entity_repo=None, class_repo=None):
+        """Инициализирует объект, позволяя подменить зависимости (для тестов)."""
         self.repo = repo or VendorProductRepository()
         self.entity_repo = entity_repo or EntityRepository()
         self.class_repo = class_repo or AutomationClassRepository()
 
     def list(self, search=None, system_class=None, ordering=None):
+        """Возвращает продукты с учётом фильтров и сортировки."""
         return self.repo.get_all(search=search, system_class=system_class, ordering=ordering)
 
     def get(self, pk):
+        """Возвращает продукт по id или бросает NotFound."""
         obj = self.repo.get_by_id(pk)
         if not obj:
             raise NotFound("Product not found")
@@ -45,6 +49,7 @@ class VendorProductUseCase:
         return data
 
     def _get_class(self, class_id):
+        """Разрешает id класса автоматизации в объект (вспомогательная)."""
         if class_id in (None, "", "None"):
             return None
         klass = self.class_repo.get_by_id(class_id)
@@ -78,6 +83,7 @@ class VendorProductUseCase:
         return classes
 
     def create(self, **data):
+        """Создаёт продукт, разрешая связи (класс, подсистемы)."""
         data = self._resolve_vendor(data)
         primary_class = self._get_class(data.get("system_class")) if "system_class" in data else None
         if "system_class" in data:
@@ -87,6 +93,7 @@ class VendorProductUseCase:
         return self.repo.create(**data)
 
     def update(self, pk, **data):
+        """Обновляет продукт переданными полями и связями."""
         obj = self.get(pk)
         data = self._resolve_vendor(data)
 
@@ -104,5 +111,6 @@ class VendorProductUseCase:
         return self.repo.update(obj, **data)
 
     def delete(self, pk):
+        """Удаляет продукт по id."""
         obj = self.get(pk)
         return self.repo.delete(obj)

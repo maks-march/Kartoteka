@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 class AutomationClass(models.Model):
 
+    """Класс автоматизации (уровень L0–L4 + аббревиатура) с поддержкой подсистем."""
     LEVEL_CHOICES = [
         (0, 'L0'),
         (1, 'L1'),
@@ -51,10 +52,12 @@ class AutomationClass(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Класс автоматизации"
         verbose_name_plural = "Классы автоматизации"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return f"L{self.level} - {self.label}"
 
     @property
@@ -144,11 +147,13 @@ class VendorProduct(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Продукт вендора"
         verbose_name_plural = "Продукты вендоров"
         ordering = ["product_name"]
 
     def __str__(self):
+        """Строковое представление объекта."""
         return self.product_name
 
     @property
@@ -177,6 +182,7 @@ class VendorProduct(models.Model):
 
 class AutomationSystem(models.Model):
 
+    """Автоматизированная система — экземпляр класса на базе продукта вендора."""
     STATUS_CHOICES = [
         ("active", "В эксплуатации"),
         ("planned", "Планируется"),
@@ -273,14 +279,17 @@ class AutomationSystem(models.Model):
     )
 
     class Meta:
+        """Мета-настройки модели."""
         verbose_name = "Автоматизированная система"
         verbose_name_plural = "Автоматизированные системы"
 
     def __str__(self):
+        """Строковое представление объекта."""
         return self.autosystem_name
 
     @property
     def status_tag_class(self):
+        """CSS-класс тега для текущего статуса системы."""
         return self.STATUS_TAG_CLASSES.get(self.system_status, "tag-muted")
 
     @staticmethod
@@ -294,10 +303,12 @@ class AutomationSystem(models.Model):
 
     @property
     def modules_text(self):
+        """Модули системы одной строкой (для отображения)."""
         return self._list_to_text(self.modules)
 
     @property
     def interfaces_text(self):
+        """Интерфейсы системы одной строкой (для отображения)."""
         return self._list_to_text(self.interfaces)
 
     @property

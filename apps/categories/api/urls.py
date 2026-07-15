@@ -1,3 +1,4 @@
+"""URL-маршруты REST API категорий."""
 from django.urls import path
 
 from apps.categories.api.views import CategoryListCreateView, CategoryDetailView

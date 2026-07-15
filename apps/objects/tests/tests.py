@@ -1,3 +1,5 @@
+"""Тесты приложения объектов производства: HTML/API эндпоинты, наследование,
+валидация уровней/титульного номера и сводка связанности."""
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -9,7 +11,9 @@ from apps.system.models import AutomationSystem, AutomationClass
 
 
 class ObjectsEndpointTestMixin:
+    """Общие фикстуры для тестов объектов: пользователь, категории, системы, объекты."""
     def create_base_data(self):
+        """Создаёт базовые фикстуры (пользователь, категории, системы, объекты)."""
         self.user = User.objects.create_user(username="user", password="password")
         self.category_l1 = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
         self.category_l2 = Category.objects.create(category_name="Цех", object_level=2, creator=self.user)
@@ -47,14 +51,18 @@ class ObjectsEndpointTestMixin:
 
 
 class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
+    """Тесты HTML-эндпоинтов объектов (список, детали, создание, фильтры)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
 
     def test_object_list_page_is_available(self):
+        """Страница списка объектов открывается (200)."""
         response = self.client.get("/objects/")
         self.assertEqual(response.status_code, 200)
 
     def test_object_list_supports_filters(self):
+        """Список объектов поддерживает фильтры из GET-параметров."""
         response = self.client.get("/objects/", {
             "level": "1",
             "search": "завод",
@@ -64,14 +72,17 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_object_detail_page_is_available(self):
+        """Страница деталей объекта открывается (200)."""
         response = self.client.get(f"/objects/{self.object.pk}/")
         self.assertEqual(response.status_code, 200)
 
     def test_object_create_page_requires_authentication(self):
+        """Страница создания объекта требует авторизации."""
         response = self.client.get("/objects/create/")
         self.assertEqual(response.status_code, 302)
 
     def test_authenticated_object_create_and_edit_endpoints(self):
+        """Авторизованный пользователь может создать и отредактировать объект."""
         self.client.force_login(self.user)
 
         response = self.client.get("/objects/create/")
@@ -103,6 +114,7 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(created.object_name, "Новый завод 2")
 
     def test_authenticated_object_add_child_endpoint(self):
+        """Авторизованный пользователь может добавить дочерний объект."""
         self.client.force_login(self.user)
 
         response = self.client.get(f"/objects/{self.object.pk}/add-child/")
@@ -119,6 +131,7 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertTrue(Object.objects.filter(object_name="Цех 2", parent_object=self.object).exists())
 
     def test_authenticated_object_system_attach_edit_delete_endpoints(self):
+        """Привязка, изменение и удаление системы у объекта (HTML)."""
         self.client.force_login(self.user)
 
         response = self.client.get(f"/objects/{self.object.pk}/attach-system/")
@@ -152,6 +165,7 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertFalse(ObjectSystem.objects.filter(pk=link.pk).exists())
 
     def test_authenticated_object_delete_endpoint_deletes(self):
+        """Авторизованный пользователь удаляет объект."""
         self.client.force_login(self.user)
         child_pk = self.child.pk
         response = self.client.post(f"/objects/{child_pk}/delete/")
@@ -160,11 +174,14 @@ class ObjectsWebEndpointTests(ObjectsEndpointTestMixin, TestCase):
 
 
 class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
+    """Тесты REST API объектов (список, детали, создание, обновление)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
         self.api_client = APIClient()
 
     def test_object_api_list_and_detail_are_public(self):
+        """Список и детали объектов доступны без авторизации (API)."""
         response = self.api_client.get("/api/objects/objects/", {
             "category": str(self.category_l1.pk),
             "owner_entity": str(self.owner_entity.pk),
@@ -177,6 +194,7 @@ class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.data["owner_entity"], self.owner_entity.pk)
 
     def test_object_api_create_requires_authentication(self):
+        """Создание объекта через API требует авторизации."""
         response = self.api_client.post("/api/objects/objects/", {
             "object_name": "API объект",
             "hierarchy_level": 1,
@@ -186,6 +204,7 @@ class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertIn(response.status_code, (401, 403))
 
     def test_authenticated_object_api_crud(self):
+        """Полный CRUD объекта через API для авторизованного пользователя."""
         self.api_client.force_authenticate(user=self.user)
 
         response = self.api_client.post("/api/objects/objects/", {
@@ -213,7 +232,9 @@ class ObjectsApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
 
 
 class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
+    """Тесты REST API связей «система на объекте» (attach, update, detach)."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.create_base_data()
         self.api_client = APIClient()
         self.link = ObjectSystem.objects.create(
@@ -223,11 +244,13 @@ class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         )
 
     def test_object_system_api_list_is_public(self):
+        """Список связей доступен без авторизации (API)."""
         response = self.api_client.get("/api/objects/object-systems/")
         self.assertEqual(response.status_code, 200)
         self.assertTrue(any(item["id"] == self.link.pk for item in response.data))
 
     def test_object_system_api_list_filtered_by_object(self):
+        """Список связей фильтруется по объекту (API)."""
         response = self.api_client.get(
             "/api/objects/object-systems/", {"object": str(self.object.pk)}
         )
@@ -236,6 +259,7 @@ class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.data[0]["system"], self.system.pk)
 
     def test_object_system_api_list_filtered_by_system(self):
+        """Список связей фильтруется по системе (API)."""
         response = self.api_client.get(
             "/api/objects/object-systems/", {"system": str(self.system.pk)}
         )
@@ -244,12 +268,14 @@ class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertEqual(response.data[0]["object"], self.object.pk)
 
     def test_object_system_api_detail_is_public(self):
+        """Детали связи доступны без авторизации (API)."""
         response = self.api_client.get(f"/api/objects/object-systems/{self.link.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["id"], self.link.pk)
         self.assertEqual(response.data["status"], "active")
 
     def test_object_system_api_attach_requires_authentication(self):
+        """Привязка системы через API требует авторизации."""
         response = self.api_client.post(
             "/api/objects/object-systems/",
             {"object": self.object.pk, "system": self.second_system.pk},
@@ -258,6 +284,7 @@ class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertIn(response.status_code, (401, 403))
 
     def test_authenticated_object_system_api_attach_update_detach(self):
+        """Привязка, обновление и отвязка системы через API."""
         self.api_client.force_authenticate(user=self.user)
 
         # attach (create)
@@ -289,6 +316,7 @@ class ObjectSystemApiEndpointTests(ObjectsEndpointTestMixin, TestCase):
         self.assertFalse(ObjectSystem.objects.filter(pk=link_id).exists())
 
     def test_object_system_api_attach_duplicate_is_rejected(self):
+        """Повторная привязка той же системы к объекту отклоняется."""
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post(
             "/api/objects/object-systems/",
@@ -304,6 +332,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
     выборку и объекты его дочерних (на любую глубину) юр. лиц."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user(username="user", password="password")
         self.category = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
 
@@ -340,9 +369,11 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         )
 
     def _names(self, qs):
+        """Возвращает имена сущностей из ответа в порядке следования (вспомогательная)."""
         return set(qs.values_list("object_name", flat=True))
 
     def test_filter_by_root_includes_all_descendants(self):
+        """Фильтр по корневому юр. лицу включает объекты всех потомков."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         result = ObjectUseCase().list(owner_entity=[self.holding.pk])
         self.assertEqual(
@@ -352,6 +383,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         self.assertNotIn("Чужой объект", self._names(result))
 
     def test_filter_by_middle_includes_its_descendants_only(self):
+        """Фильтр по среднему юр. лицу включает только его потомков."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         result = ObjectUseCase().list(owner_entity=[self.daughter.pk])
         # дочка + её потомок (внучка), но НЕ родитель (холдинг)
@@ -361,12 +393,14 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         )
 
     def test_filter_by_leaf_returns_only_itself(self):
+        """Фильтр по листовому юр. лицу возвращает только его объекты."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         result = ObjectUseCase().list(owner_entity=[self.grandchild.pk])
         self.assertEqual(self._names(result), {"Объект внучки"})
 
     def test_filter_is_resilient_to_cycles(self):
         # Искусственно создаём цикл: холдинг становится потомком внучки.
+        """Иерархический фильтр устойчив к циклам в дереве владельцев."""
         self.holding.owner = self.grandchild
         self.holding.save()
 
@@ -379,6 +413,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         )
 
     def test_web_object_list_filter_by_owner_includes_descendants(self):
+        """HTML-список: фильтр по владельцу включает объекты потомков."""
         response = self.client.get("/objects/", {"owner_entity": str(self.holding.pk)})
         self.assertEqual(response.status_code, 200)
         objects = response.context["objects"]
@@ -388,6 +423,7 @@ class ObjectOwnerHierarchyFilterTests(TestCase):
         )
 
     def test_api_object_list_filter_by_owner_includes_descendants(self):
+        """API-список: фильтр по владельцу включает объекты потомков."""
         api_client = APIClient()
         response = api_client.get(
             "/api/objects/objects/", {"owner_entity": str(self.holding.pk)}
@@ -404,6 +440,7 @@ class ObjectNewFieldsTests(TestCase):
     адреса от родителя и ограничение title только 3-м уровнем."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user(username="user", password="password")
         self.cat1 = Category.objects.create(category_name="Площадка", object_level=1, creator=self.user)
         self.cat2 = Category.objects.create(category_name="Цех", object_level=2, creator=self.user)
@@ -412,6 +449,7 @@ class ObjectNewFieldsTests(TestCase):
 
     # ---------- usecase: создание с новыми полями ----------
     def test_usecase_create_persists_new_fields(self):
+        """Use case create сохраняет все переданные поля объекта."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         obj = ObjectUseCase().create(
             user=self.user,
@@ -436,12 +474,14 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(obj.city, "Москва")
 
     def test_status_defaults_to_active(self):
+        """При отсутствии статуса объект создаётся в статусе active."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         obj = ObjectUseCase().create(user=self.user, object_name="Без статуса", hierarchy_level=1)
         self.assertEqual(obj.status, "active")
 
     # ---------- наследование адреса от родителя ----------
     def test_create_inherits_address_from_parent_when_not_provided(self):
+        """Адрес наследуется от родителя, если не задан явно."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
@@ -460,6 +500,7 @@ class ObjectNewFieldsTests(TestCase):
 
     # ---------- наследование юр. лица (owner_entity) от родителя ----------
     def test_child_inherits_owner_entity_from_parent(self):
+        """Дочерний объект наследует юр. лицо от родителя."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from apps.owners.models import OwnerEntity
         uc = ObjectUseCase()
@@ -494,6 +535,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(child.owner_entity_id, owner.pk)
 
     def test_child_owner_entity_empty_when_parent_has_none(self):
+        """У ребёнка нет юр. лица, если у родителя оно не задано."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
@@ -507,6 +549,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertIsNone(child.owner_entity_id)
 
     def test_update_reinherits_owner_entity_from_parent(self):
+        """При смене родителя юр. лицо пере-наследуется."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from apps.owners.models import OwnerEntity
         uc = ObjectUseCase()
@@ -530,6 +573,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(child.owner_entity_id, o2.pk)
 
     def test_level1_keeps_form_owner_entity(self):
+        """Для объекта 1-го уровня юр. лицо берётся из формы."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from apps.owners.models import OwnerEntity
         uc = ObjectUseCase()
@@ -542,6 +586,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(obj.owner_entity_id, owner.pk)
 
     def test_create_does_not_override_explicit_address(self):
+        """Явно заданный адрес не перезаписывается адресом родителя."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
@@ -555,6 +600,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(child.city, "Климовск")
 
     def test_get_parent_address_defaults_excludes_title(self):
+        """Наследуемые адресные поля не включают титульный номер."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         parent = uc.create(
@@ -567,6 +613,7 @@ class ObjectNewFieldsTests(TestCase):
 
     # ---------- ограничение title только уровнем 3 ----------
     def test_title_rejected_for_level_1_on_create(self):
+        """Титульный номер на уровне 1 при создании отклоняется."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from django.core.exceptions import ValidationError as DjangoValidationError
         with self.assertRaises(DjangoValidationError):
@@ -576,6 +623,7 @@ class ObjectNewFieldsTests(TestCase):
             )
 
     def test_title_allowed_for_level_2_and_3_on_create(self):
+        """Титульный номер допустим на уровнях 2 и 3 при создании."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         uc = ObjectUseCase()
         l2 = uc.create(
@@ -590,6 +638,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(l3.title, "Цех-А-стойка-3")
 
     def test_title_rejected_on_update_for_level_1(self):
+        """Титульный номер на уровне 1 при обновлении отклоняется."""
         from apps.objects.usecases.object_usecase import ObjectUseCase
         from django.core.exceptions import ValidationError as DjangoValidationError
         uc = ObjectUseCase()
@@ -599,6 +648,7 @@ class ObjectNewFieldsTests(TestCase):
 
     # ---------- HTML формы ----------
     def test_web_create_with_new_fields_and_title_level3(self):
+        """HTML-создание уровня 3 сохраняет новые поля и титульный номер."""
         self.client.force_login(self.user)
         response = self.client.post("/objects/create/", {
             "object_name": "Установка X",
@@ -616,6 +666,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(obj.title, "Цех-Б-3")
 
     def test_web_create_saves_title_for_level2(self):
+        """HTML-создание уровня 2 сохраняет титульный номер."""
         self.client.force_login(self.user)
         # title теперь допустим и для уровня 2
         response = self.client.post("/objects/create/", {
@@ -629,6 +680,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(obj.title, "Титул-Цех-Y")
 
     def test_web_create_ignores_title_for_level1(self):
+        """HTML-создание уровня 1 игнорирует титульный номер."""
         self.client.force_login(self.user)
         # title в POST есть, но уровень 1 -> view не должен его сохранять (и не падать)
         response = self.client.post("/objects/create/", {
@@ -643,6 +695,7 @@ class ObjectNewFieldsTests(TestCase):
 
     # ---------- API ----------
     def test_api_create_with_new_fields(self):
+        """API-создание сохраняет описательные и адресные поля."""
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/objects/objects/", {
             "object_name": "API Установка",
@@ -660,6 +713,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(response.data["title"], "Цех-В-7")
 
     def test_api_create_title_allowed_for_level2(self):
+        """API-создание уровня 2 принимает титульный номер."""
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/objects/objects/", {
             "object_name": "API Цех",
@@ -671,6 +725,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertEqual(response.data["title"], "Титул-API-2")
 
     def test_api_create_title_rejected_for_level1(self):
+        """API-создание уровня 1 отклоняет титульный номер."""
         self.api_client.force_authenticate(user=self.user)
         response = self.api_client.post("/api/objects/objects/", {
             "object_name": "API Завод",
@@ -681,6 +736,7 @@ class ObjectNewFieldsTests(TestCase):
         self.assertIn(response.status_code, (400, 422))
 
     def test_api_create_inherits_parent_address(self):
+        """API-создание дочернего объекта наследует адрес родителя."""
         self.api_client.force_authenticate(user=self.user)
         parent_resp = self.api_client.post("/api/objects/objects/", {
             "object_name": "API Завод", "hierarchy_level": 1, "category": self.cat1.pk,
@@ -698,10 +754,13 @@ class ObjectNewFieldsTests(TestCase):
 
 
 class ObjectAddressLineTests(TestCase):
+    """Тесты свойства address_line: сборка адреса строкой и добавление титульного номера."""
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user(username="u2", password="pw")
 
     def test_address_line_joins_nonempty_parts(self):
+        """address_line собирает адрес из непустых частей через запятую."""
         obj = Object.objects.create(
             object_name="O", hierarchy_level=1, country="Россия", region="", city="Москва",
             street="Ленина", house="1", creator=self.user,
@@ -709,10 +768,12 @@ class ObjectAddressLineTests(TestCase):
         self.assertEqual(obj.address_line, "Россия, Москва, Ленина, 1")
 
     def test_address_line_empty_when_no_address(self):
+        """address_line пуст, если адресные поля не заданы."""
         obj = Object.objects.create(object_name="O", hierarchy_level=1, creator=self.user)
         self.assertEqual(obj.address_line, "")
 
     def test_address_line_appends_title_for_level_2_and_3(self):
+        """address_line добавляет титульный номер на уровнях 2 и 3."""
         l3 = Object.objects.create(
             object_name="O3", hierarchy_level=3, city="Казань", title="Цех-А-3", creator=self.user,
         )
@@ -732,6 +793,7 @@ class ObjectSummaryExtendedTests(TestCase):
     """Расширенная сводка объекта: статусы внедрения и покрытие по уровням."""
 
     def setUp(self):
+        """Готовит тестовые данные перед каждым тестом."""
         self.user = User.objects.create_user(username="sum", password="pw")
         self.client.force_login(self.user)
         self.cls_l1 = AutomationClass.objects.create(level=1, system_class="ПЛК")
@@ -752,6 +814,7 @@ class ObjectSummaryExtendedTests(TestCase):
         ObjectSystem.objects.create(object=self.obj, system=self.s2, status="planned")
 
     def test_status_breakdown_counts(self):
+        """Сводка: корректный подсчёт систем по статусам внедрения."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         panel = h.split("summary-panel", 1)[1]
         self.assertIn("Статусы внедрения", panel)
@@ -761,6 +824,7 @@ class ObjectSummaryExtendedTests(TestCase):
         self.assertNotIn("Обслуживание", panel)
 
     def test_level_coverage_counts(self):
+        """Сводка: корректный подсчёт покрытия по уровням автоматизации."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         panel = h.split("summary-panel", 1)[1]
         self.assertIn("Покрытие по уровням", panel)
@@ -772,6 +836,7 @@ class ObjectSummaryExtendedTests(TestCase):
         self.assertIn("L4: 0", panel)
 
     def test_zero_levels_dimmed(self):
+        """Сводка: уровни без систем помечаются приглушённым классом."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         panel = h.split("summary-panel", 1)[1]
         # уровень без систем помечен приглушённым классом

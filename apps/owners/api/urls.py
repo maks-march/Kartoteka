@@ -1,3 +1,4 @@
+"""URL-маршруты REST API юридических лиц."""
 from django.urls import path
 
 from apps.owners.api.views import (

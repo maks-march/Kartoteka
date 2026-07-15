@@ -66,15 +66,18 @@ def _extract_system_fields(post):
 
 @require_http_methods(["GET"])
 def system_list(request):
+    """Список систем в табличном представлении."""
     return _system_list_render(request, "system/system_list.html", "table")
 
 
 @require_http_methods(["GET"])
 def system_cards(request):
+    """Список систем в виде карточек."""
     return _system_list_render(request, "system/system_cards.html", "cards")
 
 
 def _system_list_render(request, template, view_mode):
+    """Общий рендер списка систем для таблицы и карточек (вспомогательная)."""
     system_class = request.GET.get("system_class") or None
     search = request.GET.get("search") or None
     obj = request.GET.getlist("object") or None
@@ -114,6 +117,7 @@ def _system_list_render(request, template, view_mode):
 
 @require_http_methods(["GET"])
 def system_detail(request, pk):
+    """Подробная карточка системы со связями."""
     usecase = SystemUseCase()
     os_usecase = ObjectSystemUseCase()
     obj = usecase.get(pk)
@@ -137,6 +141,7 @@ def system_detail(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def system_create(request):
+    """Создание системы: GET — форма, POST — сохранение."""
     class_usecase = AutomationClassUseCase()
     product_usecase = VendorProductUseCase()
     error = None
@@ -169,6 +174,7 @@ def system_create(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def system_edit(request, pk):
+    """Редактирование системы: GET — форма, POST — обновление."""
     usecase = SystemUseCase()
     class_usecase = AutomationClassUseCase()
     product_usecase = VendorProductUseCase()
@@ -205,6 +211,7 @@ def system_edit(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def system_delete(request, pk):
+    """Удаление системы и возврат к списку."""
     usecase = SystemUseCase()
     usecase.delete(pk, request.user)
     return redirect("system-list")
@@ -213,6 +220,7 @@ def system_delete(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def system_attach_object(request, pk):
+    """Привязка системы к объекту: GET — форма, POST — создание связи."""
     usecase = SystemUseCase()
     os_usecase = ObjectSystemUseCase()
     object_usecase = ObjectUseCase()
@@ -249,6 +257,7 @@ def system_attach_object(request, pk):
 
 @require_http_methods(["GET"])
 def product_list(request):
+    """Список продуктов вендоров."""
     search = request.GET.get("search") or None
     system_class = request.GET.get("system_class") or None
     ordering = request.GET.getlist("ordering") or None
@@ -264,6 +273,7 @@ def product_list(request):
 
 @require_http_methods(["GET"])
 def product_detail(request, pk):
+    """Подробная карточка продукта."""
     usecase = VendorProductUseCase()
     product = usecase.get(pk)
     systems = product.systems.select_related("system_class")
@@ -290,6 +300,7 @@ def _extract_product_fields(post):
 def _product_form_context(**extra):
     # В выборе вендора — только участники типа vendor / full_cycle_vendor
     # (продукт может принадлежать только им).
+    """Готовит контекст формы продукта (справочники) (вспомогательная)."""
     vendors = [e for e in EntityUseCase().list() if e.is_vendor_type]
     ctx = {
         "vendors": vendors,
@@ -305,6 +316,7 @@ def _product_form_context(**extra):
 @require_http_methods(["GET", "POST"])
 @login_required
 def product_create(request):
+    """Создание продукта: GET — форма, POST — сохранение."""
     error = None
     if request.method == "POST":
         usecase = VendorProductUseCase()
@@ -324,6 +336,7 @@ def product_create(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def product_edit(request, pk):
+    """Редактирование продукта: GET — форма, POST — обновление."""
     usecase = VendorProductUseCase()
     product = usecase.get(pk)
     error = None
@@ -351,6 +364,7 @@ def product_edit(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def product_delete(request, pk):
+    """Удаление продукта и возврат к списку."""
     usecase = VendorProductUseCase()
     usecase.delete(pk)
     return redirect("product-list")

@@ -1,3 +1,4 @@
+"""URL-маршруты REST API аутентификации."""
 from django.urls import path
 
 from apps.users.api.views import RegisterView, LoginView

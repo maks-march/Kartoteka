@@ -214,15 +214,18 @@ def _form_context(**extra):
 
 @require_http_methods(["GET"])
 def entity_list(request):
+    """Список участников рынка в табличном представлении."""
     return _entity_list_render(request, "entities/entity_list.html", "table")
 
 
 @require_http_methods(["GET"])
 def entity_cards(request):
+    """Список участников рынка в виде карточек."""
     return _entity_list_render(request, "entities/entity_cards.html", "cards")
 
 
 def _entity_list_render(request, template, view_mode):
+    """Общий рендер списка участников для таблицы и карточек (вспомогательная)."""
     search = request.GET.get("search") or None
     ordering = request.GET.getlist("ordering") or None
     usecase = EntityUseCase()
@@ -236,6 +239,7 @@ def _entity_list_render(request, template, view_mode):
 
 @require_http_methods(["GET"])
 def entity_detail(request, pk):
+    """Подробная карточка участника со сводкой связанности."""
     usecase = EntityUseCase()
     entity = usecase.get(pk)
     implemented_links = entity.implemented_object_systems.select_related(
@@ -277,6 +281,7 @@ def entity_detail(request, pk):
 @require_http_methods(["GET", "POST"])
 @login_required
 def entity_create(request):
+    """Создание участника: GET — форма, POST — сохранение."""
     error = None
     if request.method == "POST":
         usecase = EntityUseCase()
@@ -303,6 +308,7 @@ def entity_create(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def entity_edit(request, pk):
+    """Редактирование участника: GET — форма, POST — обновление."""
     usecase = EntityUseCase()
     entity = usecase.get(pk)
     error = None
@@ -333,6 +339,7 @@ def entity_edit(request, pk):
 @require_http_methods(["POST"])
 @login_required
 def entity_delete(request, pk):
+    """Удаление участника и возврат к списку."""
     usecase = EntityUseCase()
     usecase.delete(pk)
     return redirect("entity-list")

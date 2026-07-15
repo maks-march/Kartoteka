@@ -8,6 +8,13 @@ from apps.entities.models import Entity
 
 
 class Object(models.Model):
+    """Объект производства: завод, цех или установка.
+
+    Образует трёхуровневую иерархию (self-ссылка ``parent_object``):
+    производство (L1) → цех (L2) → установка (L3). Хранит названия, адрес,
+    характеристики, категорию и юридическое лицо-владельца.
+    """
+
     LEVEL_CHOICES = [
         (1, "Level 1"),
         (2, "Level 2"),
@@ -107,10 +114,13 @@ class Object(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        """Мета-настройки: сортировка и человекочитаемые имена."""
+
         ordering = ["hierarchy_level", "object_name"]
         verbose_name = "Объект производства"
         verbose_name_plural = "Объекты производства"
     def __str__(self):
+        """Строковое представление: название и уровень иерархии."""
         return f"{self.object_name} (L{self.hierarchy_level})"
 
     @property
@@ -136,10 +146,17 @@ class Object(models.Model):
 
     @property
     def status_tag_class(self):
+        """CSS-класс тега для текущего статуса (для единообразия в шаблонах)."""
         return self.STATUS_TAG_CLASSES.get(self.status, "tag-muted")
 
 
 class ObjectSystem(models.Model):
+    """Связь «система на объекте»: какая AutomationSystem внедрена на Object.
+
+    Хранит статус внедрения, дату ввода и компанию-исполнителя. Пара
+    (объект, система) уникальна.
+    """
+
     STATUS_CHOICES = [
         ('planned', 'Планируется'),
         ('active', 'В эксплуатации'),
@@ -171,9 +188,12 @@ class ObjectSystem(models.Model):
     )
 
     class Meta:
+        """Мета-настройки: имена и уникальность пары (объект, система)."""
+
         verbose_name = "Система на объекте"
         verbose_name_plural = "Системы на объектах"
         unique_together = ('object', 'system')
 
     def __str__(self):
-        return f"{self.object.name} -> {self.system.autosystem_name}"
+        """Строковое представление: «объект → система»."""
+        return f"{self.object.object_name} -> {self.system.autosystem_name}"

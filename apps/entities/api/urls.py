@@ -1,3 +1,4 @@
+"""URL-маршруты REST API участников рынка и их профилей."""
 from django.urls import path
 
 from apps.entities.api.views import (

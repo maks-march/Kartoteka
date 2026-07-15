@@ -1,3 +1,4 @@
+"""Сценарии (use cases) работы с автоматизированными системами."""
 from apps.system.repositories.system_repository import SystemRepository
 from apps.system.repositories.automation_class_repository import AutomationClassRepository
 from apps.system.repositories.vendor_product_repository import VendorProductRepository
@@ -9,12 +10,14 @@ class SystemUseCase:
     """Сценарии работы с автоматизированными системами: список с фильтрами и
     сортировкой, CRUD, разбор JSON-полей и связанного продукта."""
     def __init__(self, repo=None, class_repo=None, product_repo=None):
+        """Инициализирует объект, позволяя подменить зависимости (для тестов)."""
         self.repo = repo or SystemRepository()
         self.class_repo = class_repo or AutomationClassRepository()
         self.product_repo = product_repo or VendorProductRepository()
 
     def list(self, system_class=None, search=None, obj=None,
              product=None, system_status=None, ordering=None):
+        """Возвращает системы с учётом фильтров и сортировки."""
         return self.repo.get_all(
             system_class=system_class,
             search=search,
@@ -25,15 +28,18 @@ class SystemUseCase:
         )
 
     def list_by_user(self, user, search=None):
+        """Возвращает системы, созданные пользователем."""
         return self.repo.get_by_creator(user, search=search)
 
     def get(self, pk):
+        """Возвращает систему по id или бросает NotFound."""
         obj = self.repo.get_by_id(pk)
         if not obj:
             raise NotFound("System not found")
         return obj
 
     def _get_optional_product(self, pk):
+        """Разрешает id продукта в объект или None (вспомогательная)."""
         if pk in (None, "", "None"):
             return None
         product = self.product_repo.get_by_id(pk)
@@ -79,6 +85,7 @@ class SystemUseCase:
         return classes
 
     def create(self, user=None, **data):
+        """Создаёт систему, разрешая связи (продукт, класс, подсистемы)."""
         class_id = data.get("system_class")
         primary_class = self.class_repo.get_by_id(class_id) if class_id is not None else None
         if primary_class is None:
@@ -96,6 +103,7 @@ class SystemUseCase:
         return self.repo.create(**data)
 
     def update(self, pk, user, **data):
+        """Обновляет систему переданными полями и связями."""
         obj = self.get(pk)
 
         # system_class трогаем только если он передан (для частичного обновления).
@@ -123,5 +131,6 @@ class SystemUseCase:
         return self.repo.update(obj, **data)
 
     def delete(self, pk, user):
+        """Удаляет систему по id."""
         obj = self.get(pk)
         return self.repo.delete(obj)

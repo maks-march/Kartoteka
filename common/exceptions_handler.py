@@ -1,3 +1,4 @@
+"""Обработчик исключений DRF: перевод доменных ошибок в HTTP-ответы."""
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.views import exception_handler
 from rest_framework.response import Response
@@ -13,6 +14,7 @@ from common.exceptions import (
 
 
 def _build_response(exception) -> dict:
+    """Формирует унифицированное тело ответа об ошибке (вспомогательная)."""
     return {
         "error": {
             "type": type(exception).__name__,
@@ -32,6 +34,7 @@ _ERROR_MAP = {
 
 
 def _django_validation_message(exc) -> str:
+    """Извлекает читаемое сообщение из django ValidationError (вспомогательная)."""
     if hasattr(exc, "message_dict"):
         return exc.message_dict
     messages = getattr(exc, "messages", None)
@@ -41,6 +44,7 @@ def _django_validation_message(exc) -> str:
 
 
 def drf_exception_handler(exc, context):
+    """Обработчик исключений DRF: маппит доменные и django-ошибки на HTTP-коды."""
     # Доменные исключения с явным маппингом на HTTP-коды.
     status_code = _ERROR_MAP.get(type(exc))
     if status_code is not None:

@@ -6,9 +6,11 @@ from apps.objects.models import ObjectSystem
 
 
 class AutomationClassSerializer(serializers.ModelSerializer):
+    """Представление класса автоматизации для чтения."""
     label = serializers.CharField(read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = AutomationClass
         fields = ["id", "level", "system_class", "name_ru", "label",
                   "description", "is_composite", "includes"]
@@ -18,12 +20,14 @@ class VendorProductSerializer(serializers.ModelSerializer):
     # vendor в API — это id УЧАСТНИКА (Entity), а не VendorProfile,
     # чтобы read/write были симметричны. Внутри модели связь идёт через
     # VendorProfile (vendor.entity_id).
+    """Представление продукта вендора для чтения."""
     vendor = serializers.IntegerField(source="vendor.entity_id", read_only=True)
     vendor_name = serializers.CharField(source="vendor.entity_name", read_only=True)
     product_type_display = serializers.CharField(source="get_product_type_display", read_only=True)
     system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = VendorProduct
         fields = [
             "id", "product_name", "vendor", "vendor_name",
@@ -35,6 +39,7 @@ class VendorProductSerializer(serializers.ModelSerializer):
 
 
 class VendorProductCreateUpdateSerializer(serializers.Serializer):
+    """Валидация данных при создании/обновлении продукта."""
     product_name = serializers.CharField(max_length=255)
     vendor = serializers.IntegerField(required=False, allow_null=True)
     product_type = serializers.ChoiceField(
@@ -55,12 +60,14 @@ class VendorProductCreateUpdateSerializer(serializers.Serializer):
 
 
 class SystemListSerializer(serializers.ModelSerializer):
+    """Компактное представление системы для списков."""
     class_name = serializers.CharField(source="system_class.system_class", read_only=True)
     class_level = serializers.IntegerField(source="system_class.level", read_only=True)
     product_name = serializers.CharField(source="product.product_name", read_only=True)
     status_display = serializers.CharField(source="get_system_status_display", read_only=True)
 
     class Meta:
+        """Поля сериализатора."""
         model = AutomationSystem
         fields = [
             "id", "autosystem_name", "autosystem_short_name",
@@ -71,6 +78,7 @@ class SystemListSerializer(serializers.ModelSerializer):
 
 
 class SystemDetailSerializer(serializers.ModelSerializer):
+    """Полное представление системы (детали)."""
     system_class_detail = AutomationClassSerializer(source="system_class", read_only=True)
     product_name = serializers.CharField(source="product.product_name", read_only=True)
     status_display = serializers.CharField(source="get_system_status_display", read_only=True)
@@ -80,6 +88,7 @@ class SystemDetailSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """Поля сериализатора."""
         model = AutomationSystem
         fields = [
             "id", "autosystem_name", "autosystem_short_name",
@@ -93,6 +102,7 @@ class SystemDetailSerializer(serializers.ModelSerializer):
 
 
 class SystemCreateUpdateSerializer(serializers.Serializer):
+    """Валидация данных при создании/обновлении системы."""
     autosystem_name = serializers.CharField(max_length=255)
     autosystem_short_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
     system_class = serializers.IntegerField()
@@ -109,6 +119,7 @@ class SystemCreateUpdateSerializer(serializers.Serializer):
 
 
 class SystemAttachObjectSerializer(serializers.Serializer):
+    """Валидация данных при привязке системы к объекту."""
     object = serializers.IntegerField()
     status = serializers.ChoiceField(
         choices=ObjectSystem.STATUS_CHOICES, required=False, default="planned"

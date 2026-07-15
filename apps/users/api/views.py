@@ -1,3 +1,4 @@
+"""REST API аутентификации: регистрация и вход с выдачей JWT."""
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,9 +11,11 @@ from apps.users.usecases.usecase import AuthUseCase
 
 
 class RegisterView(APIView):
+    """API регистрации: создаёт пользователя и возвращает пару JWT."""
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Обрабатывает POST-запрос: валидирует данные и возвращает JWT."""
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -30,9 +33,11 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
+    """API входа: проверяет учётные данные и возвращает пару JWT."""
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Обрабатывает POST-запрос: валидирует данные и возвращает JWT."""
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
