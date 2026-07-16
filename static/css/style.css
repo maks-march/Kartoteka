@@ -612,6 +612,37 @@ td a:hover {
     width: 100%;
 }
 
+/* Трёхколоночная раскладка детальной карточки объекта:
+   юридическая информация | характеристики | сводка (по 33%). */
+.detail-body.detail-3col {
+    gap: 16px;
+}
+.detail-body.detail-3col > .detail-col {
+    flex: 1 1 33.333%;
+    width: 33.333%;
+    min-width: 0;
+}
+.detail-body.detail-3col > .summary-panel {
+    flex: 1 1 33.333%;
+    width: 33.333%;
+    max-width: 33.333%;
+}
+/* В узких колонках инфо-карточки идут в один столбец (ужимаем пустоты). */
+.detail-body.detail-3col .info-cards {
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+@media (max-width: 1000px) {
+    .detail-body.detail-3col { flex-direction: column; }
+    .detail-body.detail-3col > .detail-col,
+    .detail-body.detail-3col > .summary-panel {
+        flex-basis: auto;
+        width: 100%;
+        max-width: 100%;
+        position: static;
+    }
+}
+
 /* Сводная панель (агрегаты из таблиц ниже) */
 .summary-panel {
     border: 1px solid #e3e8ef;
