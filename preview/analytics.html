@@ -38,11 +38,12 @@ h1 { font-size: 22px; color: #222; margin-bottom: 4px; }
 .adv-actions { margin-top: 14px; display: flex; gap: 10px; }
 
 /* переключатель сущности + вид */
+.list-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 .entity-switch { display: inline-flex; gap: 6px; }
 .entity-switch button { padding: 9px 18px; border: 1px solid #ced4da; border-radius: 8px; background: #f8f9fa; color: #444; font-size: 14px; font-weight: 600; cursor: pointer; }
 .entity-switch button.active { background: #007bff; border-color: #007bff; color: #fff; }
 .entity-switch button .count { font-weight: 400; opacity: .8; margin-left: 5px; }
-.view-toggle { display: inline-flex; gap: 6px; float: right; }
+.view-toggle { display: inline-flex; gap: 6px; }
 .view-toggle a { padding: 7px 12px; border: 1px solid #ced4da; border-radius: 6px; text-decoration: none; color: #444; font-size: 13px; }
 .view-toggle a.active { background: #eef4ff; border-color: #9cc0ff; color: #1f4b8e; font-weight: 600; }
 
@@ -139,18 +140,6 @@ td a { color: #007bff; text-decoration: none; }
             </div>
         </div>
     </div>
-
-    <div>
-        <div class="entity-switch">
-            <button class="active">Объекты <span class="count">4</span></button>
-            <button>Системы <span class="count">7</span></button>
-            <button>Участники <span class="count">3</span></button>
-        </div>
-        <div class="view-toggle">
-            <a href="#" class="active">☷ Таблица</a>
-            <a href="#">▦ Карточки</a>
-        </div>
-    </div>
 </div>
 
 <div class="card">
@@ -183,6 +172,17 @@ td a { color: #007bff; text-decoration: none; }
 </div>
 
 <div class="card">
+    <div class="list-toolbar">
+        <div class="entity-switch">
+            <button class="active">Объекты <span class="count">4</span></button>
+            <button>Системы <span class="count">7</span></button>
+            <button>Участники <span class="count">3</span></button>
+        </div>
+        <div class="view-toggle">
+            <a href="#" class="active">☷ Таблица</a>
+            <a href="#">▦ Карточки</a>
+        </div>
+    </div>
     <table>
         <thead>
             <tr><th>Объект</th><th>Уровень</th><th>Категория</th><th>Статус</th><th>Регион</th><th>Систем</th></tr>
@@ -227,5 +227,5 @@ td a { color: #007bff; text-decoration: none; }
 <div style="margin-top:10px">
     <a href="#" class="btn btn-secondary">← На главную</a>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b7c7108a4eb8cb',t:'MTc4NDEwODEzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bed7a3dc2f2c2c',t:'MTc4NDE4MjIxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
