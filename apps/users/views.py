@@ -27,7 +27,7 @@ def login_view(request):
             login(request, user)  # создает сессию в cookie
             return redirect("profile")
         except Exception as e:
-            error = e.message
+            error = getattr(e, "message", str(e))
 
     return render(request, "users/login.html", {"error": error})
 
@@ -49,7 +49,7 @@ def register_view(request):
             login(request, user)  # сразу логиним после регистрации
             return redirect("profile")
         except Exception as e:
-            error = e.message
+            error = getattr(e, "message", str(e))
 
     return render(request, "users/register.html", {"error": error})
 

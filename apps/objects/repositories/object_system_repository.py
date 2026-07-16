@@ -9,7 +9,10 @@ class ObjectSystemRepository:
         """Возвращает связи (системы), привязанные к объекту, с подгрузкой связей."""
         return (
             ObjectSystem.objects.filter(object=obj)
-            .select_related("system", "system__system_class", "system__product", "implementor")
+            .select_related(
+                "system", "system__system_class", "system__product",
+                "system__product__vendor__entity", "implementor",
+            )
             .order_by("system__autosystem_name")
         )
 
