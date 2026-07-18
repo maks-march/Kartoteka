@@ -187,7 +187,7 @@ class AutomationSystem(models.Model):
         ("active", "В эксплуатации"),
         ("planned", "Планируется"),
         ("unsupported", "Не поддерживается"),
-        ("decommissioned", "Выведена из эксплуатации"),
+        ("decommissioned", "Не эксплуатируется"),
     ]
 
     STATUS_TAG_CLASSES = {

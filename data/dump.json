@@ -424,6 +424,28 @@
   }
 },
 {
+  "model": "owners.ownerentity",
+  "pk": 30,
+  "fields": {
+    "owner_name": "ПАО «Восточно-Сибирская нефтегазовая компания»",
+    "owner": null,
+    "ultimate_owner": null,
+    "is_root": true,
+    "inn": ""
+  }
+},
+{
+  "model": "owners.ownerentity",
+  "pk": 31,
+  "fields": {
+    "owner_name": "АО «Ангарская нефтехимическая корпорация»",
+    "owner": 30,
+    "ultimate_owner": 30,
+    "is_root": false,
+    "inn": ""
+  }
+},
+{
   "model": "objects.object",
   "pk": 40,
   "fields": {
@@ -468,7 +490,7 @@
     "start_date": "1938-06-01",
     "is_reconstructed": false,
     "capacity": "6 млн т/год",
-    "status": "active",
+    "status": "reconstruction",
     "notes": "Первичная перегонка сырья.",
     "country": "Россия",
     "region": "Республика Башкортостан",
@@ -497,7 +519,7 @@
     "start_date": "1975-09-01",
     "is_reconstructed": false,
     "capacity": "6 млн т/год",
-    "status": "active",
+    "status": "in_project",
     "notes": "Атмосферно-вакуумная трубчатка.",
     "country": "Россия",
     "region": "Республика Башкортостан",
@@ -526,7 +548,7 @@
     "start_date": "1985-04-01",
     "is_reconstructed": true,
     "capacity": "2 млн т/год",
-    "status": "reconstruction",
+    "status": "stopped",
     "notes": "Каталитический крекинг вакуумного газойля.",
     "country": "Россия",
     "region": "Республика Башкортостан",
@@ -584,7 +606,7 @@
     "start_date": "1976-05-01",
     "is_reconstructed": false,
     "capacity": "20 млрд м³/год",
-    "status": "active",
+    "status": "reconstruction",
     "notes": "Аминовая очистка газа.",
     "country": "Россия",
     "region": "Оренбургская область",
@@ -613,7 +635,7 @@
     "start_date": "1980-07-01",
     "is_reconstructed": false,
     "capacity": "8 млрд м³/год",
-    "status": "active",
+    "status": "in_project",
     "notes": "Абсорбционная сероочистка (процесс Клауса).",
     "country": "Россия",
     "region": "Оренбургская область",
@@ -642,7 +664,7 @@
     "start_date": "2019-11-01",
     "is_reconstructed": false,
     "capacity": "2 млн т полимеров/год",
-    "status": "active",
+    "status": "stopped",
     "notes": "Пиролиз и производство полимеров.",
     "country": "Россия",
     "region": "Тюменская область",
@@ -700,7 +722,7 @@
     "start_date": "1974-12-01",
     "is_reconstructed": false,
     "capacity": "3 млн т удобрений/год",
-    "status": "active",
+    "status": "reconstruction",
     "notes": "Производство минеральных удобрений.",
     "country": "Россия",
     "region": "Вологодская область",
@@ -729,7 +751,7 @@
     "start_date": "1980-01-01",
     "is_reconstructed": false,
     "capacity": "1,2 млн т/год",
-    "status": "active",
+    "status": "in_project",
     "notes": "Грануляция и фасовка удобрений.",
     "country": "Россия",
     "region": "Вологодская область",
@@ -758,7 +780,7 @@
     "start_date": "1978-01-01",
     "is_reconstructed": false,
     "capacity": "—",
-    "status": "active",
+    "status": "stopped",
     "notes": "Хранение и отгрузка продукции.",
     "country": "Россия",
     "region": "Оренбургская область",
@@ -769,6 +791,180 @@
     "creator": 1,
     "created_at": "2026-07-18T12:34:04.090Z",
     "updated_at": "2026-07-18T12:34:04.090Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 52,
+  "fields": {
+    "object_name": "Ангарский нефтехимический комплекс",
+    "object_short_name": "АНХК",
+    "object_old_name": "Ангарский НПЗ",
+    "object_law_name": "Ангарский нефтехимический комплекс",
+    "object_class": "Нефтехимический комплекс",
+    "hierarchy_level": 1,
+    "parent_object": null,
+    "category": 93,
+    "owner_entity": 31,
+    "start_date": "1955-04-01",
+    "is_reconstructed": true,
+    "capacity": "21 млн т/год",
+    "status": "reconstruction",
+    "notes": "Ангарский нефтехимический комплекс — один из крупнейших интегрированных производственных активов Восточной Сибири. Включает установки первичной и вторичной переработки нефти, нефтехимические производства, объекты энергетики и товарно-сырьевую инфраструктуру. Глубина переработки — 92%. Реализуется программа цифровой трансформации: единая РСУ, ПАЗ уровня SIL3, система усовершенствованного управления (APC), MES и лабораторная информационная система. Объект отнесён к категории опасных производственных объектов I класса.",
+    "country": "Россия",
+    "region": "Иркутская область",
+    "city": "Ангарск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "",
+    "creator": 1,
+    "created_at": "2026-07-18T15:06:10.480Z",
+    "updated_at": "2026-07-18T15:06:10.480Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 53,
+  "fields": {
+    "object_name": "Установка ЭЛОУ-АВТ-10",
+    "object_short_name": "Установка",
+    "object_old_name": "б/н",
+    "object_law_name": "Установка ЭЛОУ-АВТ-10",
+    "object_class": "Технологическая установка",
+    "hierarchy_level": 3,
+    "parent_object": 52,
+    "category": 98,
+    "owner_entity": 31,
+    "start_date": "1980-01-01",
+    "is_reconstructed": false,
+    "capacity": "—",
+    "status": "in_project",
+    "notes": "Электрообессоливающая и атмосферно-вакуумная установка мощностью 10 млн т/год.",
+    "country": "Россия",
+    "region": "Иркутская область",
+    "city": "Ангарск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "У-10",
+    "creator": 1,
+    "created_at": "2026-07-18T15:06:10.481Z",
+    "updated_at": "2026-07-18T15:06:10.481Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 54,
+  "fields": {
+    "object_name": "Комплекс каталитического крекинга",
+    "object_short_name": "Комплекс",
+    "object_old_name": "б/н",
+    "object_law_name": "Комплекс каталитического крекинга",
+    "object_class": "Технологическая установка",
+    "hierarchy_level": 3,
+    "parent_object": 52,
+    "category": 100,
+    "owner_entity": 31,
+    "start_date": "1980-01-01",
+    "is_reconstructed": false,
+    "capacity": "—",
+    "status": "active",
+    "notes": "Комплекс глубокой переработки вакуумного газойля с блоком регенерации катализатора.",
+    "country": "Россия",
+    "region": "Иркутская область",
+    "city": "Ангарск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "ККФ-3",
+    "creator": 1,
+    "created_at": "2026-07-18T15:06:10.484Z",
+    "updated_at": "2026-07-18T15:06:10.484Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 55,
+  "fields": {
+    "object_name": "Производство полипропилена",
+    "object_short_name": "Производство",
+    "object_old_name": "б/н",
+    "object_law_name": "Производство полипропилена",
+    "object_class": "Технологическая установка",
+    "hierarchy_level": 3,
+    "parent_object": 52,
+    "category": 103,
+    "owner_entity": 31,
+    "start_date": "1980-01-01",
+    "is_reconstructed": false,
+    "capacity": "—",
+    "status": "reconstruction",
+    "notes": "Производство полипропилена по лицензионной технологии, мощность 500 тыс. т/год.",
+    "country": "Россия",
+    "region": "Иркутская область",
+    "city": "Ангарск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "ПП-2",
+    "creator": 1,
+    "created_at": "2026-07-18T15:06:10.486Z",
+    "updated_at": "2026-07-18T15:06:10.486Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 56,
+  "fields": {
+    "object_name": "Установка гидроочистки дизельного топлива",
+    "object_short_name": "Установка",
+    "object_old_name": "б/н",
+    "object_law_name": "Установка гидроочистки дизельного топлива",
+    "object_class": "Технологическая установка",
+    "hierarchy_level": 3,
+    "parent_object": 52,
+    "category": 104,
+    "owner_entity": 31,
+    "start_date": "1980-01-01",
+    "is_reconstructed": false,
+    "capacity": "—",
+    "status": "active",
+    "notes": "Гидроочистка для выпуска топлива класса Евро-5/К5.",
+    "country": "Россия",
+    "region": "Иркутская область",
+    "city": "Ангарск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "ГО-ДТ",
+    "creator": 1,
+    "created_at": "2026-07-18T15:06:10.489Z",
+    "updated_at": "2026-07-18T15:06:10.489Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 57,
+  "fields": {
+    "object_name": "Товарно-сырьевая база",
+    "object_short_name": "Товарно-сырьевая",
+    "object_old_name": "б/н",
+    "object_law_name": "Товарно-сырьевая база",
+    "object_class": "Технологическая установка",
+    "hierarchy_level": 3,
+    "parent_object": 52,
+    "category": 109,
+    "owner_entity": 31,
+    "start_date": "1980-01-01",
+    "is_reconstructed": false,
+    "capacity": "—",
+    "status": "stopped",
+    "notes": "Парк резервуаров, узлы смешения и налива готовой продукции.",
+    "country": "Россия",
+    "region": "Иркутская область",
+    "city": "Ангарск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "ТСБ",
+    "creator": 1,
+    "created_at": "2026-07-18T15:06:10.490Z",
+    "updated_at": "2026-07-18T15:06:10.490Z"
   }
 },
 {
@@ -788,7 +984,7 @@
   "fields": {
     "object": 42,
     "system": 38,
-    "status": "active",
+    "status": "planned",
     "implementation_date": null,
     "implementor": 94
   }
@@ -799,7 +995,7 @@
   "fields": {
     "object": 42,
     "system": 39,
-    "status": "active",
+    "status": "maintenance",
     "implementation_date": null,
     "implementor": 93
   }
@@ -810,7 +1006,7 @@
   "fields": {
     "object": 43,
     "system": 40,
-    "status": "planned",
+    "status": "decommissioned",
     "implementation_date": null,
     "implementor": 98
   }
@@ -832,7 +1028,7 @@
   "fields": {
     "object": 44,
     "system": 42,
-    "status": "active",
+    "status": "planned",
     "implementation_date": null,
     "implementor": 92
   }
@@ -843,7 +1039,7 @@
   "fields": {
     "object": 46,
     "system": 43,
-    "status": "active",
+    "status": "maintenance",
     "implementation_date": null,
     "implementor": 95
   }
@@ -854,7 +1050,7 @@
   "fields": {
     "object": 46,
     "system": 44,
-    "status": "active",
+    "status": "decommissioned",
     "implementation_date": null,
     "implementor": 98
   }
@@ -887,7 +1083,7 @@
   "fields": {
     "object": 49,
     "system": 47,
-    "status": "active",
+    "status": "maintenance",
     "implementation_date": null,
     "implementor": 93
   }
@@ -898,7 +1094,7 @@
   "fields": {
     "object": 50,
     "system": 48,
-    "status": "active",
+    "status": "decommissioned",
     "implementation_date": null,
     "implementor": 99
   }
@@ -912,6 +1108,171 @@
     "status": "active",
     "implementation_date": null,
     "implementor": 99
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 50,
+  "fields": {
+    "object": 52,
+    "system": 50,
+    "status": "planned",
+    "implementation_date": "2023-03-15",
+    "implementor": 102
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 51,
+  "fields": {
+    "object": 53,
+    "system": 51,
+    "status": "maintenance",
+    "implementation_date": "2023-03-15",
+    "implementor": 103
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 52,
+  "fields": {
+    "object": 54,
+    "system": 52,
+    "status": "decommissioned",
+    "implementation_date": "2023-03-15",
+    "implementor": 104
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 53,
+  "fields": {
+    "object": 55,
+    "system": 53,
+    "status": "active",
+    "implementation_date": "2023-03-15",
+    "implementor": 102
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 54,
+  "fields": {
+    "object": 56,
+    "system": 54,
+    "status": "planned",
+    "implementation_date": "2023-03-15",
+    "implementor": 103
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 55,
+  "fields": {
+    "object": 57,
+    "system": 55,
+    "status": "maintenance",
+    "implementation_date": "2023-03-15",
+    "implementor": 104
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 56,
+  "fields": {
+    "object": 52,
+    "system": 56,
+    "status": "decommissioned",
+    "implementation_date": "2023-03-15",
+    "implementor": 102
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 57,
+  "fields": {
+    "object": 53,
+    "system": 57,
+    "status": "active",
+    "implementation_date": "2023-03-15",
+    "implementor": 103
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 58,
+  "fields": {
+    "object": 54,
+    "system": 58,
+    "status": "planned",
+    "implementation_date": "2023-03-15",
+    "implementor": 104
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 59,
+  "fields": {
+    "object": 55,
+    "system": 59,
+    "status": "maintenance",
+    "implementation_date": "2023-03-15",
+    "implementor": 102
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 60,
+  "fields": {
+    "object": 52,
+    "system": 60,
+    "status": "active",
+    "implementation_date": "2023-11-01",
+    "implementor": 102
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 61,
+  "fields": {
+    "object": 53,
+    "system": 60,
+    "status": "maintenance",
+    "implementation_date": "2023-11-01",
+    "implementor": 103
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 62,
+  "fields": {
+    "object": 54,
+    "system": 60,
+    "status": "planned",
+    "implementation_date": "2023-11-01",
+    "implementor": 104
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 63,
+  "fields": {
+    "object": 55,
+    "system": 60,
+    "status": "active",
+    "implementation_date": "2023-11-01",
+    "implementor": 102
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 64,
+  "fields": {
+    "object": 56,
+    "system": 60,
+    "status": "decommissioned",
+    "implementation_date": "2023-11-01",
+    "implementor": 103
   }
 },
 {
@@ -1425,6 +1786,332 @@
   }
 },
 {
+  "model": "system.vendorproduct",
+  "pk": 78,
+  "fields": {
+    "product_name": "ПАТ-Скада «Горизонт» 5.0",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 38,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "5.0.3-LTS",
+    "release_year": "2023-01-01",
+    "end_of_support": "2031-12-31",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "2oo3 / горячий резерв"
+      ],
+      [
+        "Протоколы",
+        "OPC UA, Modbus TCP, PROFINET, HART"
+      ],
+      [
+        "Макс. тегов",
+        "250 000"
+      ],
+      [
+        "ОС",
+        "Astra Linux / Windows Server"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      83,
+      81,
+      85
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 79,
+  "fields": {
+    "product_name": "ПАТ-РСУ «Магистраль» X9",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 39,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "5.0.3-LTS",
+    "release_year": "2023-01-01",
+    "end_of_support": "2031-12-31",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "2oo3 / горячий резерв"
+      ],
+      [
+        "Протоколы",
+        "OPC UA, Modbus TCP, PROFINET, HART"
+      ],
+      [
+        "Макс. тегов",
+        "250 000"
+      ],
+      [
+        "ОС",
+        "Astra Linux / Windows Server"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      81,
+      82
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 80,
+  "fields": {
+    "product_name": "ПАТ-ПАЗ «Барьер» SIL3",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 40,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "5.0.3-LTS",
+    "release_year": "2023-01-01",
+    "end_of_support": "2031-12-31",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "2oo3 / горячий резерв"
+      ],
+      [
+        "Протоколы",
+        "OPC UA, Modbus TCP, PROFINET, HART"
+      ],
+      [
+        "Макс. тегов",
+        "250 000"
+      ],
+      [
+        "ОС",
+        "Astra Linux / Windows Server"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      84,
+      82
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 81,
+  "fields": {
+    "product_name": "ПАТ-Контроллер «Рубеж» R2000",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 34,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "5.0.3-LTS",
+    "release_year": "2023-01-01",
+    "end_of_support": "2031-12-31",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "2oo3 / горячий резерв"
+      ],
+      [
+        "Протоколы",
+        "OPC UA, Modbus TCP, PROFINET, HART"
+      ],
+      [
+        "Макс. тегов",
+        "250 000"
+      ],
+      [
+        "ОС",
+        "Astra Linux / Windows Server"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      89
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 82,
+  "fields": {
+    "product_name": "ПАТ-MES «Поток»",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 42,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "5.0.3-LTS",
+    "release_year": "2023-01-01",
+    "end_of_support": "2031-12-31",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "2oo3 / горячий резерв"
+      ],
+      [
+        "Протоколы",
+        "OPC UA, Modbus TCP, PROFINET, HART"
+      ],
+      [
+        "Макс. тегов",
+        "250 000"
+      ],
+      [
+        "ОС",
+        "Astra Linux / Windows Server"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      81,
+      86
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 83,
+  "fields": {
+    "product_name": "ПАТ-Вибро «Пульс» VMS",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 41,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "5.0.3-LTS",
+    "release_year": "2023-01-01",
+    "end_of_support": "2031-12-31",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "2oo3 / горячий резерв"
+      ],
+      [
+        "Протоколы",
+        "OPC UA, Modbus TCP, PROFINET, HART"
+      ],
+      [
+        "Макс. тегов",
+        "250 000"
+      ],
+      [
+        "ОС",
+        "Astra Linux / Windows Server"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      88,
+      90
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 84,
+  "fields": {
+    "product_name": "ИСПЦ-Платформа «Единство» DCS",
+    "vendor": 45,
+    "product_type": "complex",
+    "system_class": 39,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "4.2",
+    "release_year": "2022-06-01",
+    "end_of_support": null,
+    "technical_specs": [
+      [
+        "Отказоустойчивость",
+        "99,99%"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      82,
+      85
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 85,
+  "fields": {
+    "product_name": "ИСПЦ-Аналитика «Оракул» APC",
+    "vendor": 45,
+    "product_type": "complex",
+    "system_class": 37,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "4.2",
+    "release_year": "2022-06-01",
+    "end_of_support": null,
+    "technical_specs": [
+      [
+        "Отказоустойчивость",
+        "99,99%"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      81
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 86,
+  "fields": {
+    "product_name": "ИСПЦ-ЛИМС «Эталон»",
+    "vendor": 45,
+    "product_type": "complex",
+    "system_class": 50,
+    "description": "Флагманский программно-технический комплекс с резервированием, горячей заменой модулей, поддержкой протоколов OPC UA, Modbus, PROFINET и HART. Обеспечивает единую среду разработки, исполнения и диагностики для распределённых объектов.",
+    "version": "4.2",
+    "release_year": "2022-06-01",
+    "end_of_support": null,
+    "technical_specs": [
+      [
+        "Отказоустойчивость",
+        "99,99%"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      91,
+      92
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 87,
+  "fields": {
+    "product_name": "ПАТ-РСУ «Магистраль» X9 Enterprise",
+    "vendor": 44,
+    "product_type": "complex",
+    "system_class": 39,
+    "description": "Корпоративная редакция распределённой системы управления для территориально распределённых производств. Поддерживает мультиплощадочную архитектуру, единый historian и централизованное администрирование.",
+    "version": "9.1 Enterprise",
+    "release_year": "2023-09-01",
+    "end_of_support": "2033-09-01",
+    "technical_specs": [
+      [
+        "Площадок",
+        "до 32"
+      ],
+      [
+        "Тегов",
+        "1 000 000"
+      ]
+    ],
+    "subsystem_classes": [],
+    "industries": [
+      81,
+      82,
+      85
+    ]
+  }
+},
+{
   "model": "system.automationsystem",
   "pk": 37,
   "fields": {
@@ -1450,7 +2137,7 @@
     "autosystem_short_name": "",
     "system_class": 40,
     "product": 68,
-    "system_status": "active",
+    "system_status": "planned",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1468,7 +2155,7 @@
     "autosystem_short_name": "",
     "system_class": 34,
     "product": 66,
-    "system_status": "active",
+    "system_status": "unsupported",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1486,7 +2173,7 @@
     "autosystem_short_name": "",
     "system_class": 39,
     "product": 74,
-    "system_status": "active",
+    "system_status": "decommissioned",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1522,7 +2209,7 @@
     "autosystem_short_name": "",
     "system_class": 39,
     "product": 69,
-    "system_status": "active",
+    "system_status": "planned",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1540,7 +2227,7 @@
     "autosystem_short_name": "",
     "system_class": 40,
     "product": 70,
-    "system_status": "active",
+    "system_status": "unsupported",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1558,7 +2245,7 @@
     "autosystem_short_name": "",
     "system_class": 33,
     "product": 75,
-    "system_status": "active",
+    "system_status": "decommissioned",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1612,7 +2299,7 @@
     "autosystem_short_name": "",
     "system_class": 38,
     "product": 71,
-    "system_status": "active",
+    "system_status": "unsupported",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1630,7 +2317,7 @@
     "autosystem_short_name": "",
     "system_class": 50,
     "product": 77,
-    "system_status": "active",
+    "system_status": "decommissioned",
     "notes": "",
     "release_year": null,
     "technical_specs": null,
@@ -1654,6 +2341,404 @@
     "technical_specs": null,
     "modules": null,
     "interfaces": null,
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 50,
+  "fields": {
+    "autosystem_name": "РСУ «Магистраль» АНХК",
+    "autosystem_short_name": "РСУ",
+    "system_class": 39,
+    "product": 78,
+    "system_status": "active",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 51,
+  "fields": {
+    "autosystem_name": "ПАЗ «Барьер» ЭЛОУ-АВТ-10",
+    "autosystem_short_name": "ПАЗ",
+    "system_class": 40,
+    "product": 79,
+    "system_status": "planned",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 52,
+  "fields": {
+    "autosystem_name": "SCADA энергоблока",
+    "autosystem_short_name": "SCADA",
+    "system_class": 38,
+    "product": 80,
+    "system_status": "unsupported",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 53,
+  "fields": {
+    "autosystem_name": "APC каткрекинга",
+    "autosystem_short_name": "APC",
+    "system_class": 37,
+    "product": 81,
+    "system_status": "decommissioned",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 54,
+  "fields": {
+    "autosystem_name": "MES нефтехимического комплекса",
+    "autosystem_short_name": "MES",
+    "system_class": 42,
+    "product": 82,
+    "system_status": "active",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 55,
+  "fields": {
+    "autosystem_name": "LIMS центральной лаборатории",
+    "autosystem_short_name": "LIMS",
+    "system_class": 50,
+    "product": 83,
+    "system_status": "planned",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 56,
+  "fields": {
+    "autosystem_name": "Система вибромониторинга насосных",
+    "autosystem_short_name": "Система",
+    "system_class": 41,
+    "product": 84,
+    "system_status": "unsupported",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 57,
+  "fields": {
+    "autosystem_name": "ПЛК узлов смешения",
+    "autosystem_short_name": "ПЛК",
+    "system_class": 34,
+    "product": 85,
+    "system_status": "decommissioned",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 58,
+  "fields": {
+    "autosystem_name": "Диспетчеризация ТСБ",
+    "autosystem_short_name": "Диспетчеризация",
+    "system_class": 48,
+    "product": 86,
+    "system_status": "active",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 59,
+  "fields": {
+    "autosystem_name": "ТОиР и управление активами",
+    "autosystem_short_name": "ТОиР",
+    "system_class": 44,
+    "product": 72,
+    "system_status": "planned",
+    "notes": "Промышленная система автоматизации, введённая в рамках программы цифровой трансформации комплекса. Обеспечивает сбор данных, управление, противоаварийную защиту и информационную поддержку принятия решений. Интегрирована со смежными системами уровней L0–L4 через единую шину данных и historian.",
+    "release_year": "2022-01-01",
+    "technical_specs": [
+      [
+        "Резервирование",
+        "горячий резерв"
+      ],
+      [
+        "Кол-во сигналов",
+        "12 400"
+      ]
+    ],
+    "modules": [
+      "Сбор данных",
+      "Управление",
+      "Тренды",
+      "Отчётность"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "SQL"
+    ],
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 60,
+  "fields": {
+    "autosystem_name": "Единая РСУ «Магистраль» (мультиплощадочная)",
+    "autosystem_short_name": "РСУ-Магистраль",
+    "system_class": 39,
+    "product": 87,
+    "system_status": "active",
+    "notes": "Мультиплощадочная распределённая система управления, развёрнутая на пяти производственных объектах холдинга в единой архитектуре с централизованным мониторингом и общим хранилищем данных.",
+    "release_year": "2023-09-01",
+    "technical_specs": [
+      [
+        "Площадок",
+        "5"
+      ],
+      [
+        "Общее число тегов",
+        "480 000"
+      ]
+    ],
+    "modules": [
+      "Оперативное управление",
+      "Историзация",
+      "Аварийная сигнализация",
+      "Отчётность",
+      "Веб-доступ"
+    ],
+    "interfaces": [
+      "OPC UA",
+      "Modbus TCP",
+      "PROFINET",
+      "REST API"
+    ],
     "creator": 1,
     "subsystem_classes": []
   }
@@ -2019,6 +3104,256 @@
   }
 },
 {
+  "model": "entities.entity",
+  "pk": 100,
+  "fields": {
+    "entity_name": "ООО «ПромАвтоматика Технологии» (ПАТ)",
+    "inn": "9900000001",
+    "contacts": [
+      [
+        "Приёмная",
+        "+7 (495) 780-11-00"
+      ],
+      [
+        "Сервис 24/7",
+        "+7 (800) 555-77-99"
+      ],
+      [
+        "E-mail",
+        "info@pat.ru"
+      ]
+    ],
+    "registration_date": "1989-06-12",
+    "financial_data": [
+      [
+        "Выручка 2024",
+        "61,4 млрд ₽"
+      ],
+      [
+        "Сотрудников",
+        "5 200"
+      ],
+      [
+        "Проектов за год",
+        "120+"
+      ],
+      [
+        "Доля R&D",
+        "8%"
+      ]
+    ],
+    "entity_type": "vendor",
+    "is_partner": true,
+    "website": "https://www.pat-systems.ru",
+    "kam_name": "Смирнова Анастасия Владимировна",
+    "kam_phone": "+7 (495) 780-11-42",
+    "contact_person": "Кузнецов Дмитрий Сергеевич (ЦК ПА)",
+    "contact_phone": "+7 (495) 780-11-88",
+    "presentation_url": "https://cdn.showcase.ru/presentation-full.pdf",
+    "profile": "ООО «ПромАвтоматика Технологии» (ПАТ) — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП."
+  }
+},
+{
+  "model": "entities.entity",
+  "pk": 101,
+  "fields": {
+    "entity_name": "АО «Индустриальные Поставки и Комплектация»",
+    "inn": "9900000002",
+    "contacts": [
+      [
+        "Приёмная",
+        "+7 (495) 780-11-00"
+      ],
+      [
+        "Сервис 24/7",
+        "+7 (800) 555-77-99"
+      ],
+      [
+        "E-mail",
+        "info@ipk.ru"
+      ]
+    ],
+    "registration_date": "1994-06-12",
+    "financial_data": [
+      [
+        "Выручка 2024",
+        "28,9 млрд ₽"
+      ],
+      [
+        "Сотрудников",
+        "1 400"
+      ],
+      [
+        "Проектов за год",
+        "120+"
+      ],
+      [
+        "Доля R&D",
+        "8%"
+      ]
+    ],
+    "entity_type": "supplier",
+    "is_partner": true,
+    "website": "https://www.ipk-supply.ru",
+    "kam_name": "Смирнова Анастасия Владимировна",
+    "kam_phone": "+7 (495) 780-11-42",
+    "contact_person": "Кузнецов Дмитрий Сергеевич (ЦК ПА)",
+    "contact_phone": "+7 (495) 780-11-88",
+    "presentation_url": "https://cdn.showcase.ru/presentation-full.pdf",
+    "profile": "АО «Индустриальные Поставки и Комплектация» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП."
+  }
+},
+{
+  "model": "entities.entity",
+  "pk": 102,
+  "fields": {
+    "entity_name": "ГК «Сибирский Инжиниринговый Холдинг»",
+    "inn": "9900000003",
+    "contacts": [
+      [
+        "Приёмная",
+        "+7 (495) 780-11-00"
+      ],
+      [
+        "Сервис 24/7",
+        "+7 (800) 555-77-99"
+      ],
+      [
+        "E-mail",
+        "info@sib-eng.ru"
+      ]
+    ],
+    "registration_date": "1992-06-12",
+    "financial_data": [
+      [
+        "Выручка 2024",
+        "53,1 млрд ₽"
+      ],
+      [
+        "Сотрудников",
+        "4 600"
+      ],
+      [
+        "Проектов за год",
+        "120+"
+      ],
+      [
+        "Доля R&D",
+        "8%"
+      ]
+    ],
+    "entity_type": "system_integrator",
+    "is_partner": true,
+    "website": "https://www.sib-eng.ru",
+    "kam_name": "Смирнова Анастасия Владимировна",
+    "kam_phone": "+7 (495) 780-11-42",
+    "contact_person": "Кузнецов Дмитрий Сергеевич (ЦК ПА)",
+    "contact_phone": "+7 (495) 780-11-88",
+    "presentation_url": "https://cdn.showcase.ru/presentation-full.pdf",
+    "profile": "ГК «Сибирский Инжиниринговый Холдинг» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП."
+  }
+},
+{
+  "model": "entities.entity",
+  "pk": 103,
+  "fields": {
+    "entity_name": "ООО «Национальный Центр Промышленной Цифровизации»",
+    "inn": "9900000004",
+    "contacts": [
+      [
+        "Приёмная",
+        "+7 (495) 780-11-00"
+      ],
+      [
+        "Сервис 24/7",
+        "+7 (800) 555-77-99"
+      ],
+      [
+        "E-mail",
+        "info@ncpd.ru"
+      ]
+    ],
+    "registration_date": "1997-06-12",
+    "financial_data": [
+      [
+        "Выручка 2024",
+        "19,3 млрд ₽"
+      ],
+      [
+        "Сотрудников",
+        "2 100"
+      ],
+      [
+        "Проектов за год",
+        "120+"
+      ],
+      [
+        "Доля R&D",
+        "8%"
+      ]
+    ],
+    "entity_type": "engineering_company",
+    "is_partner": true,
+    "website": "https://www.ncpd.ru",
+    "kam_name": "Смирнова Анастасия Владимировна",
+    "kam_phone": "+7 (495) 780-11-42",
+    "contact_person": "Кузнецов Дмитрий Сергеевич (ЦК ПА)",
+    "contact_phone": "+7 (495) 780-11-88",
+    "presentation_url": "https://cdn.showcase.ru/presentation-full.pdf",
+    "profile": "ООО «Национальный Центр Промышленной Цифровизации» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП."
+  }
+},
+{
+  "model": "entities.entity",
+  "pk": 104,
+  "fields": {
+    "entity_name": "АО «Интегрированные Системы Полного Цикла»",
+    "inn": "9900000005",
+    "contacts": [
+      [
+        "Приёмная",
+        "+7 (495) 780-11-00"
+      ],
+      [
+        "Сервис 24/7",
+        "+7 (800) 555-77-99"
+      ],
+      [
+        "E-mail",
+        "info@ispc.ru"
+      ]
+    ],
+    "registration_date": "1985-06-12",
+    "financial_data": [
+      [
+        "Выручка 2024",
+        "88,0 млрд ₽"
+      ],
+      [
+        "Сотрудников",
+        "7 900"
+      ],
+      [
+        "Проектов за год",
+        "120+"
+      ],
+      [
+        "Доля R&D",
+        "8%"
+      ]
+    ],
+    "entity_type": "full_cycle_vendor",
+    "is_partner": true,
+    "website": "https://www.ispc.ru",
+    "kam_name": "Смирнова Анастасия Владимировна",
+    "kam_phone": "+7 (495) 780-11-42",
+    "contact_person": "Кузнецов Дмитрий Сергеевич (ЦК ПА)",
+    "contact_phone": "+7 (495) 780-11-88",
+    "presentation_url": "https://cdn.showcase.ru/presentation-full.pdf",
+    "profile": "АО «Интегрированные Системы Полного Цикла» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП."
+  }
+},
+{
   "model": "entities.vendorprofile",
   "pk": 37,
   "fields": {
@@ -2068,13 +3403,28 @@
   }
 },
 {
+  "model": "entities.vendorprofile",
+  "pk": 44,
+  "fields": {
+    "entity": 100
+  }
+},
+{
+  "model": "entities.vendorprofile",
+  "pk": 45,
+  "fields": {
+    "entity": 104
+  }
+},
+{
   "model": "entities.supplierprofile",
   "pk": 25,
   "fields": {
     "entity": 89,
     "products": [
       71,
-      66
+      66,
+      87
     ]
   }
 },
@@ -2085,7 +3435,8 @@
     "entity": 90,
     "products": [
       75,
-      68
+      68,
+      87
     ]
   }
 },
@@ -2111,6 +3462,36 @@
   "fields": {
     "entity": 99,
     "products": []
+  }
+},
+{
+  "model": "entities.supplierprofile",
+  "pk": 30,
+  "fields": {
+    "entity": 101,
+    "products": [
+      72,
+      71,
+      75,
+      74,
+      77,
+      76,
+      81,
+      80,
+      79,
+      87,
+      78
+    ]
+  }
+},
+{
+  "model": "entities.supplierprofile",
+  "pk": 31,
+  "fields": {
+    "entity": 104,
+    "products": [
+      87
+    ]
   }
 },
 {
@@ -2148,6 +3529,22 @@
   }
 },
 {
+  "model": "entities.systemintegratorprofile",
+  "pk": 20,
+  "fields": {
+    "entity": 102,
+    "managing_owner": 30,
+    "vendor_partners": [
+      37,
+      38,
+      39,
+      40,
+      41,
+      42
+    ]
+  }
+},
+{
   "model": "entities.systemintegratorfunctioncompetency",
   "pk": 16,
   "fields": {
@@ -2172,6 +3569,33 @@
     "profile": 18,
     "system_class": 53,
     "industry": 81
+  }
+},
+{
+  "model": "entities.systemintegratorfunctioncompetency",
+  "pk": 19,
+  "fields": {
+    "profile": 20,
+    "system_class": 53,
+    "industry": null
+  }
+},
+{
+  "model": "entities.systemintegratorfunctioncompetency",
+  "pk": 20,
+  "fields": {
+    "profile": 20,
+    "system_class": null,
+    "industry": 92
+  }
+},
+{
+  "model": "entities.systemintegratorfunctioncompetency",
+  "pk": 21,
+  "fields": {
+    "profile": 20,
+    "system_class": 46,
+    "industry": 91
   }
 },
 {
@@ -2242,6 +3666,36 @@
   }
 },
 {
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 39,
+  "fields": {
+    "entity": 103,
+    "region": "Красноярск / Иркутск / Ангарск",
+    "resident_object": null,
+    "product_competencies": [
+      72,
+      71,
+      75,
+      82,
+      83,
+      81,
+      80,
+      79,
+      78
+    ]
+  }
+},
+{
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 40,
+  "fields": {
+    "entity": 104,
+    "region": "",
+    "resident_object": null,
+    "product_competencies": []
+  }
+},
+{
   "model": "entities.engineeringcompanyfunctioncompetency",
   "pk": 33,
   "fields": {
@@ -2274,6 +3728,60 @@
   "fields": {
     "profile": 35,
     "system_class": 42,
+    "industry": null
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 37,
+  "fields": {
+    "profile": 39,
+    "system_class": 39,
+    "industry": 81
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 38,
+  "fields": {
+    "profile": 39,
+    "system_class": 40,
+    "industry": 82
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 39,
+  "fields": {
+    "profile": 39,
+    "system_class": 42,
+    "industry": 86
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 40,
+  "fields": {
+    "profile": 39,
+    "system_class": 38,
+    "industry": 83
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 41,
+  "fields": {
+    "profile": 39,
+    "system_class": null,
+    "industry": 85
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 42,
+  "fields": {
+    "profile": 39,
+    "system_class": 37,
     "industry": null
   }
 },
@@ -2311,6 +3819,20 @@
     "products": [
       77,
       76
+    ]
+  }
+},
+{
+  "model": "entities.fullcyclevendorprofile",
+  "pk": 16,
+  "fields": {
+    "entity": 104,
+    "region": "Москва / Санкт-Петербург / Казань",
+    "resident_object": null,
+    "products": [
+      85,
+      86,
+      84
     ]
   }
 },
@@ -2356,6 +3878,42 @@
   "fields": {
     "profile": 15,
     "system_class": 50,
+    "industry": null
+  }
+},
+{
+  "model": "entities.fullcyclefunctioncompetency",
+  "pk": 26,
+  "fields": {
+    "profile": 16,
+    "system_class": 39,
+    "industry": 82
+  }
+},
+{
+  "model": "entities.fullcyclefunctioncompetency",
+  "pk": 27,
+  "fields": {
+    "profile": 16,
+    "system_class": 37,
+    "industry": 81
+  }
+},
+{
+  "model": "entities.fullcyclefunctioncompetency",
+  "pk": 28,
+  "fields": {
+    "profile": 16,
+    "system_class": 50,
+    "industry": 92
+  }
+},
+{
+  "model": "entities.fullcyclefunctioncompetency",
+  "pk": 29,
+  "fields": {
+    "profile": 16,
+    "system_class": 42,
     "industry": null
   }
 }

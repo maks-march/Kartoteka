@@ -161,7 +161,7 @@ class ObjectSystem(models.Model):
         ('planned', 'Планируется'),
         ('active', 'В эксплуатации'),
         ('maintenance', 'Обслуживание'),
-        ('decommissioned', 'Выведена из эксплуатации'),
+        ('decommissioned', 'Не эксплуатируется'),
     ]
 
     object = models.ForeignKey(Object, on_delete=models.CASCADE, verbose_name="Объект")
