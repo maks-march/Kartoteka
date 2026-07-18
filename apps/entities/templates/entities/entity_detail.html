@@ -40,6 +40,21 @@
                     </div>
                 </div>
             </div>
+        {% comment %}Строка 1: Контакты | Реквизиты (рядом).{% endcomment %}
+        <div class="top-row">
+            <div class="info-block">
+                <h3 class="info-block-title">Контакты</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="info-label">КАМ (Key Account Manager)</span>
+                        <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Контакт от ЦК ПА</span>
+                        <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
+                    </div>
+                </div>
+            </div>
 
             <div class="info-block">
                 <h3 class="info-block-title">Реквизиты</h3>
