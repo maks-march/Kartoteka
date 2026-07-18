@@ -168,7 +168,14 @@ Table VendorProduct {
   release_year date [note: 'Дата выпуска']
   end_of_support date [note: 'Конец поддержки']
   technical_specs json [note: 'Технические характеристики']
-  industries json [note: 'Отрасли применения (список; значения из категорий 1го уровня, без связи)']
+}
+
+
+// M2M: отрасли применения продукта — ссылки на категории 1-го уровня.
+Table VendorProduct_industries {
+  id integer [primary key]
+  vendorproduct_id integer [ref: > VendorProduct.id]
+  category_id integer [ref: > Category.id, note: 'Отрасль — категория 1-го уровня']
 }
 
 
@@ -203,9 +210,7 @@ Table Entity {
 
   financial_data json [note: 'Финансовые показатели (пока не используем)']
   contacts json [note: 'Контактная информация (список)']
-  industries json [note: 'Отрасли применения (список; значения из категорий 1го уровня, без связи)']
 }
-
 
 // Профиль вендора (типы vendor / full_cycle_vendor).
 // Почти пустой по полям, но служит точкой привязки продуктов:
@@ -253,6 +258,15 @@ Table SystemIntegratorProfile_vendor_partners {
   vendorprofile_id integer [ref: > VendorProfile.id]
 }
 
+// Узкая компетенция инж. компании по функции — совокупность «класс систем +
+// индустрия». Каждая строка = одна связанная пара (напр. MES · Нефтехимия);
+// компания может иметь несколько таких пар.
+Table SystemIntegrator_FunctionCompetency {
+  id integer [primary key]
+  profile_id integer [ref: > SystemIntegratorProfile.id, note: 'Профиль инж. компании']
+  system_class_id integer [ref: > AutomationClass.id, note: 'Класс систем']
+  industry_id integer [ref: > Category.id, note: 'Индустрия — категория 1-го уровня']
+}
 
 // Профиль инжиниринговой компании (типы engineering_company / full_cycle_vendor).
 // Регион деятельности, вхожий объект и узкие компетенции (по продуктам и по функции).
@@ -272,15 +286,14 @@ Table EngineeringCompanyProfile_product_competencies {
   vendorproduct_id integer [ref: > VendorProduct.id]
 }
 
-
 // Узкая компетенция инж. компании по функции — совокупность «класс систем +
 // индустрия». Каждая строка = одна связанная пара (напр. MES · Нефтехимия);
 // компания может иметь несколько таких пар.
-Table FunctionCompetency {
+Table EngineeringCompany_FunctionCompetency {
   id integer [primary key]
   profile_id integer [ref: > EngineeringCompanyProfile.id, note: 'Профиль инж. компании']
   system_class_id integer [ref: > AutomationClass.id, note: 'Класс систем']
-  industry varchar [note: 'Индустрия (значение из категорий 1го уровня, без жёсткой связи)']
+  industry_id integer [ref: > Category.id, note: 'Индустрия — категория 1-го уровня']
 }
 
 // Вендор полного цикла — dedicated профиль
@@ -297,14 +310,14 @@ Table FullCycleFunctionCompetency {
   id integer [primary key]
   profile_id integer [ref: > FullCycleVendorProfile.id, note: 'Профиль вендора полного цикла']
   system_class_id integer [ref: > AutomationClass.id]
-  industry varchar [note: 'Индустрия (значение из категорий 1го уровня)']
+  industry_id integer [ref: > Category.id, note: 'Индустрия — категория 1-го уровня']
 }
 
 // Поставляемые продукты (M2M)
 Table FullCycleVendorProfile_products {
   id integer [primary key]
-  fullcycle_vendor_profile_id integer [ref: > FullCycleVendorProfile.id]
-  vendor_product_id integer [ref: > VendorProduct.id]
+  fullcyclevendorprofile_id integer [ref: > FullCycleVendorProfile.id]
+  vendorproduct_id integer [ref: > VendorProduct.id]
 }
 
 
@@ -333,10 +346,12 @@ TableGroup "Связи" [color: #2E6B2E] {
   VendorProduct_subsystem_classes
   SupplierProfile_products
   SystemIntegratorProfile_vendor_partners
+  SystemIntegrator_FunctionCompetency
   EngineeringCompanyProfile_product_competencies
-  FunctionCompetency
+  EngineeringCompany_FunctionCompetency
   FullCycleFunctionCompetency
   FullCycleVendorProfile_products
+  VendorProduct_industries
 }
 
 
