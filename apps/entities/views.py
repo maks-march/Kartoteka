@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from apps.entities.usecases.entity_usecase import EntityUseCase
 from apps.entities.models import Entity
 from apps.categories.usecases.category_usecase import CategoryUseCase
+from apps.objects.models import ObjectSystem
+from apps.system.models import AutomationClass
 from common.summary import summary_group as _summary_group
 
 
@@ -59,19 +61,31 @@ def _extract_entity_fields(post):
     return data
 
 
-def _parse_competencies(post):
-    """Пары (system_class_id, industry_id) из параллельных массивов
-    comp_class / comp_industry. Индустрия — id категории 1-го уровня.
-    Пустые/неполные строки пропускаются."""
-    classes = post.getlist("comp_class")
-    industries = post.getlist("comp_industry")
+def _parse_pairs_fields(post, class_field, industry_field):
+    """Пары (system_class_id, industry_id) из параллельных массивов формы.
+
+    Ссылки nullable: пустое значение допустимо (означает «все»). Отбрасываются
+    только строки, где ОБА поля пусты (бессмысленная запись).
+    """
+    classes = post.getlist(class_field)
+    industries = post.getlist(industry_field)
     pairs = []
     for class_id, industry_id in zip(classes, industries):
         class_id = (class_id or "").strip()
         industry_id = (industry_id or "").strip()
-        if class_id and industry_id:
+        if class_id or industry_id:
             pairs.append((class_id, industry_id))
     return pairs
+
+
+def _parse_competencies(post):
+    """Пары компетенций инж. компании / ФПЦ (comp_class / comp_industry)."""
+    return _parse_pairs_fields(post, "comp_class", "comp_industry")
+
+
+def _parse_exclusions(post):
+    """Пары исключений системного интегратора (excl_class / excl_industry)."""
+    return _parse_pairs_fields(post, "excl_class", "excl_industry")
 
 
 def _extract_engineering_fields(post):
@@ -189,11 +203,16 @@ def _form_context(**extra):
     owner_entities = OwnerEntityUseCase().list()
     integrator_partner_ids = set()
     integrator_owner_id = None
+    exclusion_pairs_json = []
     if entity is not None and getattr(entity, "is_system_integrator_type", False):
         sip = getattr(entity, "system_integrator_profile", None)
         if sip is not None:
             integrator_partner_ids = set(sip.vendor_partners.values_list("pk", flat=True))
             integrator_owner_id = sip.managing_owner_id
+            exclusion_pairs_json = [
+                {"class_id": fc.system_class_id, "industry_id": fc.industry_id}
+                for fc in sip.function_competencies.all()
+            ]
     ctx = {
         "entity_type_choices": Entity.ENTITY_TYPE_CHOICES,
         "industry_categories": industry_categories,
@@ -214,6 +233,7 @@ def _form_context(**extra):
         "owner_entities": owner_entities,
         "integrator_partner_ids": integrator_partner_ids,
         "integrator_owner_id": integrator_owner_id,
+        "exclusion_pairs_json": exclusion_pairs_json,
     }
     ctx.update(extra)
     return ctx
@@ -257,6 +277,15 @@ def entity_detail(request, pk):
         "systems__system_class"
     )
 
+    # Поставляемые продукты (участник — поставщик), со счётчиком систем.
+    supplier_profile = getattr(entity, "supplier_profile", None)
+    if supplier_profile is not None:
+        supplied_products = supplier_profile.products.select_related(
+            "vendor__entity"
+        ).prefetch_related("systems")
+    else:
+        supplied_products = []
+
     implemented = list(implemented_links)
     # Системы, созданные на продуктах этого вендора
     vendor_systems = [s for p in vendor_products for s in p.systems.all()]
@@ -270,17 +299,52 @@ def entity_detail(request, pk):
         (s.system_class for s in vendor_systems if s.system_class),
         key=lambda c: c.pk,
     )
+
+    # ---- Статусы внедрения систем (счётчики по статусу, цвет из модели) ----
+    status_counts = {}
+    for link in implemented:
+        status_counts[link.status] = status_counts.get(link.status, 0) + 1
+    status_breakdown = [
+        {
+            "label": label,
+            "count": status_counts.get(code, 0),
+            "tag": ObjectSystem.STATUS_TAG_CLASSES.get(code, "tag-muted"),
+        }
+        for code, label in ObjectSystem.STATUS_CHOICES
+        if status_counts.get(code, 0) > 0
+    ]
+
+    # ---- Покрытие по уровням автоматизации L0..L4 (счётчики) ----
+    level_counts = {}
+    for link in implemented:
+        cls = link.system.system_class if link.system else None
+        if cls is not None:
+            level_counts[cls.level] = level_counts.get(cls.level, 0) + 1
+    level_coverage = [
+        {"level": lvl, "label": label, "count": level_counts.get(lvl, 0)}
+        for lvl, label in AutomationClass.LEVEL_CHOICES
+    ]
+
+    # Счётчик продуктов участника: вендорские + поставляемые.
+    if entity.can_have_products:
+        products_count = vendor_products.count() + len(supplied_products)
+    else:
+        products_count = None
+
     summary = {
         "implemented_count": len(implemented),
-        "products_count": vendor_products.count() if entity.can_have_products else None,
+        "products_count": products_count,
         "implemented_classes": implemented_classes,
         "vendor_classes": vendor_classes,
         "is_vendor": entity.can_have_products,
+        "status_breakdown": status_breakdown,
+        "level_coverage": level_coverage,
     }
     return render(request, "entities/entity_detail.html", {
         "entity": entity,
         "implemented_links": implemented_links,
         "vendor_products": vendor_products,
+        "supplied_products": supplied_products,
         "summary": summary,
     })
 
@@ -304,6 +368,7 @@ def entity_create(request):
                 entity,
                 managing_owner_id=request.POST.get("managing_owner") or None,
                 vendor_partner_ids=request.POST.getlist("vendor_partners"),
+                exclusions=_parse_exclusions(request.POST),
             )
             usecase.save_full_cycle_profile(entity, **_extract_engineering_fields(request.POST))
             return redirect("entity-detail", pk=entity.pk)
@@ -334,6 +399,7 @@ def entity_edit(request, pk):
                 entity,
                 managing_owner_id=request.POST.get("managing_owner") or None,
                 vendor_partner_ids=request.POST.getlist("vendor_partners"),
+                exclusions=_parse_exclusions(request.POST),
             )
             usecase.save_full_cycle_profile(entity, **_extract_engineering_fields(request.POST))
             return redirect("entity-detail", pk=pk)

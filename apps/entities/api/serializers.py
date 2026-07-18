@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from apps.entities.models import (
-    Entity, EngineeringCompanyProfile, FunctionCompetency,
+    Entity, EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency,
     FullCycleVendorProfile, FullCycleFunctionCompetency,
     SupplierProfile, SystemIntegratorProfile,
 )
@@ -15,7 +15,7 @@ class FunctionCompetencySerializer(serializers.ModelSerializer):
 
     class Meta:
         """Поля сериализатора."""
-        model = FunctionCompetency
+        model = EngineeringCompanyFunctionCompetency
         fields = ["id", "system_class", "system_class_name", "industry", "industry_name"]
 
 

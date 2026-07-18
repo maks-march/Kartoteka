@@ -586,6 +586,11 @@ td a:hover {
     background: #ffebee;
     color: #c62828;
 }
+/* Компетенция «есть класс, но Все отрасли» — бирюзовый */
+.tag-teal {
+    background: #e0f2f1;
+    color: #00796b;
+}
 
 /* ===== Detail: секции карточек с информацией ===== */
 /* Двухколоночная раскладка детальной карточки: данные слева (70%),
@@ -798,6 +803,48 @@ td a:hover {
 
 @media (max-width: 900px) {
     .info-block { width: 100%; }
+}
+
+/* ===== Карточка участника: верхняя сетка Контакты | Реквизиты, ниже Профиль ===== */
+/* Две колонки: левая — Контакты + профильные плитки; правая — Реквизиты +
+   «Профиль компании» (высокая карточка, тянется до низа левой колонки). */
+.top-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    align-items: stretch;
+}
+.top-grid > .top-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+.top-grid .info-block { margin-top: 0; }
+/* Профильные плитки (регион/вхожий/ЮЛ) идут в один столбец. */
+.top-grid .info-block .info-cards { grid-template-columns: 1fr; }
+/* «Профиль компании» занимает остаток высоты правой колонки. */
+.top-grid .profile-card { flex: 1; margin-top: 0; }
+@media (max-width: 700px) {
+    .top-grid { grid-template-columns: 1fr; }
+}
+
+/* Две таблицы продуктов рядом (вендорские + поставляемые у ФПЦ). */
+.product-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+    align-items: start;
+}
+.product-cols > .card { margin-bottom: 0; }
+@media (max-width: 900px) {
+    .product-cols { grid-template-columns: 1fr; }
+}
+/* Общий контейнер тегов внутри info-card (детальная карточка). */
+.info-card .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 /* ===== Textarea на всю ширину ===== */

@@ -98,92 +98,61 @@ document.addEventListener('DOMContentLoaded', function () {
         sync();
     });
 
-    /* ---- Компетенция по функции: строки «класс + индустрия» ----
-       Оба поля — combobox «только из списка»: подсказки снизу в нашем стиле,
-       свой вариант ввести нельзя (невалидный ввод → предупреждение и откат к
-       последнему выбранному). Класс шлёт id, индустрия — название. */
-    const compAdd = document.getElementById('competencyAddBtn');
-    const compList = document.getElementById('competencyList');
-    if (compAdd && compList) {
+    /* ---- Редакторы строк «класс + индустрия» (select с опцией «Все») ----
+       Универсальная механика для двух блоков:
+        - компетенции инж. компании / ФПЦ (поля comp_class / comp_industry);
+        - исключения системного интегратора (поля excl_class / excl_industry).
+       Пустое значение (опция «— Все —») допустимо: класс и индустрия nullable. */
+    (function () {
         const jsonEl = function (id) { const e = document.getElementById(id); try { return e ? JSON.parse(e.textContent) : []; } catch (x) { return []; } };
         const CLASSES = jsonEl('competencyClassesData');
-        const INDUSTRIES = jsonEl('competencyIndustriesData').map(function (c) { return { id: c.id, label: c.label, desc: '' }; });
-        const EXISTING = jsonEl('competencyExistingData');
+        const INDUSTRIES = jsonEl('competencyIndustriesData');
 
-        function makeCombo(options, fieldName, placeholder, warnText, preId) {
-            const combo = document.createElement('div'); combo.className = 'combo';
-            const input = document.createElement('input');
-            input.type = 'text'; input.placeholder = placeholder; input.autocomplete = 'off';
-            const hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = fieldName; hidden.value = '';
-            const panel = document.createElement('div'); panel.className = 'combo-panel';
-            const empty = document.createElement('div'); empty.className = 'combo-empty'; empty.textContent = 'Ничего не найдено';
-            const warn = document.createElement('div'); warn.className = 'combo-warn'; warn.textContent = warnText;
-            let lastValid = { label: '', id: '' };
-
-            const byLabel = function (txt) {
-                return options.find(function (o) { return o.label.toLowerCase() === txt.trim().toLowerCase(); });
-            };
-
+        function makeSelect(options, fieldName, allLabel, preId) {
+            const sel = document.createElement('select');
+            sel.name = fieldName;
+            const optAll = document.createElement('option');
+            optAll.value = ''; optAll.textContent = allLabel;
+            sel.appendChild(optAll);
             options.forEach(function (o) {
-                const it = document.createElement('div'); it.className = 'system-item';
-                it.setAttribute('data-label', o.label.toLowerCase());
-                const name = document.createElement('span'); name.className = 'system-name'; name.textContent = o.label;
-                it.appendChild(name);
-                if (o.desc) { const d = document.createElement('span'); d.className = 'system-info'; d.textContent = o.desc; it.appendChild(d); }
-                it.addEventListener('mousedown', function (e) {   // раньше blur
-                    e.preventDefault();
-                    input.value = o.label; hidden.value = o.id;
-                    combo.classList.remove('open', 'invalid');
-                    lastValid = { label: o.label, id: String(o.id) };
-                });
-                panel.appendChild(it);
+                const op = document.createElement('option');
+                op.value = String(o.id); op.textContent = o.label;
+                if (preId !== undefined && preId !== null && preId !== '' && String(o.id) === String(preId)) {
+                    op.selected = true;
+                }
+                sel.appendChild(op);
             });
-            panel.appendChild(empty);
-
-            if (preId !== undefined && preId !== null && preId !== '') {
-                const o = options.find(function (x) { return String(x.id) === String(preId); });
-                if (o) { input.value = o.label; hidden.value = o.id; lastValid = { label: o.label, id: String(o.id) }; }
-            }
-
-            function filter() {
-                const q = input.value.toLowerCase().trim(); let any = false;
-                panel.querySelectorAll('.system-item').forEach(function (it) {
-                    const ok = it.getAttribute('data-label').indexOf(q) !== -1;
-                    it.style.display = ok ? '' : 'none'; if (ok) any = true;
-                });
-                empty.style.display = any ? 'none' : 'block';
-            }
-            input.addEventListener('focus', function () { combo.classList.remove('invalid'); combo.classList.add('open'); filter(); });
-            input.addEventListener('input', function () { combo.classList.add('open'); combo.classList.remove('invalid'); hidden.value = ''; filter(); });
-            input.addEventListener('blur', function () {
-                setTimeout(function () {
-                    combo.classList.remove('open');
-                    if (input.value.trim() === '') { hidden.value = ''; lastValid = { label: '', id: '' }; combo.classList.remove('invalid'); return; }
-                    const m = byLabel(input.value);
-                    if (m) { hidden.value = String(m.id); input.value = m.label; lastValid = { label: m.label, id: String(m.id) }; combo.classList.remove('invalid'); }
-                    else { combo.classList.add('invalid'); input.value = lastValid.label; hidden.value = lastValid.id; }
-                }, 120);
-            });
-
-            combo.appendChild(input); combo.appendChild(hidden); combo.appendChild(panel); combo.appendChild(warn);
-            return combo;
+            return sel;
         }
 
-        function makeRow(preClassId, preIndustry) {
-            const row = document.createElement('div'); row.className = 'kv-row';
-            row.appendChild(makeCombo(CLASSES, 'comp_class', 'Класс (выберите из списка)', 'Выберите класс из списка', preClassId));
-            row.appendChild(makeCombo(INDUSTRIES, 'comp_industry', 'Индустрия (выберите из списка)', 'Выберите индустрию из списка', preIndustry));
-            const rm = document.createElement('button');
-            rm.type = 'button'; rm.className = 'btn btn-danger btn-sm kv-remove'; rm.title = 'Удалить';
-            rm.textContent = '\u2212';
-            rm.addEventListener('click', function () { row.remove(); });
-            row.appendChild(rm);
-            return row;
+        function initEditor(listId, addBtnId, dataId, classField, industryField) {
+            const list = document.getElementById(listId);
+            const addBtn = document.getElementById(addBtnId);
+            if (!list || !addBtn) return;
+            const EXISTING = jsonEl(dataId);
+
+            function makeRow(preClassId, preIndustryId) {
+                const row = document.createElement('div'); row.className = 'kv-row';
+                row.appendChild(makeSelect(CLASSES, classField, '— Все классы —', preClassId));
+                row.appendChild(makeSelect(INDUSTRIES, industryField, '— Все отрасли —', preIndustryId));
+                const rm = document.createElement('button');
+                rm.type = 'button'; rm.className = 'btn btn-danger btn-sm kv-remove'; rm.title = 'Удалить';
+                rm.textContent = '\u2212';
+                rm.addEventListener('click', function () { row.remove(); });
+                row.appendChild(rm);
+                return row;
+            }
+
+            EXISTING.forEach(function (p) { list.appendChild(makeRow(p.class_id, p.industry_id)); });
+            addBtn.addEventListener('click', function () { list.appendChild(makeRow()); });
         }
 
-        EXISTING.forEach(function (p) { compList.appendChild(makeRow(p.class_id, p.industry_id)); });
-        compAdd.addEventListener('click', function () { compList.appendChild(makeRow()); });
-    }
+        // Компетенции инж. компании / ФПЦ.
+        initEditor('competencyList', 'competencyAddBtn', 'competencyExistingData', 'comp_class', 'comp_industry');
+        // Исключения системного интегратора («от обратного»).
+        initEditor('exclusionList', 'exclusionAddBtn', 'exclusionExistingData', 'excl_class', 'excl_industry');
+    })();
+
 
     /* ---- Переключатель партнёрства ---- */
     const pt = document.getElementById('partnerToggle');

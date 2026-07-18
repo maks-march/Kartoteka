@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load entity_extras %}
 
 {% block title %}{{ entity.entity_name }}{% endblock %}
 
@@ -24,186 +25,203 @@
     <div class="detail-body">
     <div class="detail-main">
 
-    <!-- ===== Реквизиты ===== -->
-    <div class="info-block">
-        <h3 class="info-block-title">Реквизиты</h3>
-        <div class="info-cards-two">
-            <div class="info-card">
-                <span class="info-label">ИНН</span>
-                <span class="info-value">{{ entity.inn|default:'—' }}</span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Дата регистрации</span>
-                <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Сайт</span>
-                <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}—{% endif %}</span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Презентация</span>
-                <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}—{% endif %}</span>
-            </div>
-        </div>
-    </div>
+        {% comment %}Верхняя сетка: слева Контакты + профильные плитки,
+        справа Реквизиты + «Профиль компании».{% endcomment %}
+        <div class="top-grid">
 
-    <!-- ===== Контакты ===== -->
-    <div class="info-block">
-        <h3 class="info-block-title">Контакты</h3>
-        <div class="info-cards-two">
-            <div class="info-card">
-                <span class="info-label">КАМ (Key Account Manager)</span>
-                <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
-            </div>
-            <div class="info-card">
-                <span class="info-label">Контакт от ЦК ПА</span>
-                <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
-            </div>
-            {% for key, value in entity.contacts_items %}
-            <div class="info-card">
-                <span class="info-label">{{ key }}</span>
-                <span class="info-value">{{ value }}</span>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+            {# ===== Левая колонка: Контакты + профильные плитки ===== #}
+            <div class="top-col">
+                <div class="info-block">
+                    <h3 class="info-block-title">Контакты</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <span class="info-label">КАМ (Key Account Manager)</span>
+                            <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Контакт от ЦК ПА</span>
+                            <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- ===== Отрасли и профиль ===== -->
-    <div class="info-block">
-        <h3 class="info-block-title">Отрасли и профиль</h3>
-        <div class="info-card full">
-            <span class="info-label">Отрасли</span>
-            {% if entity.industries.all %}
-            <div class="card-tags">
-                {% for ind in entity.industries.all %}<span class="tag tag-muted">{{ ind.category_name }}</span>{% endfor %}
+                {% comment %}Профильные плитки зависят от типа участника.{% endcomment %}
+                {% if entity.entity_type == "full_cycle_vendor" %}
+                {% with prof=entity.full_cycle_profile %}
+                <div class="info-block">
+                    <h3 class="info-block-title">Профиль</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <span class="info-label">Локация (регион)</span>
+                            <span class="info-value">{{ prof.region|default:'—' }}</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Вхожий объект</span>
+                            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% elif entity.entity_type == "engineering_company" %}
+                {% with prof=entity.engineering_profile %}
+                <div class="info-block">
+                    <h3 class="info-block-title">Профиль</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <span class="info-label">Локация (регион)</span>
+                            <span class="info-value">{{ prof.region|default:'—' }}</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Вхожий объект</span>
+                            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% elif entity.is_system_integrator_type %}
+                {% with sip=entity.system_integrator_profile %}
+                <div class="info-block">
+                    <h3 class="info-block-title">Профиль</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <span class="info-label">Юридическое лицо</span>
+                            <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% endif %}
             </div>
-            {% else %}<span class="info-value">—</span>{% endif %}
-        </div>
-        <div class="info-card full" style="margin-top:12px">
-            <span class="info-label">Профиль компании</span>
-            <span class="info-value desc-text">{{ entity.profile|default:'—' }}</span>
-        </div>
-    </div>
 
-    <!-- ===== Финансовые показатели ===== -->
-    {% if entity.financial_data_items %}
-    <div class="info-block">
-        <h3 class="info-block-title">Финансовые показатели</h3>
-        <div class="tech-grid">
-            {% for key, value in entity.financial_data_items %}
-            <div class="tech-tile">
-                <span class="tech-key" title="{{ key }}">{{ key }}</span>
-                <span class="tech-val">{{ value }}</span>
+            {# ===== Правая колонка: Реквизиты + «Профиль компании» ===== #}
+            <div class="top-col">
+                <div class="info-block">
+                    <h3 class="info-block-title">Реквизиты</h3>
+                    <div class="info-cards-two">
+                        <div class="info-card">
+                            <span class="info-label">ИНН</span>
+                            <span class="info-value">{{ entity.inn|default:'—' }}</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Дата регистрации</span>
+                            <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Сайт</span>
+                            <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}—{% endif %}</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Презентация</span>
+                            <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}—{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card full profile-card">
+                    <span class="info-label">Профиль компании</span>
+                    <span class="info-value desc-text">{{ entity.profile|default:'—' }}</span>
+                </div>
             </div>
-            {% endfor %}
+
         </div>
-    </div>
-    {% endif %}
+
+        {% comment %}Компетенции / партнёры (во всю ширину). Зависят от типа.{% endcomment %}
+        {% if entity.entity_type == "full_cycle_vendor" %}
+        {% with prof=entity.full_cycle_profile %}
+        <div class="info-block">
+            <div class="info-card full">
+                <span class="info-label">Узкая компетенция по продуктам</span>
+                {% if prof.products.all %}
+                <div class="card-tags">
+                    {% for p in prof.products.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+                </div>
+                {% else %}<span class="info-value">—</span>{% endif %}
+            </div>
+            <div class="info-card full">
+                <span class="info-label">Узкая компетенция по функции</span>
+                {% if prof.function_competencies.all %}
+                <div class="card-tags">
+                    {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
+                </div>
+                {% else %}<span class="info-value">—</span>{% endif %}
+            </div>
+        </div>
+        {% endwith %}
+        {% elif entity.entity_type == "engineering_company" %}
+        {% with prof=entity.engineering_profile %}
+        <div class="info-block">
+            <div class="info-card full">
+                <span class="info-label">Узкая компетенция по продуктам</span>
+                {% if prof.product_competencies.all %}
+                <div class="card-tags">
+                    {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+                </div>
+                {% else %}<span class="info-value">—</span>{% endif %}
+            </div>
+            <div class="info-card full">
+                <span class="info-label">Узкая компетенция по функции</span>
+                {% if prof.function_competencies.all %}
+                <div class="card-tags">
+                    {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
+                </div>
+                {% else %}<span class="info-value">—</span>{% endif %}
+            </div>
+        </div>
+        {% endwith %}
+        {% elif entity.is_system_integrator_type %}
+        {% with sip=entity.system_integrator_profile %}
+        <div class="info-block">
+            <div class="info-card full">
+                <span class="info-label">Вендоры-партнёры</span>
+                {% if sip.vendor_partners.all %}
+                <div class="card-tags">
+                    {% for vp in sip.vendor_partners.all %}<a class="tag tag-blue" href="{% url 'entity-detail' vp.entity.pk %}">{{ vp.entity_name }}</a>{% endfor %}
+                </div>
+                {% else %}<span class="info-value">—</span>{% endif %}
+            </div>
+            <div class="info-card full">
+                <span class="info-label">Компетенции</span>
+                {% if sip.function_competencies.all %}
+                <span class="info-value">Все отрасли и классы, кроме:</span>
+                <div class="card-tags" style="margin-top:6px">
+                    {% for fc in sip.function_competencies.all %}<span class="tag tag-danger">{{ fc }}</span>{% endfor %}
+                </div>
+                {% else %}<span class="info-value">Работает со всеми отраслями и классами</span>{% endif %}
+            </div>
+        </div>
+        {% endwith %}
+        {% endif %}
+
+        {% comment %}Финансовые показатели.{% endcomment %}
+        {% if entity.financial_data_items %}
+        <div class="info-block">
+            <h3 class="info-block-title">Финансовые показатели</h3>
+            <div class="tech-grid">
+                {% for key, value in entity.financial_data_items %}
+                <div class="tech-tile">
+                    <span class="tech-key" title="{{ key }}">{{ key }}</span>
+                    <span class="tech-val">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
     </div><!-- /.detail-main -->
     {% include "entities/_entity_summary.html" %}
     </div><!-- /.detail-body -->
 </div>
 
-{% if entity.is_engineering_type %}
-<div class="card">
-    <h2>Инжиниринговая компания</h2>
-    {% with prof=entity.engineering_profile %}
-    <div class="info-cards">
-        <div class="info-card">
-            <span class="info-label">Локация (регион)</span>
-            <span class="info-value">{{ prof.region|default:'—' }}</span>
-        </div>
-        <div class="info-card">
-            <span class="info-label">Вхожий объект</span>
-            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
-        </div>
-        <div class="info-card full">
-            <span class="info-label">Узкая компетенция по продуктам</span>
-            {% if prof.product_competencies.all %}
-            <div class="card-tags">
-                {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
-            </div>
-            {% else %}<span class="info-value">—</span>{% endif %}
-        </div>
-        <div class="info-card full">
-            <span class="info-label">Узкая компетенция по функции</span>
-            {% if prof.function_competencies.all %}
-            <div class="card-tags">
-                {% for fc in prof.function_competencies.all %}<span class="tag tag-muted">{{ fc.system_class.system_class }} · {{ fc.industry.category_name }}</span>{% endfor %}
-            </div>
-            {% else %}<span class="info-value">—</span>{% endif %}
-        </div>
-    </div>
-    {% endwith %}
+{% comment %}Продукты: вендорские и поставляемые. Если оба вида (ФПЦ) —
+рядом в двух колонках; иначе одной карточкой.{% endcomment %}
+{% if entity.is_vendor_type and entity.is_supplier_type %}
+<div class="product-cols">
+    {% include "entities/_vendor_products.html" %}
+    {% include "entities/_supplied_products.html" %}
 </div>
-{% endif %}
-
-{% if entity.is_vendor_type %}
-<div class="card">
-    <div class="card-title-row">
-        <h2 style="margin:0">Вендорские продукты</h2>
-        {% if user.is_authenticated %}<a href="{% url 'product-create' %}" class="btn btn-primary">+ Добавить продукт</a>{% endif %}
-    </div>
-    <table>
-        <thead>
-            <tr><th>Продукт</th><th>Систем на продукте</th></tr>
-        </thead>
-        <tbody>
-            {% for product in vendor_products %}
-            <tr>
-                <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
-                <td>{{ product.systems.count }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="2" class="empty">Нет продуктов</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endif %}
-
-{% if entity.is_supplier_type %}
-<div class="card">
-    <h2>Поставляемые продукты</h2>
-    <table>
-        <thead>
-            <tr><th>Продукт</th><th>Вендор</th></tr>
-        </thead>
-        <tbody>
-            {% for product in entity.supplier_profile.products.all %}
-            <tr>
-                <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
-                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="2" class="empty">Нет продуктов</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endif %}
-
-{% if entity.is_system_integrator_type %}
-<div class="card">
-    <h2>Системный интегратор</h2>
-    {% with sip=entity.system_integrator_profile %}
-    <div class="info-cards">
-        <div class="info-card">
-            <span class="info-label">Юридическое лицо</span>
-            <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
-        </div>
-        <div class="info-card full">
-            <span class="info-label">Вендоры-партнёры</span>
-            {% if sip.vendor_partners.all %}
-            <div class="card-tags">
-                {% for vp in sip.vendor_partners.all %}<a class="tag tag-blue" href="{% url 'entity-detail' vp.entity.pk %}">{{ vp.entity_name }}</a>{% endfor %}
-            </div>
-            {% else %}<span class="info-value">—</span>{% endif %}
-        </div>
-    </div>
-    {% endwith %}
-</div>
+{% else %}
+{% if entity.is_vendor_type %}{% include "entities/_vendor_products.html" %}{% endif %}
+{% if entity.is_supplier_type %}{% include "entities/_supplied_products.html" %}{% endif %}
 {% endif %}
 
 <div class="card">
@@ -217,7 +235,7 @@
             <tr>
                 <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.object_name }}</a></td>
                 <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
-                <td>{{ link.get_status_display }}</td>
+                <td><span class="tag {{ link.status_tag_class }}">{{ link.get_status_display }}</span></td>
             </tr>
             {% empty %}
             <tr><td colspan="3" class="empty">Нет связей</td></tr>

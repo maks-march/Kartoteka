@@ -561,6 +561,43 @@ class EntityTypingProfilesTests(TestCase):
         # внутренний интегратор виден у OwnerEntity
         self.assertIn(si.pk, owner.internal_integrators.values_list("entity_id", flat=True))
 
+    def test_integrator_exclusions_saved_with_nullable(self):
+        """Исключения интегратора сохраняются с nullable-ссылками (пусто = «все»)."""
+        from apps.entities.models import SystemIntegratorFunctionCompetency
+        from apps.categories.models import Category
+        cls = self.cls  # AutomationClass из setUp
+        ind = Category.objects.create(category_name="ОтрасльИскл", object_level=1)
+        si = self._uc().create(entity_name="ИнтегрИскл", entity_type="system_integrator")
+        self._uc().save_system_integrator_profile(
+            si,
+            exclusions=[
+                (str(cls.pk), str(ind.pk)),   # класс + отрасль
+                (str(cls.pk), ""),             # класс во всех отраслях
+                ("", str(ind.pk)),             # вся отрасль
+                ("", ""),                       # обе пустые — отбрасывается
+            ],
+        )
+        excl = SystemIntegratorFunctionCompetency.objects.filter(profile__entity=si)
+        self.assertEqual(excl.count(), 3)  # четвёртая (обе пустые) отброшена
+        # есть исключение только по классу (industry null)
+        self.assertTrue(excl.filter(system_class=cls, industry__isnull=True).exists())
+        # есть исключение только по отрасли (class null)
+        self.assertTrue(excl.filter(system_class__isnull=True, industry=ind).exists())
+
+    def test_engineering_competency_allows_all(self):
+        """Компетенция инж. компании допускает пустой класс/отрасль (= «все»)."""
+        from apps.entities.models import EngineeringCompanyFunctionCompetency
+        from apps.categories.models import Category
+        ind = Category.objects.create(category_name="ОтрасльВсе", object_level=1)
+        e = self._uc().create(entity_name="ИКвсе", entity_type="engineering_company")
+        self._uc().save_engineering_profile(
+            e, region="", resident_object_id=None, product_ids=[],
+            competencies=[("", str(ind.pk)), (str(self.cls.pk), "")])
+        comps = EngineeringCompanyFunctionCompetency.objects.filter(profile__entity=e)
+        self.assertEqual(comps.count(), 2)
+        self.assertTrue(comps.filter(system_class__isnull=True, industry=ind).exists())
+        self.assertTrue(comps.filter(system_class=self.cls, industry__isnull=True).exists())
+
     def test_web_system_integrator_saves_profile(self):
         """HTML-форма интегратора сохраняет профиль."""
         from apps.entities.models import Entity, VendorProfile
@@ -930,3 +967,108 @@ class EntityProfileAPICoverageTests(TestCase):
         """GET профиля ФПЦ возвращает 404 при его отсутствии."""
         r = self.api.get(f"/api/entities/{self.vend.pk}/full-cycle-profile/")
         self.assertEqual(r.status_code, 404)
+
+
+class CompetencyTagClassFilterTests(TestCase):
+    """Фильтр competency_tag_class: цвет тега компетенции «по функции».
+
+    Правило: класс+отрасль → tag-<level>; класс без отрасли → tag-teal;
+    только отрасль (класс пустой) → tag-muted.
+    """
+
+    def setUp(self):
+        """Общие справочники: класс уровня 3 и отрасль."""
+        from apps.categories.models import Category
+        from apps.system.models import AutomationClass
+        self.cls3 = AutomationClass.objects.create(level=3, system_class="MES")
+        self.ind = Category.objects.create(category_name="Химия", object_level=1)
+
+    def _filter(self):
+        from apps.entities.templatetags.entity_extras import competency_tag_class
+        return competency_tag_class
+
+    def test_class_and_industry_uses_level(self):
+        """Класс + отрасль → цвет по уровню автоматизации класса."""
+        from apps.entities.models import (
+            EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency)
+        e = Entity.objects.create(entity_name="ИК", entity_type="engineering_company")
+        prof = EngineeringCompanyProfile.objects.create(entity=e)
+        fc = EngineeringCompanyFunctionCompetency.objects.create(
+            profile=prof, system_class=self.cls3, industry=self.ind)
+        self.assertEqual(self._filter()(fc), "tag-3")
+
+    def test_class_without_industry_is_teal(self):
+        """Есть класс, «Все отрасли» → бирюзовый (tag-teal)."""
+        from apps.entities.models import (
+            EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency)
+        e = Entity.objects.create(entity_name="ИК2", entity_type="engineering_company")
+        prof = EngineeringCompanyProfile.objects.create(entity=e)
+        fc = EngineeringCompanyFunctionCompetency.objects.create(
+            profile=prof, system_class=self.cls3, industry=None)
+        self.assertEqual(self._filter()(fc), "tag-teal")
+
+    def test_industry_only_is_muted(self):
+        """Только отрасль («Все классы») → серый (tag-muted)."""
+        from apps.entities.models import (
+            EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency)
+        e = Entity.objects.create(entity_name="ИК3", entity_type="engineering_company")
+        prof = EngineeringCompanyProfile.objects.create(entity=e)
+        fc = EngineeringCompanyFunctionCompetency.objects.create(
+            profile=prof, system_class=None, industry=self.ind)
+        self.assertEqual(self._filter()(fc), "tag-muted")
+
+
+class DetailLayoutTests(TestCase):
+    """Раскладка детальной карточки: сводка, счётчик продуктов, продукты."""
+
+    def setUp(self):
+        """Вендор+поставщик (ФПЦ) с продуктами и внедрённой системой."""
+        from apps.categories.models import Category
+        from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
+        from apps.objects.models import Object, ObjectSystem
+        from apps.entities.models import VendorProfile, SupplierProfile
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        uc = EntityUseCase()
+        self.user = User.objects.create_user("dl", "dl@x.x", "pw")
+        self.cls0 = AutomationClass.objects.create(level=0, system_class="КИПиА")
+        # ФПЦ: и вендор, и поставщик (профили создаются usecase-ом)
+        self.fcv = uc.create(entity_name="ФПЦ", entity_type="full_cycle_vendor")
+        self.vprofile = VendorProfile.objects.get(entity=self.fcv)
+        self.sprofile = SupplierProfile.objects.get(entity=self.fcv)
+        # 2 вендорских продукта
+        self.own1 = VendorProduct.objects.create(
+            product_name="Свой-1", vendor=self.vprofile, system_class=self.cls0)
+        self.own2 = VendorProduct.objects.create(
+            product_name="Свой-2", vendor=self.vprofile, system_class=self.cls0)
+        # 1 поставляемый (чужого вендора)
+        other = uc.create(entity_name="Друг", entity_type="vendor")
+        oprof = VendorProfile.objects.get(entity=other)
+        self.supplied = VendorProduct.objects.create(
+            product_name="Постав-1", vendor=oprof, system_class=self.cls0)
+        self.sprofile.products.add(self.supplied)
+        # внедрённая система (ФПЦ как исполнитель)
+        sys = AutomationSystem.objects.create(
+            autosystem_name="Сис", system_class=self.cls0,
+            product=self.own1, creator=self.user)
+        obj = Object.objects.create(
+            object_name="Об", hierarchy_level=1, creator=self.user)
+        ObjectSystem.objects.create(
+            object=obj, system=sys, status="active", implementor=self.fcv)
+
+    def test_products_count_is_vendor_plus_supplied(self):
+        """Счётчик «Продуктов» = вендорские + поставляемые (2 + 1 = 3)."""
+        r = self.client.get(f"/entities/{self.fcv.pk}/")
+        self.assertEqual(r.context["summary"]["products_count"], 3)
+
+    def test_summary_has_status_and_level_coverage(self):
+        """Сводка содержит статусы внедрения и покрытие по уровням."""
+        h = self.client.get(f"/entities/{self.fcv.pk}/").content.decode()
+        self.assertIn("Статусы внедрения", h)
+        self.assertIn("Покрытие по уровням", h)
+
+    def test_supplied_products_shown_with_system_count(self):
+        """Поставляемые продукты — со столбцом «Систем»."""
+        h = self.client.get(f"/entities/{self.fcv.pk}/").content.decode()
+        self.assertIn("Поставляемые продукты", h)
+        self.assertIn("Постав-1", h)
+        self.assertIn("<th>Систем</th>", h)

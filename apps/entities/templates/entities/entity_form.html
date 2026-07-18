@@ -271,6 +271,15 @@
                     <p class="hint">Нет вендоров для выбора. Сначала добавьте участников типа «Вендор».</p>
                     {% endif %}
                 </div>
+
+                <div class="form-group">
+                    <label>Исключения компетенций</label>
+                    <p class="hint" style="margin-top:-2px; margin-bottom:8px">Интегратор работает со всеми отраслями и классами, кроме указанных. Пустой класс — исключается вся отрасль; пустая отрасль — класс во всех отраслях.</p>
+                    <div id="exclusionList"></div>
+                    <button type="button" class="btn btn-secondary btn-sm" id="exclusionAddBtn">+ Добавить исключение</button>
+                    {# Справочники классов/отраслей объявлены в блоке инж. компании (общие). #}
+                    {{ exclusion_pairs_json|json_script:"exclusionExistingData" }}
+                </div>
             </div>
         </div>
 

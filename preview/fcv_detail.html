@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Endress+Hauser Group — Вендор полного цикла</title>
+<style>
+/* ===== Скопировано из static/css/style.css (для точной копии в песочном превью) ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; width: 90%; min-width: 320px; margin: 0 auto; padding: 20px; background: #f0f2f5; color: #333; }
+h1, h2, h3 { margin-top: 0; margin-bottom: 15px; color: #222; }
+
+.card { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.08); margin-bottom: 20px; }
+
+.btn { display: inline-block; padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: 500; }
+.btn-primary { background: #007bff; color: #fff; }
+.btn-danger { background: #dc3545; color: #fff; }
+.btn-secondary { background: #6c757d; color: #fff; }
+
+.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.tag-ok { background: #e8f5e9; color: #2e7d32; }
+.tag-blue { background: #e3f2fd; color: #1565c0; }
+.tag-muted { background: #eceff1; color: #607d8b; }
+.tag-warn { background: #fff3e0; color: #ef6c00; }
+.tag-danger { background: #ffebee; color: #c62828; }
+.tag-3 { background: #fff3e0; color: #ef6c00; }
+/* Цвета классов автоматизации по уровням L0–L4 */
+.tag-0 { background: #f3e5f5; color: #7b1fa2; }
+.tag-1 { background: #e3f2fd; color: #1565c0; }
+.tag-2 { background: #e8f5e9; color: #2e7d32; }
+.tag-4 { background: #efe5dc; color: #6d4c33; }
+.tag-off { background: #f2f3f5 !important; color: #aeb4bd !important; }
+
+.page-title-row, .card-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.card-title-row { margin-bottom: 12px; }
+.actions { display: flex; gap: 8px; align-items: center; }
+.link, td a { color: #007bff; text-decoration: none; }
+.link:hover, td a:hover { text-decoration: underline; }
+a.tag { color: inherit; }
+a.tag:hover { text-decoration: underline; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e9ecef; }
+th { background: #f8f9fa; font-weight: 600; color: #555; }
+.empty { color: #999; font-style: italic; }
+
+/* Detail layout */
+.detail-body { display: flex; gap: 22px; align-items: flex-start; }
+.detail-body > .detail-main { flex: 1 1 70%; min-width: 0; }
+.detail-body > .summary-panel { flex: 0 0 30%; width: 30%; max-width: 30%; position: sticky; top: 16px; }
+.detail-body .info-block { width: 100%; }
+
+.info-block + .info-block { margin-top: 18px; }
+.info-block > .info-block-title { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin: 0 0 10px; }
+/* Верхняя сетка: слева Реквизиты + регион/вхожий, справа Контакты + Профиль */
+.top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch; }
+.top-grid > .top-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.top-grid .info-block { margin-top: 0; }
+.top-grid .info-block .info-cards { grid-template-columns: 1fr; }
+/* Карточка «Профиль компании» тянется до низа правой колонки */
+.top-grid .profile-card { flex: 1; margin-top: 0; }
+/* Компетенция «есть класс, но Все отрасли» — бирюзовый */
+.tag-teal { background: #e0f2f1; color: #00796b; }
+@media (max-width: 700px) { .top-grid { grid-template-columns: 1fr; } }
+.info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.info-cards-two { display: grid; grid-template-columns: repeat(2, minmax(160px, 1fr)); gap: 12px; }
+.info-card { background: #f8f9fb; border: 1px solid #eef0f4; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.info-card .info-label { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: #8a909a; }
+.info-card .info-value { font-size: 14px; color: #222; font-weight: 500; word-break: break-word; }
+.info-card.full { margin-top: 12px; grid-column: 1 / -1; }
+.info-card .desc-text { font-weight: 400; line-height: 1.5; color: #444; white-space: pre-line; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.tech-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 6px; }
+.tech-tile { background: #f8f9fb; border: 1px solid #eef0f4; border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tech-tile .tech-key { font-size: 10px; text-transform: uppercase; letter-spacing: .02em; color: #8a909a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tech-tile .tech-val { font-size: 13px; color: #222; font-weight: 500; word-break: break-word; }
+
+/* Summary panel */
+.summary-panel { border: 1px solid #e3e8ef; border-radius: 10px; overflow: hidden; background: #fff; }
+.summary-panel .summary-head { background: #eef4ff; color: #1f4b8e; padding: 12px 16px; font-size: 14px; font-weight: 700; letter-spacing: .02em; border-bottom: 1px solid #dce6f5; }
+.summary-panel .summary-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+.summary-metrics { display: flex; flex-wrap: wrap; gap: 10px; }
+.summary-metrics .metric { flex: 1 1; min-width: 70px; background: #f6f8fb; border: 1px solid #eef0f4; border-radius: 8px; padding: 8px 10px; text-align: center; }
+.summary-metrics .metric .metric-num { display: block; font-size: 20px; font-weight: 700; color: #1f4b8e; line-height: 1.1; }
+.summary-metrics .metric .metric-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .03em; color: #8a909a; }
+.summary-group .summary-group-title { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin: 0 0 7px; }
+.summary-group .summary-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.summary-group .summary-tags .tag { font-size: 12px; padding: 2px 9px; white-space: normal; overflow-wrap: anywhere; }
+.summary-group .summary-empty { color: #9aa1ac; font-size: 12.5px; }
+
+/* Две таблицы продуктов в одном блоке, рядом */
+.product-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; align-items: start; }
+.product-cols > .card { margin-bottom: 0; }
+@media (max-width: 900px) { .product-cols { grid-template-columns: 1fr; } .detail-body { flex-direction: column; } .detail-body > .summary-panel { width: 100%; position: static; } }
+</style>
+</head>
+<body>
+
+<!-- ======================= КАРТОЧКА ============================ -->
+<div class="card">
+    <div class="page-title-row">
+        <div>
+            <h1 style="margin-bottom:6px">Endress+Hauser Group</h1>
+            <span class="tag tag-3">Вендор полного цикла</span>
+            <span class="tag tag-ok" style="margin-left:6px">Партнёр</span>
+        </div>
+        <div class="actions">
+            <a href="#" class="btn btn-secondary">Изменить</a>
+            <button type="button" class="btn btn-danger">Удалить</button>
+        </div>
+    </div>
+
+    <div class="detail-body">
+    <div class="detail-main">
+
+        <!-- ===== Верхняя сетка: Реквизиты | Контакты, ниже — Профиль | «Профиль компании» ===== -->
+        <div class="top-grid">
+
+            <!-- Левая колонка: Контакты + регион/вхожий объект -->
+            <div class="top-col">
+                <div class="info-block">
+                    <h3 class="info-block-title">Контакты</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <span class="info-label">КАМ (Key Account Manager)</span>
+                            <span class="info-value">Иванов И.И.<br>+7 (495) 111-22-33</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Контакт от ЦК ПА</span>
+                            <span class="info-value">Петров П.П. (ЦК ПА)<br>+7 (495) 444-55-66</span>
+                        </div>
+                    </div>
+                    <!-- Доп. контактная информация — если пусто, ничего не выводим. -->
+                </div>
+
+                <div class="info-block">
+                    <h3 class="info-block-title">Профиль</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <span class="info-label">Локация (регион)</span>
+                            <span class="info-value">Москва</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Вхожий объект</span>
+                            <span class="info-value"><a class="link" href="#">Тобольский нефтехимкомбинат</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Реквизиты + Профиль компании (высокая карточка) -->
+            <div class="top-col">
+                <div class="info-block">
+                    <h3 class="info-block-title">Реквизиты</h3>
+                    <div class="info-cards-two req-cards">
+                        <div class="info-card">
+                            <span class="info-label">ИНН</span>
+                            <span class="info-value">7700002877</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Дата регистрации</span>
+                            <span class="info-value">15.03.1953</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Сайт</span>
+                            <span class="info-value"><a class="link" href="https://www.endress.com" target="_blank" rel="noopener">https://www.endress.com</a></span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">Презентация</span>
+                            <span class="info-value"><a class="link" href="#" target="_blank" rel="noopener">Открыть</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card full profile-card">
+                    <span class="info-label">Профиль компании</span>
+                    <span class="info-value desc-text">Швейцарский вендор полного цикла КИПиА и аналитики. Проектирует, поставляет и внедряет решения измерения, аналитики и мониторинга оборудования (Netilion, Memograph) под ключ — от разработки до сопровождения.</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== Компетенции (во всю ширину) ===== -->
+        <div class="info-block">
+            <div class="info-card full">
+                <span class="info-label">Узкая компетенция по продуктам</span>
+                <div class="card-tags">
+                    <a class="tag tag-blue" href="#">Endress+Hauser Netilion</a>
+                    <a class="tag tag-blue" href="#">Endress+Hauser Memograph</a>
+                </div>
+            </div>
+
+            <div class="info-card full">
+                <span class="info-label">Узкая компетенция по функции</span>
+                <div class="card-tags">
+                    <!-- Правило цвета: класс+отрасль → по уровню класса (tag-0..tag-4);
+                         есть класс, «Все отрасли» → бирюзовый (tag-teal);
+                         «Все классы» (только отрасль) → серый (tag-muted). -->
+                    <span class="tag tag-0">КИПиА · Фарма</span>
+                    <span class="tag tag-3">LIMS · Пищевая</span>
+                    <span class="tag tag-teal">КИПиА · Все отрасли</span>
+                    <span class="tag tag-muted">Все классы · Нефтехимия</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Финансовые показатели ===== -->
+        <div class="info-block">
+            <h3 class="info-block-title">Финансовые показатели</h3>
+            <div class="tech-grid">
+                <div class="tech-tile"><span class="tech-key" title="Выручка">Выручка</span><span class="tech-val">€3,3 млрд</span></div>
+                <div class="tech-tile"><span class="tech-key" title="Сотрудников">Сотрудников</span><span class="tech-val">16 000</span></div>
+                <div class="tech-tile"><span class="tech-key" title="Год основания">Год основания</span><span class="tech-val">1953</span></div>
+                <div class="tech-tile"><span class="tech-key" title="EBITDA">EBITDA</span><span class="tech-val">€0,6 млрд</span></div>
+                <div class="tech-tile"><span class="tech-key" title="R&D">R&D</span><span class="tech-val">€0,3 млрд</span></div>
+            </div>
+        </div>
+
+    </div><!-- /.detail-main -->
+
+    <!-- ===== Сводка связанности ===== -->
+    <aside class="summary-panel">
+        <div class="summary-head">Сводка связанности</div>
+        <div class="summary-body">
+            <div class="summary-metrics">
+                <div class="metric"><span class="metric-num">2</span><span class="metric-label">Внедр. систем</span></div>
+                <div class="metric"><span class="metric-num">4</span><span class="metric-label">Продуктов</span></div>
+            </div>
+
+            <!-- Статусы внедрения систем (счётчики по статусу) -->
+            <div class="summary-group">
+                <div class="summary-group-title">Статусы внедрения</div>
+                <div class="summary-tags">
+                    <span class="tag tag-ok">В эксплуатации: 1</span>
+                    <span class="tag tag-blue">Планируется: 1</span>
+                </div>
+            </div>
+
+            <!-- Покрытие по уровням автоматизации L0–L4 -->
+            <div class="summary-group">
+                <div class="summary-group-title">Покрытие по уровням</div>
+                <div class="summary-tags">
+                    <span class="tag tag-0">L0: 1</span>
+                    <span class="tag tag-1 tag-off">L1: 0</span>
+                    <span class="tag tag-2 tag-off">L2: 0</span>
+                    <span class="tag tag-3">L3: 1</span>
+                    <span class="tag tag-4 tag-off">L4: 0</span>
+                </div>
+            </div>
+
+            <!-- Классы внедрённых систем (цвет по уровню) -->
+            <div class="summary-group">
+                <div class="summary-group-title">Классы внедрённых систем</div>
+                <div class="summary-tags">
+                    <span class="tag tag-0">L0 - КИПиА</span>
+                    <span class="tag tag-3">L3 - LIMS</span>
+                </div>
+            </div>
+
+            <!-- Классы вендорских систем (цвет по уровню) -->
+            <div class="summary-group">
+                <div class="summary-group-title">Классы вендорских систем</div>
+                <div class="summary-tags">
+                    <span class="tag tag-0">L0 - КИПиА</span>
+                    <span class="tag tag-3">L3 - LIMS</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+    </div><!-- /.detail-body -->
+</div>
+
+<!-- ===== Продукты: две карточки рядом (вендорские + поставляемые) ===== -->
+<div class="product-cols">
+
+    <!-- Вендорские продукты -->
+    <div class="card">
+        <div class="card-title-row">
+            <h2 style="margin:0">Вендорские продукты</h2>
+            <a href="#" class="btn btn-primary">+ Добавить продукт</a>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Продукт</th><th>Систем на продукте</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><a class="link" href="#">Endress+Hauser Netilion</a></td><td>1</td></tr>
+                <tr><td><a class="link" href="#">Endress+Hauser Memograph</a></td><td>1</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Поставляемые продукты (со счётчиком систем) -->
+    <div class="card">
+        <h2>Поставляемые продукты</h2>
+        <table>
+            <thead>
+                <tr><th>Продукт</th><th>Вендор</th><th>Систем</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><a class="link" href="#">Emerson AMS Device Manager</a></td><td><a class="link" href="#">Emerson Electric Co.</a></td><td>2</td></tr>
+                <tr><td><a class="link" href="#">Honeywell Safety Manager</a></td><td><a class="link" href="#">Honeywell International Inc.</a></td><td>1</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ===== Внедренные системы ===== -->
+<div class="card" style="margin-top:20px">
+    <h2>Внедренные системы</h2>
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><a class="link" href="#">Тобольский нефтехимкомбинат</a></td><td><a class="link" href="#">КИПиА-мониторинг Тобольск</a></td><td>В эксплуатации</td></tr>
+            <tr><td><a class="link" href="#">Челябинский МЭЗ</a></td><td><a class="link" href="#">LIMS лаборатории МЭЗ</a></td><td>Планируется</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:10px">
+    <a href="#" class="btn btn-secondary">← Назад к списку</a>
+</div>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d155734fd5813b',t:'MTc4NDM3NjEwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

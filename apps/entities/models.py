@@ -375,6 +375,55 @@ class SystemIntegratorProfile(models.Model):
         return self.entity.entity_name
 
 
+class SystemIntegratorFunctionCompetency(models.Model):
+    """Исключение из компетенций системного интегратора («от обратного»).
+
+    Интегратор по умолчанию работает СО ВСЕМИ отраслями и классами; записи в
+    этой таблице — то, с чем он НЕ работает. Обе ссылки nullable:
+    - класс без отрасли  → не работает с этим классом во всех отраслях;
+    - отрасль без класса → не работает ни с чем в этой отрасли;
+    - класс и отрасль    → не работает с этим классом именно в этой отрасли.
+    Хотя бы одно поле должно быть заполнено. Нет записей → работает со всеми.
+    """
+
+    profile = models.ForeignKey(
+        SystemIntegratorProfile,
+        on_delete=models.CASCADE,
+        related_name="function_competencies",
+        verbose_name="Профиль системного интегратора",
+    )
+    system_class = models.ForeignKey(
+        "system.AutomationClass",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="integrator_excluded_competencies",
+        verbose_name="Класс систем (исключение)",
+        help_text="Пусто — исключение по всем классам (в указанной отрасли).",
+    )
+    industry = models.ForeignKey(
+        "categories.Category",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="integrator_excluded_competencies",
+        verbose_name="Индустрия (исключение)",
+        help_text="Индустрия — категория 1-го уровня. Пусто — исключение во всех отраслях.",
+    )
+
+    class Meta:
+        """Мета-настройки модели."""
+        verbose_name = "Исключение компетенции интегратора"
+        verbose_name_plural = "Исключения компетенций интегратора"
+        ordering = ["system_class__level", "system_class__system_class", "industry__category_name"]
+
+    def __str__(self):
+        """Строковое представление исключения («класс · индустрия», с «Все»)."""
+        cls = self.system_class.system_class if self.system_class else "Все классы"
+        ind = self.industry.category_name if self.industry else "Все отрасли"
+        return f"кроме: {cls} · {ind}"
+
+
 class EngineeringCompanyProfile(models.Model):
     """Профиль инжиниринговой компании (тип engineering_company)."""
 
@@ -417,10 +466,12 @@ class EngineeringCompanyProfile(models.Model):
         return f"EngineeringCompanyProfile: {self.entity.entity_name}"
 
 
-class FunctionCompetency(models.Model):
+class EngineeringCompanyFunctionCompetency(models.Model):
     """Узкая компетенция инж. компании по функции: пара «класс + индустрия».
 
-    Каждая строка — одна связанная пара (напр. MES · Нефтехимия).
+    Смысл прямой — компания РАБОТАЕТ с этим сочетанием. Обе ссылки nullable:
+    пустой класс = все классы в указанной отрасли; пустая отрасль = этот класс
+    во всех отраслях; хотя бы одно поле должно быть заполнено.
     """
 
     profile = models.ForeignKey(
@@ -432,26 +483,33 @@ class FunctionCompetency(models.Model):
     system_class = models.ForeignKey(
         "system.AutomationClass",
         on_delete=models.CASCADE,
-        related_name="function_competencies",
+        null=True,
+        blank=True,
+        related_name="eng_function_competencies",
         verbose_name="Класс систем",
+        help_text="Пусто — все классы (в указанной отрасли).",
     )
     industry = models.ForeignKey(
         "categories.Category",
         on_delete=models.CASCADE,
-        related_name="function_competencies",
+        null=True,
+        blank=True,
+        related_name="eng_function_competencies",
         verbose_name="Индустрия",
-        help_text="Индустрия — категория 1-го уровня (ссылка на справочник).",
+        help_text="Индустрия — категория 1-го уровня. Пусто — все отрасли.",
     )
 
     class Meta:
         """Мета-настройки модели."""
-        verbose_name = "Компетенция по функции"
-        verbose_name_plural = "Компетенции по функции"
+        verbose_name = "Компетенция инж. компании по функции"
+        verbose_name_plural = "Компетенции инж. компании по функции"
         ordering = ["system_class__level", "system_class__system_class", "industry__category_name"]
 
     def __str__(self):
-        """Строковое представление объекта."""
-        return f"{self.system_class.system_class} · {self.industry.category_name}"
+        """Строковое представление объекта («класс · индустрия», с «Все»)."""
+        cls = self.system_class.system_class if self.system_class else "Все классы"
+        ind = self.industry.category_name if self.industry else "Все отрасли"
+        return f"{cls} · {ind}"
 
 
 class FullCycleVendorProfile(models.Model):
@@ -515,15 +573,20 @@ class FullCycleFunctionCompetency(models.Model):
     system_class = models.ForeignKey(
         "system.AutomationClass",
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="full_cycle_function_competencies",
         verbose_name="Класс систем",
+        help_text="Пусто — все классы (в указанной отрасли).",
     )
     industry = models.ForeignKey(
         "categories.Category",
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="full_cycle_function_competencies",
         verbose_name="Индустрия",
-        help_text="Индустрия — категория 1-го уровня (ссылка на справочник).",
+        help_text="Индустрия — категория 1-го уровня. Пусто — все отрасли.",
     )
 
     class Meta:
@@ -533,5 +596,7 @@ class FullCycleFunctionCompetency(models.Model):
         ordering = ["system_class__level", "system_class__system_class", "industry__category_name"]
 
     def __str__(self):
-        """Строковое представление объекта."""
-        return f"{self.system_class.system_class} · {self.industry.category_name}"
+        """Строковое представление объекта («класс · индустрия», с «Все»)."""
+        cls = self.system_class.system_class if self.system_class else "Все классы"
+        ind = self.industry.category_name if self.industry else "Все отрасли"
+        return f"{cls} · {ind}"

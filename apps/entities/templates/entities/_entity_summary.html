@@ -9,6 +9,31 @@
             {% endif %}
         </div>
 
+        {% comment %}Статусы внедрения систем (счётчики по статусу).{% endcomment %}
+        {% if summary.status_breakdown %}
+        <div class="summary-group">
+            <div class="summary-group-title">Статусы внедрения</div>
+            <div class="summary-tags">
+                {% for s in summary.status_breakdown %}
+                <span class="tag {{ s.tag }}">{{ s.label }}: {{ s.count }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% comment %}Покрытие по уровням автоматизации L0–L4.{% endcomment %}
+        {% if summary.implemented_count %}
+        <div class="summary-group">
+            <div class="summary-group-title">Покрытие по уровням</div>
+            <div class="summary-tags">
+                {% for l in summary.level_coverage %}
+                <span class="tag tag-{{ l.level }}{% if not l.count %} tag-off{% endif %}">{{ l.label }}: {{ l.count }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% comment %}Классы систем — цвет по уровню автоматизации.{% endcomment %}
         {% include "core/_summary_group.html" with title="Классы внедрённых систем" group=summary.implemented_classes kind="class" %}
         {% if summary.is_vendor %}
         {% include "core/_summary_group.html" with title="Классы вендорских систем" group=summary.vendor_classes kind="class" %}

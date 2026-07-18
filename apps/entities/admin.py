@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from apps.entities.models import (
     Entity, VendorProfile, SupplierProfile, SystemIntegratorProfile,
-    EngineeringCompanyProfile, FunctionCompetency,
+    EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency,
     FullCycleVendorProfile, FullCycleFunctionCompetency,
 )
 
@@ -41,7 +41,7 @@ class SystemIntegratorProfileAdmin(admin.ModelAdmin):
 
 class FunctionCompetencyInline(admin.TabularInline):
     """Инлайн компетенций по функции для профиля инж. компании."""
-    model = FunctionCompetency
+    model = EngineeringCompanyFunctionCompetency
     extra = 0
     raw_id_fields = ["system_class"]
 

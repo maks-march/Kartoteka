@@ -99,7 +99,7 @@ class EntityUseCase:
         if not entity.is_engineering_type:
             return None
         from apps.entities.models import (
-            EngineeringCompanyProfile, FunctionCompetency,
+            EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency,
         )
         from apps.objects.models import Object
         from apps.system.models import VendorProduct, AutomationClass
@@ -118,18 +118,18 @@ class EntityUseCase:
         )
         profile.product_competencies.set(valid_products)
 
-        # Компетенция по функции (пары класс + индустрия-категория) — пересобираем целиком
+        # Компетенция по функции (пары класс + индустрия) — пересобираем целиком.
+        # Ссылки nullable: пусто = «все». Требуется хотя бы одно непустое поле.
         from apps.categories.models import Category
         profile.function_competencies.all().delete()
         for class_id, industry_id in (competencies or []):
-            if class_id in (None, "", "None") or industry_id in (None, "", "None"):
-                continue
-            klass = AutomationClass.objects.filter(pk=class_id).first()
-            industry = Category.objects.filter(pk=industry_id).first()
-            if klass and industry:
-                FunctionCompetency.objects.create(
-                    profile=profile, system_class=klass, industry=industry
-                )
+            klass = None if class_id in (None, "", "None") else AutomationClass.objects.filter(pk=class_id).first()
+            industry = None if industry_id in (None, "", "None") else Category.objects.filter(pk=industry_id).first()
+            if klass is None and industry is None:
+                continue  # обе пустые — бессмысленная запись
+            EngineeringCompanyFunctionCompetency.objects.create(
+                profile=profile, system_class=klass, industry=industry
+            )
         return profile
 
     def save_vendor_products(self, entity, product_ids=None):
@@ -180,15 +180,20 @@ class EntityUseCase:
         return profile
 
     def save_system_integrator_profile(self, entity, managing_owner_id=None,
-                                       vendor_partner_ids=None):
+                                       vendor_partner_ids=None, exclusions=None):
         """Сохраняет профиль системного интегратора: управляющую компанию
-        (FK OwnerEntity, необязательно) и вендоров-партнёров (M2M VendorProfile).
+        (FK OwnerEntity, необязательно), вендоров-партнёров (M2M VendorProfile)
+        и исключения компетенций «от обратного» (пары класс/индустрия, nullable).
         Вызывать только для типа system_integrator.
         """
         if not entity.is_system_integrator_type:
             return None
-        from apps.entities.models import SystemIntegratorProfile, VendorProfile
+        from apps.entities.models import (
+            SystemIntegratorProfile, VendorProfile, SystemIntegratorFunctionCompetency,
+        )
         from apps.owners.models import OwnerEntity
+        from apps.categories.models import Category
+        from apps.system.models import AutomationClass
 
         profile, _ = SystemIntegratorProfile.objects.get_or_create(entity=entity)
         if managing_owner_id in (None, "", "None"):
@@ -201,6 +206,18 @@ class EntityUseCase:
             pk__in=[p for p in (vendor_partner_ids or []) if p not in (None, "", "None")]
         )
         profile.vendor_partners.set(valid)
+
+        # Исключения компетенций (класс/индустрия, nullable) — пересобираем целиком.
+        # Пусто = «все»; требуется хотя бы одно непустое поле.
+        profile.function_competencies.all().delete()
+        for class_id, industry_id in (exclusions or []):
+            klass = None if class_id in (None, "", "None") else AutomationClass.objects.filter(pk=class_id).first()
+            industry = None if industry_id in (None, "", "None") else Category.objects.filter(pk=industry_id).first()
+            if klass is None and industry is None:
+                continue
+            SystemIntegratorFunctionCompetency.objects.create(
+                profile=profile, system_class=klass, industry=industry
+            )
         return profile
 
     def delete(self, pk):
@@ -238,16 +255,16 @@ class EntityUseCase:
         )
         profile.products.set(valid_products)
 
-        # Компетенция по функции (пары класс + индустрия-категория) — пересобираем целиком
+        # Компетенция по функции (пары класс + индустрия) — пересобираем целиком.
+        # Ссылки nullable: пусто = «все». Требуется хотя бы одно непустое поле.
         from apps.categories.models import Category
         profile.function_competencies.all().delete()
         for class_id, industry_id in (competencies or []):
-            if class_id in (None, "", "None") or industry_id in (None, "", "None"):
+            klass = None if class_id in (None, "", "None") else AutomationClass.objects.filter(pk=class_id).first()
+            industry = None if industry_id in (None, "", "None") else Category.objects.filter(pk=industry_id).first()
+            if klass is None and industry is None:
                 continue
-            klass = AutomationClass.objects.filter(pk=class_id).first()
-            industry = Category.objects.filter(pk=industry_id).first()
-            if klass and industry:
-                FullCycleFunctionCompetency.objects.create(
-                    profile=profile, system_class=klass, industry=industry
-                )
+            FullCycleFunctionCompetency.objects.create(
+                profile=profile, system_class=klass, industry=industry
+            )
         return profile

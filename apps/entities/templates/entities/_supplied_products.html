@@ -1,0 +1,20 @@
+{% comment %}Поставляемые продукты участника (со счётчиком систем).{% endcomment %}
+<div class="card">
+    <h2>Поставляемые продукты</h2>
+    <table>
+        <thead>
+            <tr><th>Продукт</th><th>Вендор</th><th>Систем</th></tr>
+        </thead>
+        <tbody>
+            {% for product in supplied_products %}
+            <tr>
+                <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
+                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{{ product.systems.count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Нет продуктов</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
