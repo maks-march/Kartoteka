@@ -76,7 +76,7 @@
                         {% if object.parent_object %}<a class="link" href="{% url 'object-detail' object.parent_object.pk %}">{{ object.parent_object.object_name }}</a>{% else %}—{% endif %}
                     </span>
                 </div>
-                <div class="info-card full">
+                <div class="info-card">
                     <span class="info-label">Адрес</span>
                     {% if object.address_line %}
                         <span class="info-value desc-text">{{ object.address_line }}</span>

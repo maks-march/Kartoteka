@@ -3,7 +3,7 @@
   "model": "auth.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$1200000$z3gS22tiqbycx2LhaEQwKw$Egsy/+SmifH3zxm5EMjZbUGMovNgpEK/1YmeG9CWqgU=",
+    "password": "pbkdf2_sha256$1200000$npKsNb5G4iuI8IUP3tlZsM$WbNUOTP+U7ko+S+PboO+/xnM4O6HMhNubcxV8S20yFU=",
     "last_login": null,
     "is_superuser": true,
     "username": "admin",
@@ -19,7 +19,7 @@
 },
 {
   "model": "categories.category",
-  "pk": 41,
+  "pk": 81,
   "fields": {
     "category_name": "Нефтепереработка",
     "object_level": 1,
@@ -28,7 +28,7 @@
 },
 {
   "model": "categories.category",
-  "pk": 42,
+  "pk": 82,
   "fields": {
     "category_name": "Нефтехимия",
     "object_level": 1,
@@ -37,7 +37,7 @@
 },
 {
   "model": "categories.category",
-  "pk": 43,
+  "pk": 83,
   "fields": {
     "category_name": "Газопереработка",
     "object_level": 1,
@@ -46,7 +46,16 @@
 },
 {
   "model": "categories.category",
-  "pk": 44,
+  "pk": 84,
+  "fields": {
+    "category_name": "Газохимия",
+    "object_level": 1,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 85,
   "fields": {
     "category_name": "Химия",
     "object_level": 1,
@@ -55,7 +64,16 @@
 },
 {
   "model": "categories.category",
-  "pk": 45,
+  "pk": 86,
+  "fields": {
+    "category_name": "Химия-удобрение",
+    "object_level": 1,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 87,
   "fields": {
     "category_name": "Добыча нефти",
     "object_level": 1,
@@ -64,7 +82,7 @@
 },
 {
   "model": "categories.category",
-  "pk": 46,
+  "pk": 88,
   "fields": {
     "category_name": "Добыча газа",
     "object_level": 1,
@@ -73,25 +91,25 @@
 },
 {
   "model": "categories.category",
-  "pk": 47,
+  "pk": 89,
   "fields": {
-    "category_name": "Металлургия",
+    "category_name": "Добыча руды",
     "object_level": 1,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 48,
+  "pk": 90,
   "fields": {
-    "category_name": "Энергетика",
+    "category_name": "Транспорт",
     "object_level": 1,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 49,
+  "pk": 91,
   "fields": {
     "category_name": "Пищевая",
     "object_level": 1,
@@ -100,7 +118,7 @@
 },
 {
   "model": "categories.category",
-  "pk": 50,
+  "pk": 92,
   "fields": {
     "category_name": "Фарма",
     "object_level": 1,
@@ -109,34 +127,70 @@
 },
 {
   "model": "categories.category",
-  "pk": 51,
+  "pk": 93,
   "fields": {
-    "category_name": "Основное",
+    "category_name": "Основные",
     "object_level": 2,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 52,
+  "pk": 94,
   "fields": {
-    "category_name": "Вспомогательное",
+    "category_name": "Вспомогательные",
     "object_level": 2,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 53,
+  "pk": 95,
   "fields": {
-    "category_name": "Общее",
+    "category_name": "Общие",
     "object_level": 2,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 54,
+  "pk": 96,
+  "fields": {
+    "category_name": "Сырьевые",
+    "object_level": 2,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 97,
+  "fields": {
+    "category_name": "Товарные",
+    "object_level": 2,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 98,
+  "fields": {
+    "category_name": "Атмосферное разделение",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 99,
+  "fields": {
+    "category_name": "Вакуумное разделение",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 100,
   "fields": {
     "category_name": "Крекинг каталитический",
     "object_level": 3,
@@ -145,34 +199,70 @@
 },
 {
   "model": "categories.category",
-  "pk": 55,
+  "pk": 101,
   "fields": {
-    "category_name": "Первичная переработка",
+    "category_name": "Крекинг гидро",
     "object_level": 3,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 56,
+  "pk": 102,
   "fields": {
-    "category_name": "Стабилизация",
+    "category_name": "Реформинг",
     "object_level": 3,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 57,
+  "pk": 103,
   "fields": {
-    "category_name": "Компримирование",
+    "category_name": "Полимеризация",
     "object_level": 3,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 58,
+  "pk": 104,
+  "fields": {
+    "category_name": "Гидроочистка",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 105,
+  "fields": {
+    "category_name": "Мокрый катализ",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 106,
+  "fields": {
+    "category_name": "Грануляция",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 107,
+  "fields": {
+    "category_name": "Фильтрация",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 108,
   "fields": {
     "category_name": "Электролиз",
     "object_level": 3,
@@ -181,25 +271,106 @@
 },
 {
   "model": "categories.category",
-  "pk": 59,
+  "pk": 109,
   "fields": {
-    "category_name": "Прокатный стан",
+    "category_name": "Абсорбция",
     "object_level": 3,
     "creator": 1
   }
 },
 {
   "model": "categories.category",
-  "pk": 60,
+  "pk": 110,
   "fields": {
-    "category_name": "Котлотурбинный цех",
+    "category_name": "Стабилизация",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 111,
+  "fields": {
+    "category_name": "КЦА",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 112,
+  "fields": {
+    "category_name": "Дробление",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 113,
+  "fields": {
+    "category_name": "Транспорт (техн)",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 114,
+  "fields": {
+    "category_name": "Измельчение",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 115,
+  "fields": {
+    "category_name": "Флотация",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 116,
+  "fields": {
+    "category_name": "Фильтрация руды",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 117,
+  "fields": {
+    "category_name": "Катание",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 118,
+  "fields": {
+    "category_name": "Ковка",
+    "object_level": 3,
+    "creator": 1
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 119,
+  "fields": {
+    "category_name": "Штамповка",
     "object_level": 3,
     "creator": 1
   }
 },
 {
   "model": "owners.ownerentity",
-  "pk": 13,
+  "pk": 25,
   "fields": {
     "owner_name": "ПАО «Нефтехолдинг»",
     "owner": null,
@@ -210,18 +381,18 @@
 },
 {
   "model": "owners.ownerentity",
-  "pk": 14,
+  "pk": 26,
   "fields": {
     "owner_name": "АО «Уфанефтепереработка»",
-    "owner": 13,
-    "ultimate_owner": 13,
+    "owner": 25,
+    "ultimate_owner": 25,
     "is_root": false,
     "inn": ""
   }
 },
 {
   "model": "owners.ownerentity",
-  "pk": 15,
+  "pk": 27,
   "fields": {
     "owner_name": "ПАО «ГазХим»",
     "owner": null,
@@ -232,9 +403,20 @@
 },
 {
   "model": "owners.ownerentity",
-  "pk": 16,
+  "pk": 28,
   "fields": {
-    "owner_name": "ПАО «МеталлЭнерго»",
+    "owner_name": "ООО «ГазХим-Переработка»",
+    "owner": 27,
+    "ultimate_owner": 27,
+    "is_root": false,
+    "inn": ""
+  }
+},
+{
+  "model": "owners.ownerentity",
+  "pk": 29,
+  "fields": {
+    "owner_name": "ПАО «ХимАгро»",
     "owner": null,
     "ultimate_owner": null,
     "is_root": true,
@@ -242,40 +424,18 @@
   }
 },
 {
-  "model": "owners.ownerentity",
-  "pk": 17,
-  "fields": {
-    "owner_name": "АО «Уральский меткомбинат»",
-    "owner": 16,
-    "ultimate_owner": 16,
-    "is_root": false,
-    "inn": ""
-  }
-},
-{
-  "model": "owners.ownerentity",
-  "pk": 18,
-  "fields": {
-    "owner_name": "ООО «ГазХим-Переработка»",
-    "owner": 15,
-    "ultimate_owner": 15,
-    "is_root": false,
-    "inn": ""
-  }
-},
-{
   "model": "objects.object",
-  "pk": 14,
+  "pk": 40,
   "fields": {
     "object_name": "Уфимский НПЗ",
     "object_short_name": "УНПЗ",
     "object_old_name": "Уфимский КНПЗ",
-    "object_law_name": "АО «Уфанефтепереработка» — площадка №1",
+    "object_law_name": "Уфимский НПЗ",
     "object_class": "Нефтеперерабатывающий завод",
     "hierarchy_level": 1,
     "parent_object": null,
-    "category": 51,
-    "owner_entity": 14,
+    "category": 93,
+    "owner_entity": 26,
     "start_date": "1938-06-01",
     "is_reconstructed": true,
     "capacity": "12 млн т/год",
@@ -288,28 +448,28 @@
     "house": "1",
     "title": "",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.986Z",
-    "updated_at": "2026-07-18T09:12:49.986Z"
+    "created_at": "2026-07-18T12:34:04.071Z",
+    "updated_at": "2026-07-18T12:34:04.071Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 15,
+  "pk": 41,
   "fields": {
     "object_name": "Цех первичной переработки",
     "object_short_name": "Цех №1",
-    "object_old_name": "Цех первичной перегонки",
-    "object_law_name": "Цех первичной переработки нефти",
+    "object_old_name": "б/н",
+    "object_law_name": "Цех первичной переработки",
     "object_class": "Технологический цех",
     "hierarchy_level": 2,
-    "parent_object": 14,
-    "category": 51,
-    "owner_entity": 14,
+    "parent_object": 40,
+    "category": 93,
+    "owner_entity": 26,
     "start_date": "1938-06-01",
     "is_reconstructed": false,
     "capacity": "6 млн т/год",
     "status": "active",
-    "notes": "Первичная перегонка и подготовка сырья.",
+    "notes": "Первичная перегонка сырья.",
     "country": "Россия",
     "region": "Республика Башкортостан",
     "city": "Уфа",
@@ -317,28 +477,28 @@
     "house": "1",
     "title": "Цех-1",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.988Z",
-    "updated_at": "2026-07-18T09:12:49.988Z"
+    "created_at": "2026-07-18T12:34:04.073Z",
+    "updated_at": "2026-07-18T12:34:04.073Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 16,
+  "pk": 42,
   "fields": {
     "object_name": "Установка ЭЛОУ-АВТ-6",
     "object_short_name": "ЭЛОУ-АВТ-6",
-    "object_old_name": "АВТ-6",
+    "object_old_name": "б/н",
     "object_law_name": "Установка ЭЛОУ-АВТ-6",
     "object_class": "Технологическая установка",
     "hierarchy_level": 3,
-    "parent_object": 15,
-    "category": 55,
-    "owner_entity": 14,
+    "parent_object": 41,
+    "category": 98,
+    "owner_entity": 26,
     "start_date": "1975-09-01",
     "is_reconstructed": false,
     "capacity": "6 млн т/год",
     "status": "active",
-    "notes": "Электрообессоливание и атмосферно-вакуумная трубчатка.",
+    "notes": "Атмосферно-вакуумная трубчатка.",
     "country": "Россия",
     "region": "Республика Башкортостан",
     "city": "Уфа",
@@ -346,28 +506,28 @@
     "house": "1",
     "title": "6-АВТ",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.989Z",
-    "updated_at": "2026-07-18T09:12:49.989Z"
+    "created_at": "2026-07-18T12:34:04.075Z",
+    "updated_at": "2026-07-18T12:34:04.075Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 17,
+  "pk": 43,
   "fields": {
     "object_name": "Установка каталитического крекинга",
     "object_short_name": "ККФ",
     "object_old_name": "Г-43-107",
-    "object_law_name": "Установка каталитического крекинга Г-43-107",
+    "object_law_name": "Установка каталитического крекинга",
     "object_class": "Технологическая установка",
     "hierarchy_level": 3,
-    "parent_object": 15,
-    "category": 54,
-    "owner_entity": 14,
+    "parent_object": 41,
+    "category": 100,
+    "owner_entity": 26,
     "start_date": "1985-04-01",
     "is_reconstructed": true,
     "capacity": "2 млн т/год",
     "status": "reconstruction",
-    "notes": "Каталитический крекинг вакуумного газойля, идёт модернизация.",
+    "notes": "Каталитический крекинг вакуумного газойля.",
     "country": "Россия",
     "region": "Республика Башкортостан",
     "city": "Уфа",
@@ -375,28 +535,28 @@
     "house": "1",
     "title": "Г-43-107",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.991Z",
-    "updated_at": "2026-07-18T09:12:49.991Z"
+    "created_at": "2026-07-18T12:34:04.076Z",
+    "updated_at": "2026-07-18T12:34:04.076Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 18,
+  "pk": 44,
   "fields": {
     "object_name": "Оренбургский ГПЗ",
     "object_short_name": "ОГПЗ",
-    "object_old_name": "Оренбургский газзавод",
-    "object_law_name": "ПАО «ГазХим» — Оренбургский ГПЗ",
+    "object_old_name": "б/н",
+    "object_law_name": "Оренбургский ГПЗ",
     "object_class": "Газоперерабатывающий завод",
     "hierarchy_level": 1,
     "parent_object": null,
-    "category": 51,
-    "owner_entity": 15,
+    "category": 93,
+    "owner_entity": 27,
     "start_date": "1974-02-01",
     "is_reconstructed": true,
     "capacity": "45 млрд м³/год",
     "status": "active",
-    "notes": "Крупнейший в Европе комплекс по переработке газа и конденсата.",
+    "notes": "Крупнейший комплекс по переработке газа и конденсата.",
     "country": "Россия",
     "region": "Оренбургская область",
     "city": "Оренбург",
@@ -404,57 +564,57 @@
     "house": "10",
     "title": "",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.992Z",
-    "updated_at": "2026-07-18T09:12:49.992Z"
+    "created_at": "2026-07-18T12:34:04.078Z",
+    "updated_at": "2026-07-18T12:34:04.078Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 19,
+  "pk": 45,
   "fields": {
-    "object_name": "Цех компримирования газа",
-    "object_short_name": "Цех КГ",
-    "object_old_name": "Компрессорная-2",
-    "object_law_name": "Цех компримирования газа",
+    "object_name": "Цех сероочистки",
+    "object_short_name": "Цех СО",
+    "object_old_name": "б/н",
+    "object_law_name": "Цех сероочистки",
     "object_class": "Технологический цех",
     "hierarchy_level": 2,
-    "parent_object": 18,
-    "category": 51,
-    "owner_entity": 15,
+    "parent_object": 44,
+    "category": 93,
+    "owner_entity": 27,
     "start_date": "1976-05-01",
     "is_reconstructed": false,
     "capacity": "20 млрд м³/год",
     "status": "active",
-    "notes": "Компримирование и осушка природного газа.",
+    "notes": "Аминовая очистка газа.",
     "country": "Россия",
     "region": "Оренбургская область",
     "city": "Оренбург",
     "street": "Заводская",
     "house": "1",
-    "title": "Цех-К",
+    "title": "Цех-СО",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.994Z",
-    "updated_at": "2026-07-18T09:12:49.994Z"
+    "created_at": "2026-07-18T12:34:04.080Z",
+    "updated_at": "2026-07-18T12:34:04.080Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 20,
+  "pk": 46,
   "fields": {
-    "object_name": "Установка сероочистки",
+    "object_name": "Установка абсорбции У-30",
     "object_short_name": "У-30",
-    "object_old_name": "Клаус-1",
-    "object_law_name": "Установка сероочистки У-30",
+    "object_old_name": "б/н",
+    "object_law_name": "Установка абсорбции У-30",
     "object_class": "Технологическая установка",
     "hierarchy_level": 3,
-    "parent_object": 19,
-    "category": 57,
-    "owner_entity": 15,
+    "parent_object": 45,
+    "category": 109,
+    "owner_entity": 27,
     "start_date": "1980-07-01",
     "is_reconstructed": false,
     "capacity": "8 млрд м³/год",
     "status": "active",
-    "notes": "Аминовая очистка газа от сероводорода, процесс Клауса.",
+    "notes": "Абсорбционная сероочистка (процесс Клауса).",
     "country": "Россия",
     "region": "Оренбургская область",
     "city": "Оренбург",
@@ -462,144 +622,28 @@
     "house": "1",
     "title": "У-30",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:49.995Z",
-    "updated_at": "2026-07-18T09:12:49.995Z"
+    "created_at": "2026-07-18T12:34:04.081Z",
+    "updated_at": "2026-07-18T12:34:04.081Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 21,
-  "fields": {
-    "object_name": "Магнитогорский меткомбинат",
-    "object_short_name": "ММК",
-    "object_old_name": "Магнитка",
-    "object_law_name": "АО «Уральский меткомбинат» — площадка Магнитогорск",
-    "object_class": "Металлургический комбинат",
-    "hierarchy_level": 1,
-    "parent_object": null,
-    "category": 51,
-    "owner_entity": 17,
-    "start_date": "1932-02-01",
-    "is_reconstructed": true,
-    "capacity": "12,5 млн т стали/год",
-    "status": "active",
-    "notes": "Полный металлургический цикл: агломерация, домны, прокат.",
-    "country": "Россия",
-    "region": "Челябинская область",
-    "city": "Магнитогорск",
-    "street": "Кирова",
-    "house": "93",
-    "title": "",
-    "creator": 1,
-    "created_at": "2026-07-18T09:12:49.996Z",
-    "updated_at": "2026-07-18T09:12:49.996Z"
-  }
-},
-{
-  "model": "objects.object",
-  "pk": 22,
-  "fields": {
-    "object_name": "Стан горячей прокатки 2000",
-    "object_short_name": "Стан-2000",
-    "object_old_name": "ШСГП",
-    "object_law_name": "Стан горячей прокатки 2000",
-    "object_class": "Прокатный стан",
-    "hierarchy_level": 3,
-    "parent_object": 21,
-    "category": 59,
-    "owner_entity": 17,
-    "start_date": "1994-08-01",
-    "is_reconstructed": false,
-    "capacity": "6 млн т/год",
-    "status": "active",
-    "notes": "Широкополосный стан горячей прокатки листа.",
-    "country": "Россия",
-    "region": "Челябинская область",
-    "city": "Магнитогорск",
-    "street": "Заводская",
-    "house": "1",
-    "title": "2000 г/п",
-    "creator": 1,
-    "created_at": "2026-07-18T09:12:49.998Z",
-    "updated_at": "2026-07-18T09:12:49.998Z"
-  }
-},
-{
-  "model": "objects.object",
-  "pk": 23,
-  "fields": {
-    "object_name": "Челябинская ТЭЦ-3",
-    "object_short_name": "ЧТЭЦ-3",
-    "object_old_name": "ТЭЦ-3",
-    "object_law_name": "ПАО «МеталлЭнерго» — Челябинская ТЭЦ-3",
-    "object_class": "Теплоэлектроцентраль",
-    "hierarchy_level": 1,
-    "parent_object": null,
-    "category": 51,
-    "owner_entity": 16,
-    "start_date": "1996-12-01",
-    "is_reconstructed": false,
-    "capacity": "360 МВт",
-    "status": "active",
-    "notes": "Комбинированная выработка электро- и теплоэнергии.",
-    "country": "Россия",
-    "region": "Челябинская область",
-    "city": "Челябинск",
-    "street": "Радонежская",
-    "house": "21",
-    "title": "",
-    "creator": 1,
-    "created_at": "2026-07-18T09:12:49.999Z",
-    "updated_at": "2026-07-18T09:12:49.999Z"
-  }
-},
-{
-  "model": "objects.object",
-  "pk": 24,
-  "fields": {
-    "object_name": "Котлотурбинный цех",
-    "object_short_name": "КТЦ",
-    "object_old_name": "КТЦ-1",
-    "object_law_name": "Котлотурбинный цех ТЭЦ-3",
-    "object_class": "Энергетический цех",
-    "hierarchy_level": 2,
-    "parent_object": 23,
-    "category": 51,
-    "owner_entity": 16,
-    "start_date": "1996-12-01",
-    "is_reconstructed": false,
-    "capacity": "360 МВт",
-    "status": "active",
-    "notes": "Котлоагрегаты и паровые турбины.",
-    "country": "Россия",
-    "region": "Челябинская область",
-    "city": "Челябинск",
-    "street": "Заводская",
-    "house": "1",
-    "title": "КТЦ",
-    "creator": 1,
-    "created_at": "2026-07-18T09:12:50.000Z",
-    "updated_at": "2026-07-18T09:12:50.000Z"
-  }
-},
-{
-  "model": "objects.object",
-  "pk": 25,
+  "pk": 47,
   "fields": {
     "object_name": "Тобольский нефтехимкомбинат",
-    "object_short_name": "ЗапСибНефтехим",
-    "object_old_name": "Тобольск-Нефтехим",
-    "object_law_name": "ПАО «Нефтехолдинг» — Тобольская площадка",
+    "object_short_name": "ЗапСиб",
+    "object_old_name": "б/н",
+    "object_law_name": "Тобольский нефтехимкомбинат",
     "object_class": "Нефтехимический комплекс",
     "hierarchy_level": 1,
     "parent_object": null,
-    "category": 51,
-    "owner_entity": 13,
+    "category": 93,
+    "owner_entity": 25,
     "start_date": "2019-11-01",
     "is_reconstructed": false,
     "capacity": "2 млн т полимеров/год",
     "status": "active",
-    "notes": "Пиролиз и производство полиэтилена/полипропилена.",
+    "notes": "Пиролиз и производство полимеров.",
     "country": "Россия",
     "region": "Тюменская область",
     "city": "Тобольск",
@@ -607,747 +651,529 @@
     "house": "5",
     "title": "",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:50.002Z",
-    "updated_at": "2026-07-18T09:12:50.002Z"
+    "created_at": "2026-07-18T12:34:04.082Z",
+    "updated_at": "2026-07-18T12:34:04.082Z"
   }
 },
 {
   "model": "objects.object",
-  "pk": 26,
+  "pk": 48,
   "fields": {
-    "object_name": "Челябинский маслоэкстракционный завод",
-    "object_short_name": "МЭЗ",
-    "object_old_name": "ЖирКомбинат",
-    "object_law_name": "ПАО «МеталлЭнерго» — МЭЗ (непрофильный актив)",
-    "object_class": "Пищевое производство",
-    "hierarchy_level": 1,
-    "parent_object": null,
-    "category": 51,
-    "owner_entity": 16,
-    "start_date": "2008-05-01",
+    "object_name": "Установка полимеризации",
+    "object_short_name": "ПП-500",
+    "object_old_name": "б/н",
+    "object_law_name": "Установка полимеризации",
+    "object_class": "Технологическая установка",
+    "hierarchy_level": 3,
+    "parent_object": 47,
+    "category": 103,
+    "owner_entity": 25,
+    "start_date": "2020-03-01",
     "is_reconstructed": false,
     "capacity": "500 тыс. т/год",
     "status": "active",
-    "notes": "Экстракция растительных масел и фасовка.",
+    "notes": "Полимеризация пропилена.",
     "country": "Россия",
-    "region": "Челябинская область",
-    "city": "Челябинск",
-    "street": "Копейское шоссе",
-    "house": "42",
+    "region": "Тюменская область",
+    "city": "Тобольск",
+    "street": "Заводская",
+    "house": "1",
+    "title": "ПП-500",
+    "creator": 1,
+    "created_at": "2026-07-18T12:34:04.085Z",
+    "updated_at": "2026-07-18T12:34:04.085Z"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 49,
+  "fields": {
+    "object_name": "Череповецкий химзавод",
+    "object_short_name": "ЧХЗ",
+    "object_old_name": "б/н",
+    "object_law_name": "Череповецкий химзавод",
+    "object_class": "Химический завод",
+    "hierarchy_level": 1,
+    "parent_object": null,
+    "category": 93,
+    "owner_entity": 29,
+    "start_date": "1974-12-01",
+    "is_reconstructed": false,
+    "capacity": "3 млн т удобрений/год",
+    "status": "active",
+    "notes": "Производство минеральных удобрений.",
+    "country": "Россия",
+    "region": "Вологодская область",
+    "city": "Череповец",
+    "street": "Северное шоссе",
+    "house": "75",
     "title": "",
     "creator": 1,
-    "created_at": "2026-07-18T09:12:50.003Z",
-    "updated_at": "2026-07-18T09:12:50.003Z"
+    "created_at": "2026-07-18T12:34:04.087Z",
+    "updated_at": "2026-07-18T12:34:04.087Z"
   }
 },
 {
-  "model": "objects.objectsystem",
-  "pk": 13,
+  "model": "objects.object",
+  "pk": 50,
   "fields": {
-    "object": 16,
-    "system": 13,
+    "object_name": "Цех грануляции",
+    "object_short_name": "Цех Гр",
+    "object_old_name": "б/н",
+    "object_law_name": "Цех грануляции",
+    "object_class": "Технологический цех",
+    "hierarchy_level": 2,
+    "parent_object": 49,
+    "category": 97,
+    "owner_entity": 29,
+    "start_date": "1980-01-01",
+    "is_reconstructed": false,
+    "capacity": "1,2 млн т/год",
     "status": "active",
-    "implementation_date": null,
-    "implementor": 49
+    "notes": "Грануляция и фасовка удобрений.",
+    "country": "Россия",
+    "region": "Вологодская область",
+    "city": "Череповец",
+    "street": "Заводская",
+    "house": "1",
+    "title": "Цех-Гр",
+    "creator": 1,
+    "created_at": "2026-07-18T12:34:04.088Z",
+    "updated_at": "2026-07-18T12:34:04.088Z"
   }
 },
 {
-  "model": "objects.objectsystem",
-  "pk": 14,
+  "model": "objects.object",
+  "pk": 51,
   "fields": {
-    "object": 16,
-    "system": 14,
+    "object_name": "Оренбургский ГПЗ — товарный парк",
+    "object_short_name": "Товарный",
+    "object_old_name": "б/н",
+    "object_law_name": "Оренбургский ГПЗ — товарный парк",
+    "object_class": "Товарный парк",
+    "hierarchy_level": 2,
+    "parent_object": 44,
+    "category": 97,
+    "owner_entity": 27,
+    "start_date": "1978-01-01",
+    "is_reconstructed": false,
+    "capacity": "—",
     "status": "active",
-    "implementation_date": null,
-    "implementor": 52
+    "notes": "Хранение и отгрузка продукции.",
+    "country": "Россия",
+    "region": "Оренбургская область",
+    "city": "Оренбург",
+    "street": "Заводская",
+    "house": "1",
+    "title": "ТП",
+    "creator": 1,
+    "created_at": "2026-07-18T12:34:04.090Z",
+    "updated_at": "2026-07-18T12:34:04.090Z"
   }
 },
 {
   "model": "objects.objectsystem",
-  "pk": 15,
-  "fields": {
-    "object": 17,
-    "system": 15,
-    "status": "planned",
-    "implementation_date": null,
-    "implementor": 56
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 16,
-  "fields": {
-    "object": 14,
-    "system": 16,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 54
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 17,
-  "fields": {
-    "object": 18,
-    "system": 17,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 50
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 18,
-  "fields": {
-    "object": 20,
-    "system": 18,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 52
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 19,
-  "fields": {
-    "object": 22,
-    "system": 19,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 62
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 20,
-  "fields": {
-    "object": 22,
-    "system": 20,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 60
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 21,
-  "fields": {
-    "object": 24,
-    "system": 21,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 60
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 22,
-  "fields": {
-    "object": 25,
-    "system": 22,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 56
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 23,
-  "fields": {
-    "object": 25,
-    "system": 23,
-    "status": "planned",
-    "implementation_date": null,
-    "implementor": 61
-  }
-},
-{
-  "model": "objects.objectsystem",
-  "pk": 24,
-  "fields": {
-    "object": 26,
-    "system": 24,
-    "status": "active",
-    "implementation_date": null,
-    "implementor": 51
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 1,
-  "fields": {
-    "level": 0,
-    "system_class": "КИПиА",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 2,
-  "fields": {
-    "level": 1,
-    "system_class": "PLC",
-    "name_ru": "ПЛК",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 3,
-  "fields": {
-    "level": 2,
-    "system_class": "SCADA",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 4,
-  "fields": {
-    "level": 2,
-    "system_class": "DCS",
-    "name_ru": "РСУ",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 5,
-  "fields": {
-    "level": 2,
-    "system_class": "ESD",
-    "name_ru": "ПАЗ",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 6,
-  "fields": {
-    "level": 3,
-    "system_class": "MES",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 7,
-  "fields": {
-    "level": 3,
-    "system_class": "LIMS",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 8,
-  "fields": {
-    "level": 4,
-    "system_class": "ERP",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 9,
-  "fields": {
-    "level": 0,
-    "system_class": "КИПиА",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 10,
-  "fields": {
-    "level": 1,
-    "system_class": "PLC",
-    "name_ru": "ПЛК",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 11,
-  "fields": {
-    "level": 2,
-    "system_class": "SCADA",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 12,
-  "fields": {
-    "level": 2,
-    "system_class": "DCS",
-    "name_ru": "РСУ",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 13,
-  "fields": {
-    "level": 2,
-    "system_class": "ESD",
-    "name_ru": "ПАЗ",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 14,
-  "fields": {
-    "level": 3,
-    "system_class": "MES",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 15,
-  "fields": {
-    "level": 3,
-    "system_class": "LIMS",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 16,
-  "fields": {
-    "level": 4,
-    "system_class": "ERP",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 17,
-  "fields": {
-    "level": 0,
-    "system_class": "КИПиА",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 18,
-  "fields": {
-    "level": 1,
-    "system_class": "PLC",
-    "name_ru": "ПЛК",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 19,
-  "fields": {
-    "level": 2,
-    "system_class": "SCADA",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 20,
-  "fields": {
-    "level": 2,
-    "system_class": "DCS",
-    "name_ru": "РСУ",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 21,
-  "fields": {
-    "level": 2,
-    "system_class": "ESD",
-    "name_ru": "ПАЗ",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 22,
-  "fields": {
-    "level": 3,
-    "system_class": "MES",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 23,
-  "fields": {
-    "level": 3,
-    "system_class": "LIMS",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.automationclass",
-  "pk": 24,
-  "fields": {
-    "level": 4,
-    "system_class": "ERP",
-    "name_ru": "",
-    "description": null,
-    "is_composite": false,
-    "includes": null
-  }
-},
-{
-  "model": "system.vendorproduct",
-  "pk": 33,
-  "fields": {
-    "product_name": "Siemens PCS 7 V9.1",
-    "vendor": 19,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      41,
-      42,
-      44
-    ]
-  }
-},
-{
-  "model": "system.vendorproduct",
-  "pk": 34,
-  "fields": {
-    "product_name": "Siemens SIMATIC S7-1500",
-    "vendor": 19,
-    "product_type": "",
-    "system_class": 18,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      41,
-      48
-    ]
-  }
-},
-{
-  "model": "system.vendorproduct",
-  "pk": 35,
-  "fields": {
-    "product_name": "Honeywell Experion PKS R520",
-    "vendor": 20,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      43,
-      41
-    ]
-  }
-},
-{
-  "model": "system.vendorproduct",
-  "pk": 36,
-  "fields": {
-    "product_name": "Honeywell Safety Manager",
-    "vendor": 20,
-    "product_type": "",
-    "system_class": 21,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      43,
-      42
-    ]
-  }
-},
-{
-  "model": "system.vendorproduct",
   "pk": 37,
   "fields": {
-    "product_name": "Yokogawa CENTUM VP",
-    "vendor": 21,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      42,
-      44
-    ]
+    "object": 42,
+    "system": 37,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 91
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 38,
   "fields": {
-    "product_name": "AVEVA System Platform",
-    "vendor": 22,
-    "product_type": "",
-    "system_class": 19,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      47,
-      48
-    ]
+    "object": 42,
+    "system": 38,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 94
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 39,
   "fields": {
-    "product_name": "AVEVA PI System",
-    "vendor": 22,
-    "product_type": "",
-    "system_class": 22,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      47,
-      41
-    ]
+    "object": 42,
+    "system": 39,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 93
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 40,
   "fields": {
-    "product_name": "Schneider EcoStruxure Foxboro DCS",
-    "vendor": 23,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      44,
-      48
-    ]
+    "object": 43,
+    "system": 40,
+    "status": "planned",
+    "implementation_date": null,
+    "implementor": 98
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 41,
   "fields": {
-    "product_name": "Emerson DeltaV",
-    "vendor": 24,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      42,
-      50
-    ]
+    "object": 40,
+    "system": 41,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 96
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 42,
   "fields": {
-    "product_name": "Emerson AMS Device Manager",
-    "vendor": 24,
-    "product_type": "",
-    "system_class": 17,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      41
-    ]
+    "object": 44,
+    "system": 42,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 92
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 43,
   "fields": {
-    "product_name": "ABB System 800xA",
-    "vendor": 25,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      47,
-      44,
-      48
-    ]
+    "object": 46,
+    "system": 43,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 95
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 44,
   "fields": {
-    "product_name": "ABB Ability Symphony Plus",
-    "vendor": 25,
-    "product_type": "",
-    "system_class": 19,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      48
-    ]
+    "object": 46,
+    "system": 44,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 98
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 45,
   "fields": {
-    "product_name": "Rockwell PlantPAx",
-    "vendor": 26,
-    "product_type": "",
-    "system_class": 20,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      49,
-      44
-    ]
+    "object": 47,
+    "system": 45,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 97
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 46,
   "fields": {
-    "product_name": "Rockwell ControlLogix",
-    "vendor": 26,
-    "product_type": "",
-    "system_class": 18,
-    "description": "",
-    "version": "",
-    "release_year": null,
-    "end_of_support": null,
-    "technical_specs": null,
-    "subsystem_classes": [],
-    "industries": [
-      47,
-      49
-    ]
+    "object": 48,
+    "system": 46,
+    "status": "planned",
+    "implementation_date": null,
+    "implementor": 96
   }
 },
 {
-  "model": "system.vendorproduct",
+  "model": "objects.objectsystem",
   "pk": 47,
   "fields": {
-    "product_name": "Endress+Hauser Netilion",
-    "vendor": 27,
+    "object": 49,
+    "system": 47,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 93
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 48,
+  "fields": {
+    "object": 50,
+    "system": 48,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 99
+  }
+},
+{
+  "model": "objects.objectsystem",
+  "pk": 49,
+  "fields": {
+    "object": 50,
+    "system": 49,
+    "status": "active",
+    "implementation_date": null,
+    "implementor": 99
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 33,
+  "fields": {
+    "level": 0,
+    "system_class": "КИПиА",
+    "name_ru": "КИПиА",
+    "description": "Датчики и исполнительные механизмы",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 34,
+  "fields": {
+    "level": 1,
+    "system_class": "PLC",
+    "name_ru": "ПЛК",
+    "description": "Контроллеры и логика",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 35,
+  "fields": {
+    "level": 2,
+    "system_class": "HMI",
+    "name_ru": "",
+    "description": "Визуализация и управление",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 36,
+  "fields": {
+    "level": 2,
+    "system_class": "АСУТП",
+    "name_ru": "АСУТП",
+    "description": "Управление технологическим процессом",
+    "is_composite": true,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 37,
+  "fields": {
+    "level": 2,
+    "system_class": "APC",
+    "name_ru": "СУУТП",
+    "description": "Усовершенствованное управление технологическим процессом",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 38,
+  "fields": {
+    "level": 2,
+    "system_class": "SCADA",
+    "name_ru": "",
+    "description": "Система сбора данных",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 39,
+  "fields": {
+    "level": 2,
+    "system_class": "DCS",
+    "name_ru": "РСУ",
+    "description": "Распределённая система управления",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 40,
+  "fields": {
+    "level": 2,
+    "system_class": "ESD",
+    "name_ru": "ПАЗ",
+    "description": "Противоаварийная защита",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 41,
+  "fields": {
+    "level": 2,
+    "system_class": "VMS",
+    "name_ru": "ВМ",
+    "description": "Вибромониторинг",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 42,
+  "fields": {
+    "level": 3,
+    "system_class": "MES",
+    "name_ru": "",
+    "description": "Управление производством",
+    "is_composite": true,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 43,
+  "fields": {
+    "level": 3,
+    "system_class": "APS",
+    "name_ru": "",
+    "description": "Планирование производства",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 44,
+  "fields": {
+    "level": 3,
+    "system_class": "EAM",
+    "name_ru": "ТОИР",
+    "description": "Техобслуживание и ремонт",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 45,
+  "fields": {
+    "level": 3,
+    "system_class": "BMS",
+    "name_ru": "",
+    "description": "Автоматизация зданий",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 46,
+  "fields": {
+    "level": 3,
+    "system_class": "WMS",
+    "name_ru": "",
+    "description": "Автоматизация складов и терминалов",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 47,
+  "fields": {
+    "level": 3,
+    "system_class": "PLM",
+    "name_ru": "",
+    "description": "Система управления жизненным циклом продукта",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 48,
+  "fields": {
+    "level": 3,
+    "system_class": "DS",
+    "name_ru": "ДС",
+    "description": "Диспетчеризация",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 49,
+  "fields": {
+    "level": 3,
+    "system_class": "DCA",
+    "name_ru": "",
+    "description": "Data collection — сбор и хранение данных",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 50,
+  "fields": {
+    "level": 3,
+    "system_class": "LIMS",
+    "name_ru": "ЛИМС",
+    "description": "Лабораторная информационная менеджмент-система",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 51,
+  "fields": {
+    "level": 3,
+    "system_class": "MOM",
+    "name_ru": "",
+    "description": "Управление производственными операциями (включает MES)",
+    "is_composite": true,
+    "includes": 42
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 52,
+  "fields": {
+    "level": 3,
+    "system_class": "QMS",
+    "name_ru": "",
+    "description": "Система управления качеством",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.automationclass",
+  "pk": 53,
+  "fields": {
+    "level": 4,
+    "system_class": "ERP",
+    "name_ru": "",
+    "description": "Бизнес-планирование",
+    "is_composite": false,
+    "includes": null
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 65,
+  "fields": {
+    "product_name": "Siemens PCS 7 V9.1",
+    "vendor": 37,
     "product_type": "",
-    "system_class": 17,
+    "system_class": 39,
     "description": "",
     "version": "",
     "release_year": null,
@@ -1355,19 +1181,20 @@
     "technical_specs": null,
     "subsystem_classes": [],
     "industries": [
-      42,
-      50
+      81,
+      82,
+      85
     ]
   }
 },
 {
   "model": "system.vendorproduct",
-  "pk": 48,
+  "pk": 66,
   "fields": {
-    "product_name": "Endress+Hauser Memograph",
-    "vendor": 27,
+    "product_name": "Siemens SIMATIC S7-1500",
+    "vendor": 37,
     "product_type": "",
-    "system_class": 23,
+    "system_class": 34,
     "description": "",
     "version": "",
     "release_year": null,
@@ -1375,19 +1202,236 @@
     "technical_specs": null,
     "subsystem_classes": [],
     "industries": [
-      49,
-      50
+      83,
+      81
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 67,
+  "fields": {
+    "product_name": "Honeywell Experion PKS R520",
+    "vendor": 38,
+    "product_type": "",
+    "system_class": 39,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      83,
+      81
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 68,
+  "fields": {
+    "product_name": "Honeywell Safety Manager",
+    "vendor": 38,
+    "product_type": "",
+    "system_class": 40,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      84,
+      82
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 69,
+  "fields": {
+    "product_name": "Yokogawa CENTUM VP",
+    "vendor": 39,
+    "product_type": "",
+    "system_class": 39,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      82,
+      85
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 70,
+  "fields": {
+    "product_name": "Yokogawa ProSafe-RS",
+    "vendor": 39,
+    "product_type": "",
+    "system_class": 40,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      86
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 71,
+  "fields": {
+    "product_name": "AVEVA System Platform",
+    "vendor": 40,
+    "product_type": "",
+    "system_class": 38,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      89,
+      90
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 72,
+  "fields": {
+    "product_name": "AVEVA PI System",
+    "vendor": 40,
+    "product_type": "",
+    "system_class": 42,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      81,
+      82
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 73,
+  "fields": {
+    "product_name": "Schneider EcoStruxure Foxboro DCS",
+    "vendor": 41,
+    "product_type": "",
+    "system_class": 39,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      91,
+      85
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 74,
+  "fields": {
+    "product_name": "Emerson DeltaV",
+    "vendor": 42,
+    "product_type": "",
+    "system_class": 39,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      82,
+      92
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 75,
+  "fields": {
+    "product_name": "Emerson AMS Device Manager",
+    "vendor": 42,
+    "product_type": "",
+    "system_class": 33,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      81
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 76,
+  "fields": {
+    "product_name": "Endress+Hauser Netilion",
+    "vendor": 43,
+    "product_type": "",
+    "system_class": 33,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      91,
+      92
+    ]
+  }
+},
+{
+  "model": "system.vendorproduct",
+  "pk": 77,
+  "fields": {
+    "product_name": "Endress+Hauser Memograph",
+    "vendor": 43,
+    "product_type": "",
+    "system_class": 50,
+    "description": "",
+    "version": "",
+    "release_year": null,
+    "end_of_support": null,
+    "technical_specs": null,
+    "subsystem_classes": [],
+    "industries": [
+      92
     ]
   }
 },
 {
   "model": "system.automationsystem",
-  "pk": 13,
+  "pk": 37,
   "fields": {
     "autosystem_name": "РСУ Уфимского НПЗ",
     "autosystem_short_name": "",
-    "system_class": 20,
-    "product": 33,
+    "system_class": 39,
+    "product": 65,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1400,12 +1444,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 14,
+  "pk": 38,
   "fields": {
     "autosystem_name": "ПАЗ ЭЛОУ-АВТ-6",
     "autosystem_short_name": "",
-    "system_class": 21,
-    "product": 36,
+    "system_class": 40,
+    "product": 68,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1418,12 +1462,30 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 15,
+  "pk": 39,
+  "fields": {
+    "autosystem_name": "ПЛК ЭЛОУ-АВТ-6",
+    "autosystem_short_name": "",
+    "system_class": 34,
+    "product": 66,
+    "system_status": "active",
+    "notes": "",
+    "release_year": null,
+    "technical_specs": null,
+    "modules": null,
+    "interfaces": null,
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 40,
   "fields": {
     "autosystem_name": "РСУ крекинга",
     "autosystem_short_name": "",
-    "system_class": 20,
-    "product": 41,
+    "system_class": 39,
+    "product": 74,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1436,12 +1498,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 16,
+  "pk": 41,
   "fields": {
-    "autosystem_name": "MES НПЗ",
+    "autosystem_name": "MES Уфимского НПЗ",
     "autosystem_short_name": "",
-    "system_class": 22,
-    "product": 39,
+    "system_class": 42,
+    "product": 72,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1454,12 +1516,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 17,
+  "pk": 42,
   "fields": {
-    "autosystem_name": "РСУ ГПЗ",
+    "autosystem_name": "РСУ Оренбургского ГПЗ",
     "autosystem_short_name": "",
-    "system_class": 20,
-    "product": 37,
+    "system_class": 39,
+    "product": 69,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1472,12 +1534,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 18,
+  "pk": 43,
   "fields": {
     "autosystem_name": "ПАЗ сероочистки",
     "autosystem_short_name": "",
-    "system_class": 21,
-    "product": 36,
+    "system_class": 40,
+    "product": 70,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1490,12 +1552,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 19,
+  "pk": 44,
   "fields": {
-    "autosystem_name": "АСУ ТП стана 2000",
+    "autosystem_name": "КИПиА Оренбургского ГПЗ",
     "autosystem_short_name": "",
-    "system_class": 20,
-    "product": 43,
+    "system_class": 33,
+    "product": 75,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1508,48 +1570,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 20,
-  "fields": {
-    "autosystem_name": "ПЛК прокатного стана",
-    "autosystem_short_name": "",
-    "system_class": 18,
-    "product": 46,
-    "system_status": "active",
-    "notes": "",
-    "release_year": null,
-    "technical_specs": null,
-    "modules": null,
-    "interfaces": null,
-    "creator": 1,
-    "subsystem_classes": []
-  }
-},
-{
-  "model": "system.automationsystem",
-  "pk": 21,
-  "fields": {
-    "autosystem_name": "АСУ ТП ТЭЦ-3",
-    "autosystem_short_name": "",
-    "system_class": 19,
-    "product": 44,
-    "system_status": "active",
-    "notes": "",
-    "release_year": null,
-    "technical_specs": null,
-    "modules": null,
-    "interfaces": null,
-    "creator": 1,
-    "subsystem_classes": []
-  }
-},
-{
-  "model": "system.automationsystem",
-  "pk": 22,
+  "pk": 45,
   "fields": {
     "autosystem_name": "РСУ Тобольск",
     "autosystem_short_name": "",
-    "system_class": 20,
-    "product": 41,
+    "system_class": 39,
+    "product": 73,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1562,12 +1588,12 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 23,
+  "pk": 46,
   "fields": {
     "autosystem_name": "MES Тобольск",
     "autosystem_short_name": "",
-    "system_class": 22,
-    "product": 39,
+    "system_class": 42,
+    "product": 72,
     "system_status": "planned",
     "notes": "",
     "release_year": null,
@@ -1580,12 +1606,48 @@
 },
 {
   "model": "system.automationsystem",
-  "pk": 24,
+  "pk": 47,
   "fields": {
-    "autosystem_name": "АСУ ТП МЭЗ",
+    "autosystem_name": "SCADA Череповец",
     "autosystem_short_name": "",
-    "system_class": 20,
-    "product": 45,
+    "system_class": 38,
+    "product": 71,
+    "system_status": "active",
+    "notes": "",
+    "release_year": null,
+    "technical_specs": null,
+    "modules": null,
+    "interfaces": null,
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 48,
+  "fields": {
+    "autosystem_name": "LIMS лаборатории",
+    "autosystem_short_name": "",
+    "system_class": 50,
+    "product": 77,
+    "system_status": "active",
+    "notes": "",
+    "release_year": null,
+    "technical_specs": null,
+    "modules": null,
+    "interfaces": null,
+    "creator": 1,
+    "subsystem_classes": []
+  }
+},
+{
+  "model": "system.automationsystem",
+  "pk": 49,
+  "fields": {
+    "autosystem_name": "КИПиА грануляции",
+    "autosystem_short_name": "",
+    "system_class": 33,
+    "product": 76,
     "system_status": "active",
     "notes": "",
     "release_year": null,
@@ -1598,15 +1660,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 43,
+  "pk": 85,
   "fields": {
     "entity_name": "Siemens AG",
     "inn": "7700000137",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@siemens-ag.ru",
-      "Адрес": "Мюнхен, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1847-03-15",
     "financial_data": {
       "Выручка": "€72 млрд",
@@ -1621,20 +1679,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.siemens-ag.ru/presentation.pdf",
-    "profile": "Германский концерн; АСУ ТП, PLC/DCS для промышленности."
+    "profile": "Германский концерн; АСУ ТП, PLC/DCS."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 44,
+  "pk": 86,
   "fields": {
     "entity_name": "Honeywell International Inc.",
     "inn": "7700000274",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@honeywell-international-inc.ru",
-      "Адрес": "Шарлотт, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1906-03-15",
     "financial_data": {
       "Выручка": "$36 млрд",
@@ -1649,20 +1703,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.honeywell-international-inc.ru/presentation.pdf",
-    "profile": "Американский вендор DCS/ESD Experion."
+    "profile": "Вендор DCS/ESD Experion."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 45,
+  "pk": 87,
   "fields": {
     "entity_name": "Yokogawa Electric Corporation",
     "inn": "7700000411",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@yokogawa-electric-corporation.ru",
-      "Адрес": "Токио, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1915-03-15",
     "financial_data": {
       "Выручка": "¥456 млрд",
@@ -1677,20 +1727,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.yokogawa-electric-corporation.ru/presentation.pdf",
-    "profile": "Японский вендор РСУ CENTUM VP."
+    "profile": "Вендор РСУ CENTUM VP."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 46,
+  "pk": 88,
   "fields": {
     "entity_name": "AVEVA Group plc",
     "inn": "7700000548",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@aveva-group-plc.ru",
-      "Адрес": "Кембридж, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1967-03-15",
     "financial_data": {
       "Выручка": "£1,2 млрд",
@@ -1705,20 +1751,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.aveva-group-plc.ru/presentation.pdf",
-    "profile": "Британский вендор SCADA/MES и PI System."
+    "profile": "Вендор SCADA/MES и PI System."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 47,
+  "pk": 89,
   "fields": {
     "entity_name": "ООО «Прософт-Системы»",
     "inn": "7700000685",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-prosoft-sistemy.ru",
-      "Адрес": "Екатеринбург, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1995-03-15",
     "financial_data": {
       "Выручка": "4,5 млрд ₽",
@@ -1733,20 +1775,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.ooo-prosoft-sistemy.ru/presentation.pdf",
-    "profile": "Разработчик и поставщик АСУ ТП, ПЛК ARIS."
+    "profile": "Разработка и поставка АСУ ТП, ПЛК ARIS."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 48,
+  "pk": 90,
   "fields": {
     "entity_name": "ООО «КИП-Сервис»",
     "inn": "7700000822",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-kip-servis.ru",
-      "Адрес": "Краснодар, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "2001-03-15",
     "financial_data": {
       "Выручка": "6,1 млрд ₽",
@@ -1766,15 +1804,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 49,
+  "pk": 91,
   "fields": {
     "entity_name": "ГК «СМС-Автоматизация»",
     "inn": "7700000959",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@gk-sms-avtomatizaciya.ru",
-      "Адрес": "Самара, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1993-03-15",
     "financial_data": {
       "Выручка": "8,0 млрд ₽",
@@ -1794,15 +1828,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 50,
+  "pk": 92,
   "fields": {
     "entity_name": "ООО «УльтимаТек»",
     "inn": "7700001096",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-ultimatek.ru",
-      "Адрес": "Москва, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "2013-03-15",
     "financial_data": {
       "Выручка": "3,4 млрд ₽",
@@ -1822,15 +1852,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 51,
+  "pk": 93,
   "fields": {
     "entity_name": "ООО «Сумма Технологий»",
     "inn": "7700001233",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-summa-tehnologiy.ru",
-      "Адрес": "Санкт-Петербург, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "2004-03-15",
     "financial_data": {
       "Выручка": "5,2 млрд ₽",
@@ -1850,15 +1876,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 52,
+  "pk": 94,
   "fields": {
     "entity_name": "ООО «Адвантек-Промышленная Автоматизация»",
     "inn": "7700001370",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-advantek-promyshlennaya-avtomatizaci.ru",
-      "Адрес": "Пермь, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "2006-03-15",
     "financial_data": {
       "Выручка": "2,1 млрд ₽",
@@ -1878,15 +1900,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 53,
+  "pk": 95,
   "fields": {
     "entity_name": "НПП «Промышленная Автоматизация»",
     "inn": "7700001507",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@npp-promyshlennaya-avtomatizaciya.ru",
-      "Адрес": "Москва, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1999-03-15",
     "financial_data": {
       "Выручка": "1,8 млрд ₽",
@@ -1906,15 +1924,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 54,
+  "pk": 96,
   "fields": {
     "entity_name": "ООО «ИндаСофт»",
     "inn": "7700001644",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-indasoft.ru",
-      "Адрес": "Москва, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1996-03-15",
     "financial_data": {
       "Выручка": "3,0 млрд ₽",
@@ -1934,15 +1948,11 @@
 },
 {
   "model": "entities.entity",
-  "pk": 55,
+  "pk": 97,
   "fields": {
     "entity_name": "Schneider Electric SE",
     "inn": "7700001781",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@schneider-electric-se.ru",
-      "Адрес": "Рюэй-Мальмезон, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1836-03-15",
     "financial_data": {
       "Выручка": "€36 млрд",
@@ -1957,20 +1967,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.schneider-electric-se.ru/presentation.pdf",
-    "profile": "Французский вендор полного цикла EcoStruxure."
+    "profile": "Вендор полного цикла EcoStruxure."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 56,
+  "pk": 98,
   "fields": {
     "entity_name": "Emerson Electric Co.",
     "inn": "7700001918",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@emerson-electric-co.ru",
-      "Адрес": "Сент-Луис, ул. Промышленная, 1"
-    },
+    "contacts": [],
     "registration_date": "1890-03-15",
     "financial_data": {
       "Выручка": "$15 млрд",
@@ -1985,188 +1991,16 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.emerson-electric-co.ru/presentation.pdf",
-    "profile": "Американский вендор полного цикла DeltaV."
+    "profile": "Вендор полного цикла DeltaV."
   }
 },
 {
   "model": "entities.entity",
-  "pk": 57,
-  "fields": {
-    "entity_name": "ABB Ltd",
-    "inn": "7700002055",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@abb-ltd.ru",
-      "Адрес": "Цюрих, ул. Промышленная, 1"
-    },
-    "registration_date": "1988-03-15",
-    "financial_data": {
-      "Выручка": "$32 млрд",
-      "Сотрудников": "105 000",
-      "Год основания": "1988"
-    },
-    "entity_type": "vendor",
-    "is_partner": true,
-    "website": "https://www.abb.com",
-    "kam_name": "Иванов И.И.",
-    "kam_phone": "+7 (495) 111-22-33",
-    "contact_person": "Петров П.П. (ЦК ПА)",
-    "contact_phone": "+7 (495) 444-55-66",
-    "presentation_url": "https://cdn.abb-ltd.ru/presentation.pdf",
-    "profile": "Швейцарско-шведский вендор АСУ ТП System 800xA."
-  }
-},
-{
-  "model": "entities.entity",
-  "pk": 58,
-  "fields": {
-    "entity_name": "Rockwell Automation Inc.",
-    "inn": "7700002192",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@rockwell-automation-inc.ru",
-      "Адрес": "Милуоки, ул. Промышленная, 1"
-    },
-    "registration_date": "1903-03-15",
-    "financial_data": {
-      "Выручка": "$9 млрд",
-      "Сотрудников": "28 000",
-      "Год основания": "1903"
-    },
-    "entity_type": "vendor",
-    "is_partner": true,
-    "website": "https://www.rockwellautomation.com",
-    "kam_name": "Иванов И.И.",
-    "kam_phone": "+7 (495) 111-22-33",
-    "contact_person": "Петров П.П. (ЦК ПА)",
-    "contact_phone": "+7 (495) 444-55-66",
-    "presentation_url": "https://cdn.rockwell-automation-inc.ru/presentation.pdf",
-    "profile": "Американский вендор PLC/SCADA (Allen-Bradley)."
-  }
-},
-{
-  "model": "entities.entity",
-  "pk": 59,
-  "fields": {
-    "entity_name": "ООО «ЭлеСи»",
-    "inn": "7700002329",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-elesi.ru",
-      "Адрес": "Томск, ул. Промышленная, 1"
-    },
-    "registration_date": "1990-03-15",
-    "financial_data": {
-      "Выручка": "2,8 млрд ₽",
-      "Сотрудников": "600",
-      "Год основания": "1990"
-    },
-    "entity_type": "supplier",
-    "is_partner": false,
-    "website": "https://www.ooo-elesi.ru",
-    "kam_name": "Иванов И.И.",
-    "kam_phone": "+7 (495) 111-22-33",
-    "contact_person": "Петров П.П. (ЦК ПА)",
-    "contact_phone": "+7 (495) 444-55-66",
-    "presentation_url": "https://cdn.ooo-elesi.ru/presentation.pdf",
-    "profile": "Разработка и поставка ПТК и КИПиА."
-  }
-},
-{
-  "model": "entities.entity",
-  "pk": 60,
-  "fields": {
-    "entity_name": "АО «Текон-Инжиниринг»",
-    "inn": "7700002466",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ao-tekon-inzhiniring.ru",
-      "Адрес": "Москва, ул. Промышленная, 1"
-    },
-    "registration_date": "1991-03-15",
-    "financial_data": {
-      "Выручка": "4,0 млрд ₽",
-      "Сотрудников": "500",
-      "Год основания": "1991"
-    },
-    "entity_type": "system_integrator",
-    "is_partner": false,
-    "website": "https://www.ao-tekon-inzhiniring.ru",
-    "kam_name": "Иванов И.И.",
-    "kam_phone": "+7 (495) 111-22-33",
-    "contact_person": "Петров П.П. (ЦК ПА)",
-    "contact_phone": "+7 (495) 444-55-66",
-    "presentation_url": "https://cdn.ao-tekon-inzhiniring.ru/presentation.pdf",
-    "profile": "Интегратор АСУ ТП и телемеханики."
-  }
-},
-{
-  "model": "entities.entity",
-  "pk": 61,
-  "fields": {
-    "entity_name": "ООО «Сибур Диджитал»",
-    "inn": "7700002603",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-sibur-didzhital.ru",
-      "Адрес": "Нижневартовск, ул. Промышленная, 1"
-    },
-    "registration_date": "2019-03-15",
-    "financial_data": {
-      "Выручка": "5,5 млрд ₽",
-      "Сотрудников": "800",
-      "Год основания": "2019"
-    },
-    "entity_type": "engineering_company",
-    "is_partner": false,
-    "website": "https://www.ooo-sibur-didzhital.ru",
-    "kam_name": "Иванов И.И.",
-    "kam_phone": "+7 (495) 111-22-33",
-    "contact_person": "Петров П.П. (ЦК ПА)",
-    "contact_phone": "+7 (495) 444-55-66",
-    "presentation_url": "https://cdn.ooo-sibur-didzhital.ru/presentation.pdf",
-    "profile": "Цифровизация нефтехимии, MES/APC."
-  }
-},
-{
-  "model": "entities.entity",
-  "pk": 62,
-  "fields": {
-    "entity_name": "ООО «Волгостальпроект»",
-    "inn": "7700002740",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@ooo-volgostalproekt.ru",
-      "Адрес": "Волгоград, ул. Промышленная, 1"
-    },
-    "registration_date": "2002-03-15",
-    "financial_data": {
-      "Выручка": "1,3 млрд ₽",
-      "Сотрудников": "210",
-      "Год основания": "2002"
-    },
-    "entity_type": "engineering_company",
-    "is_partner": false,
-    "website": "https://www.ooo-volgostalproekt.ru",
-    "kam_name": "Иванов И.И.",
-    "kam_phone": "+7 (495) 111-22-33",
-    "contact_person": "Петров П.П. (ЦК ПА)",
-    "contact_phone": "+7 (495) 444-55-66",
-    "presentation_url": "https://cdn.ooo-volgostalproekt.ru/presentation.pdf",
-    "profile": "Инжиниринг АСУ ТП металлургии и энергетики."
-  }
-},
-{
-  "model": "entities.entity",
-  "pk": 63,
+  "pk": 99,
   "fields": {
     "entity_name": "Endress+Hauser Group",
-    "inn": "7700002877",
-    "contacts": {
-      "Телефон": "+7 (495) 000-00-00",
-      "E-mail": "info@endress-hauser-group.ru",
-      "Адрес": "Райнах, ул. Промышленная, 1"
-    },
+    "inn": "7700002055",
+    "contacts": [],
     "registration_date": "1953-03-15",
     "financial_data": {
       "Выручка": "€3,3 млрд",
@@ -2181,455 +2015,348 @@
     "contact_person": "Петров П.П. (ЦК ПА)",
     "contact_phone": "+7 (495) 444-55-66",
     "presentation_url": "https://cdn.endress-hauser-group.ru/presentation.pdf",
-    "profile": "Швейцарский вендор полного цикла КИПиА и аналитики."
+    "profile": "Вендор полного цикла КИПиА и аналитики."
   }
 },
 {
   "model": "entities.vendorprofile",
-  "pk": 19,
+  "pk": 37,
   "fields": {
-    "entity": 43
+    "entity": 85
   }
 },
 {
   "model": "entities.vendorprofile",
-  "pk": 20,
+  "pk": 38,
   "fields": {
-    "entity": 44
+    "entity": 86
   }
 },
 {
   "model": "entities.vendorprofile",
-  "pk": 21,
+  "pk": 39,
   "fields": {
-    "entity": 45
+    "entity": 87
   }
 },
 {
   "model": "entities.vendorprofile",
-  "pk": 22,
+  "pk": 40,
   "fields": {
-    "entity": 46
+    "entity": 88
   }
 },
 {
   "model": "entities.vendorprofile",
-  "pk": 23,
+  "pk": 41,
   "fields": {
-    "entity": 55
+    "entity": 97
   }
 },
 {
   "model": "entities.vendorprofile",
-  "pk": 24,
+  "pk": 42,
   "fields": {
-    "entity": 56
+    "entity": 98
   }
 },
 {
   "model": "entities.vendorprofile",
+  "pk": 43,
+  "fields": {
+    "entity": 99
+  }
+},
+{
+  "model": "entities.supplierprofile",
   "pk": 25,
   "fields": {
-    "entity": 57
+    "entity": 89,
+    "products": [
+      71,
+      66
+    ]
   }
 },
 {
-  "model": "entities.vendorprofile",
+  "model": "entities.supplierprofile",
   "pk": 26,
   "fields": {
-    "entity": 58
+    "entity": 90,
+    "products": [
+      75,
+      68
+    ]
   }
 },
 {
-  "model": "entities.vendorprofile",
+  "model": "entities.supplierprofile",
   "pk": 27,
   "fields": {
-    "entity": 63
-  }
-},
-{
-  "model": "entities.supplierprofile",
-  "pk": 13,
-  "fields": {
-    "entity": 47,
-    "products": [
-      38,
-      34
-    ]
-  }
-},
-{
-  "model": "entities.supplierprofile",
-  "pk": 14,
-  "fields": {
-    "entity": 48,
-    "products": [
-      42,
-      36
-    ]
-  }
-},
-{
-  "model": "entities.supplierprofile",
-  "pk": 15,
-  "fields": {
-    "entity": 55,
+    "entity": 97,
     "products": []
   }
 },
 {
   "model": "entities.supplierprofile",
-  "pk": 16,
+  "pk": 28,
   "fields": {
-    "entity": 56,
+    "entity": 98,
     "products": []
   }
 },
 {
   "model": "entities.supplierprofile",
+  "pk": 29,
+  "fields": {
+    "entity": 99,
+    "products": []
+  }
+},
+{
+  "model": "entities.systemintegratorprofile",
   "pk": 17,
   "fields": {
-    "entity": 59,
-    "products": [
-      44,
-      46
-    ]
-  }
-},
-{
-  "model": "entities.supplierprofile",
-  "pk": 18,
-  "fields": {
-    "entity": 63,
-    "products": []
-  }
-},
-{
-  "model": "entities.systemintegratorprofile",
-  "pk": 9,
-  "fields": {
-    "entity": 49,
+    "entity": 91,
     "managing_owner": null,
     "vendor_partners": [
-      19,
-      20
+      37,
+      38
     ]
   }
 },
 {
   "model": "entities.systemintegratorprofile",
-  "pk": 10,
-  "fields": {
-    "entity": 50,
-    "managing_owner": 13,
-    "vendor_partners": [
-      21
-    ]
-  }
-},
-{
-  "model": "entities.systemintegratorprofile",
-  "pk": 11,
-  "fields": {
-    "entity": 51,
-    "managing_owner": null,
-    "vendor_partners": [
-      22
-    ]
-  }
-},
-{
-  "model": "entities.systemintegratorprofile",
-  "pk": 12,
-  "fields": {
-    "entity": 60,
-    "managing_owner": 16,
-    "vendor_partners": [
-      25,
-      26
-    ]
-  }
-},
-{
-  "model": "entities.systemintegratorfunctioncompetency",
-  "pk": 8,
-  "fields": {
-    "profile": 9,
-    "system_class": 22,
-    "industry": null
-  }
-},
-{
-  "model": "entities.systemintegratorfunctioncompetency",
-  "pk": 9,
-  "fields": {
-    "profile": 9,
-    "system_class": null,
-    "industry": 50
-  }
-},
-{
-  "model": "entities.systemintegratorfunctioncompetency",
-  "pk": 10,
-  "fields": {
-    "profile": 10,
-    "system_class": 24,
-    "industry": 41
-  }
-},
-{
-  "model": "entities.systemintegratorfunctioncompetency",
-  "pk": 11,
-  "fields": {
-    "profile": 12,
-    "system_class": 23,
-    "industry": null
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 17,
-  "fields": {
-    "entity": 52,
-    "region": "Пермь",
-    "resident_object": null,
-    "product_competencies": [
-      41,
-      35
-    ]
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
   "pk": 18,
   "fields": {
-    "entity": 53,
-    "region": "Москва",
-    "resident_object": null,
-    "product_competencies": [
-      33
-    ]
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 19,
-  "fields": {
-    "entity": 54,
-    "region": "Москва",
-    "resident_object": null,
-    "product_competencies": [
+    "entity": 92,
+    "managing_owner": 25,
+    "vendor_partners": [
       39
     ]
   }
 },
 {
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 20,
-  "fields": {
-    "entity": 55,
-    "region": "",
-    "resident_object": null,
-    "product_competencies": []
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 21,
-  "fields": {
-    "entity": 56,
-    "region": "",
-    "resident_object": null,
-    "product_competencies": []
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 22,
-  "fields": {
-    "entity": 61,
-    "region": "Тобольск",
-    "resident_object": null,
-    "product_competencies": [
-      39,
-      41
-    ]
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 23,
-  "fields": {
-    "entity": 62,
-    "region": "Волгоград",
-    "resident_object": null,
-    "product_competencies": [
-      43
-    ]
-  }
-},
-{
-  "model": "entities.engineeringcompanyprofile",
-  "pk": 24,
-  "fields": {
-    "entity": 63,
-    "region": "",
-    "resident_object": null,
-    "product_competencies": []
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 17,
-  "fields": {
-    "profile": 17,
-    "system_class": 20,
-    "industry": 41
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 18,
-  "fields": {
-    "profile": 17,
-    "system_class": 21,
-    "industry": 42
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
+  "model": "entities.systemintegratorprofile",
   "pk": 19,
   "fields": {
-    "profile": 18,
-    "system_class": null,
-    "industry": 44
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 20,
-  "fields": {
-    "profile": 19,
-    "system_class": 22,
-    "industry": null
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 21,
-  "fields": {
-    "profile": 22,
-    "system_class": 22,
-    "industry": 42
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 22,
-  "fields": {
-    "profile": 22,
-    "system_class": 20,
-    "industry": 42
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 23,
-  "fields": {
-    "profile": 23,
-    "system_class": 20,
-    "industry": 47
-  }
-},
-{
-  "model": "entities.engineeringcompanyfunctioncompetency",
-  "pk": 24,
-  "fields": {
-    "profile": 23,
-    "system_class": 19,
-    "industry": 48
-  }
-},
-{
-  "model": "entities.fullcyclevendorprofile",
-  "pk": 7,
-  "fields": {
-    "entity": 55,
-    "region": "Москва",
-    "resident_object": null,
-    "products": [
+    "entity": 93,
+    "managing_owner": null,
+    "vendor_partners": [
       40
     ]
   }
 },
 {
-  "model": "entities.fullcyclevendorprofile",
-  "pk": 8,
+  "model": "entities.systemintegratorfunctioncompetency",
+  "pk": 16,
   "fields": {
-    "entity": 56,
-    "region": "Самара",
+    "profile": 17,
+    "system_class": 42,
+    "industry": null
+  }
+},
+{
+  "model": "entities.systemintegratorfunctioncompetency",
+  "pk": 17,
+  "fields": {
+    "profile": 17,
+    "system_class": null,
+    "industry": 92
+  }
+},
+{
+  "model": "entities.systemintegratorfunctioncompetency",
+  "pk": 18,
+  "fields": {
+    "profile": 18,
+    "system_class": 53,
+    "industry": 81
+  }
+},
+{
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 33,
+  "fields": {
+    "entity": 94,
+    "region": "Пермь",
     "resident_object": null,
-    "products": [
-      41
+    "product_competencies": [
+      74,
+      67
     ]
   }
 },
 {
-  "model": "entities.fullcyclevendorprofile",
-  "pk": 9,
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 34,
   "fields": {
-    "entity": 63,
+    "entity": 95,
+    "region": "Москва",
+    "resident_object": null,
+    "product_competencies": [
+      65
+    ]
+  }
+},
+{
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 35,
+  "fields": {
+    "entity": 96,
+    "region": "Москва",
+    "resident_object": null,
+    "product_competencies": [
+      72
+    ]
+  }
+},
+{
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 36,
+  "fields": {
+    "entity": 97,
+    "region": "",
+    "resident_object": null,
+    "product_competencies": []
+  }
+},
+{
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 37,
+  "fields": {
+    "entity": 98,
+    "region": "",
+    "resident_object": null,
+    "product_competencies": []
+  }
+},
+{
+  "model": "entities.engineeringcompanyprofile",
+  "pk": 38,
+  "fields": {
+    "entity": 99,
+    "region": "",
+    "resident_object": null,
+    "product_competencies": []
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 33,
+  "fields": {
+    "profile": 33,
+    "system_class": 39,
+    "industry": 81
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 34,
+  "fields": {
+    "profile": 33,
+    "system_class": 40,
+    "industry": 82
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 35,
+  "fields": {
+    "profile": 34,
+    "system_class": null,
+    "industry": 85
+  }
+},
+{
+  "model": "entities.engineeringcompanyfunctioncompetency",
+  "pk": 36,
+  "fields": {
+    "profile": 35,
+    "system_class": 42,
+    "industry": null
+  }
+},
+{
+  "model": "entities.fullcyclevendorprofile",
+  "pk": 13,
+  "fields": {
+    "entity": 97,
     "region": "Москва",
     "resident_object": null,
     "products": [
-      48,
-      47
+      73
+    ]
+  }
+},
+{
+  "model": "entities.fullcyclevendorprofile",
+  "pk": 14,
+  "fields": {
+    "entity": 98,
+    "region": "Самара",
+    "resident_object": null,
+    "products": [
+      74
+    ]
+  }
+},
+{
+  "model": "entities.fullcyclevendorprofile",
+  "pk": 15,
+  "fields": {
+    "entity": 99,
+    "region": "Москва",
+    "resident_object": null,
+    "products": [
+      77,
+      76
     ]
   }
 },
 {
   "model": "entities.fullcyclefunctioncompetency",
-  "pk": 11,
+  "pk": 21,
   "fields": {
-    "profile": 7,
-    "system_class": 20,
-    "industry": 48
+    "profile": 13,
+    "system_class": 39,
+    "industry": 85
   }
 },
 {
   "model": "entities.fullcyclefunctioncompetency",
-  "pk": 12,
+  "pk": 22,
   "fields": {
-    "profile": 8,
-    "system_class": 20,
-    "industry": 42
+    "profile": 14,
+    "system_class": 39,
+    "industry": 82
   }
 },
 {
   "model": "entities.fullcyclefunctioncompetency",
-  "pk": 13,
+  "pk": 23,
   "fields": {
-    "profile": 8,
-    "system_class": 21,
-    "industry": 50
+    "profile": 14,
+    "system_class": 40,
+    "industry": 92
   }
 },
 {
   "model": "entities.fullcyclefunctioncompetency",
-  "pk": 14,
+  "pk": 24,
   "fields": {
-    "profile": 9,
-    "system_class": 17,
-    "industry": 50
+    "profile": 15,
+    "system_class": 33,
+    "industry": 92
   }
 },
 {
   "model": "entities.fullcyclefunctioncompetency",
-  "pk": 15,
+  "pk": 25,
   "fields": {
-    "profile": 9,
-    "system_class": 23,
-    "industry": 49
+    "profile": 15,
+    "system_class": 50,
+    "industry": null
   }
 }
 ]

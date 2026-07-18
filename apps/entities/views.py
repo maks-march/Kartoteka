@@ -270,34 +270,46 @@ def entity_detail(request, pk):
     usecase = EntityUseCase()
     entity = usecase.get(pk)
     implemented_links = entity.implemented_object_systems.select_related(
-        "object", "system", "system__system_class"
+        "object", "system", "system__system_class",
+        "system__product__vendor__entity",
     )
     # Продукты, где участник выступает вендором
-    vendor_products = entity.products.select_related("vendor").prefetch_related(
-        "systems__system_class"
-    )
+    vendor_products = entity.products.select_related(
+        "vendor", "system_class"
+    ).prefetch_related("systems__system_class")
 
     # Поставляемые продукты (участник — поставщик), со счётчиком систем.
     supplier_profile = getattr(entity, "supplier_profile", None)
     if supplier_profile is not None:
         supplied_products = supplier_profile.products.select_related(
-            "vendor__entity"
+            "vendor__entity", "system_class"
         ).prefetch_related("systems")
     else:
         supplied_products = []
 
     implemented = list(implemented_links)
-    # Системы, созданные на продуктах этого вендора
-    vendor_systems = [s for p in vendor_products for s in p.systems.all()]
 
     # ---- Сводка связанности (агрегат из таблиц ниже) ----
     implemented_classes = _summary_group(
         (l.system.system_class for l in implemented if l.system and l.system.system_class),
         key=lambda c: c.pk,
     )
+    # Классы вендорских продуктов (для вендора / ФПЦ).
     vendor_classes = _summary_group(
-        (s.system_class for s in vendor_systems if s.system_class),
+        (p.system_class for p in vendor_products if p.system_class),
         key=lambda c: c.pk,
+    )
+    # Классы поставляемых продуктов (для поставщика / ФПЦ).
+    supplied_classes = _summary_group(
+        (p.system_class for p in supplied_products if p.system_class),
+        key=lambda c: c.pk,
+    )
+    # Вендоры внедрённых систем (для системного интегратора): чей продукт стоит.
+    implemented_vendors = _summary_group(
+        (l.system.product.vendor.entity
+         for l in implemented
+         if l.system and l.system.product and l.system.product.vendor),
+        key=lambda e: e.pk,
     )
 
     # ---- Статусы внедрения систем (счётчики по статусу, цвет из модели) ----
@@ -336,9 +348,15 @@ def entity_detail(request, pk):
         "products_count": products_count,
         "implemented_classes": implemented_classes,
         "vendor_classes": vendor_classes,
+        "supplied_classes": supplied_classes,
+        "implemented_vendors": implemented_vendors,
         "is_vendor": entity.can_have_products,
         "status_breakdown": status_breakdown,
         "level_coverage": level_coverage,
+        # Флаги типа — какие группы сводки показывать.
+        "is_vendor_type": entity.is_vendor_type,
+        "is_supplier_type": entity.is_supplier_type,
+        "is_integrator": entity.is_system_integrator_type,
     }
     return render(request, "entities/entity_detail.html", {
         "entity": entity,

@@ -737,10 +737,9 @@ td a:hover {
 .info-block {
     width: 60%;
     min-width: 320px;
+    margin-bottom:10px;
 }
-.info-block + .info-block {
-    margin-top: 18px;
-}
+
 .info-block > .info-block-title {
     font-size: 14px;
     text-transform: uppercase;
@@ -784,8 +783,10 @@ td a:hover {
 }
 /* Широкая карточка описания под характеристиками */
 .info-card.full {
-    margin-top: 12px;
     grid-column: 1 / -1;
+}
+.info-card.gap {
+    margin-top: 10px;
 }
 .info-card .desc-text {
     font-weight: 400;
@@ -805,28 +806,27 @@ td a:hover {
     .info-block { width: 100%; }
 }
 
-/* ===== Карточка участника: верхняя сетка Контакты | Реквизиты, ниже Профиль ===== */
-/* Две колонки: левая — Контакты + профильные плитки; правая — Реквизиты +
-   «Профиль компании» (высокая карточка, тянется до низа левой колонки). */
-.top-grid {
+/* ===== Карточка участника: две строки. ===== */
+/* Строка 1: Контакты | Реквизиты. Строка 2: Профиль-плитки | «Профиль
+   компании». Каждая строка — независимая 2-колоночная сетка (колонки строк
+   между собой НЕ выровнены). Если во 2-й строке нет профильных плиток
+   (вендор/поставщик) — «Профиль компании» растягивается на всю ширину. */
+.top-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 22px;
-    align-items: stretch;
+    align-items: start;
 }
-.top-grid > .top-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 0;
-}
-.top-grid .info-block { margin-top: 0; }
-/* Профильные плитки (регион/вхожий/ЮЛ) идут в один столбец. */
-.top-grid .info-block .info-cards { grid-template-columns: 1fr; }
-/* «Профиль компании» занимает остаток высоты правой колонки. */
-.top-grid .profile-card { flex: 1; margin-top: 0; }
+.top-row + .top-row { margin-top: 18px; }
+.top-row .info-block { margin-top: 0; }
+/* Профильные плитки (регион/вхожий/ЮЛ) — в один столбец. */
+.top-row .info-block .info-cards,
+.top-row > .info-cards { grid-template-columns: 1fr; }
+.top-row .profile-card { margin-top: 0; }
+/* Если профильных плиток нет — «Профиль компании» на всю ширину строки. */
+.top-row .profile-card.span-full { grid-column: 1 / -1; }
 @media (max-width: 700px) {
-    .top-grid { grid-template-columns: 1fr; }
+    .top-row { grid-template-columns: 1fr; }
 }
 
 /* Две таблицы продуктов рядом (вендорские + поставляемые у ФПЦ). */
@@ -835,6 +835,7 @@ td a:hover {
     grid-template-columns: 1fr 1fr;
     gap: 20px 24px;
     align-items: start;
+    margin-bottom: 20px;   /* отступ до следующего блока (Внедрённые системы) */
 }
 .product-cols > .card { margin-bottom: 0; }
 @media (max-width: 900px) {
