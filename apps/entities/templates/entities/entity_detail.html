@@ -25,104 +25,94 @@
     <div class="detail-body">
     <div class="detail-main">
 
-        {% comment %}Верхняя сетка: слева Контакты + профильные плитки,
-        справа Реквизиты + «Профиль компании».{% endcomment %}
-        <div class="top-grid">
-
-            {# ===== Левая колонка: Контакты + профильные плитки ===== #}
-            <div class="top-col">
-                <div class="info-block">
-                    <h3 class="info-block-title">Контакты</h3>
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <span class="info-label">КАМ (Key Account Manager)</span>
-                            <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Контакт от ЦК ПА</span>
-                            <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
-                        </div>
+        {% comment %}Строка 1: Контакты | Реквизиты (рядом).{% endcomment %}
+        <div class="top-row">
+            <div class="info-block">
+                <h3 class="info-block-title">Контакты</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="info-label">КАМ (Key Account Manager)</span>
+                        <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Контакт от ЦК ПА</span>
+                        <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
                     </div>
                 </div>
+            </div>
 
-                {% comment %}Профильные плитки зависят от типа участника.{% endcomment %}
+            <div class="info-block">
+                <h3 class="info-block-title">Реквизиты</h3>
+                <div class="info-cards-two">
+                    <div class="info-card">
+                        <span class="info-label">ИНН</span>
+                        <span class="info-value">{{ entity.inn|default:'—' }}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Дата регистрации</span>
+                        <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Сайт</span>
+                        <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Презентация</span>
+                        <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}—{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% comment %}Строка 2: заголовок «Профиль» + строка «плитки | Профиль
+        компании». Заголовок вынесен в обёртку, чтобы не ломать выравнивание
+        строки. Если профильных плиток нет (вендор/поставщик) — «Профиль
+        компании» растягивается на всю ширину (span-full).{% endcomment %}
+        <div class="info-block">
+            <h3 class="info-block-title">Профиль</h3>
+            <div class="top-row">
                 {% if entity.entity_type == "full_cycle_vendor" %}
                 {% with prof=entity.full_cycle_profile %}
-                <div class="info-block">
-                    <h3 class="info-block-title">Профиль</h3>
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <span class="info-label">Локация (регион)</span>
-                            <span class="info-value">{{ prof.region|default:'—' }}</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Вхожий объект</span>
-                            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
-                        </div>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="info-label">Локация (регион)</span>
+                        <span class="info-value">{{ prof.region|default:'—' }}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Вхожий объект</span>
+                        <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
                     </div>
                 </div>
                 {% endwith %}
                 {% elif entity.entity_type == "engineering_company" %}
                 {% with prof=entity.engineering_profile %}
-                <div class="info-block">
-                    <h3 class="info-block-title">Профиль</h3>
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <span class="info-label">Локация (регион)</span>
-                            <span class="info-value">{{ prof.region|default:'—' }}</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Вхожий объект</span>
-                            <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
-                        </div>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="info-label">Локация (регион)</span>
+                        <span class="info-value">{{ prof.region|default:'—' }}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Вхожий объект</span>
+                        <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
                     </div>
                 </div>
                 {% endwith %}
                 {% elif entity.is_system_integrator_type %}
                 {% with sip=entity.system_integrator_profile %}
-                <div class="info-block">
-                    <h3 class="info-block-title">Профиль</h3>
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <span class="info-label">Юридическое лицо</span>
-                            <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
-                        </div>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="info-label">Юридическое лицо</span>
+                        <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
                     </div>
                 </div>
                 {% endwith %}
                 {% endif %}
-            </div>
 
-            {# ===== Правая колонка: Реквизиты + «Профиль компании» ===== #}
-            <div class="top-col">
-                <div class="info-block">
-                    <h3 class="info-block-title">Реквизиты</h3>
-                    <div class="info-cards-two">
-                        <div class="info-card">
-                            <span class="info-label">ИНН</span>
-                            <span class="info-value">{{ entity.inn|default:'—' }}</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Дата регистрации</span>
-                            <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Сайт</span>
-                            <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}—{% endif %}</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Презентация</span>
-                            <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}—{% endif %}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-card full profile-card">
+                <div class="info-card full profile-card{% if not entity.is_engineering_type and not entity.is_system_integrator_type %} span-full{% endif %}">
                     <span class="info-label">Профиль компании</span>
                     <span class="info-value desc-text">{{ entity.profile|default:'—' }}</span>
                 </div>
             </div>
-
         </div>
 
         {% comment %}Компетенции / партнёры (во всю ширину). Зависят от типа.{% endcomment %}

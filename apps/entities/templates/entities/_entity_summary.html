@@ -1,4 +1,9 @@
-{% comment %}Сводка связанности участника — агрегат из таблиц ниже.{% endcomment %}
+{% comment %}Сводка связанности участника. Наполнение зависит от типа:
+- по связям с системами (у исполнителей внедрений): статусы внедрения,
+  покрытие по уровням, классы внедрённых систем;
+- по связям с продуктами: классы вендорских продуктов (вендор/ФПЦ),
+  классы поставляемых (поставщик/ФПЦ) — у ФПЦ обе группы в две колонки,
+  вендоры внедрённых систем (только системный интегратор).{% endcomment %}
 <aside class="summary-panel">
     <div class="summary-head">Сводка связанности</div>
     <div class="summary-body">
@@ -9,7 +14,8 @@
             {% endif %}
         </div>
 
-        {% comment %}Статусы внедрения систем (счётчики по статусу).{% endcomment %}
+        {% comment %}===== По связям с системами (если есть внедрения) ====={% endcomment %}
+        {% if summary.implemented_count %}
         {% if summary.status_breakdown %}
         <div class="summary-group">
             <div class="summary-group-title">Статусы внедрения</div>
@@ -21,8 +27,6 @@
         </div>
         {% endif %}
 
-        {% comment %}Покрытие по уровням автоматизации L0–L4.{% endcomment %}
-        {% if summary.implemented_count %}
         <div class="summary-group">
             <div class="summary-group-title">Покрытие по уровням</div>
             <div class="summary-tags">
@@ -31,12 +35,29 @@
                 {% endfor %}
             </div>
         </div>
+
+        {% include "core/_summary_group.html" with title="Классы внедрённых систем" group=summary.implemented_classes kind="class" %}
+
+        {% comment %}Вендоры внедрённых систем — только для системного интегратора.{% endcomment %}
+        {% if summary.is_integrator %}
+        {% include "core/_summary_group.html" with title="Вендоры установленных продуктов" group=summary.implemented_vendors kind="entity" tag="tag-blue" %}
+        {% endif %}
         {% endif %}
 
-        {% comment %}Классы систем — цвет по уровню автоматизации.{% endcomment %}
-        {% include "core/_summary_group.html" with title="Классы внедрённых систем" group=summary.implemented_classes kind="class" %}
-        {% if summary.is_vendor %}
-        {% include "core/_summary_group.html" with title="Классы вендорских систем" group=summary.vendor_classes kind="class" %}
+        {% comment %}===== По связям с продуктами ====={% endcomment %}
+        {% if summary.is_vendor_type and summary.is_supplier_type %}
+        {% comment %}ФПЦ: вендорские и поставляемые классы — в две колонки.{% endcomment %}
+        <div class="summary-cols">
+            {% include "core/_summary_group.html" with title="Классы вендорских продуктов" group=summary.vendor_classes kind="class" %}
+            {% include "core/_summary_group.html" with title="Классы поставляемых продуктов" group=summary.supplied_classes kind="class" %}
+        </div>
+        {% else %}
+        {% if summary.is_vendor_type %}
+        {% include "core/_summary_group.html" with title="Классы вендорских продуктов" group=summary.vendor_classes kind="class" %}
+        {% endif %}
+        {% if summary.is_supplier_type %}
+        {% include "core/_summary_group.html" with title="Классы поставляемых продуктов" group=summary.supplied_classes kind="class" %}
+        {% endif %}
         {% endif %}
     </div>
 </aside>

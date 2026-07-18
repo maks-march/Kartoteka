@@ -346,13 +346,13 @@ class DetailSummaryPanelTests(TestCase):
     def test_entity_summary_products_only_for_vendor_types(self):
         """Блок продуктов в сводке — только для вендорских типов."""
         hv = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
-        # у вендора в сводке есть метрика продуктов и классы вендорских систем
+        # у вендора в сводке есть метрика продуктов и классы вендорских продуктов
         self.assertIn("Продуктов", hv)
-        self.assertIn("Классы вендорских систем", hv)
+        self.assertIn("Классы вендорских продуктов", hv)
         hi = self.client.get(f"/entities/{self.impl.pk}/").content.decode()
-        # инжиниринговая компания — без продуктов и вендорских систем в сводке
+        # инжиниринговая компания — без продуктов и вендорских продуктов в сводке
         self.assertNotIn("Продуктов", hi)
-        self.assertNotIn("Классы вендорских систем", hi)
+        self.assertNotIn("Классы вендорских продуктов", hi)
 
 
 class SummaryLimitTests(TestCase):
@@ -1072,3 +1072,68 @@ class DetailLayoutTests(TestCase):
         self.assertIn("Поставляемые продукты", h)
         self.assertIn("Постав-1", h)
         self.assertIn("<th>Систем</th>", h)
+
+
+class SummaryPerTypeTests(TestCase):
+    """Сводка связанности: наполнение групп зависит от типа участника."""
+
+    def setUp(self):
+        """ФПЦ (вендор+поставщик), интегратор с внедрением на продукте вендора."""
+        from apps.categories.models import Category
+        from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
+        from apps.objects.models import Object, ObjectSystem
+        from apps.entities.models import VendorProfile, SupplierProfile
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        uc = EntityUseCase()
+        self.user = User.objects.create_user("spt", "spt@x.x", "pw")
+        self.cls0 = AutomationClass.objects.create(level=0, system_class="КИПиА")
+        self.cls2 = AutomationClass.objects.create(level=2, system_class="DCS")
+        # Вендор + его продукт + система на продукте
+        self.vendor = uc.create(entity_name="ВендорX", entity_type="vendor")
+        vp = VendorProfile.objects.get(entity=self.vendor)
+        self.prod = VendorProduct.objects.create(
+            product_name="Прод-DCS", vendor=vp, system_class=self.cls2)
+        self.system = AutomationSystem.objects.create(
+            autosystem_name="Сис-DCS", system_class=self.cls2,
+            product=self.prod, creator=self.user)
+        # ФПЦ: вендор + поставщик
+        self.fcv = uc.create(entity_name="ФПЦX", entity_type="full_cycle_vendor")
+        fvp = VendorProfile.objects.get(entity=self.fcv)
+        VendorProduct.objects.create(
+            product_name="ФПЦ-own", vendor=fvp, system_class=self.cls0)
+        sp = SupplierProfile.objects.get(entity=self.fcv)
+        sp.products.add(self.prod)  # поставляет чужой DCS-продукт
+        # Интегратор: внедрил систему на продукте ВендораX
+        self.integ = uc.create(entity_name="ИнтегX", entity_type="system_integrator")
+        obj = Object.objects.create(object_name="ОбъX", hierarchy_level=1, creator=self.user)
+        ObjectSystem.objects.create(
+            object=obj, system=self.system, status="active", implementor=self.integ)
+
+    def test_integrator_shows_implemented_vendors(self):
+        """У интегратора в сводке — вендоры установленных продуктов."""
+        h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
+        self.assertIn("Вендоры установленных продуктов", h)
+        self.assertIn("ВендорX", h)
+        self.assertIn("Статусы внедрения", h)
+
+    def test_vendor_shows_vendor_product_classes(self):
+        """У вендора в сводке — классы вендорских продуктов, без внедрений."""
+        h = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
+        self.assertIn("Классы вендорских продуктов", h)
+        self.assertNotIn("Вендоры установленных продуктов", h)
+
+    def test_fcv_shows_both_product_class_groups_in_two_cols(self):
+        """У ФПЦ вендорские и поставляемые классы — рядом в две колонки."""
+        h = self.client.get(f"/entities/{self.fcv.pk}/").content.decode()
+        self.assertIn("Классы вендорских продуктов", h)
+        self.assertIn("Классы поставляемых продуктов", h)
+        self.assertIn("summary-cols", h)
+
+    def test_engineering_no_product_groups(self):
+        """У инж.компании нет продуктовых групп и вендоров установленных."""
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        eng = EntityUseCase().create(entity_name="ИКX", entity_type="engineering_company")
+        h = self.client.get(f"/entities/{eng.pk}/").content.decode()
+        self.assertNotIn("Классы вендорских продуктов", h)
+        self.assertNotIn("Классы поставляемых продуктов", h)
+        self.assertNotIn("Вендоры установленных продуктов", h)
