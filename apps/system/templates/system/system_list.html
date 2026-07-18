@@ -38,7 +38,7 @@
                 <td><a class="link" href="{% url 'system-detail' s.pk %}">{{ s.autosystem_name }}</a></td>
                 <td><span class="tag tag-{{ s.system_class.level }}">L{{ s.system_class.level }} - {{ s.system_class.system_class }}</span></td>
                 <td><span class="tag {{ s.status_tag_class }}">{{ s.get_system_status_display }}</span></td>
-                <td>{% if s.product %}<a class="link" href="{% url 'product-detail' s.product.pk %}">{{ s.product.product_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if s.product %}<a class="link" href="{% url 'product-detail' s.product.pk %}">{{ s.product.product_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                 <td>{{ s.objects_count }}</td>
             </tr>
             {% empty %}

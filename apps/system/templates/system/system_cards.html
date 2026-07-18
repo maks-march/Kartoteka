@@ -29,7 +29,7 @@
                 <span class="tag {{ s.status_tag_class }}">{{ s.get_system_status_display }}</span>
             </div>
             <div class="card-rows">
-                <div class="card-row"><span class="k">Продукт</span><span class="v">{% if s.product %}<a class="link" href="{% url 'product-detail' s.product.pk %}">{{ s.product.product_name }}</a>{% else %}—{% endif %}</span></div>
+                <div class="card-row"><span class="k">Продукт</span><span class="v">{% if s.product %}<a class="link" href="{% url 'product-detail' s.product.pk %}">{{ s.product.product_name }}</a>{% else %}Не указано{% endif %}</span></div>
                 <div class="card-row"><span class="k">Объектов</span><span class="v">{{ s.objects_count }}</span></div>
             </div>
         </div>

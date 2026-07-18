@@ -32,11 +32,11 @@
                 <div class="info-cards">
                     <div class="info-card">
                         <span class="info-label">КАМ (Key Account Manager)</span>
-                        <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
+                        <span class="info-value">{{ entity.kam_name|default:'Не указано' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
                     </div>
                     <div class="info-card">
                         <span class="info-label">Контакт от ЦК ПА</span>
-                        <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
+                        <span class="info-value">{{ entity.contact_person|default:'Не указано' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
                     </div>
                 </div>
             </div>
@@ -46,19 +46,19 @@
                 <div class="info-cards-two">
                     <div class="info-card">
                         <span class="info-label">ИНН</span>
-                        <span class="info-value">{{ entity.inn|default:'—' }}</span>
+                        <span class="info-value">{{ entity.inn|default:'Не указано' }}</span>
                     </div>
                     <div class="info-card">
                         <span class="info-label">Дата регистрации</span>
-                        <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                        <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
                     </div>
                     <div class="info-card">
                         <span class="info-label">Сайт</span>
-                        <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}—{% endif %}</span>
+                        <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}Не указано{% endif %}</span>
                     </div>
                     <div class="info-card">
                         <span class="info-label">Презентация</span>
-                        <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}—{% endif %}</span>
+                        <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}Не указано{% endif %}</span>
                     </div>
                 </div>
             </div>
@@ -76,11 +76,11 @@
                 <div class="info-cards">
                     <div class="info-card">
                         <span class="info-label">Локация (регион)</span>
-                        <span class="info-value">{{ prof.region|default:'—' }}</span>
+                        <span class="info-value">{{ prof.region|default:'Не указано' }}</span>
                     </div>
                     <div class="info-card">
                         <span class="info-label">Вхожий объект</span>
-                        <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
+                        <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}Не указано{% endif %}</span>
                     </div>
                 </div>
                 {% endwith %}
@@ -89,11 +89,11 @@
                 <div class="info-cards">
                     <div class="info-card">
                         <span class="info-label">Локация (регион)</span>
-                        <span class="info-value">{{ prof.region|default:'—' }}</span>
+                        <span class="info-value">{{ prof.region|default:'Не указано' }}</span>
                     </div>
                     <div class="info-card">
                         <span class="info-label">Вхожий объект</span>
-                        <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}—{% endif %}</span>
+                        <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}Не указано{% endif %}</span>
                     </div>
                 </div>
                 {% endwith %}
@@ -102,7 +102,7 @@
                 <div class="info-cards">
                     <div class="info-card">
                         <span class="info-label">Юридическое лицо</span>
-                        <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}—{% endif %}</span>
+                        <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}Не указано{% endif %}</span>
                     </div>
                 </div>
                 {% endwith %}
@@ -110,7 +110,7 @@
 
                 <div class="info-card profile-card{% if not entity.is_engineering_type and not entity.is_system_integrator_type %} span-full{% endif %}">
                     <span class="info-label">Профиль компании</span>
-                    <span class="info-value desc-text">{{ entity.profile|default:'—' }}</span>
+                    <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@
                 <div class="card-tags">
                     {% for p in prof.products.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
                 </div>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
             <div class="info-card gap">
                 <span class="info-label">Узкая компетенция по функции</span>
@@ -133,7 +133,7 @@
                 <div class="card-tags">
                     {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
                 </div>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
         </div>
         {% endwith %}
@@ -146,7 +146,7 @@
                 <div class="card-tags">
                     {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
                 </div>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
             <div class="info-card full">
                 <span class="info-label">Узкая компетенция по функции</span>
@@ -154,7 +154,7 @@
                 <div class="card-tags">
                     {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
                 </div>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
         </div>
         {% endwith %}
@@ -167,7 +167,7 @@
                 <div class="card-tags">
                     {% for vp in sip.vendor_partners.all %}<a class="tag tag-blue" href="{% url 'entity-detail' vp.entity.pk %}">{{ vp.entity_name }}</a>{% endfor %}
                 </div>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
             <div class="info-card full">
                 <span class="info-label">Компетенции</span>

@@ -30,9 +30,9 @@
                 {% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% endif %}
             </div>
             <div class="card-rows">
-                <div class="card-row"><span class="k">ЮЛ</span><span class="v">{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}—{% endif %}</span></div>
-                <div class="card-row"><span class="k">Родитель</span><span class="v">{% if obj.parent_object %}<a class="link" href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}—{% endif %}</span></div>
-                <div class="card-row"><span class="k">Город</span><span class="v">{{ obj.city|default:'—' }}</span></div>
+                <div class="card-row"><span class="k">ЮЛ</span><span class="v">{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}Не указано{% endif %}</span></div>
+                <div class="card-row"><span class="k">Родитель</span><span class="v">{% if obj.parent_object %}<a class="link" href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}Не указано{% endif %}</span></div>
+                <div class="card-row"><span class="k">Город</span><span class="v">{{ obj.city|default:'Не указано' }}</span></div>
                 <div class="card-row"><span class="k">Систем</span><span class="v">{{ obj.systems_count }}</span></div>
             </div>
         </div>

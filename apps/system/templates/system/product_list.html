@@ -45,10 +45,10 @@
             {% for product in products %}
             <tr>
                 <td><a href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
-                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if product.product_type %}<span class="tag tag-blue">{{ product.get_product_type_display }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if product.system_class %}<span class="tag tag-{{ product.system_class.level }}">{{ product.system_class.system_class }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{{ product.version|default:'—' }}</td>
+                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{% if product.product_type %}<span class="tag tag-blue">{{ product.get_product_type_display }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{% if product.system_class %}<span class="tag tag-{{ product.system_class.level }}">{{ product.system_class.system_class }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{{ product.version|default:'Не указано' }}</td>
                 <td>{{ product.systems_count }}</td>
             </tr>
             {% empty %}

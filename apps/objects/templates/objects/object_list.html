@@ -39,9 +39,9 @@
                 <tr>
                     <td><a class="link" href="{% url 'object-detail' obj.pk %}">{{ obj.object_name }}</a></td>
                     <td><span class="tag tag-{{ obj.hierarchy_level }}">Уровень {{ obj.hierarchy_level }}</span></td>
-                    <td>{% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                    <td>{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
-                    <td>{% if obj.parent_object %}<a class="link" href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                    <td>{% if obj.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' obj.owner_entity.pk %}">{{ obj.owner_entity.owner_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                    <td>{% if obj.parent_object %}<a class="link" href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                     <td><span class="tag {{ obj.status_tag_class }}">{{ obj.get_status_display }}</span></td>
                     <td>{{ obj.systems_count }}</td>
                 </tr>

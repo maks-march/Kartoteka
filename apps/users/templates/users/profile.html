@@ -50,7 +50,7 @@
                 <tr>
                     <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.object_name }}</a></td>
                     <td><span class="tag tag-{{ obj.hierarchy_level }}">Уровень {{ obj.hierarchy_level }}</span></td>
-                    <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                     <td>{{ obj.created_at|date:"d.m.Y H:i" }}</td>
                     <td>
                         <div class="actions">

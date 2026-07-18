@@ -15,7 +15,7 @@
 
 
             <div class="detail-meta">
-                <p>Автор: {% if object.creator %}{{ object.creator.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+                <p>Автор: {% if object.creator %}{{ object.creator.username }}{% else %}<span class="empty">Не указано</span>{% endif %}</p>
             </div>
         </div>
         {% if user.is_authenticated %}
@@ -37,15 +37,15 @@
             <div class="info-cards">
                 <div class="info-card">
                     <span class="info-label">Историческое название</span>
-                    <span class="info-value">{{ object.object_old_name|default:'—' }}</span>
+                    <span class="info-value">{{ object.object_old_name|default:'Не указано' }}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Юридическое название</span>
-                    <span class="info-value">{{ object.object_law_name|default:'—' }}</span>
+                    <span class="info-value">{{ object.object_law_name|default:'Не указано' }}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Дата ввода</span>
-                    <span class="info-value">{% if object.start_date %}{{ object.start_date|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                    <span class="info-value">{% if object.start_date %}{{ object.start_date|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Реконструкция</span>
@@ -54,7 +54,7 @@
                 <div class="info-card">
                     <span class="info-label">Юридическое лицо</span>
                     <span class="info-value">
-                        {% if object.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>{% else %}—{% endif %}
+                        {% if object.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>{% else %}Не указано{% endif %}
                     </span>
                 </div>
             </div>
@@ -68,12 +68,12 @@
             <div class="info-cards">
                 <div class="info-card">
                     <span class="info-label">Короткое название</span>
-                    <span class="info-value">{{ object.object_short_name|default:'—' }}</span>
+                    <span class="info-value">{{ object.object_short_name|default:'Не указано' }}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Родительский объект</span>
                     <span class="info-value">
-                        {% if object.parent_object %}<a class="link" href="{% url 'object-detail' object.parent_object.pk %}">{{ object.parent_object.object_name }}</a>{% else %}—{% endif %}
+                        {% if object.parent_object %}<a class="link" href="{% url 'object-detail' object.parent_object.pk %}">{{ object.parent_object.object_name }}</a>{% else %}Не указано{% endif %}
                     </span>
                 </div>
                 <div class="info-card">
@@ -81,16 +81,16 @@
                     {% if object.address_line %}
                         <span class="info-value desc-text">{{ object.address_line }}</span>
                     {% else %}
-                        <span class="empty">— не указан —</span>
+                        <span class="empty">Не указано</span>
                     {% endif %}
                 </div>
                 <div class="info-card">
                     <span class="info-label">Мощность</span>
-                    <span class="info-value">{{ object.capacity|default:'—' }}</span>
+                    <span class="info-value">{{ object.capacity|default:'Не указано' }}</span>
                 </div>
                 <div class="info-card full">
                     <span class="info-label">Описание</span>
-                    <span class="info-value desc-text">{% if object.notes %}{{ object.notes }}{% else %}—{% endif %}</span>
+                    <span class="info-value desc-text">{% if object.notes %}{{ object.notes }}{% else %}Не указано{% endif %}</span>
                 </div>
             </div>
         </div>
@@ -118,8 +118,8 @@
                     <td><a class="link" href="{% url 'system-detail' os.system.pk %}">{{ os.system.autosystem_name }}</a></td>
                     <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
                     <td><span class="tag {{ os.status_tag_class }}">{{ os.get_status_display }}</span></td>
-                    <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
-                    <td>{% if os.implementor %}<a class="link" href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                    <td>{% if os.implementor %}<a class="link" href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                     {% if user.is_authenticated %}
                     <td>
                         <div class="actions">
@@ -158,9 +158,9 @@
                 <tr>
                     <td><a class="link" href="{% url 'object-detail' child.pk %}">{{ child.object_name }}</a></td>
                     <td><span class="tag tag-{{ child.hierarchy_level }}">Уровень {{ child.hierarchy_level }}</span></td>
-                    <td>{% if child.category %}<span class="tag tag-{{ child.category.object_level }}">{{ child.category.category_name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
+                    <td>{% if child.category %}<span class="tag tag-{{ child.category.object_level }}">{{ child.category.category_name }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                     <td><span class="tag {{ child.status_tag_class }}">{{ child.get_status_display }}</span></td>
-                    <td>{{ child.city|default:'—' }}</td>
+                    <td>{{ child.city|default:'Не указано' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

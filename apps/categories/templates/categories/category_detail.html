@@ -8,7 +8,7 @@
         <h1 style="margin-bottom:5px">{{ category.category_name }}</h1>
         <span class="tag tag-{{ category.object_level }}">Уровень {{ category.object_level }}</span>
         <p class="hint" style="display:inline-block; margin:10px 0 0">Категория может быть назначена объектам уровня {{ category.object_level }}</p>
-        <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if category.creator %}{{ category.creator.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+        <p style="margin-top:5px; color:#888; font-size:12px">Автор: {% if category.creator %}{{ category.creator.username }}{% else %}<span class="empty">Не указано</span>{% endif %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="actions" style="margin-top:15px; padding-top:15px; border-top:1px solid #e9ecef">
@@ -36,7 +36,7 @@
             <tr>
                 <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.object_name }}</a></td>
                 <td><span class="tag tag-{{ obj.hierarchy_level }}">Уровень {{ obj.hierarchy_level }}</span></td>
-                <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="3" class="empty">Объектов с этой категорией пока нет</td></tr>

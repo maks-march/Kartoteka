@@ -9,7 +9,7 @@
             {% for product in supplied_products %}
             <tr>
                 <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
-                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                 <td>{{ product.systems.count }}</td>
             </tr>
             {% empty %}

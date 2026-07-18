@@ -13,7 +13,7 @@
             {% if owner_entity.owner %}
                 <a href="{% url 'owner-entity-detail' owner_entity.owner.pk %}">{{ owner_entity.owner.owner_name }}</a>
             {% else %}
-                <span class="empty">—</span>
+                <span class="empty">Не указано</span>
             {% endif %}
         </p>
         <p style="margin-top:5px; color:#666">
@@ -21,7 +21,7 @@
             {% if owner_entity.ultimate_owner %}
                 <a href="{% url 'owner-entity-detail' owner_entity.ultimate_owner.pk %}">{{ owner_entity.ultimate_owner.owner_name }}</a>
             {% else %}
-                <span class="empty">—</span>
+                <span class="empty">Не указано</span>
             {% endif %}
         </p>
     </div>
@@ -47,7 +47,7 @@
             {% for child in child_entities %}
             <tr>
                 <td><a href="{% url 'owner-entity-detail' child.pk %}">{{ child.owner_name }}</a></td>
-                <td>{% if child.ultimate_owner %}<a href="{% url 'owner-entity-detail' child.ultimate_owner.pk %}">{{ child.ultimate_owner.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if child.ultimate_owner %}<a href="{% url 'owner-entity-detail' child.ultimate_owner.pk %}">{{ child.ultimate_owner.owner_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="2" class="empty">Дочерних юридических лиц нет</td></tr>
@@ -70,8 +70,8 @@
             <tr>
                 <td><a href="{% url 'object-detail' obj.pk %}">{{ obj.object_name }}</a></td>
                 <td><span class="tag tag-{{ obj.hierarchy_level }}">Уровень {{ obj.hierarchy_level }}</span></td>
-                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if obj.category %}<span class="tag tag-{{ obj.category.object_level }}">{{ obj.category.category_name }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{% if obj.parent_object %}<a href="{% url 'object-detail' obj.parent_object.pk %}">{{ obj.parent_object.object_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="4" class="empty">Объектов у этого юр. лица пока нет</td></tr>

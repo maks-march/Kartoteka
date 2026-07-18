@@ -12,7 +12,7 @@
             <span class="tag {{ system.status_tag_class }}" style="margin-left:6px">{{ system.get_system_status_display }}</span>
 
             <div class="detail-meta">
-                <p>Автор: {% if system.creator %}{{ system.creator.username }}{% else %}<span class="empty">—</span>{% endif %}</p>
+                <p>Автор: {% if system.creator %}{{ system.creator.username }}{% else %}<span class="empty">Не указано</span>{% endif %}</p>
             </div>
         </div>
         {% if user.is_authenticated %}
@@ -35,7 +35,7 @@
         <div class="info-cards">
             <div class="info-card">
                 <span class="info-label">Короткое название</span>
-                <span class="info-value">{{ system.autosystem_short_name|default:'—' }}</span>
+                <span class="info-value">{{ system.autosystem_short_name|default:'Не указано' }}</span>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
             <div class="info-card">
                 <span class="info-label">Продукт</span>
                 <span class="info-value">
-                    {% if system.product %}<a class="link" href="{% url 'product-detail' system.product.pk %}">{{ system.product.product_name }}</a>{% else %}—{% endif %}
+                    {% if system.product %}<a class="link" href="{% url 'product-detail' system.product.pk %}">{{ system.product.product_name }}</a>{% else %}Не указано{% endif %}
                 </span>
             </div>
             {% if system.subsystem_classes.exists %}
@@ -78,12 +78,12 @@
             </div>
             <div class="info-card">
                 <span class="info-label">Дата выпуска</span>
-                <span class="info-value">{% if system.release_year %}{{ system.release_year|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                <span class="info-value">{% if system.release_year %}{{ system.release_year|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
             </div>
 
             <div class="info-card full">
                 <span class="info-label">Описание / примечания</span>
-                <span class="info-value desc-text">{% if system.notes %}{{ system.notes }}{% else %}—{% endif %}</span>
+                <span class="info-value desc-text">{% if system.notes %}{{ system.notes }}{% else %}Не указано{% endif %}</span>
             </div>
         </div>
     </div>
@@ -99,7 +99,7 @@
                 <ul class="json-list">
                     {% for m in system.modules %}<li>{{ m }}</li>{% endfor %}
                 </ul>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
             <div class="info-card">
                 <span class="info-label">Интерфейсы системы</span>
@@ -107,7 +107,7 @@
                 <ul class="json-list">
                     {% for i in system.interfaces %}<li>{{ i }}</li>{% endfor %}
                 </ul>
-                {% else %}<span class="info-value">—</span>{% endif %}
+                {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
         </div>
     </div>
@@ -150,8 +150,8 @@
                 <td><a href="{% url 'object-detail' os.object.pk %}">{{ os.object.object_name }}</a></td>
                 <td><span class="tag tag-{{ os.object.hierarchy_level }}">Уровень {{ os.object.hierarchy_level }}</span></td>
                 <td>{{ os.get_status_display }}</td>
-                <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
-                <td>{% if os.implementor %}<a href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{% if os.implementor %}<a href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                 {% if user.is_authenticated %}
                 <td>
                     <div class="actions">

@@ -11,7 +11,7 @@
             {% if product.system_class %}<span class="tag tag-{{ product.system_class.level }}" style="margin-left:6px">L{{ product.system_class.level }} - {{ product.system_class.system_class }}</span>{% endif %}
             {% for sub in product.subsystem_classes.all %}<span class="tag tag-{{ sub.level }}" style="margin-left:6px">{{ sub.system_class }}</span>{% endfor %}
             <div class="detail-meta">
-                <p>Вендор: {% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</p>
+                <p>Вендор: {% if product.vendor %}<a class="link" href="{% url 'entity-detail' product.vendor.entity.pk %}">{{ product.vendor.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</p>
             </div>
         </div>
         {% if user.is_authenticated %}
@@ -31,11 +31,11 @@
         <div class="info-cards">
             <div class="info-card">
                 <span class="info-label">Класс системы</span>
-                <span class="info-value">{% if product.system_class %}L{{ product.system_class.level }} - {{ product.system_class.system_class }}{% else %}—{% endif %}</span>
+                <span class="info-value">{% if product.system_class %}L{{ product.system_class.level }} - {{ product.system_class.system_class }}{% else %}Не указано{% endif %}</span>
             </div>
             <div class="info-card">
                 <span class="info-label">Тип продукта</span>
-                <span class="info-value">{{ product.get_product_type_display|default:'—' }}</span>
+                <span class="info-value">{{ product.get_product_type_display|default:'Не указано' }}</span>
             </div>
             {% if product.subsystem_classes.exists %}
             <div class="info-card full">
@@ -54,15 +54,15 @@
         <div class="info-cards">
             <div class="info-card">
                 <span class="info-label">Версия</span>
-                <span class="info-value">{{ product.version|default:'—' }}</span>
+                <span class="info-value">{{ product.version|default:'Не указано' }}</span>
             </div>
             <div class="info-card">
                 <span class="info-label">Дата выпуска</span>
-                <span class="info-value">{% if product.release_year %}{{ product.release_year|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                <span class="info-value">{% if product.release_year %}{{ product.release_year|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
             </div>
             <div class="info-card">
                 <span class="info-label">Конец поддержки</span>
-                <span class="info-value">{% if product.end_of_support %}{{ product.end_of_support|date:"d.m.Y" }}{% else %}—{% endif %}</span>
+                <span class="info-value">{% if product.end_of_support %}{{ product.end_of_support|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
             </div>
         </div>
     </div>
@@ -83,7 +83,7 @@
             {% for key, value in product.specs_items %}
             <div class="info-card">
                 <span class="info-label">{{ key }}</span>
-                <span class="info-value">{{ value|default:'—' }}</span>
+                <span class="info-value">{{ value|default:'Не указано' }}</span>
             </div>
             {% endfor %}
         </div>
@@ -95,7 +95,7 @@
         <h3 class="info-block-title">Описание</h3>
         <div class="info-cards">
             <div class="info-card full">
-                <span class="info-value desc-text">{{ product.description|default:'—' }}</span>
+                <span class="info-value desc-text">{{ product.description|default:'Не указано' }}</span>
             </div>
         </div>
     </div>

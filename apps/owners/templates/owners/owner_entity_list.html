@@ -37,7 +37,7 @@
             <tr>
                 <td><a href="{% url 'owner-entity-detail' owner.pk %}">{{ owner.owner_name }}</a></td>
                 <td>{% if owner.is_root %}<span class="tag tag-blue">Материнская</span>{% else %}<span class="tag tag-muted">Дочерняя</span>{% endif %}</td>
-                <td>{% if owner.is_root %}<span class="empty">— это материнская —</span>{% elif owner.ultimate_owner %}<a href="{% url 'owner-entity-detail' owner.ultimate_owner.pk %}">{{ owner.ultimate_owner.owner_name }}</a>{% elif owner.owner %}<a href="{% url 'owner-entity-detail' owner.owner.pk %}">{{ owner.owner.owner_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
+                <td>{% if owner.is_root %}<span class="empty">— это материнская —</span>{% elif owner.ultimate_owner %}<a href="{% url 'owner-entity-detail' owner.ultimate_owner.pk %}">{{ owner.ultimate_owner.owner_name }}</a>{% elif owner.owner %}<a href="{% url 'owner-entity-detail' owner.owner.pk %}">{{ owner.owner.owner_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="3" class="empty">Юридические лица не найдены</td></tr>
