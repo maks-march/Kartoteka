@@ -140,7 +140,7 @@
         {% elif entity.entity_type == "engineering_company" %}
         {% with prof=entity.engineering_profile %}
         <div class="info-block">
-            <div class="info-card full">
+            <div class="info-card">
                 <span class="info-label">Узкая компетенция по продуктам</span>
                 {% if prof.product_competencies.all %}
                 <div class="card-tags">
@@ -148,7 +148,7 @@
                 </div>
                 {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
-            <div class="info-card full">
+            <div class="info-card gap">
                 <span class="info-label">Узкая компетенция по функции</span>
                 {% if prof.function_competencies.all %}
                 <div class="card-tags">
@@ -161,7 +161,7 @@
         {% elif entity.is_system_integrator_type %}
         {% with sip=entity.system_integrator_profile %}
         <div class="info-block">
-            <div class="info-card full">
+            <div class="info-card">
                 <span class="info-label">Вендоры-партнёры</span>
                 {% if sip.vendor_partners.all %}
                 <div class="card-tags">
@@ -169,7 +169,7 @@
                 </div>
                 {% else %}<span class="info-value">Не указано</span>{% endif %}
             </div>
-            <div class="info-card full">
+            <div class="info-card gap">
                 <span class="info-label">Компетенции</span>
                 {% if sip.function_competencies.all %}
                 <span class="info-value">Все отрасли и классы, кроме:</span>

@@ -42,7 +42,7 @@
             </div>
             <div class="card-rows">
                 {% if entity.is_system_integrator_type %}
-                <div class="card-row"><span class="k">Все отрасли, кроме:</span><span class="v">{{ entity.excluded_industries_text }}</span></div>
+                <div class="card-row"><span class="k">Все отрасли, кроме</span><span class="v">{{ entity.excluded_industries_text }}</span></div>
                 {% else %}
                 <div class="card-row"><span class="k">Отрасли</span><span class="v">{{ entity.industries_display }}</span></div>
                 {% endif %}
