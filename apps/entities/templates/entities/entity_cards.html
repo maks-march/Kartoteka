@@ -41,7 +41,11 @@
                 {% if entity.is_partner %}<span class="tag tag-ok">Партнёр</span>{% endif %}
             </div>
             <div class="card-rows">
-                <div class="card-row"><span class="k">Отрасли</span><span class="v">{{ entity.industries_first_three|default:'—' }}</span></div>
+                {% if entity.is_system_integrator_type %}
+                <div class="card-row"><span class="k">Все отрасли, кроме:</span><span class="v">{{ entity.excluded_industries_text }}</span></div>
+                {% else %}
+                <div class="card-row"><span class="k">Отрасли</span><span class="v">{{ entity.industries_display }}</span></div>
+                {% endif %}
                 <div class="card-row"><span class="k">ИНН</span><span class="v">{{ entity.inn|default:'—' }}</span></div>
                 <div class="card-row"><span class="k">Связанные системы</span><span class="v">{{ entity.systems_count }}</span></div>
                 {% if entity.can_have_products %}

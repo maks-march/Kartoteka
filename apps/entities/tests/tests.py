@@ -1137,3 +1137,45 @@ class SummaryPerTypeTests(TestCase):
         self.assertNotIn("Классы вендорских продуктов", h)
         self.assertNotIn("Классы поставляемых продуктов", h)
         self.assertNotIn("Вендоры установленных продуктов", h)
+
+
+class IndustriesDisplayTests(TestCase):
+    """industries_display: у интегратора «Все отрасли, кроме: …»."""
+
+    def setUp(self):
+        from apps.categories.models import Category
+        from apps.system.models import AutomationClass
+        self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.ind = Category.objects.create(category_name="Фарма", object_level=1)
+
+    def _uc(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        return EntityUseCase()
+
+    def test_integrator_all_except_excluded_industries(self):
+        """Исключение с отраслью → «Все отрасли, кроме: <отрасль>»."""
+        e = self._uc().create(entity_name="Инт1", entity_type="system_integrator")
+        self._uc().save_system_integrator_profile(
+            e, managing_owner_id=None, vendor_partner_ids=[],
+            exclusions=[(self.cls.pk, self.ind.pk)])
+        self.assertEqual(e.industries_display, "Все отрасли, кроме: Фарма")
+
+    def test_integrator_class_only_exclusion_is_all(self):
+        """Исключение только по классу (без отрасли) → «Все отрасли»."""
+        e = self._uc().create(entity_name="Инт2", entity_type="system_integrator")
+        self._uc().save_system_integrator_profile(
+            e, managing_owner_id=None, vendor_partner_ids=[],
+            exclusions=[(self.cls.pk, "")])
+        self.assertEqual(e.industries_display, "Все отрасли")
+
+    def test_integrator_no_exclusions_is_all(self):
+        """Нет исключений → «Все отрасли»."""
+        e = self._uc().create(entity_name="Инт3", entity_type="system_integrator")
+        self._uc().save_system_integrator_profile(
+            e, managing_owner_id=None, vendor_partner_ids=[], exclusions=[])
+        self.assertEqual(e.industries_display, "Все отрасли")
+
+    def test_non_integrator_uses_industries_list(self):
+        """У не-интегратора без отраслей — «—»."""
+        e = self._uc().create(entity_name="Вен1", entity_type="vendor")
+        self.assertEqual(e.industries_display, "—")

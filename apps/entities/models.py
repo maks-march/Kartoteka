@@ -239,6 +239,57 @@ class Entity(models.Model):
         """Первые три отрасли строкой через запятую (для карточки)."""
         return ", ".join(self.industries_names[:3])
 
+    @property
+    def excluded_industries_names(self):
+        """Исключённые отрасли системного интегратора (компетенции «от обратного»).
+
+        Возвращает список названий отраслей, указанных в исключениях
+        (только записи, где задана отрасль). Для не-интеграторов — пусто.
+        """
+        if not self.is_system_integrator_type:
+            return []
+        sip = getattr(self, "system_integrator_profile", None)
+        if sip is None:
+            return []
+        names = [
+            fc.industry.category_name
+            for fc in sip.function_competencies.select_related("industry").all()
+            if fc.industry is not None
+        ]
+        # Уникальные, с сохранением порядка.
+        seen = set()
+        result = []
+        for n in names:
+            if n not in seen:
+                seen.add(n)
+                result.append(n)
+        return result
+
+    @property
+    def industries_display(self):
+        """Отрасли для мини-карточки с учётом типа участника.
+
+        Системный интегратор работает со всеми отраслями «от обратного»:
+        показываем «Все отрасли, кроме: …» (или «Все отрасли», если
+        исключений по отраслям нет). Для остальных типов — первые три
+        вычисленные отрасли (или «—»).
+        """
+        if self.is_system_integrator_type:
+            excluded = self.excluded_industries_names
+            if excluded:
+                return "Все отрасли, кроме: " + ", ".join(excluded)
+            return "Все отрасли"
+        return self.industries_first_three or "—"
+
+    @property
+    def excluded_industries_text(self):
+        """Исключённые отрасли интегратора строкой (для значения мини-карточки).
+
+        Только сами отрасли, без префикса «Все отрасли, кроме:» — метка на
+        карточке уже содержит этот текст. Пусто → «все» (прочерк).
+        """
+        return ", ".join(self.excluded_industries_names) or "—"
+
     # --- Вспомогательные свойства для форм/детали ---
 
     @property

@@ -40,21 +40,6 @@
                     </div>
                 </div>
             </div>
-        {% comment %}Строка 1: Контакты | Реквизиты (рядом).{% endcomment %}
-        <div class="top-row">
-            <div class="info-block">
-                <h3 class="info-block-title">Контакты</h3>
-                <div class="info-cards">
-                    <div class="info-card">
-                        <span class="info-label">КАМ (Key Account Manager)</span>
-                        <span class="info-value">{{ entity.kam_name|default:'—' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
-                    </div>
-                    <div class="info-card">
-                        <span class="info-label">Контакт от ЦК ПА</span>
-                        <span class="info-value">{{ entity.contact_person|default:'—' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
-                    </div>
-                </div>
-            </div>
 
             <div class="info-block">
                 <h3 class="info-block-title">Реквизиты</h3>
@@ -189,7 +174,7 @@
                 {% if sip.function_competencies.all %}
                 <span class="info-value">Все отрасли и классы, кроме:</span>
                 <div class="card-tags" style="margin-top:6px">
-                    {% for fc in sip.function_competencies.all %}<span class="tag tag-danger">{{ fc }}</span>{% endfor %}
+                    {% for fc in sip.function_competencies.all %}<span class="tag tag-danger">{{ fc|cut:"кроме: " }}</span>{% endfor %}
                 </div>
                 {% else %}<span class="info-value">Работает со всеми отраслями и классами</span>{% endif %}
             </div>
