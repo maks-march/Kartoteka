@@ -11,21 +11,23 @@ from apps.entities.models import (
 class FunctionCompetencySerializer(serializers.ModelSerializer):
     """Представление компетенции по функции (инж. компания) для чтения."""
     system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
+    industry_name = serializers.CharField(source="industry.category_name", read_only=True)
 
     class Meta:
         """Поля сериализатора."""
         model = FunctionCompetency
-        fields = ["id", "system_class", "system_class_name", "industry"]
+        fields = ["id", "system_class", "system_class_name", "industry", "industry_name"]
 
 
 class FullCycleFunctionCompetencySerializer(serializers.ModelSerializer):
     """Представление компетенции по функции (вендор полного цикла)."""
     system_class_name = serializers.CharField(source="system_class.system_class", read_only=True)
+    industry_name = serializers.CharField(source="industry.category_name", read_only=True)
 
     class Meta:
         """Поля сериализатора."""
         model = FullCycleFunctionCompetency
-        fields = ["id", "system_class", "system_class_name", "industry"]
+        fields = ["id", "system_class", "system_class_name", "industry", "industry_name"]
 
 
 class SupplierProfileSerializer(serializers.ModelSerializer):
@@ -85,6 +87,8 @@ class EntitySerializer(serializers.ModelSerializer):
     engineering_profile = EngineeringProfileSerializer(read_only=True)
     full_cycle_profile = FullCycleProfileSerializer(read_only=True)
     products = serializers.SerializerMethodField()
+    # Отрасли вычисляются из связей по типу участника (только чтение).
+    industries = serializers.SerializerMethodField()
 
     class Meta:
         """Поля сериализатора."""
@@ -100,6 +104,10 @@ class EntitySerializer(serializers.ModelSerializer):
     def get_products(self, obj):
         """Id продуктов вендора (через VendorProfile)."""
         return list(obj.products.values_list("id", flat=True))
+
+    def get_industries(self, obj):
+        """Id вычисленных отраслей участника (категории 1-го уровня)."""
+        return [c.pk for c in obj.industries]
 
 
 class EntityCreateUpdateSerializer(serializers.Serializer):
@@ -118,7 +126,7 @@ class EntityCreateUpdateSerializer(serializers.Serializer):
     contact_phone = serializers.CharField(max_length=50, required=False, allow_blank=True)
     presentation_url = serializers.CharField(max_length=255, required=False, allow_blank=True)
     profile = serializers.CharField(required=False, allow_blank=True)
-    industries = serializers.JSONField(required=False, allow_null=True)
+    # Отрасли участника не задаются напрямую — вычисляются из связей.
 
     def validate_inn(self, value):
         # Пустой ИНН храним как NULL (unique допускает несколько NULL).
@@ -129,9 +137,12 @@ class EntityCreateUpdateSerializer(serializers.Serializer):
 
 
 class FunctionCompetencyWriteSerializer(serializers.Serializer):
-    """Валидация пары «класс + индустрия» при записи компетенции."""
+    """Валидация пары «класс + индустрия» при записи компетенции.
+
+    industry — id категории 1-го уровня (FK).
+    """
     system_class = serializers.IntegerField()
-    industry = serializers.CharField(max_length=255)
+    industry = serializers.IntegerField()
 
 
 class EngineeringProfileWriteSerializer(serializers.Serializer):

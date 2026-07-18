@@ -10,7 +10,10 @@
             </div>
         </div>
 
-        {% comment %}Статусы внедрения систем на объекте (счётчики по статусу).{% endcomment %}
+        {% comment %}Категории дочерних объектов.{% endcomment %}
+        {% include "core/_summary_group.html" with title="Категории дочерних" group=summary.children_categories kind="category" %}
+
+        {% comment %}Статусы внедрения систем (счётчики по статусу).{% endcomment %}
         <div class="summary-group">
             <div class="summary-group-title">Статусы внедрения</div>
             {% if summary.status_breakdown %}
@@ -33,7 +36,11 @@
         </div>
 
         {% include "core/_summary_group.html" with title="Классы систем" group=summary.system_classes kind="class" %}
-        {% include "core/_summary_group.html" with title="Вендоры" group=summary.vendors kind="entity" tag="tag-blue" %}
-        {% include "core/_summary_group.html" with title="Исполнители" group=summary.implementors kind="entity" tag="tag-warn" %}
+
+        {% comment %}Вендоры и исполнители — в две колонки рядом.{% endcomment %}
+        <div class="summary-cols">
+            {% include "core/_summary_group.html" with title="Вендоры" group=summary.vendors kind="entity" tag="tag-blue" %}
+            {% include "core/_summary_group.html" with title="Исполнители" group=summary.implementors kind="entity" tag="tag-warn" %}
+        </div>
     </div>
 </aside>

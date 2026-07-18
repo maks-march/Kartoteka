@@ -646,36 +646,35 @@ class VendorProductFieldsTests(TestCase):
         self.assertEqual(p.description, "Демо-описание")
 
     def test_web_create_with_specs_and_industries(self):
-        """HTML-создание продукта с характеристиками и отраслями."""
+        """HTML-создание продукта с характеристиками и отраслями (id категорий)."""
+        from apps.categories.models import Category
+        c1 = Category.objects.create(category_name="Химия", object_level=1)
+        c2 = Category.objects.create(category_name="Металлургия", object_level=1)
         self.client.force_login(self.user)
         r = self.client.post("/system/products/create/", {
             "product_name": "SpecProd",
-            "industries": "Химия, Металлургия;Химия",
+            "industries": [str(c1.pk), str(c2.pk)],
             "spec_key": ["Разрядность", "", "Протокол"],
             "spec_value": ["64 бита", "пропустить", "OPC UA"],
         })
         self.assertEqual(r.status_code, 302)
         from apps.system.models import VendorProduct
         p = VendorProduct.objects.get(product_name="SpecProd")
-        # industries: список, пустые ключи характеристик отброшены
-        self.assertEqual(p.industries, ["Химия", "Металлургия", "Химия"])
+        # industries: M2M-связь с категориями, пустые ключи характеристик отброшены
+        self.assertEqual(set(p.industries.values_list("pk", flat=True)), {c1.pk, c2.pk})
         self.assertEqual(p.technical_specs, {"Разрядность": "64 бита", "Протокол": "OPC UA"})
-        # свойства-помощники
-        self.assertEqual(p.industries_text, "Химия, Металлургия, Химия")
         self.assertIn(("Протокол", "OPC UA"), p.specs_items)
 
     def test_form_shows_specs_and_industries(self):
-        """Форма продукта показывает характеристики и отрасли."""
+        """Форма продукта показывает характеристики и отрасли (пикер по id)."""
         from apps.categories.models import Category
         Category.objects.create(category_name="Химия", object_level=1)
         self.client.force_login(self.user)
         h = self.client.get("/system/products/create/").content.decode()
-        # отрасли — пикер множественного выбора (как в форме участника), без datalist
-        self.assertIn("industry-picker", h)
-        self.assertIn('id="productIndustriesValue"', h)
+        # отрасли — capsule-picker множественного выбора по id категорий
+        self.assertIn("capsule-picker", h)
         self.assertIn('name="industries"', h)
-        self.assertIn('data-name="Химия"', h)
-        self.assertNotIn("industryOptions", h)
+        self.assertIn("Химия", h)
         self.assertIn('id="specsList"', h)
         self.assertIn('id="specsAddBtn"', h)
 
@@ -693,8 +692,10 @@ class VendorProductFieldsTests(TestCase):
 
     def test_detail_shows_specs_and_industries(self):
         """Деталь продукта показывает характеристики и отрасли."""
+        from apps.categories.models import Category
+        c = Category.objects.create(category_name="Химия", object_level=1)
         p = self._uc().create(
-            product_name="ShowProd", industries=["Химия"],
+            product_name="ShowProd", industries=[c.pk],
             technical_specs={"CPU": "x86"})
         h = self.client.get(f"/system/products/{p.pk}/").content.decode()
         self.assertIn("Химия", h)
@@ -721,17 +722,20 @@ class VendorProductFieldsTests(TestCase):
         self.assertEqual(p.vendor.entity_id, self.vendor.pk)
 
     def test_api_create_with_specs_and_industries(self):
-        """API-создание продукта с характеристиками и отраслями."""
+        """API-создание продукта с характеристиками и отраслями (id категорий)."""
+        from apps.categories.models import Category
+        c1 = Category.objects.create(category_name="Нефтехимия", object_level=1)
+        c2 = Category.objects.create(category_name="Газопереработка", object_level=1)
         self.api.force_authenticate(user=self.user)
         r = self.api.post("/api/system/products/", {
             "product_name": "ApiSpec",
             "technical_specs": {"CPU": "ARM"},
-            "industries": ["Нефтехимия", "Газопереработка"],
+            "industries": [c1.pk, c2.pk],
         }, format="json")
         self.assertEqual(r.status_code, 201)
         r = self.api.get(f"/api/system/products/{r.data['id']}/")
         self.assertEqual(r.data["technical_specs"], {"CPU": "ARM"})
-        self.assertEqual(r.data["industries"], ["Нефтехимия", "Газопереработка"])
+        self.assertEqual(set(r.data["industries"]), {c1.pk, c2.pk})
 
     def test_usecase_invalid_class_rejected(self):
         """Use case отклоняет продукт с недопустимым классом."""

@@ -70,13 +70,19 @@ class EntityUseCase:
             FullCycleVendorProfile.objects.filter(entity=entity).delete()
 
     def create(self, **data):
-        """Создаёт участника и синхронизирует профили по типу."""
+        """Создаёт участника и синхронизирует профили по типу.
+
+        Отрасли участника не хранятся — вычисляются из связей (Entity.industries).
+        """
         entity = self.repo.create(**data)
         self._sync_profiles(entity)
         return entity
 
     def update(self, pk, **data):
-        """Обновляет участника и синхронизирует профили по типу."""
+        """Обновляет участника и синхронизирует профили по типу.
+
+        Отрасли участника не хранятся — вычисляются из связей (Entity.industries).
+        """
         obj = self.get(pk)
         entity = self.repo.update(obj, **data)
         self._sync_profiles(entity)
@@ -112,14 +118,15 @@ class EntityUseCase:
         )
         profile.product_competencies.set(valid_products)
 
-        # Компетенция по функции (пары класс+индустрия) — пересобираем целиком
+        # Компетенция по функции (пары класс + индустрия-категория) — пересобираем целиком
+        from apps.categories.models import Category
         profile.function_competencies.all().delete()
-        for class_id, industry in (competencies or []):
-            industry = (industry or "").strip()
-            if class_id in (None, "", "None") or not industry:
+        for class_id, industry_id in (competencies or []):
+            if class_id in (None, "", "None") or industry_id in (None, "", "None"):
                 continue
             klass = AutomationClass.objects.filter(pk=class_id).first()
-            if klass:
+            industry = Category.objects.filter(pk=industry_id).first()
+            if klass and industry:
                 FunctionCompetency.objects.create(
                     profile=profile, system_class=klass, industry=industry
                 )
@@ -231,14 +238,15 @@ class EntityUseCase:
         )
         profile.products.set(valid_products)
 
-        # Компетенция по функции (пары класс+индустрия) — пересобираем целиком
+        # Компетенция по функции (пары класс + индустрия-категория) — пересобираем целиком
+        from apps.categories.models import Category
         profile.function_competencies.all().delete()
-        for class_id, industry in (competencies or []):
-            industry = (industry or "").strip()
-            if class_id in (None, "", "None") or not industry:
+        for class_id, industry_id in (competencies or []):
+            if class_id in (None, "", "None") or industry_id in (None, "", "None"):
                 continue
             klass = AutomationClass.objects.filter(pk=class_id).first()
-            if klass:
+            industry = Category.objects.filter(pk=industry_id).first()
+            if klass and industry:
                 FullCycleFunctionCompetency.objects.create(
                     profile=profile, system_class=klass, industry=industry
                 )

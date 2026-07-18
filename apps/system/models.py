@@ -139,11 +139,12 @@ class VendorProduct(models.Model):
         verbose_name="Технические характеристики",
         help_text="Словарь «характеристика — значение».",
     )
-    industries = models.JSONField(
+    industries = models.ManyToManyField(
+        "categories.Category",
         blank=True,
-        null=True,
+        related_name="industry_products",
         verbose_name="Отрасли применения",
-        help_text="Список отраслей (значения из категорий 1-го уровня, без связи).",
+        help_text="Отрасли — категории 1-го уровня (ссылки на справочник).",
     )
 
     class Meta:
@@ -164,20 +165,19 @@ class VendorProduct(models.Model):
         return []
 
     @property
+    def industries_names(self):
+        """Названия связанных отраслей (категорий 1-го уровня) списком."""
+        return [c.category_name for c in self.industries.all()]
+
+    @property
     def industries_text(self):
-        """Отрасли строкой через запятую (для предзаполнения поля формы)."""
-        if not self.industries:
-            return ""
-        if isinstance(self.industries, (list, tuple)):
-            return ", ".join(str(v) for v in self.industries)
-        return str(self.industries)
+        """Отрасли строкой через запятую (для отображения)."""
+        return ", ".join(self.industries_names)
 
     @property
     def industries_first_three(self):
         """Первые три отрасли строкой через запятую (для карточки/списка)."""
-        if isinstance(self.industries, (list, tuple)) and self.industries:
-            return ", ".join(str(v) for v in self.industries[:3])
-        return ""
+        return ", ".join(self.industries_names[:3])
 
 
 class AutomationSystem(models.Model):

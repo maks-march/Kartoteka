@@ -57,97 +57,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ---- Множественный выбор с капсулами (продукты) ----
-       Заголовок показывает выбранное нейтральными капсулами (крестик снимает
-       выбор), список — в нашем стиле с автопоиском и группами (data-group). */
-    document.querySelectorAll('.capsule-picker').forEach(function (picker) {
-        const header = picker.querySelector('.picker-header');
-        const chips = picker.querySelector('.picker-chips');
-        const emptyText = picker.getAttribute('data-empty-text') || 'Не выбрано';
-        const search = picker.querySelector('.picker-search');
-        const list = picker.querySelector('.system-results-container');
-        // Контейнер скрытых input'ов — прямой потомок пикера с data-name
-        // (у .system-item тоже есть data-name, поэтому ищем именно вне списка).
-        const inputsBox = picker.querySelector(':scope > [data-name]');
-        const noRes = picker.querySelector('.picker-empty');
-        if (!inputsBox || !list) return;
-        const fieldName = inputsBox.getAttribute('data-name');
-        const items = Array.from(list.querySelectorAll('.system-item'));
-        const groupLabels = Array.from(list.querySelectorAll('.group-label'));
-
-        function itemById(id) { return items.find(function (i) { return i.getAttribute('data-id') === id; }); }
-
-        function sync() {
-            inputsBox.innerHTML = '';
-            const selected = items.filter(function (i) { return i.classList.contains('selected'); });
-            selected.forEach(function (it) {
-                const inp = document.createElement('input');
-                inp.type = 'hidden'; inp.name = fieldName; inp.value = it.getAttribute('data-id');
-                inputsBox.appendChild(inp);
-            });
-            if (chips) {
-                chips.innerHTML = '';
-                if (!selected.length) {
-                    const e = document.createElement('span');
-                    e.className = 'empty-value'; e.textContent = emptyText;
-                    chips.appendChild(e);
-                } else {
-                    selected.forEach(function (it) {
-                        const chip = document.createElement('span');
-                        chip.className = 'chip';
-                        const nameEl = it.querySelector('.system-name');
-                        const name = nameEl ? nameEl.textContent.trim() : (it.getAttribute('data-name') || '');
-                        const label = document.createElement('span'); label.textContent = name;
-                        const x = document.createElement('span'); x.className = 'x'; x.textContent = '\u2715';
-                        x.setAttribute('data-id', it.getAttribute('data-id'));
-                        chip.appendChild(label); chip.appendChild(x);
-                        chips.appendChild(chip);
-                    });
-                }
-            }
-        }
-
-        // раскрытие/сворачивание (клик по крестику капсулы не сворачивает)
-        if (header) header.addEventListener('click', function (e) {
-            if (e.target.closest('.picker-body')) return;
-            if (e.target.classList.contains('x')) return;
-            picker.classList.toggle('open');
-        });
-
-        // выбор пункта
-        items.forEach(function (it) {
-            it.addEventListener('click', function () { it.classList.toggle('selected'); sync(); });
-        });
-
-        // снятие капсулы крестиком
-        if (chips) chips.addEventListener('click', function (e) {
-            if (!e.target.classList.contains('x')) return;
-            e.stopPropagation();
-            const it = itemById(e.target.getAttribute('data-id'));
-            if (it) { it.classList.remove('selected'); sync(); }
-        });
-
-        // автопоиск (+ скрытие пустых групп)
-        if (search) search.addEventListener('input', function () {
-            const q = search.value.toLowerCase().trim();
-            let any = false;
-            items.forEach(function (it) {
-                const ok = (it.getAttribute('data-name') || '').includes(q);
-                it.style.display = ok ? '' : 'none';
-                if (ok) any = true;
-            });
-            groupLabels.forEach(function (lbl) {
-                const g = lbl.getAttribute('data-group');
-                const visible = items.some(function (o) {
-                    return o.getAttribute('data-group') === g && o.style.display !== 'none';
-                });
-                lbl.style.display = visible ? '' : 'none';
-            });
-            if (noRes) noRes.style.display = any ? 'none' : 'block';
-        });
-
-        sync();
-    });
+    /* Множественный выбор с капсулами (.capsule-picker) инициализируется
+       общей функцией initCapsulePicker в app.js. */
 
     /* ---- Одиночный выбор объекта (+ автозаполнение региона) ---- */
     const regionInput = document.getElementById('regionInput');
@@ -196,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (compAdd && compList) {
         const jsonEl = function (id) { const e = document.getElementById(id); try { return e ? JSON.parse(e.textContent) : []; } catch (x) { return []; } };
         const CLASSES = jsonEl('competencyClassesData');
-        const INDUSTRIES = jsonEl('competencyIndustriesData').map(function (n) { return { id: n, label: n, desc: '' }; });
+        const INDUSTRIES = jsonEl('competencyIndustriesData').map(function (c) { return { id: c.id, label: c.label, desc: '' }; });
         const EXISTING = jsonEl('competencyExistingData');
 
         function makeCombo(options, fieldName, placeholder, warnText, preId) {
@@ -270,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return row;
         }
 
-        EXISTING.forEach(function (p) { compList.appendChild(makeRow(p.class_id, p.industry)); });
+        EXISTING.forEach(function (p) { compList.appendChild(makeRow(p.class_id, p.industry_id)); });
         compAdd.addEventListener('click', function () { compList.appendChild(makeRow()); });
     }
 

@@ -15,10 +15,19 @@ class EntityModelTests(TestCase):
         self.assertFalse(e.is_partner)
         self.assertEqual(e.entity_type, "")
 
-    def test_industries_text_property(self):
-        """Свойство industries_text корректно собирает отрасли."""
-        e = Entity.objects.create(entity_name="X", industries=["Химия", "Металлургия"])
-        self.assertEqual(e.industries_text, "Химия, Металлургия")
+    def test_industries_computed_from_vendor_products(self):
+        """Отрасли участника вычисляются из отраслей его продуктов (вендор)."""
+        from apps.categories.models import Category
+        from apps.entities.models import VendorProfile
+        from apps.system.models import VendorProduct
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        cat = Category.objects.create(category_name="Химия", object_level=1)
+        e = EntityUseCase().create(entity_name="X", entity_type="vendor")
+        vp = VendorProfile.objects.get(entity=e)
+        prod = VendorProduct.objects.create(product_name="P", vendor=vp)
+        prod.industries.set([cat])
+        self.assertEqual(e.industries_text, "Химия")
+        self.assertIn(cat, list(e.industries))
 
     def test_contacts_items_property(self):
         """Свойство contacts_items возвращает пары контактов."""
@@ -49,36 +58,15 @@ class EntityWebEndpointTests(TestCase):
         r = self.client.get("/entities/create/")
         self.assertEqual(r.status_code, 302)
 
-    def test_industry_picker_is_multiselect_without_search(self):
-        """Форма: отрасли выбираются множественно (пикер), без поля поиска."""
-        from apps.categories.models import Category
-        Category.objects.create(category_name="Химия", object_level=1)
-        Category.objects.create(category_name="Металлургия", object_level=1)
+    def test_industries_not_editable_in_form(self):
+        """Форма участника не содержит ручного ввода отраслей — они вычисляются."""
         self.client.force_login(self.user)
         h = self.client.get("/entities/create/").content.decode()
-        # мультивыбор через пикер, значение пишется в скрытый input с прежним именем
-        self.assertIn("industry-picker", h)
-        self.assertIn('id="industriesValue"', h)
-        self.assertIn('name="industries"', h)
-        # пункты — категории 1-го уровня
-        self.assertIn('data-name="Химия"', h)
-        self.assertIn('data-name="Металлургия"', h)
-        # поиска в пикере отраслей быть не должно
-        block = h[h.index("industry-picker"):]
-        block = block[:block.index("</div></div>") if "</div></div>" in block else len(block)]
-        self.assertNotIn("picker-search", block)
-
-    def test_industry_picker_preselects_on_edit(self):
-        """Пикер отраслей предвыбран при редактировании."""
-        from apps.categories.models import Category
-        Category.objects.create(category_name="Химия", object_level=1)
-        Category.objects.create(category_name="Нефтехимия", object_level=1)
-        e = Entity.objects.create(entity_name="Ред", industries=["Химия"])
-        self.client.force_login(self.user)
-        h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
-        # выбранная отрасль помечена selected, значение предзаполнено
-        self.assertIn('class="system-item selected" data-name="Химия"', h)
-        self.assertIn('value="Химия"', h)
+        # прежнего пикера/поля отраслей быть не должно
+        self.assertNotIn("industry-picker", h)
+        self.assertNotIn('id="industriesValue"', h)
+        # есть пояснение об автоматическом определении отраслей
+        self.assertIn("Определяются автоматически", h)
 
     def test_authenticated_crud_with_full_fields(self):
         """CRUD участника со всеми полями (авторизованный)."""
@@ -100,7 +88,6 @@ class EntityWebEndpointTests(TestCase):
             "contact_phone": "+7 900 111-11-11",
             "presentation_url": "https://example.com/p.pdf",
             "profile": "Профиль компании",
-            "industries": "Химия, Металлургия; Химия",
             "contact_key": ["email", ""],
             "contact_value": ["info@example.com", "пустой ключ"],
             "fin_key": ["revenue"],
@@ -112,7 +99,6 @@ class EntityWebEndpointTests(TestCase):
         self.assertEqual(e.entity_type, "vendor")
         self.assertTrue(e.is_partner)
         self.assertEqual(e.website, "https://example.com")
-        self.assertEqual(e.industries, ["Химия", "Металлургия", "Химия"])
         self.assertEqual(e.contacts, {"email": "info@example.com"})
         self.assertEqual(e.financial_data, {"revenue": "1.2 млрд"})
 
@@ -173,14 +159,14 @@ class EntityApiEndpointTests(TestCase):
             "entity_name": "ApiNew",
             "entity_type": "system_integrator",
             "is_partner": True,
-            "industries": ["Химия"],
             "contacts": {"email": "x@y.z"},
         }, format="json")
         self.assertEqual(r.status_code, 201)
         eid = r.data["id"]
         self.assertEqual(r.data["entity_type"], "system_integrator")
         self.assertTrue(r.data["is_partner"])
-        self.assertEqual(r.data["industries"], ["Химия"])
+        # отрасли вычисляются из связей — у нового интегратора их нет
+        self.assertEqual(r.data["industries"], [])
 
         r = self.api.patch(f"/api/entities/{eid}/", {"entity_name": "ApiNew2"}, format="json")
         self.assertEqual(r.status_code, 200)
@@ -254,8 +240,17 @@ class EntityCountsAndViewsTests(TestCase):
         self.assertFalse(self.integ.can_have_products)
 
     def test_industries_helpers(self):
-        """Вспомогательные свойства отраслей работают корректно."""
-        e = Entity.objects.create(entity_name="X", industries=["A", "B", "C", "D"])
+        """Вспомогательные свойства отраслей вычисляются из продуктов вендора."""
+        from apps.categories.models import Category
+        from apps.entities.models import VendorProfile
+        from apps.system.models import VendorProduct
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        cats = [Category.objects.create(category_name=n, object_level=1) for n in ("A", "B", "C", "D")]
+        e = EntityUseCase().create(entity_name="XИнд", entity_type="vendor")
+        vp = VendorProfile.objects.get(entity=e)
+        prod = VendorProduct.objects.create(product_name="P", vendor=vp)
+        prod.industries.set(cats)
+        # industries отсортированы по имени: A, B, C, D
         self.assertEqual(e.industries_first, "A")
         self.assertEqual(e.industries_first_three, "A, B, C")
 
@@ -521,12 +516,14 @@ class EntityTypingProfilesTests(TestCase):
         """ФПЦ через форму сохраняет данные поставщика и инж. компании."""
         from apps.entities.models import Entity
         from apps.system.models import VendorProduct
+        from apps.categories.models import Category
+        ind = Category.objects.create(category_name="Химия", object_level=1)
         prod = VendorProduct.objects.create(product_name="ФПЦпрод")
         r = self.client.post("/entities/create/", {
             "entity_name": "ФПЦФорма", "entity_type": "full_cycle_vendor",
             "supplier_products": [str(prod.pk)],
             "region": "Урал",
-            "comp_class": [str(self.cls.pk)], "comp_industry": ["Химия"],
+            "comp_class": [str(self.cls.pk)], "comp_industry": [str(ind.pk)],
         })
         self.assertEqual(r.status_code, 302)
         e = Entity.objects.get(entity_name="ФПЦФорма")
@@ -605,6 +602,8 @@ class EntityTypingProfilesTests(TestCase):
         """HTML-создание инж. компании сохраняет поля профиля."""
         from apps.entities.models import Entity, VendorProfile
         from apps.system.models import VendorProduct
+        from apps.categories.models import Category
+        ind = Category.objects.create(category_name="Нефтехимия", object_level=1)
         vend = self._uc().create(entity_name="ВендорПрод", entity_type="vendor")
         product = VendorProduct.objects.create(product_name="Prod1", vendor=VendorProfile.objects.get(entity=vend))
         r = self.client.post("/entities/create/", {
@@ -614,7 +613,7 @@ class EntityTypingProfilesTests(TestCase):
             "resident_object": str(self.obj.pk),
             "product_competencies": [str(product.pk)],
             "comp_class": [str(self.cls.pk), ""],
-            "comp_industry": ["Нефтехимия", "пропуск-без-класса"],
+            "comp_industry": [str(ind.pk), ""],  # id категории; вторая без класса — отброшена
         })
         self.assertEqual(r.status_code, 302)
         e = Entity.objects.get(entity_name="ИнжКомп")
@@ -626,7 +625,7 @@ class EntityTypingProfilesTests(TestCase):
         self.assertEqual(prof.function_competencies.count(), 1)
         fc = prof.function_competencies.first()
         self.assertEqual(fc.system_class_id, self.cls.pk)
-        self.assertEqual(fc.industry, "Нефтехимия")
+        self.assertEqual(fc.industry_id, ind.pk)
 
     def test_web_vendor_assigns_free_products(self):
         """Вендор через форму назначает свободные продукты; при снятии — освобождает."""
@@ -714,10 +713,12 @@ class EntityTypingProfilesTests(TestCase):
 
     def test_detail_shows_engineering_block(self):
         """Деталь участника показывает блок инж. компании."""
+        from apps.categories.models import Category
+        ind = Category.objects.create(category_name="Химия", object_level=1)
         e = self._uc().create(entity_name="ИК2", entity_type="engineering_company")
         self._uc().save_engineering_profile(
             e, region="Сибирь", resident_object_id=self.obj.pk,
-            product_ids=[], competencies=[(self.cls.pk, "Химия")])
+            product_ids=[], competencies=[(self.cls.pk, ind.pk)])
         h = self.client.get(f"/entities/{e.pk}/").content.decode()
         self.assertIn("Инжиниринговая компания", h)
         self.assertIn("Сибирь", h)
@@ -737,7 +738,9 @@ class EngineeringProfileAPITests(TestCase):
 
         self.user = User.objects.create_user("api", "api@x.x", "pw")
         self.api = APIClient()
+        from apps.categories.models import Category
         self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.industry = Category.objects.create(category_name="Нефтехимия", object_level=1)
         self.obj = Object.objects.create(object_name="ОбъектAPI", hierarchy_level=1, creator=self.user)
         vend = EntityUseCase().create(entity_name="ВендAPI", entity_type="vendor")
         self.product = VendorProduct.objects.create(
@@ -751,14 +754,15 @@ class EngineeringProfileAPITests(TestCase):
             "region": "Урал",
             "resident_object": self.obj.pk,
             "product_competencies": [self.product.pk],
-            "function_competencies": [{"system_class": self.cls.pk, "industry": "Нефтехимия"}],
+            "function_competencies": [{"system_class": self.cls.pk, "industry": self.industry.pk}],
         }, format="json")
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.data["region"], "Урал")
         self.assertEqual(r.data["resident_object"], self.obj.pk)
         self.assertEqual(r.data["product_competencies"], [self.product.pk])
         self.assertEqual(len(r.data["function_competencies"]), 1)
-        self.assertEqual(r.data["function_competencies"][0]["industry"], "Нефтехимия")
+        self.assertEqual(r.data["function_competencies"][0]["industry"], self.industry.pk)
+        self.assertEqual(r.data["function_competencies"][0]["industry_name"], "Нефтехимия")
 
         # GET доступен без авторизации
         r = self.api.get(f"/api/entities/{self.eng.pk}/engineering-profile/")
@@ -786,7 +790,7 @@ class EngineeringProfileAPITests(TestCase):
         from apps.entities.usecases.entity_usecase import EntityUseCase
         EntityUseCase().save_engineering_profile(
             self.eng, region="Сибирь", resident_object_id=None,
-            product_ids=[self.product.pk], competencies=[(self.cls.pk, "Химия")])
+            product_ids=[self.product.pk], competencies=[(self.cls.pk, self.industry.pk)])
         r = self.api.get(f"/api/entities/{self.eng.pk}/")
         self.assertEqual(r.status_code, 200)
         self.assertIsNotNone(r.data["engineering_profile"])
@@ -809,9 +813,11 @@ class EntityProfileAPICoverageTests(TestCase):
         from apps.entities.usecases.entity_usecase import EntityUseCase
         from apps.entities.models import VendorProfile
         from apps.owners.models import OwnerEntity
+        from apps.categories.models import Category
         self.user = User.objects.create_user("apicov", "apicov@x.x", "pw")
         self.api = APIClient()
         self.cls = AutomationClass.objects.create(level=3, system_class="MES")
+        self.industry = Category.objects.create(category_name="Химия", object_level=1)
         self.obj = Object.objects.create(object_name="ОбъектП", hierarchy_level=1, creator=self.user)
         self.owner = OwnerEntity.objects.create(owner_name="Холдинг")
         self.free_product = VendorProduct.objects.create(product_name="Свободный")
@@ -903,7 +909,7 @@ class EntityProfileAPICoverageTests(TestCase):
             f"/api/entities/{fc.pk}/full-cycle-profile/",
             {"region": "Урал", "resident_object": self.obj.pk,
              "product_competencies": [self.free_product.pk],
-             "function_competencies": [{"system_class": self.cls.pk, "industry": "Химия"}]},
+             "function_competencies": [{"system_class": self.cls.pk, "industry": self.industry.pk}]},
             format="json")
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.data["region"], "Урал")

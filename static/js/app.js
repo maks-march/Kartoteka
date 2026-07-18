@@ -239,11 +239,101 @@ function initIndustryPicker(picker) {
     sync();
 }
 
+/* Множественный выбор с капсулами (продукты, отрасли и т.п.).
+   Заголовок показывает выбранное нейтральными капсулами (крестик снимает
+   выбор), список — с автопоиском и группами (data-group). Значения пишутся
+   скрытыми input'ами по id. Универсальная версия — используется на всех
+   страницах, где есть .capsule-picker. */
+function initCapsulePicker(picker) {
+    const header = picker.querySelector('.picker-header');
+    const chips = picker.querySelector('.picker-chips');
+    const emptyText = picker.getAttribute('data-empty-text') || 'Не выбрано';
+    const search = picker.querySelector('.picker-search');
+    const list = picker.querySelector('.system-results-container');
+    const inputsBox = picker.querySelector(':scope > [data-name]');
+    const noRes = picker.querySelector('.picker-empty');
+    if (!inputsBox || !list) return;
+    const fieldName = inputsBox.getAttribute('data-name');
+    const items = Array.from(list.querySelectorAll('.system-item'));
+    const groupLabels = Array.from(list.querySelectorAll('.group-label'));
+
+    function itemById(id) { return items.find(function (i) { return i.getAttribute('data-id') === id; }); }
+
+    function sync() {
+        inputsBox.innerHTML = '';
+        const selected = items.filter(function (i) { return i.classList.contains('selected'); });
+        selected.forEach(function (it) {
+            const inp = document.createElement('input');
+            inp.type = 'hidden'; inp.name = fieldName; inp.value = it.getAttribute('data-id');
+            inputsBox.appendChild(inp);
+        });
+        if (chips) {
+            chips.innerHTML = '';
+            if (!selected.length) {
+                const e = document.createElement('span');
+                e.className = 'empty-value'; e.textContent = emptyText;
+                chips.appendChild(e);
+            } else {
+                selected.forEach(function (it) {
+                    const chip = document.createElement('span');
+                    chip.className = 'chip';
+                    const nameEl = it.querySelector('.system-name');
+                    const name = nameEl ? nameEl.textContent.trim() : (it.getAttribute('data-name') || '');
+                    const label = document.createElement('span'); label.textContent = name;
+                    const x = document.createElement('span'); x.className = 'x'; x.textContent = '\u2715';
+                    x.setAttribute('data-id', it.getAttribute('data-id'));
+                    chip.appendChild(label); chip.appendChild(x);
+                    chips.appendChild(chip);
+                });
+            }
+        }
+    }
+
+    if (header) header.addEventListener('click', function (e) {
+        if (e.target.closest('.picker-body')) return;
+        if (e.target.classList.contains('x')) return;
+        picker.classList.toggle('open');
+    });
+
+    items.forEach(function (it) {
+        it.addEventListener('click', function () { it.classList.toggle('selected'); sync(); });
+    });
+
+    if (chips) chips.addEventListener('click', function (e) {
+        if (!e.target.classList.contains('x')) return;
+        e.stopPropagation();
+        const it = itemById(e.target.getAttribute('data-id'));
+        if (it) { it.classList.remove('selected'); sync(); }
+    });
+
+    if (search) search.addEventListener('input', function () {
+        const q = search.value.toLowerCase().trim();
+        let any = false;
+        items.forEach(function (it) {
+            const ok = (it.getAttribute('data-name') || '').includes(q);
+            it.style.display = ok ? '' : 'none';
+            if (ok) any = true;
+        });
+        groupLabels.forEach(function (lbl) {
+            const g = lbl.getAttribute('data-group');
+            const visible = items.some(function (o) {
+                return o.getAttribute('data-group') === g && o.style.display !== 'none';
+            });
+            lbl.style.display = visible ? '' : 'none';
+        });
+        if (noRes) noRes.style.display = any ? 'none' : 'block';
+    });
+
+    sync();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // .industry-picker / .capsule-picker / .single-id-picker — обрабатываются в entity_form.js
+    // .industry-picker / .single-id-picker — обрабатываются отдельно (entity_form.js);
+    // .capsule-picker — общий обработчик здесь.
     document.querySelectorAll('.picker:not(.industry-picker):not(.capsule-picker):not(.single-id-picker)').forEach(initPicker);
     document.querySelectorAll('.picker.collapsible:not(.industry-picker):not(.single-id-picker):not(.capsule-picker)').forEach(initCollapsiblePicker);
     document.querySelectorAll('.industry-picker').forEach(initIndustryPicker);
+    document.querySelectorAll('.capsule-picker').forEach(initCapsulePicker);
     document.querySelectorAll('.mode-toggle').forEach(initModeToggle);
 });
 

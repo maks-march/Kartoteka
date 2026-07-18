@@ -57,6 +57,13 @@ class VendorProductUseCase:
             raise ValidationError("Класс системы не найден")
         return klass
 
+    def _resolve_industries(self, raw_ids):
+        """Разрешает id категорий 1-го уровня в queryset отраслей (вспомогательная)."""
+        from apps.categories.models import Category
+        return Category.objects.filter(
+            pk__in=[i for i in (raw_ids or []) if i not in (None, "", "None")]
+        )
+
     def _resolve_subsystem_classes(self, raw_ids, primary_class):
         """Классы-подсистемы для составного основного класса продукта.
 
@@ -90,6 +97,8 @@ class VendorProductUseCase:
             data["system_class"] = primary_class
         raw_subsystems = data.pop("subsystem_classes", None)
         data["subsystem_classes"] = self._resolve_subsystem_classes(raw_subsystems, primary_class)
+        if "industries" in data:
+            data["industries"] = self._resolve_industries(data["industries"])
         return self.repo.create(**data)
 
     def update(self, pk, **data):
@@ -107,6 +116,9 @@ class VendorProductUseCase:
         if "subsystem_classes" in data or "system_class" in data:
             raw_subsystems = data.pop("subsystem_classes", None)
             data["subsystem_classes"] = self._resolve_subsystem_classes(raw_subsystems, primary_class)
+
+        if "industries" in data:
+            data["industries"] = self._resolve_industries(data["industries"])
 
         return self.repo.update(obj, **data)
 

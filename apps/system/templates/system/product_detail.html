@@ -68,15 +68,15 @@
     </div>
 
     <!-- ===== Технические данные ===== -->
-    {% if product.industries or product.specs_items %}
+    {% if product.industries.all or product.specs_items %}
     <div class="info-block">
         <h3 class="info-block-title">Технические данные</h3>
         <div class="info-cards">
-            {% if product.industries %}
+            {% if product.industries.all %}
             <div class="info-card full">
                 <span class="info-label">Отрасли применения</span>
                 <div class="card-tags">
-                    {% for ind in product.industries %}<span class="tag tag-muted">{{ ind }}</span>{% endfor %}
+                    {% for ind in product.industries.all %}<span class="tag tag-muted">{{ ind.category_name }}</span>{% endfor %}
                 </div>
             </div>
             {% endif %}

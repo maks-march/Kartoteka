@@ -53,23 +53,24 @@ def _extract_entity_fields(post):
     data["entity_type"] = post.get("entity_type") or ""
     data["is_partner"] = post.get("is_partner") == "on"
     data["registration_date"] = post.get("registration_date") or None
-    data["industries"] = _parse_list_field(post.get("industries"))
+    # Отрасли участника не задаются вручную — вычисляются из связей.
     data["contacts"] = _parse_pairs(post, "contact_key", "contact_value")
     data["financial_data"] = _parse_pairs(post, "fin_key", "fin_value")
     return data
 
 
 def _parse_competencies(post):
-    """Пары (system_class_id, industry) из параллельных массивов
-    comp_class / comp_industry. Пустые/неполные строки пропускаются."""
+    """Пары (system_class_id, industry_id) из параллельных массивов
+    comp_class / comp_industry. Индустрия — id категории 1-го уровня.
+    Пустые/неполные строки пропускаются."""
     classes = post.getlist("comp_class")
     industries = post.getlist("comp_industry")
     pairs = []
-    for class_id, industry in zip(classes, industries):
+    for class_id, industry_id in zip(classes, industries):
         class_id = (class_id or "").strip()
-        industry = (industry or "").strip()
-        if class_id and industry:
-            pairs.append((class_id, industry))
+        industry_id = (industry_id or "").strip()
+        if class_id and industry_id:
+            pairs.append((class_id, industry_id))
     return pairs
 
 
@@ -90,7 +91,12 @@ def _form_context(**extra):
     from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
     from apps.objects.models import Object
 
-    industries = [c.category_name for c in CategoryUseCase().list(level=1)]
+    # Отрасли — категории 1-го уровня (объекты, для выбора по id).
+    industry_categories = list(CategoryUseCase().list(level=1))
+    # Справочник отраслей для combobox компетенции: [{id, label}].
+    competency_industries_json = [
+        {"id": c.pk, "label": c.category_name} for c in industry_categories
+    ]
     # Регионы-подсказки — из существующих объектов.
     regions = sorted({
         r for r in Object.objects.exclude(region="").values_list("region", flat=True) if r
@@ -162,7 +168,7 @@ def _form_context(**extra):
         prof = getattr(entity, "engineering_profile", None)
         if prof is not None:
             competency_pairs_json = [
-                {"class_id": fc.system_class_id, "industry": fc.industry}
+                {"class_id": fc.system_class_id, "industry_id": fc.industry_id}
                 for fc in prof.function_competencies.all()
             ]
     # Для full_cycle_vendor используем dedicated full_cycle_profile
@@ -170,7 +176,7 @@ def _form_context(**extra):
         prof = getattr(entity, "full_cycle_profile", None)
         if prof is not None:
             competency_pairs_json = [
-                {"class_id": fc.system_class_id, "industry": fc.industry}
+                {"class_id": fc.system_class_id, "industry_id": fc.industry_id}
                 for fc in prof.function_competencies.all()
             ]
 
@@ -190,7 +196,8 @@ def _form_context(**extra):
             integrator_owner_id = sip.managing_owner_id
     ctx = {
         "entity_type_choices": Entity.ENTITY_TYPE_CHOICES,
-        "industry_suggestions": industries,
+        "industry_categories": industry_categories,
+        "competency_industries_json": competency_industries_json,
         "region_suggestions": regions,
         "all_objects": ObjectUseCase().list(),
         "all_products": VendorProductUseCase().list(),

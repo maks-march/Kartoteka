@@ -46,19 +46,25 @@ class VendorProductRepository:
     def create(self, **kwargs):
         """Создаёт и возвращает новый продукт."""
         subsystem_classes = kwargs.pop("subsystem_classes", None)
+        industries = kwargs.pop("industries", None)
         instance = VendorProduct.objects.create(**kwargs)
         if subsystem_classes is not None:
             instance.subsystem_classes.set(subsystem_classes)
+        if industries is not None:
+            instance.industries.set(industries)
         return instance
 
     def update(self, instance, **kwargs):
         """Обновляет переданные поля продукта и сохраняет его."""
         subsystem_classes = kwargs.pop("subsystem_classes", "__keep__")
+        industries = kwargs.pop("industries", "__keep__")
         for key, value in kwargs.items():
             setattr(instance, key, value)
         instance.save()
         if subsystem_classes != "__keep__":
             instance.subsystem_classes.set(subsystem_classes or [])
+        if industries != "__keep__":
+            instance.industries.set(industries or [])
         return instance
 
     def delete(self, instance):

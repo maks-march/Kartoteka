@@ -136,10 +136,15 @@ def object_detail(request, pk):
     usecase = ObjectUseCase()
     os_usecase = ObjectSystemUseCase()
     obj = usecase.get(pk)
-    children = obj.children.all()
+    children = obj.children.select_related("category").all()
     object_systems = os_usecase.list_for_object(obj)
 
-    # ---- Сводка связанности (агрегат из таблицы «Подключенные системы») ----
+    # ---- Сводка связанности (агрегат из таблиц ниже) ----
+    # Категории дочерних объектов (уникальные, с обрезкой до лимита).
+    children_categories = _summary_group(
+        (c.category for c in children if c.category),
+        key=lambda cat: cat.pk,
+    )
     system_classes = _summary_group(
         (os.system.system_class for os in object_systems if os.system and os.system.system_class),
         key=lambda c: c.pk,
@@ -154,12 +159,7 @@ def object_detail(request, pk):
     )
 
     # ---- Разбивка систем по статусу внедрения (счётчики по категориям) ----
-    _STATUS_TAG = {
-        "active": "tag-ok",
-        "planned": "tag-blue",
-        "maintenance": "tag-warn",
-        "decommissioned": "tag-danger",
-    }
+    # Цвета тегов берём из модели (единая точка правды со статусом в таблице).
     status_counts = {}
     for os in object_systems:
         status_counts[os.status] = status_counts.get(os.status, 0) + 1
@@ -167,7 +167,7 @@ def object_detail(request, pk):
         {
             "label": label,
             "count": status_counts.get(code, 0),
-            "tag": _STATUS_TAG.get(code, "tag-muted"),
+            "tag": ObjectSystem.STATUS_TAG_CLASSES.get(code, "tag-muted"),
         }
         for code, label in ObjectSystem.STATUS_CHOICES
         if status_counts.get(code, 0) > 0
@@ -187,6 +187,7 @@ def object_detail(request, pk):
     summary = {
         "systems_count": len(object_systems),
         "children_count": children.count(),
+        "children_categories": children_categories,
         "system_classes": system_classes,
         "vendors": vendors,
         "implementors": implementors,

@@ -54,8 +54,9 @@ class VendorProductCreateUpdateSerializer(serializers.Serializer):
     release_year = serializers.DateField(required=False, allow_null=True)
     end_of_support = serializers.DateField(required=False, allow_null=True)
     technical_specs = serializers.DictField(required=False, allow_null=True)
+    # Отрасли — список id категорий 1-го уровня (M2M).
     industries = serializers.ListField(
-        child=serializers.CharField(), required=False, allow_null=True
+        child=serializers.IntegerField(), required=False, allow_null=True
     )
 
 

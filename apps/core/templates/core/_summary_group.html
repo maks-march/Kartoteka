@@ -13,6 +13,8 @@
         {% for it in group.items %}
             {% if kind == "class" %}
                 <span class="tag tag-{{ it.level }}">L{{ it.level }} - {{ it.system_class }}</span>
+            {% elif kind == "category" %}
+                <span class="tag tag-{{ it.object_level }}">{{ it.category_name }}</span>
             {% elif kind == "entity" %}
                 <span class="tag {{ tag }}"><a href="{% url 'entity-detail' it.pk %}">{{ it.entity_name }}</a></span>
             {% elif kind == "system" %}

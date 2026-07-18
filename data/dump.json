@@ -1,0 +1,2623 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$uZJodywj5Du37fQQA7Fcpb$bzApJMDLu+RxZXi3AkpZns78zpmuSovR4OnT0ISim+4=",
+      "last_login": "2026-06-23T18:24:21.949Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-01-01T00:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 1,
+    "fields": {
+      "entity_name": "ООО \"Автоматика\"",
+      "inn": "7700000137",
+      "contacts": {
+        "email": "info@company1.com",
+        "phone": "+7 495 101-11-07"
+      },
+      "registration_date": "1996-02-02",
+      "financial_data": {
+        "Выручка": "237 млн ₽",
+        "Сотрудников": "103"
+      },
+      "entity_type": "full_cycle_vendor",
+      "is_partner": false,
+      "website": "https://company1.com",
+      "kam_name": "КАМ 1",
+      "kam_phone": "+7 916 201-21-03",
+      "contact_person": "Контакт ЦК ПА 1",
+      "contact_phone": "+7 903 301-31-05",
+      "presentation_url": "https://company1.com/presentation.pdf",
+      "profile": "Профиль компании «ООО \"Автоматика\"». Демонстрационное описание деятельности.",
+      "industries": [
+        "Нефтехимия",
+        "Газопереработка"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 2,
+    "fields": {
+      "entity_name": "Siemens AG",
+      "inn": "7700000274",
+      "contacts": {
+        "email": "info@siemensag.com",
+        "phone": "+7 495 102-12-14"
+      },
+      "registration_date": "1997-03-03",
+      "financial_data": {
+        "Выручка": "374 млн ₽",
+        "Сотрудников": "156"
+      },
+      "entity_type": "vendor",
+      "is_partner": false,
+      "website": "https://siemensag.com",
+      "kam_name": "КАМ 2",
+      "kam_phone": "+7 916 202-22-06",
+      "contact_person": "Контакт ЦК ПА 2",
+      "contact_phone": "+7 903 302-32-10",
+      "presentation_url": "https://siemensag.com/presentation.pdf",
+      "profile": "Профиль компании «Siemens AG». Демонстрационное описание деятельности.",
+      "industries": [
+        "Газопереработка",
+        "Химия",
+        "Добыча нефти"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 3,
+    "fields": {
+      "entity_name": "Honeywell International Inc.",
+      "inn": "7700000411",
+      "contacts": {
+        "email": "info@honeywellinternation.com",
+        "phone": "+7 495 103-13-21"
+      },
+      "registration_date": "1998-04-04",
+      "financial_data": {
+        "Выручка": "511 млн ₽",
+        "Сотрудников": "209"
+      },
+      "entity_type": "vendor",
+      "is_partner": true,
+      "website": "https://honeywellinternation.com",
+      "kam_name": "КАМ 3",
+      "kam_phone": "+7 916 203-23-09",
+      "contact_person": "Контакт ЦК ПА 3",
+      "contact_phone": "+7 903 303-33-15",
+      "presentation_url": "https://honeywellinternation.com/presentation.pdf",
+      "profile": "Профиль компании «Honeywell International Inc.». Демонстрационное описание деятельности.",
+      "industries": [
+        "Химия"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 4,
+    "fields": {
+      "entity_name": "SAP SE",
+      "inn": "7700000548",
+      "contacts": {
+        "email": "info@sapse.com",
+        "phone": "+7 495 104-14-28"
+      },
+      "registration_date": "1999-05-05",
+      "financial_data": {
+        "Выручка": "648 млн ₽",
+        "Сотрудников": "262"
+      },
+      "entity_type": "full_cycle_vendor",
+      "is_partner": false,
+      "website": "https://sapse.com",
+      "kam_name": "КАМ 4",
+      "kam_phone": "+7 916 204-24-12",
+      "contact_person": "Контакт ЦК ПА 4",
+      "contact_phone": "+7 903 304-34-20",
+      "presentation_url": "https://sapse.com/presentation.pdf",
+      "profile": "Профиль компании «SAP SE». Демонстрационное описание деятельности.",
+      "industries": [
+        "Добыча нефти",
+        "Транспорт"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 5,
+    "fields": {
+      "entity_name": "Aspen Technology, Inc.",
+      "inn": "7700000685",
+      "contacts": {
+        "email": "info@aspentechnologyinc.com",
+        "phone": "+7 495 105-15-35"
+      },
+      "registration_date": "2000-06-06",
+      "financial_data": {
+        "Выручка": "785 млн ₽",
+        "Сотрудников": "315"
+      },
+      "entity_type": "vendor",
+      "is_partner": false,
+      "website": "https://aspentechnologyinc.com",
+      "kam_name": "КАМ 5",
+      "kam_phone": "+7 916 205-25-15",
+      "contact_person": "Контакт ЦК ПА 5",
+      "contact_phone": "+7 903 305-35-25",
+      "presentation_url": "https://aspentechnologyinc.com/presentation.pdf",
+      "profile": "Профиль компании «Aspen Technology, Inc.». Демонстрационное описание деятельности.",
+      "industries": [
+        "Транспорт",
+        "Пищевая",
+        "Фарма"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 6,
+    "fields": {
+      "entity_name": "ООО \"1С\"",
+      "inn": "7700000822",
+      "contacts": {
+        "email": "info@1.com",
+        "phone": "+7 495 106-16-42"
+      },
+      "registration_date": "2001-07-07",
+      "financial_data": {
+        "Выручка": "922 млн ₽",
+        "Сотрудников": "368"
+      },
+      "entity_type": "vendor",
+      "is_partner": true,
+      "website": "https://1.com",
+      "kam_name": "КАМ 6",
+      "kam_phone": "+7 916 206-26-18",
+      "contact_person": "Контакт ЦК ПА 6",
+      "contact_phone": "+7 903 306-36-30",
+      "presentation_url": "https://1.com/presentation.pdf",
+      "profile": "Профиль компании «ООО \"1С\"». Демонстрационное описание деятельности.",
+      "industries": [
+        "Пищевая"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 7,
+    "fields": {
+      "entity_name": "Schneider Electric SE",
+      "inn": "7700000959",
+      "contacts": {
+        "email": "info@schneiderelectricse.com",
+        "phone": "+7 495 107-17-49"
+      },
+      "registration_date": "2002-08-08",
+      "financial_data": {
+        "Выручка": "159 млн ₽",
+        "Сотрудников": "421"
+      },
+      "entity_type": "full_cycle_vendor",
+      "is_partner": false,
+      "website": "https://schneiderelectricse.com",
+      "kam_name": "КАМ 7",
+      "kam_phone": "+7 916 207-27-21",
+      "contact_person": "Контакт ЦК ПА 7",
+      "contact_phone": "+7 903 307-37-35",
+      "presentation_url": "https://schneiderelectricse.com/presentation.pdf",
+      "profile": "Профиль компании «Schneider Electric SE». Демонстрационное описание деятельности.",
+      "industries": [
+        "Фарма",
+        "Нефтепереработка"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 8,
+    "fields": {
+      "entity_name": "AVEVA Group plc",
+      "inn": "7700001096",
+      "contacts": {
+        "email": "info@avevagroupplc.com",
+        "phone": "+7 495 108-18-56"
+      },
+      "registration_date": "2003-09-09",
+      "financial_data": {
+        "Выручка": "296 млн ₽",
+        "Сотрудников": "474"
+      },
+      "entity_type": "vendor",
+      "is_partner": false,
+      "website": "https://avevagroupplc.com",
+      "kam_name": "КАМ 8",
+      "kam_phone": "+7 916 208-28-24",
+      "contact_person": "Контакт ЦК ПА 8",
+      "contact_phone": "+7 903 308-38-40",
+      "presentation_url": "https://avevagroupplc.com/presentation.pdf",
+      "profile": "Профиль компании «AVEVA Group plc». Демонстрационное описание деятельности.",
+      "industries": [
+        "Нефтепереработка",
+        "Нефтехимия",
+        "Газопереработка"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 9,
+    "fields": {
+      "entity_name": "OSIsoft LLC",
+      "inn": "7700001233",
+      "contacts": {
+        "email": "info@osisoftllc.com",
+        "phone": "+7 495 109-19-63"
+      },
+      "registration_date": "2004-10-10",
+      "financial_data": {
+        "Выручка": "433 млн ₽",
+        "Сотрудников": "527"
+      },
+      "entity_type": "vendor",
+      "is_partner": true,
+      "website": "https://osisoftllc.com",
+      "kam_name": "КАМ 9",
+      "kam_phone": "+7 916 209-29-27",
+      "contact_person": "Контакт ЦК ПА 9",
+      "contact_phone": "+7 903 309-39-45",
+      "presentation_url": "https://osisoftllc.com/presentation.pdf",
+      "profile": "Профиль компании «OSIsoft LLC». Демонстрационное описание деятельности.",
+      "industries": [
+        "Нефтехимия"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 10,
+    "fields": {
+      "entity_name": "Emerson Electric Co.",
+      "inn": "7700001370",
+      "contacts": {
+        "email": "info@emersonelectricco.com",
+        "phone": "+7 495 110-20-70"
+      },
+      "registration_date": "2005-11-11",
+      "financial_data": {
+        "Выручка": "570 млн ₽",
+        "Сотрудников": "580"
+      },
+      "entity_type": "full_cycle_vendor",
+      "is_partner": false,
+      "website": "https://emersonelectricco.com",
+      "kam_name": "КАМ 10",
+      "kam_phone": "+7 916 210-30-30",
+      "contact_person": "Контакт ЦК ПА 10",
+      "contact_phone": "+7 903 310-40-50",
+      "presentation_url": "https://emersonelectricco.com/presentation.pdf",
+      "profile": "Профиль компании «Emerson Electric Co.». Демонстрационное описание деятельности.",
+      "industries": [
+        "Газопереработка",
+        "Химия"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 11,
+    "fields": {
+      "entity_name": "Yokogawa Electric Corporation",
+      "inn": "7700001507",
+      "contacts": {
+        "email": "info@yokogawaelectriccorp.com",
+        "phone": "+7 495 111-21-77"
+      },
+      "registration_date": "2006-12-12",
+      "financial_data": {
+        "Выручка": "707 млн ₽",
+        "Сотрудников": "633"
+      },
+      "entity_type": "vendor",
+      "is_partner": false,
+      "website": "https://yokogawaelectriccorp.com",
+      "kam_name": "КАМ 11",
+      "kam_phone": "+7 916 211-31-33",
+      "contact_person": "Контакт ЦК ПА 11",
+      "contact_phone": "+7 903 311-41-55",
+      "presentation_url": "https://yokogawaelectriccorp.com/presentation.pdf",
+      "profile": "Профиль компании «Yokogawa Electric Corporation». Демонстрационное описание деятельности.",
+      "industries": [
+        "Химия",
+        "Добыча нефти",
+        "Транспорт"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 12,
+    "fields": {
+      "entity_name": "ООО \"ИндаСофт\"",
+      "inn": "7700001644",
+      "contacts": {
+        "email": "info@company12.com",
+        "phone": "+7 495 112-22-84"
+      },
+      "registration_date": "2007-01-13",
+      "financial_data": {
+        "Выручка": "844 млн ₽",
+        "Сотрудников": "686"
+      },
+      "entity_type": "engineering_company",
+      "is_partner": true,
+      "website": "https://company12.com",
+      "kam_name": "КАМ 12",
+      "kam_phone": "+7 916 212-32-36",
+      "contact_person": "Контакт ЦК ПА 12",
+      "contact_phone": "+7 903 312-42-60",
+      "presentation_url": "https://company12.com/presentation.pdf",
+      "profile": "Профиль компании «ООО \"ИндаСофт\"». Демонстрационное описание деятельности.",
+      "industries": [
+        "Добыча нефти"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 13,
+    "fields": {
+      "entity_name": "АО \"КРОК инкорпорейтед\"",
+      "inn": "7700001781",
+      "contacts": {
+        "email": "info@company13.com",
+        "phone": "+7 495 113-23-91"
+      },
+      "registration_date": "2008-02-14",
+      "financial_data": {
+        "Выручка": "981 млн ₽",
+        "Сотрудников": "739"
+      },
+      "entity_type": "full_cycle_vendor",
+      "is_partner": false,
+      "website": "https://company13.com",
+      "kam_name": "КАМ 13",
+      "kam_phone": "+7 916 213-33-39",
+      "contact_person": "Контакт ЦК ПА 13",
+      "contact_phone": "+7 903 313-43-65",
+      "presentation_url": "https://company13.com/presentation.pdf",
+      "profile": "Профиль компании «АО \"КРОК инкорпорейтед\"». Демонстрационное описание деятельности.",
+      "industries": [
+        "Транспорт",
+        "Пищевая"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 14,
+    "fields": {
+      "entity_name": "ООО \"СИБУР Диджитал\"",
+      "inn": "7700001918",
+      "contacts": {
+        "email": "info@company14.com",
+        "phone": "+7 495 114-24-98"
+      },
+      "registration_date": "2009-03-15",
+      "financial_data": {
+        "Выручка": "218 млн ₽",
+        "Сотрудников": "792"
+      },
+      "entity_type": "supplier",
+      "is_partner": false,
+      "website": "https://company14.com",
+      "kam_name": "КАМ 14",
+      "kam_phone": "+7 916 214-34-42",
+      "contact_person": "Контакт ЦК ПА 14",
+      "contact_phone": "+7 903 314-44-70",
+      "presentation_url": "https://company14.com/presentation.pdf",
+      "profile": "Профиль компании «ООО \"СИБУР Диджитал\"». Демонстрационное описание деятельности.",
+      "industries": [
+        "Пищевая",
+        "Фарма",
+        "Нефтепереработка"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 15,
+    "fields": {
+      "entity_name": "ООО \"Газпромнефть ИТО\"",
+      "inn": "7700002055",
+      "contacts": {
+        "email": "info@company15.com",
+        "phone": "+7 495 115-25-05"
+      },
+      "registration_date": "2010-04-16",
+      "financial_data": {
+        "Выручка": "355 млн ₽",
+        "Сотрудников": "845"
+      },
+      "entity_type": "vendor",
+      "is_partner": true,
+      "website": "https://company15.com",
+      "kam_name": "КАМ 15",
+      "kam_phone": "+7 916 215-35-45",
+      "contact_person": "Контакт ЦК ПА 15",
+      "contact_phone": "+7 903 315-45-75",
+      "presentation_url": "https://company15.com/presentation.pdf",
+      "profile": "Профиль компании «ООО \"Газпромнефть ИТО\"». Демонстрационное описание деятельности.",
+      "industries": [
+        "Фарма"
+      ]
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 1,
+    "fields": {
+      "owner_name": "ПАО \"Газпром\"",
+      "owner": null,
+      "ultimate_owner": null,
+      "is_root": true
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 2,
+    "fields": {
+      "owner_name": "ПАО \"Газпром нефть\"",
+      "owner": 1,
+      "ultimate_owner": 1,
+      "is_root": false
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 3,
+    "fields": {
+      "owner_name": "АО \"Газпромнефть-Омский НПЗ\"",
+      "owner": 2,
+      "ultimate_owner": 1,
+      "is_root": false
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 4,
+    "fields": {
+      "owner_name": "ПАО \"СИБУР Холдинг\"",
+      "owner": null,
+      "ultimate_owner": null,
+      "is_root": true
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 5,
+    "fields": {
+      "owner_name": "ООО \"СИБУР Тобольск\"",
+      "owner": 4,
+      "ultimate_owner": 4,
+      "is_root": false
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 6,
+    "fields": {
+      "owner_name": "ПАО \"НОВАТЭК\"",
+      "owner": null,
+      "ultimate_owner": null,
+      "is_root": true
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 7,
+    "fields": {
+      "owner_name": "ОАО \"Ямал СПГ\"",
+      "owner": 6,
+      "ultimate_owner": 6,
+      "is_root": false
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 8,
+    "fields": {
+      "owner_name": "ПАО \"НК Роснефть\"",
+      "owner": null,
+      "ultimate_owner": null,
+      "is_root": true
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 9,
+    "fields": {
+      "owner_name": "ООО \"РН-Коммерция\"",
+      "owner": 8,
+      "ultimate_owner": 8,
+      "is_root": false
+    }
+  },
+  {
+    "model": "owners.ownerentity",
+    "pk": 10,
+    "fields": {
+      "owner_name": "АО \"Сызранский НПЗ\"",
+      "owner": 9,
+      "ultimate_owner": 8,
+      "is_root": false
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 1,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Нефтепереработка",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 2,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Нефтехимия",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 3,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Газопереработка",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 4,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Газохимия",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 5,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Химия",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 6,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Химия-удобрение",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 7,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Добыча нефти",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 8,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Добыча газа",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 9,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Добыча руды",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 10,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Транспорт",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 11,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Пищевая",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 12,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Фарма",
+      "object_level": 1
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 13,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Основное",
+      "object_level": 2
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 14,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Вспомогательное",
+      "object_level": 2
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 15,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Общее",
+      "object_level": 2
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 16,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Сырьевое",
+      "object_level": 2
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 17,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Товарное",
+      "object_level": 2
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 18,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Атмосферное разделение",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 19,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Вакуумное разделение",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 20,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Крекинг каталитический",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 21,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Крекинг гидро",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 22,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Реформинг",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 23,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Полимеризация",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 24,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Гидроочистка",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 25,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Мокрый катализ",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 26,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Грануляция",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 27,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Фильтрация",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 28,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Электролиз",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 29,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Абсорбция",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 30,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Стабилизация",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 31,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "КЦА",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 32,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Дробление",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 33,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Транспорт (техн)",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 34,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Измельчение",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 35,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Флотация",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 36,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Фильтрация руды",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 37,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Катание",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 38,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Ковка",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "categories.category",
+    "pk": 39,
+    "fields": {
+      "creator_id": 1,
+      "category_name": "Штамповка",
+      "object_level": 3
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 1,
+    "fields": {
+      "product_name": "Siemens AG Siemens PCS7 V9.1 SP2",
+      "vendor": 1,
+      "product_type": "hardware",
+      "system_class": 13,
+      "version": "V9.1 SP2",
+      "release_year": "2015-02-15",
+      "end_of_support": "2027-12-31",
+      "description": "Демонстрационное описание продукта «Siemens AG Siemens PCS7 V9.1 SP2».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 2,
+    "fields": {
+      "product_name": "Honeywell International Inc. Honeywell Experion R520.2",
+      "vendor": 2,
+      "product_type": "complex",
+      "system_class": 13,
+      "version": "R520.2",
+      "release_year": "2016-03-15",
+      "end_of_support": "2028-12-31",
+      "description": "Демонстрационное описание продукта «Honeywell International Inc. Honeywell Experion R520.2».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 3,
+    "fields": {
+      "product_name": "SAP SE SAP S/4HANA 2023 FPS01",
+      "vendor": 3,
+      "product_type": "software",
+      "system_class": 5,
+      "version": "2023 FPS01",
+      "release_year": "2017-04-15",
+      "end_of_support": "2029-12-31",
+      "description": "Демонстрационное описание продукта «SAP SE SAP S/4HANA 2023 FPS01».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 4,
+    "fields": {
+      "product_name": "Aspen Technology, Inc. Aspen InfoPlus.21 v15.3",
+      "vendor": 4,
+      "product_type": "hardware",
+      "system_class": 4,
+      "version": "v15.3",
+      "release_year": "2018-05-15",
+      "end_of_support": "2026-12-31",
+      "description": "Демонстрационное описание продукта «Aspen Technology, Inc. Aspen InfoPlus.21 v15.3».",
+      "subsystem_classes": [
+        11,
+        9,
+        8
+      ]
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 5,
+    "fields": {
+      "product_name": "ООО \"1С\" 1C:ERP Производство 8.4.1",
+      "vendor": 5,
+      "product_type": "complex",
+      "system_class": 5,
+      "version": "8.4.1",
+      "release_year": "2019-06-15",
+      "end_of_support": "2027-12-31",
+      "description": "Демонстрационное описание продукта «ООО \"1С\" 1C:ERP Производство 8.4.1».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 6,
+    "fields": {
+      "product_name": "Schneider Electric SE Schneider EcoStruxure 2.8.4",
+      "vendor": 6,
+      "product_type": "software",
+      "system_class": 13,
+      "version": "2.8.4",
+      "release_year": "2020-07-15",
+      "end_of_support": "2028-12-31",
+      "description": "Демонстрационное описание продукта «Schneider Electric SE Schneider EcoStruxure 2.8.4».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 7,
+    "fields": {
+      "product_name": "AVEVA Group plc Wonderware System Platform R4.1",
+      "vendor": 7,
+      "product_type": "hardware",
+      "system_class": 13,
+      "version": "R4.1",
+      "release_year": "2021-08-15",
+      "end_of_support": "2029-12-31",
+      "description": "Демонстрационное описание продукта «AVEVA Group plc Wonderware System Platform R4.1».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 8,
+    "fields": {
+      "product_name": "OSIsoft LLC OSIsoft PI System V9.1 SP2",
+      "vendor": 8,
+      "product_type": "complex",
+      "system_class": 4,
+      "version": "V9.1 SP2",
+      "release_year": "2014-01-15",
+      "end_of_support": "2026-12-31",
+      "description": "Демонстрационное описание продукта «OSIsoft LLC OSIsoft PI System V9.1 SP2».",
+      "subsystem_classes": [
+        11,
+        9,
+        8
+      ]
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 9,
+    "fields": {
+      "product_name": "Emerson Electric Co. Emerson DeltaV R520.2",
+      "vendor": 9,
+      "product_type": "software",
+      "system_class": 13,
+      "version": "R520.2",
+      "release_year": "2015-02-15",
+      "end_of_support": "2027-12-31",
+      "description": "Демонстрационное описание продукта «Emerson Electric Co. Emerson DeltaV R520.2».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 10,
+    "fields": {
+      "product_name": "Yokogawa Electric Corporation Yokogawa CENTUM VP 2023 FPS01",
+      "vendor": 10,
+      "product_type": "hardware",
+      "system_class": 13,
+      "version": "2023 FPS01",
+      "release_year": "2016-03-15",
+      "end_of_support": "2028-12-31",
+      "description": "Демонстрационное описание продукта «Yokogawa Electric Corporation Yokogawa CENTUM VP 2023 FPS01».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 11,
+    "fields": {
+      "product_name": "ООО \"Автоматика\" Датчик №123432 v15.3",
+      "vendor": 11,
+      "product_type": "complex",
+      "system_class": 1,
+      "version": "v15.3",
+      "release_year": "2017-04-15",
+      "end_of_support": "2029-12-31",
+      "description": "Демонстрационное описание продукта «ООО \"Автоматика\" Датчик №123432 v15.3».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 12,
+    "fields": {
+      "product_name": "ООО \"Автоматика\" Контроллер №4132 8.4.1",
+      "vendor": 11,
+      "product_type": "software",
+      "system_class": 2,
+      "version": "8.4.1",
+      "release_year": "2018-05-15",
+      "end_of_support": "2026-12-31",
+      "description": "Демонстрационное описание продукта «ООО \"Автоматика\" Контроллер №4132 8.4.1».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 13,
+    "fields": {
+      "product_name": "Emerson Electric Co. АСУТП Emerson DeltaV 2.8.4",
+      "vendor": 9,
+      "product_type": "hardware",
+      "system_class": 6,
+      "version": "2.8.4",
+      "release_year": "2019-06-15",
+      "end_of_support": "2027-12-31",
+      "description": "Демонстрационное описание продукта «Emerson Electric Co. АСУТП Emerson DeltaV 2.8.4».",
+      "subsystem_classes": [
+        13,
+        3
+      ]
+    }
+  },
+  {
+    "model": "system.vendorproduct",
+    "pk": 14,
+    "fields": {
+      "product_name": "Emerson Electric Co. test",
+      "vendor": 9,
+      "product_type": "complex",
+      "system_class": 13,
+      "version": "",
+      "release_year": "2020-07-15",
+      "end_of_support": "2028-12-31",
+      "description": "Демонстрационное описание продукта «Emerson Electric Co. test».",
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 1,
+    "fields": {
+      "autosystem_name": "Siemens PCS7",
+      "autosystem_short_name": "PCS7",
+      "system_class": 13,
+      "system_status": "active",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2015-01-15",
+      "technical_specs": {
+        "Платформа": "x86-64",
+        "ОС": "Windows Server 2019",
+        "Резервирование": "горячее"
+      },
+      "modules": [
+        "SCADA",
+        "Историзация",
+        "Алармы"
+      ],
+      "interfaces": [
+        "OPC UA",
+        "Modbus TCP"
+      ],
+      "creator_id": 1,
+      "product": 1,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 2,
+    "fields": {
+      "autosystem_name": "Honeywell Experion",
+      "autosystem_short_name": "Experion",
+      "system_class": 13,
+      "system_status": "planned",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2016-02-15",
+      "technical_specs": {
+        "СУБД": "PostgreSQL 14",
+        "Протокол": "OPC UA",
+        "Лицензия": "коммерческая"
+      },
+      "modules": [
+        "Диспетчеризация",
+        "Отчёты",
+        "Тренды"
+      ],
+      "interfaces": [
+        "OPC DA",
+        "Profibus",
+        "REST API"
+      ],
+      "creator_id": 1,
+      "product": 2,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 3,
+    "fields": {
+      "autosystem_name": "SAP S/4HANA",
+      "autosystem_short_name": "S/4HANA",
+      "system_class": 5,
+      "system_status": "unsupported",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2017-03-15",
+      "technical_specs": {
+        "Контроллеры": "Simatic S7-1500",
+        "Сеть": "Profinet",
+        "Резервирование": "холодное"
+      },
+      "modules": [
+        "MES-ядро",
+        "Планирование",
+        "Контроль качества"
+      ],
+      "interfaces": [
+        "MQTT",
+        "SQL",
+        "OPC UA"
+      ],
+      "creator_id": 1,
+      "product": 3,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 4,
+    "fields": {
+      "autosystem_name": "Aspen InfoPlus.21",
+      "autosystem_short_name": "InfoPlus.21",
+      "system_class": 4,
+      "system_status": "decommissioned",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2018-04-15",
+      "technical_specs": {
+        "Архитектура": "клиент-сервер",
+        "ОС": "Linux RHEL 8",
+        "Кластеризация": "да"
+      },
+      "modules": [
+        "Визуализация",
+        "Архив",
+        "Резервное копирование"
+      ],
+      "interfaces": [
+        "Modbus RTU",
+        "HART"
+      ],
+      "creator_id": 1,
+      "product": 4,
+      "subsystem_classes": [
+        11,
+        9,
+        8
+      ]
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 5,
+    "fields": {
+      "autosystem_name": "1C:ERP Производство",
+      "autosystem_short_name": "Производство",
+      "system_class": 5,
+      "system_status": "active",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2019-05-15",
+      "technical_specs": {
+        "Платформа": "x86-64",
+        "ОС": "Windows Server 2019",
+        "Резервирование": "горячее"
+      },
+      "modules": [
+        "SCADA",
+        "Историзация",
+        "Алармы"
+      ],
+      "interfaces": [
+        "OPC UA",
+        "Modbus TCP"
+      ],
+      "creator_id": 1,
+      "product": 5,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 6,
+    "fields": {
+      "autosystem_name": "Schneider EcoStruxure",
+      "autosystem_short_name": "EcoStruxure",
+      "system_class": 13,
+      "system_status": "planned",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2020-06-15",
+      "technical_specs": {
+        "СУБД": "PostgreSQL 14",
+        "Протокол": "OPC UA",
+        "Лицензия": "коммерческая"
+      },
+      "modules": [
+        "Диспетчеризация",
+        "Отчёты",
+        "Тренды"
+      ],
+      "interfaces": [
+        "OPC DA",
+        "Profibus",
+        "REST API"
+      ],
+      "creator_id": 1,
+      "product": 6,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 7,
+    "fields": {
+      "autosystem_name": "Wonderware System Platform",
+      "autosystem_short_name": "Platform",
+      "system_class": 13,
+      "system_status": "unsupported",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2021-07-15",
+      "technical_specs": {
+        "Контроллеры": "Simatic S7-1500",
+        "Сеть": "Profinet",
+        "Резервирование": "холодное"
+      },
+      "modules": [
+        "MES-ядро",
+        "Планирование",
+        "Контроль качества"
+      ],
+      "interfaces": [
+        "MQTT",
+        "SQL",
+        "OPC UA"
+      ],
+      "creator_id": 1,
+      "product": 7,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 8,
+    "fields": {
+      "autosystem_name": "OSIsoft PI System",
+      "autosystem_short_name": "System",
+      "system_class": 4,
+      "system_status": "decommissioned",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2022-08-15",
+      "technical_specs": {
+        "Архитектура": "клиент-сервер",
+        "ОС": "Linux RHEL 8",
+        "Кластеризация": "да"
+      },
+      "modules": [
+        "Визуализация",
+        "Архив",
+        "Резервное копирование"
+      ],
+      "interfaces": [
+        "Modbus RTU",
+        "HART"
+      ],
+      "creator_id": 1,
+      "product": 8,
+      "subsystem_classes": [
+        11,
+        9,
+        8
+      ]
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 9,
+    "fields": {
+      "autosystem_name": "Emerson DeltaV",
+      "autosystem_short_name": "DeltaV",
+      "system_class": 13,
+      "system_status": "active",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2023-09-15",
+      "technical_specs": {
+        "Платформа": "x86-64",
+        "ОС": "Windows Server 2019",
+        "Резервирование": "горячее"
+      },
+      "modules": [
+        "SCADA",
+        "Историзация",
+        "Алармы"
+      ],
+      "interfaces": [
+        "OPC UA",
+        "Modbus TCP"
+      ],
+      "creator_id": 1,
+      "product": 9,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 10,
+    "fields": {
+      "autosystem_name": "Yokogawa CENTUM VP",
+      "autosystem_short_name": "VP",
+      "system_class": 13,
+      "system_status": "planned",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2024-01-15",
+      "technical_specs": {
+        "СУБД": "PostgreSQL 14",
+        "Протокол": "OPC UA",
+        "Лицензия": "коммерческая"
+      },
+      "modules": [
+        "Диспетчеризация",
+        "Отчёты",
+        "Тренды"
+      ],
+      "interfaces": [
+        "OPC DA",
+        "Profibus",
+        "REST API"
+      ],
+      "creator_id": 1,
+      "product": 10,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 11,
+    "fields": {
+      "autosystem_name": "Датчик №123432",
+      "autosystem_short_name": "№123432",
+      "system_class": 1,
+      "system_status": "unsupported",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2015-02-15",
+      "technical_specs": {
+        "Контроллеры": "Simatic S7-1500",
+        "Сеть": "Profinet",
+        "Резервирование": "холодное"
+      },
+      "modules": [
+        "MES-ядро",
+        "Планирование",
+        "Контроль качества"
+      ],
+      "interfaces": [
+        "MQTT",
+        "SQL",
+        "OPC UA"
+      ],
+      "creator_id": 1,
+      "product": 11,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 12,
+    "fields": {
+      "autosystem_name": "Контроллер №4132",
+      "autosystem_short_name": "№4132",
+      "system_class": 2,
+      "system_status": "decommissioned",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2016-03-15",
+      "technical_specs": {
+        "Архитектура": "клиент-сервер",
+        "ОС": "Linux RHEL 8",
+        "Кластеризация": "да"
+      },
+      "modules": [
+        "Визуализация",
+        "Архив",
+        "Резервное копирование"
+      ],
+      "interfaces": [
+        "Modbus RTU",
+        "HART"
+      ],
+      "creator_id": 1,
+      "product": 12,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 13,
+    "fields": {
+      "autosystem_name": "АСУТП Emerson DeltaV",
+      "autosystem_short_name": "DeltaV",
+      "system_class": 6,
+      "system_status": "active",
+      "notes": "Система автоматизации. Демонстрационное описание.",
+      "release_year": "2017-04-15",
+      "technical_specs": {
+        "Платформа": "x86-64",
+        "ОС": "Windows Server 2019",
+        "Резервирование": "горячее"
+      },
+      "modules": [
+        "SCADA",
+        "Историзация",
+        "Алармы"
+      ],
+      "interfaces": [
+        "OPC UA",
+        "Modbus TCP"
+      ],
+      "creator_id": 1,
+      "product": 13,
+      "subsystem_classes": [
+        13,
+        3
+      ]
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 14,
+    "fields": {
+      "autosystem_name": "test",
+      "autosystem_short_name": "test",
+      "system_class": 13,
+      "system_status": "planned",
+      "notes": "Дополнительная информация",
+      "release_year": "2026-06-01",
+      "technical_specs": {
+        "ОС": "Linux",
+        "ОС2": "Linux",
+        "ОС3": "Linux",
+        "ОС4": "Linux",
+        "ОС5": "Linux",
+        "1": "1"
+      },
+      "modules": [
+        "SCADA 1111111111111111111111111111111111111111111111111111",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "HMI"
+      ],
+      "interfaces": [
+        "SCADA 111111111111111111111111111111111111111111111111111111",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "SCADA 1",
+        "Modbus"
+      ],
+      "creator_id": 1,
+      "product": 14,
+      "subsystem_classes": []
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 1,
+    "fields": {
+      "object_name": "Омский НПЗ",
+      "object_short_name": "ОН",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Производство",
+      "hierarchy_level": 1,
+      "parent_object": null,
+      "category": 1,
+      "owner_entity": 3,
+      "start_date": "2008-01-10",
+      "is_reconstructed": true,
+      "capacity": "50 тыс. т/год",
+      "status": "active",
+      "notes": "Объект уровня 1. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Омская область",
+      "city": "Омск",
+      "street": "Советская",
+      "house": "1",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-06-26T06:49:11.296Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 2,
+    "fields": {
+      "object_name": "Тобольск-Полимер",
+      "object_short_name": "Т",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Завод",
+      "hierarchy_level": 1,
+      "parent_object": null,
+      "category": 2,
+      "owner_entity": 5,
+      "start_date": "2009-02-11",
+      "is_reconstructed": false,
+      "capacity": "100 тыс. т/год",
+      "status": "in_project",
+      "notes": "Объект уровня 1. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Тюменская область",
+      "city": "Тобольск",
+      "street": "Промышленная",
+      "house": "8",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 3,
+    "fields": {
+      "object_name": "Ямал СПГ",
+      "object_short_name": "ЯС",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Промплощадка",
+      "hierarchy_level": 1,
+      "parent_object": null,
+      "category": 3,
+      "owner_entity": 7,
+      "start_date": "2010-03-12",
+      "is_reconstructed": false,
+      "capacity": "150 тыс. т/год",
+      "status": "reconstruction",
+      "notes": "Объект уровня 1. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Татарстан",
+      "city": "Нижнекамск",
+      "street": "Технологическая",
+      "house": "15",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 4,
+    "fields": {
+      "object_name": "Цех №10 (АВТ)",
+      "object_short_name": "Ц№(",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Цех",
+      "hierarchy_level": 2,
+      "parent_object": 1,
+      "category": 13,
+      "owner_entity": 3,
+      "start_date": "2011-04-13",
+      "is_reconstructed": true,
+      "capacity": "200 тыс. т/год",
+      "status": "stopped",
+      "notes": "Объект уровня 2. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Башкортостан",
+      "city": "Уфа",
+      "street": "Индустриальная",
+      "house": "22",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 5,
+    "fields": {
+      "object_name": "Производство полипропилена",
+      "object_short_name": "ПП",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Очередь",
+      "hierarchy_level": 2,
+      "parent_object": 2,
+      "category": 13,
+      "owner_entity": 5,
+      "start_date": "2012-05-14",
+      "is_reconstructed": false,
+      "capacity": "250 тыс. т/год",
+      "status": "active",
+      "notes": "Объект уровня 2. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Самарская область",
+      "city": "Новокуйбышевск",
+      "street": "Нефтяников",
+      "house": "29",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 6,
+    "fields": {
+      "object_name": "Линия сжижения газа №1",
+      "object_short_name": "ЛСЖГ №1",
+      "object_old_name": "Линия сжижения газа №1",
+      "object_law_name": "Линия сжижения газа №1",
+      "object_class": "Линия",
+      "hierarchy_level": 2,
+      "parent_object": 3,
+      "category": 13,
+      "owner_entity": 7,
+      "start_date": "2026-06-26",
+      "is_reconstructed": false,
+      "capacity": "100000",
+      "status": "in_project",
+      "notes": "Дополнительная информация",
+      "country": "Россия",
+      "region": "Самарская область",
+      "city": "Сызрань",
+      "street": "Заводская",
+      "house": "36",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-06-28T15:50:40.088Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 7,
+    "fields": {
+      "object_name": "Резервуарный парк",
+      "object_short_name": "РП",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Цех",
+      "hierarchy_level": 2,
+      "parent_object": 1,
+      "category": 17,
+      "owner_entity": 3,
+      "start_date": "2014-07-16",
+      "is_reconstructed": true,
+      "capacity": "350 тыс. т/год",
+      "status": "reconstruction",
+      "notes": "Объект уровня 2. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Тюменская область",
+      "city": "Тобольск",
+      "street": "Промышленная",
+      "house": "43",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 8,
+    "fields": {
+      "object_name": "Установка АВТ-10",
+      "object_short_name": "УА",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Блок",
+      "hierarchy_level": 3,
+      "parent_object": 4,
+      "category": 18,
+      "owner_entity": 3,
+      "start_date": "2015-08-17",
+      "is_reconstructed": false,
+      "capacity": "",
+      "status": "stopped",
+      "notes": "Объект уровня 3. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Татарстан",
+      "city": "Нижнекамск",
+      "street": "Технологическая",
+      "house": "50",
+      "title": "Цех-3-поз.17",
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 9,
+    "fields": {
+      "object_name": "Установка полимеризации пропилена",
+      "object_short_name": "УПП",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Узел",
+      "hierarchy_level": 3,
+      "parent_object": 5,
+      "category": 23,
+      "owner_entity": 5,
+      "start_date": "2016-09-18",
+      "is_reconstructed": false,
+      "capacity": "",
+      "status": "active",
+      "notes": "Объект уровня 3. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Башкортостан",
+      "city": "Уфа",
+      "street": "Индустриальная",
+      "house": "7",
+      "title": "Цех-4-поз.18",
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 10,
+    "fields": {
+      "object_name": "Блок компримирования и сжижения",
+      "object_short_name": "БКИ",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Установка",
+      "hierarchy_level": 3,
+      "parent_object": 6,
+      "category": 33,
+      "owner_entity": 7,
+      "start_date": "2017-01-19",
+      "is_reconstructed": true,
+      "capacity": "",
+      "status": "in_project",
+      "notes": "Объект уровня 3. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Самарская область",
+      "city": "Новокуйбышевск",
+      "street": "Нефтяников",
+      "house": "14",
+      "title": "Цех-5-поз.19",
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 11,
+    "fields": {
+      "object_name": "Сызранский НПЗ",
+      "object_short_name": "СН",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Завод",
+      "hierarchy_level": 1,
+      "parent_object": null,
+      "category": 1,
+      "owner_entity": 10,
+      "start_date": "2018-02-10",
+      "is_reconstructed": false,
+      "capacity": "550 тыс. т/год",
+      "status": "reconstruction",
+      "notes": "Объект уровня 1. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Самарская область",
+      "city": "Сызрань",
+      "street": "Заводская",
+      "house": "21",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 12,
+    "fields": {
+      "object_name": "Цех вторичных процессов",
+      "object_short_name": "ЦВП",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Производственный участок",
+      "hierarchy_level": 2,
+      "parent_object": 11,
+      "category": 13,
+      "owner_entity": 10,
+      "start_date": "2019-03-11",
+      "is_reconstructed": false,
+      "capacity": "600 тыс. т/год",
+      "status": "stopped",
+      "notes": "Объект уровня 2. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Тюменская область",
+      "city": "Тобольск",
+      "street": "Промышленная",
+      "house": "28",
+      "title": "",
+      "creator_id": 1,
+      "created_at": "2026-01-01T11:00:00Z",
+      "updated_at": "2026-01-01T11:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 13,
+    "fields": {
+      "object_name": "Установка каталитического риформинга",
+      "object_short_name": "УКР",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Установка",
+      "hierarchy_level": 3,
+      "parent_object": 12,
+      "category": 22,
+      "owner_entity": 10,
+      "start_date": "2020-04-12",
+      "is_reconstructed": true,
+      "capacity": "",
+      "status": "active",
+      "notes": "Объект уровня 3. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Татарстан",
+      "city": "Нижнекамск",
+      "street": "Технологическая",
+      "house": "35",
+      "title": "Цех-3-поз.22",
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.object",
+    "pk": 14,
+    "fields": {
+      "object_name": "Блок гидроочистки дизельного топлива",
+      "object_short_name": "БГД",
+      "object_old_name": "",
+      "object_law_name": "",
+      "object_class": "Блок",
+      "hierarchy_level": 3,
+      "parent_object": 12,
+      "category": 24,
+      "owner_entity": 10,
+      "start_date": "2021-05-13",
+      "is_reconstructed": false,
+      "capacity": "",
+      "status": "in_project",
+      "notes": "Объект уровня 3. Демонстрационные данные.",
+      "country": "Россия",
+      "region": "Башкортостан",
+      "city": "Уфа",
+      "street": "Индустриальная",
+      "house": "42",
+      "title": "Цех-4-поз.23",
+      "creator_id": 1,
+      "created_at": "2026-01-01T12:00:00Z",
+      "updated_at": "2026-01-01T12:00:00Z"
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 1,
+    "fields": {
+      "object": 1,
+      "system": 3,
+      "status": "active",
+      "implementation_date": "2024-01-01",
+      "implementor": 15
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 2,
+    "fields": {
+      "object": 2,
+      "system": 5,
+      "status": "active",
+      "implementation_date": "2024-02-01",
+      "implementor": 14
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 3,
+    "fields": {
+      "object": 4,
+      "system": 1,
+      "status": "active",
+      "implementation_date": "2025-05-10",
+      "implementor": 1
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 4,
+    "fields": {
+      "object": 5,
+      "system": 2,
+      "status": "active",
+      "implementation_date": "2025-06-15",
+      "implementor": 1
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 5,
+    "fields": {
+      "object": 6,
+      "system": 10,
+      "status": "active",
+      "implementation_date": "2025-08-20",
+      "implementor": 1
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 6,
+    "fields": {
+      "object": 4,
+      "system": 8,
+      "status": "active",
+      "implementation_date": "2025-09-01",
+      "implementor": 12
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 7,
+    "fields": {
+      "object": 8,
+      "system": 9,
+      "status": "active",
+      "implementation_date": "2025-10-10",
+      "implementor": 10
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 8,
+    "fields": {
+      "object": 10,
+      "system": 6,
+      "status": "planned",
+      "implementation_date": "2026-12-01",
+      "implementor": 7
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 9,
+    "fields": {
+      "object": 7,
+      "system": 7,
+      "status": "maintenance",
+      "implementation_date": "2023-11-11",
+      "implementor": 8
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 10,
+    "fields": {
+      "object": 9,
+      "system": 4,
+      "status": "active",
+      "implementation_date": "2025-12-30",
+      "implementor": 5
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 11,
+    "fields": {
+      "object": 11,
+      "system": 13,
+      "status": "active",
+      "implementation_date": "2025-04-15",
+      "implementor": 10
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 12,
+    "fields": {
+      "object": 13,
+      "system": 9,
+      "status": "active",
+      "implementation_date": "2025-07-01",
+      "implementor": 10
+    }
+  },
+  {
+    "model": "objects.objectsystem",
+    "pk": 13,
+    "fields": {
+      "object": 1,
+      "system": 14,
+      "status": "planned",
+      "implementation_date": null,
+      "implementor": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 1,
+    "fields": {
+      "level": 0,
+      "system_class": "КИПиА",
+      "name_ru": "КИПиА",
+      "description": "Датчики и исполнительные механизмы",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 2,
+    "fields": {
+      "level": 1,
+      "system_class": "PLC",
+      "name_ru": "ПЛК",
+      "description": "Контроллеры и логика",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 3,
+    "fields": {
+      "level": 2,
+      "system_class": "HMI",
+      "name_ru": "",
+      "description": "Визуализация и управление",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 6,
+    "fields": {
+      "level": 2,
+      "system_class": "АСУТП",
+      "name_ru": "АСУТП",
+      "description": "Управление технологическим процессом",
+      "is_composite": true,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 7,
+    "fields": {
+      "level": 2,
+      "system_class": "APC",
+      "name_ru": "СУУТП",
+      "description": "Усовершенствованное управление технологическим процессом",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 13,
+    "fields": {
+      "level": 2,
+      "system_class": "SCADA",
+      "name_ru": "",
+      "description": "Система сбора данных",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 14,
+    "fields": {
+      "level": 2,
+      "system_class": "DCS",
+      "name_ru": "РСУ",
+      "description": "Распределённая система управления",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 15,
+    "fields": {
+      "level": 2,
+      "system_class": "ESD",
+      "name_ru": "ПАЗ",
+      "description": "Противоаварийная защита",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 16,
+    "fields": {
+      "level": 2,
+      "system_class": "VMS",
+      "name_ru": "ВМ",
+      "description": "Вибромониторинг",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 4,
+    "fields": {
+      "level": 3,
+      "system_class": "MES",
+      "name_ru": "",
+      "description": "Управление производством",
+      "is_composite": true,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 8,
+    "fields": {
+      "level": 3,
+      "system_class": "APS",
+      "name_ru": "",
+      "description": "Планирование производства",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 9,
+    "fields": {
+      "level": 3,
+      "system_class": "EAM",
+      "name_ru": "ТОИР",
+      "description": "Техобслуживание и ремонт",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 10,
+    "fields": {
+      "level": 3,
+      "system_class": "BMS",
+      "name_ru": "",
+      "description": "Автоматизация зданий",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 11,
+    "fields": {
+      "level": 3,
+      "system_class": "WMS",
+      "name_ru": "",
+      "description": "Автоматизация складов и терминалов",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 12,
+    "fields": {
+      "level": 3,
+      "system_class": "PLM",
+      "name_ru": "",
+      "description": "Система управления жизненным циклом продукта",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 17,
+    "fields": {
+      "level": 3,
+      "system_class": "DS",
+      "name_ru": "ДС",
+      "description": "Диспетчеризация",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 18,
+    "fields": {
+      "level": 3,
+      "system_class": "DCA",
+      "name_ru": "",
+      "description": "Data collection — сбор и хранение данных",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 19,
+    "fields": {
+      "level": 3,
+      "system_class": "LIMS",
+      "name_ru": "ЛИМС",
+      "description": "Лабораторная информационная менеджмент-система",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 20,
+    "fields": {
+      "level": 3,
+      "system_class": "MOM",
+      "name_ru": "",
+      "description": "Управление производственными операциями (включает в себя MES)",
+      "is_composite": true,
+      "includes": 4
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 21,
+    "fields": {
+      "level": 3,
+      "system_class": "QMS",
+      "name_ru": "",
+      "description": "Система управления качеством",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationclass",
+    "pk": 5,
+    "fields": {
+      "level": 4,
+      "system_class": "ERP",
+      "name_ru": "",
+      "description": "Бизнес-планирование",
+      "is_composite": false,
+      "includes": null
+    }
+  },
+  {
+    "model": "system.automationsystem",
+    "pk": 15,
+    "fields": {
+      "autosystem_name": "Единая MOM-платформа",
+      "autosystem_short_name": "MOM",
+      "system_class": 20,
+      "subsystem_classes": [
+        4,
+        11,
+        9
+      ],
+      "product": null,
+      "system_status": "active",
+      "notes": "Демонстрационная MOM-система (включает MES и подсистемы).",
+      "release_year": null,
+      "technical_specs": null,
+      "modules": null,
+      "interfaces": null,
+      "creator_id": 1
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 1,
+    "fields": {
+      "entity": 2
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 2,
+    "fields": {
+      "entity": 3
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 3,
+    "fields": {
+      "entity": 4
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 4,
+    "fields": {
+      "entity": 5
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 5,
+    "fields": {
+      "entity": 6
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 6,
+    "fields": {
+      "entity": 7
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 7,
+    "fields": {
+      "entity": 8
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 8,
+    "fields": {
+      "entity": 9
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 9,
+    "fields": {
+      "entity": 10
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 10,
+    "fields": {
+      "entity": 11
+    }
+  },
+  {
+    "model": "entities.vendorprofile",
+    "pk": 11,
+    "fields": {
+      "entity": 1
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 16,
+    "fields": {
+      "entity_name": "ООО \"СистемИнтегро\"",
+      "inn": "7700000900",
+      "contacts": {
+        "email": "info@ооо.ru",
+        "phone": "+7 495 100-00-00"
+      },
+      "registration_date": "2005-05-05",
+      "financial_data": {
+        "Выручка": "500 млн ₽",
+        "Сотрудников": "200"
+      },
+      "entity_type": "system_integrator",
+      "is_partner": true,
+      "website": "https://ооо.ru",
+      "kam_name": "КАМ",
+      "kam_phone": "+7 916 200-00-00",
+      "contact_person": "Контакт ЦК ПА",
+      "contact_phone": "+7 903 300-00-00",
+      "presentation_url": "",
+      "profile": "Профиль компании «ООО \"СистемИнтегро\"».",
+      "industries": [
+        "Нефтехимия",
+        "Металлургия"
+      ]
+    }
+  },
+  {
+    "model": "entities.entity",
+    "pk": 17,
+    "fields": {
+      "entity_name": "АО \"ИнжПроект\"",
+      "inn": "7700000901",
+      "contacts": {
+        "email": "info@ао.ru",
+        "phone": "+7 495 100-00-00"
+      },
+      "registration_date": "2005-05-05",
+      "financial_data": {
+        "Выручка": "500 млн ₽",
+        "Сотрудников": "200"
+      },
+      "entity_type": "engineering_company",
+      "is_partner": true,
+      "website": "https://ао.ru",
+      "kam_name": "КАМ",
+      "kam_phone": "+7 916 200-00-00",
+      "contact_person": "Контакт ЦК ПА",
+      "contact_phone": "+7 903 300-00-00",
+      "presentation_url": "",
+      "profile": "Профиль компании «АО \"ИнжПроект\"».",
+      "industries": [
+        "Газопереработка",
+        "Химия"
+      ]
+    }
+  },
+  {
+    "model": "entities.engineeringcompanyprofile",
+    "pk": 1,
+    "fields": {
+      "entity": 17,
+      "region": "Челябинская область",
+      "resident_object": 1,
+      "product_competencies": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "entities.functioncompetency",
+    "pk": 1,
+    "fields": {
+      "profile": 1,
+      "system_class": 1,
+      "industry": "Нефтехимия"
+    }
+  },
+  {
+    "model": "entities.functioncompetency",
+    "pk": 2,
+    "fields": {
+      "profile": 1,
+      "system_class": 2,
+      "industry": "Металлургия"
+    }
+  }
+]

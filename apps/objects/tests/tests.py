@@ -841,3 +841,33 @@ class ObjectSummaryExtendedTests(TestCase):
         panel = h.split("summary-panel", 1)[1]
         # уровень без систем помечен приглушённым классом
         self.assertIn("tag-off", panel)
+
+    def test_children_categories_in_summary(self):
+        """Сводка: показываются категории дочерних объектов."""
+        cat = Category.objects.create(category_name="Цех переработки", object_level=2, creator=self.user)
+        Object.objects.create(
+            object_name="Цех-1", hierarchy_level=2, parent_object=self.obj,
+            category=cat, creator=self.user)
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        panel = h.split("summary-panel", 1)[1]
+        self.assertIn("Категории дочерних", panel)
+        self.assertIn("Цех переработки", panel)
+
+    def test_system_status_is_colored_tag(self):
+        """В таблице подключённых систем статус выводится цветным тегом."""
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        # active -> tag-ok, planned -> tag-blue (согласно STATUS_TAG_CLASSES)
+        self.assertIn('<span class="tag tag-ok">В эксплуатации</span>', h)
+        self.assertIn('<span class="tag tag-blue">Планируется</span>', h)
+
+    def test_objectsystem_status_tag_class_mapping(self):
+        """Свойство status_tag_class связи возвращает верный css-класс."""
+        os_active = ObjectSystem.objects.get(object=self.obj, system=self.s1)
+        os_planned = ObjectSystem.objects.get(object=self.obj, system=self.s2)
+        self.assertEqual(os_active.status_tag_class, "tag-ok")
+        self.assertEqual(os_planned.status_tag_class, "tag-blue")
+
+    def test_summary_groups_in_two_columns(self):
+        """Группы сводки обёрнуты в двухколоночный контейнер."""
+        h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
+        self.assertIn("summary-cols", h)

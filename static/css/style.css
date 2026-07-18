@@ -665,6 +665,16 @@ td a:hover {
     flex-direction: column;
     gap: 14px;
 }
+/* Группы сводки в две колонки */
+.summary-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+}
+.summary-cols > .summary-group { min-width: 0; }
+@media (max-width: 1200px) {
+    .summary-cols { grid-template-columns: 1fr; }
+}
 .summary-group .summary-group-title {
     font-size: 11px;
     text-transform: uppercase;

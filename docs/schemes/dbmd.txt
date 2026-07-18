@@ -61,7 +61,6 @@ Table Object {
   street varchar
   house varchar [note: 'Адрес производства (уровень 1)']
   title varchar [note: 'Кодовое расположение установки (только уровень 3)']
-  fias_code varchar
 
   creator_id integer [note: 'Создатель']
   created_at datetime
@@ -304,8 +303,8 @@ Table FullCycleFunctionCompetency {
 // Поставляемые продукты (M2M)
 Table FullCycleVendorProfile_products {
   id integer [primary key]
-  fullcyclevendorprofile_id integer [ref: > FullCycleVendorProfile.id]
-  vendorproduct_id integer [ref: > VendorProduct.id]
+  fullcycle_vendor_profile_id integer [ref: > FullCycleVendorProfile.id]
+  vendor_product_id integer [ref: > VendorProduct.id]
 }
 
 

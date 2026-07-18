@@ -117,7 +117,7 @@
                 <tr>
                     <td><a class="link" href="{% url 'system-detail' os.system.pk %}">{{ os.system.autosystem_name }}</a></td>
                     <td><span class="tag tag-{{ os.system.system_class.level }}">L{{ os.system.system_class.level }} - {{ os.system.system_class.system_class }}</span></td>
-                    <td>{{ os.get_status_display }}</td>
+                    <td><span class="tag {{ os.status_tag_class }}">{{ os.get_status_display }}</span></td>
                     <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">—</span>{% endif %}</td>
                     <td>{% if os.implementor %}<a class="link" href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">—</span>{% endif %}</td>
                     {% if user.is_authenticated %}

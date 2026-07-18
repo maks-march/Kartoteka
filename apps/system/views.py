@@ -293,7 +293,8 @@ def _extract_product_fields(post):
         "release_year": post.get("release_year") or None,
         "end_of_support": post.get("end_of_support") or None,
         "technical_specs": _parse_specs_pairs(post),
-        "industries": _parse_list_field(post.get("industries")),
+        # Отрасли — id категорий 1-го уровня (M2M).
+        "industries": [i for i in post.getlist("industries") if i],
     }
 
 
@@ -302,12 +303,17 @@ def _product_form_context(**extra):
     # (продукт может принадлежать только им).
     """Готовит контекст формы продукта (справочники) (вспомогательная)."""
     vendors = [e for e in EntityUseCase().list() if e.is_vendor_type]
+    product = extra.get("product")
+    product_industry_ids = set()
+    if product is not None and product.pk:
+        product_industry_ids = set(product.industries.values_list("pk", flat=True))
     ctx = {
         "vendors": vendors,
         "classes": AutomationClassUseCase().list(),
         "product_type_choices": VendorProduct.PRODUCT_TYPE_CHOICES,
-        # Отрасли-подсказки: категории 1-го уровня (без связи, только значения).
-        "industry_suggestions": [c.category_name for c in CategoryUseCase().list(level=1)],
+        # Отрасли — категории 1-го уровня (выбор по id, M2M).
+        "industry_categories": list(CategoryUseCase().list(level=1)),
+        "product_industry_ids": product_industry_ids,
     }
     ctx.update(extra)
     return ctx

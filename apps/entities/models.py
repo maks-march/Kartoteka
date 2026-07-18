@@ -104,11 +104,6 @@ class Entity(models.Model):
         default="",
         verbose_name="Профиль компании",
     )
-    industries = models.JSONField(
-        null=True,
-        blank=True,
-        verbose_name="Отрасли применения",
-    )
 
     class Meta:
         """Мета-настройки модели."""
@@ -167,29 +162,89 @@ class Entity(models.Model):
         return profile.products.all()
 
     @property
+    def industries(self):
+        """Отрасли участника — вычисляются из связей по типу (не хранятся).
+
+        Источники по типу:
+        - вендор: отрасли своих продуктов;
+        - поставщик: отрасли поставляемых продуктов;
+        - инжиниринговая компания: отрасли из компетенций по функции +
+          отрасли продуктов, являющихся компетенцией;
+        - вендор полного цикла: объединение вышеперечисленного.
+
+        Системный интегратор здесь не обрабатывается (его компетенции
+        задаются «от обратного» — будет реализовано отдельно).
+
+        Возвращает queryset уникальных категорий 1-го уровня (Category).
+        """
+        from apps.categories.models import Category
+
+        ids = set()
+
+        # Вендор / полный цикл: отрасли собственных продуктов (через VendorProfile).
+        if self.is_vendor_type:
+            vp = getattr(self, "vendor_profile", None)
+            if vp is not None:
+                ids |= set(
+                    Category.objects.filter(industry_products__vendor=vp)
+                    .values_list("pk", flat=True)
+                )
+
+        # Поставщик / полный цикл: отрасли поставляемых продуктов.
+        if self.is_supplier_type:
+            sp = getattr(self, "supplier_profile", None)
+            if sp is not None:
+                ids |= set(
+                    Category.objects.filter(industry_products__suppliers=sp)
+                    .values_list("pk", flat=True)
+                )
+
+        # Инжиниринговая компания: компетенции по функции + отрасли
+        # продуктов-компетенций.
+        if self.is_engineering_type:
+            eng = getattr(self, "engineering_profile", None)
+            if eng is not None:
+                ids |= set(eng.function_competencies.values_list("industry_id", flat=True))
+                ids |= set(
+                    Category.objects.filter(industry_products__competent_engineering_companies=eng)
+                    .values_list("pk", flat=True)
+                )
+
+        # Вендор полного цикла: dedicated профиль (компетенции по функции +
+        # отрасли устанавливаемых продуктов).
+        if self.entity_type == "full_cycle_vendor":
+            fc = getattr(self, "full_cycle_profile", None)
+            if fc is not None:
+                ids |= set(fc.function_competencies.values_list("industry_id", flat=True))
+                ids |= set(
+                    Category.objects.filter(industry_products__full_cycle_competent_vendors=fc)
+                    .values_list("pk", flat=True)
+                )
+
+        return Category.objects.filter(pk__in=ids).order_by("category_name")
+
+    @property
+    def industries_names(self):
+        """Названия вычисленных отраслей участника списком."""
+        return [c.category_name for c in self.industries]
+
+    @property
     def industries_first(self):
         """Первая отрасль (для колонки таблицы)."""
-        if isinstance(self.industries, (list, tuple)) and self.industries:
-            return str(self.industries[0])
-        return ""
+        names = self.industries_names
+        return names[0] if names else ""
 
     @property
     def industries_first_three(self):
         """Первые три отрасли строкой через запятую (для карточки)."""
-        if isinstance(self.industries, (list, tuple)) and self.industries:
-            return ", ".join(str(v) for v in self.industries[:3])
-        return ""
+        return ", ".join(self.industries_names[:3])
 
     # --- Вспомогательные свойства для форм/детали ---
 
     @property
     def industries_text(self):
-        """Отрасли списком через запятую (для предзаполнения поля)."""
-        if not self.industries:
-            return ""
-        if isinstance(self.industries, (list, tuple)):
-            return ", ".join(str(v) for v in self.industries)
-        return str(self.industries)
+        """Отрасли списком через запятую (для отображения)."""
+        return ", ".join(self.industries_names)
 
     @property
     def contacts_items(self):
@@ -380,21 +435,23 @@ class FunctionCompetency(models.Model):
         related_name="function_competencies",
         verbose_name="Класс систем",
     )
-    industry = models.CharField(
-        max_length=255,
+    industry = models.ForeignKey(
+        "categories.Category",
+        on_delete=models.CASCADE,
+        related_name="function_competencies",
         verbose_name="Индустрия",
-        help_text="Значение из категорий 1-го уровня (без жёсткой связи).",
+        help_text="Индустрия — категория 1-го уровня (ссылка на справочник).",
     )
 
     class Meta:
         """Мета-настройки модели."""
         verbose_name = "Компетенция по функции"
         verbose_name_plural = "Компетенции по функции"
-        ordering = ["system_class__level", "system_class__system_class", "industry"]
+        ordering = ["system_class__level", "system_class__system_class", "industry__category_name"]
 
     def __str__(self):
         """Строковое представление объекта."""
-        return f"{self.system_class.system_class} · {self.industry}"
+        return f"{self.system_class.system_class} · {self.industry.category_name}"
 
 
 class FullCycleVendorProfile(models.Model):
@@ -461,18 +518,20 @@ class FullCycleFunctionCompetency(models.Model):
         related_name="full_cycle_function_competencies",
         verbose_name="Класс систем",
     )
-    industry = models.CharField(
-        max_length=255,
+    industry = models.ForeignKey(
+        "categories.Category",
+        on_delete=models.CASCADE,
+        related_name="full_cycle_function_competencies",
         verbose_name="Индустрия",
-        help_text="Значение из категорий 1-го уровня (без жёсткой связи).",
+        help_text="Индустрия — категория 1-го уровня (ссылка на справочник).",
     )
 
     class Meta:
         """Мета-настройки модели."""
         verbose_name = "Компетенция по функции (полный цикл)"
         verbose_name_plural = "Компетенции по функции (полный цикл)"
-        ordering = ["system_class__level", "system_class__system_class", "industry"]
+        ordering = ["system_class__level", "system_class__system_class", "industry__category_name"]
 
     def __str__(self):
         """Строковое представление объекта."""
-        return f"{self.system_class.system_class} · {self.industry}"
+        return f"{self.system_class.system_class} · {self.industry.category_name}"

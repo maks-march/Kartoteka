@@ -72,10 +72,10 @@
     <div class="info-block">
         <h3 class="info-block-title">Отрасли и профиль</h3>
         <div class="info-card full">
-            <span class="info-label">Отрасли применения</span>
-            {% if entity.industries %}
+            <span class="info-label">Отрасли</span>
+            {% if entity.industries.all %}
             <div class="card-tags">
-                {% for ind in entity.industries %}<span class="tag tag-muted">{{ ind }}</span>{% endfor %}
+                {% for ind in entity.industries.all %}<span class="tag tag-muted">{{ ind.category_name }}</span>{% endfor %}
             </div>
             {% else %}<span class="info-value">—</span>{% endif %}
         </div>
@@ -130,7 +130,7 @@
             <span class="info-label">Узкая компетенция по функции</span>
             {% if prof.function_competencies.all %}
             <div class="card-tags">
-                {% for fc in prof.function_competencies.all %}<span class="tag tag-muted">{{ fc.system_class.system_class }} · {{ fc.industry }}</span>{% endfor %}
+                {% for fc in prof.function_competencies.all %}<span class="tag tag-muted">{{ fc.system_class.system_class }} · {{ fc.industry.category_name }}</span>{% endfor %}
             </div>
             {% else %}<span class="info-value">—</span>{% endif %}
         </div>

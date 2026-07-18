@@ -197,3 +197,16 @@ class ObjectSystem(models.Model):
     def __str__(self):
         """Строковое представление: «объект → система»."""
         return f"{self.object.object_name} -> {self.system.autosystem_name}"
+
+    # Соответствие статуса внедрения css-классу тега (единый цвет со сводкой).
+    STATUS_TAG_CLASSES = {
+        "active": "tag-ok",
+        "planned": "tag-blue",
+        "maintenance": "tag-warn",
+        "decommissioned": "tag-danger",
+    }
+
+    @property
+    def status_tag_class(self):
+        """CSS-класс тега для текущего статуса внедрения системы."""
+        return self.STATUS_TAG_CLASSES.get(self.status, "tag-muted")
