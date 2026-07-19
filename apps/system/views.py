@@ -298,6 +298,22 @@ def _extract_product_fields(post):
     }
 
 
+def _attach_product_to_supplier(supplier_id, product):
+    """Привязывает созданный продукт к поставщику (связь «поставляет»).
+
+    Сохраняет уже поставляемые продукты и добавляет новый. Молча игнорирует,
+    если участник не найден или не является поставщиком.
+    """
+    from apps.entities.models import Entity
+    entity = Entity.objects.filter(pk=supplier_id).first()
+    if entity is None or not getattr(entity, "is_supplier_type", False):
+        return
+    usecase = EntityUseCase()
+    profile = getattr(entity, "supplier_profile", None)
+    existing_ids = list(profile.products.values_list("pk", flat=True)) if profile else []
+    usecase.save_supplier_products(entity, product_ids=existing_ids + [product.pk])
+
+
 def _product_form_context(**extra):
     # В выборе вендора — только участники типа vendor / full_cycle_vendor
     # (продукт может принадлежать только им).
@@ -322,8 +338,16 @@ def _product_form_context(**extra):
 @require_http_methods(["GET", "POST"])
 @login_required
 def product_create(request):
-    """Создание продукта: GET — форма, POST — сохранение."""
+    """Создание продукта: GET — форма, POST — сохранение.
+
+    Поддерживает предзаполнение по query-параметрам (при переходе с карточки
+    участника): ``?vendor=<pk>`` — предвыбрать вендора; ``?supplier=<pk>`` —
+    после создания привязать продукт к этому поставщику (связь «поставляет»).
+    """
     error = None
+    # id участника-инициатора (из query при GET, из скрытых полей при POST).
+    preselected_vendor_id = request.POST.get("vendor") or request.GET.get("vendor") or ""
+    supplier_id = request.POST.get("supplier_id") or request.GET.get("supplier") or ""
     if request.method == "POST":
         usecase = VendorProductUseCase()
         try:
@@ -333,10 +357,18 @@ def product_create(request):
                 subsystem_classes=request.POST.getlist("subsystem_classes"),
                 **_extract_product_fields(request.POST),
             )
+            # Если пришли с карточки поставщика — привязываем продукт к нему.
+            if supplier_id:
+                _attach_product_to_supplier(supplier_id, product)
+                return redirect("entity-detail", pk=supplier_id)
             return redirect("product-detail", pk=product.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
-    return render(request, "system/product_form.html", _product_form_context(error=error))
+    return render(request, "system/product_form.html", _product_form_context(
+        error=error,
+        preselected_vendor_id=str(preselected_vendor_id),
+        supplier_id=str(supplier_id),
+    ))
 
 
 @require_http_methods(["GET", "POST"])

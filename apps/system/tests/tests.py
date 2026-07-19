@@ -847,3 +847,51 @@ class VendorProductSubsystemTests(TestCase):
         """В списке присутствует фильтр по классу."""
         h = self.client.get("/system/products/").content.decode()
         self.assertIn('name="system_class"', h)
+
+
+class ProductCreateFromEntityCardTests(TestCase):
+    """Создание продукта с карточки участника: предвыбор вендора и привязка
+    к поставщику через query-параметры формы."""
+
+    def setUp(self):
+        from apps.entities.models import Entity
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        self.user = User.objects.create_user("pcard", "p@x.x", "pw")
+        self.client.force_login(self.user)
+        uc = EntityUseCase()
+        self.vendor = uc.create(entity_name="ВендорКарта", entity_type="vendor")
+        self.supplier = uc.create(entity_name="ПоставщикКарта", entity_type="supplier")
+
+    def test_vendor_preselected_on_get(self):
+        """GET формы с ?vendor= предзаполняет скрытое поле вендора."""
+        h = self.client.get(
+            f"/system/products/create/?vendor={self.vendor.pk}").content.decode()
+        self.assertIn(
+            f'name="vendor" id="selectedVendorId" value="{self.vendor.pk}"', h)
+
+    def test_create_vendor_product_sets_vendor(self):
+        """POST продукта c vendor=<pk> проставляет вендора."""
+        r = self.client.post("/system/products/create/", {
+            "product_name": "Продукт от вендора", "vendor": str(self.vendor.pk)})
+        self.assertEqual(r.status_code, 302)
+        from apps.system.models import VendorProduct
+        p = VendorProduct.objects.get(product_name="Продукт от вендора")
+        self.assertEqual(p.vendor.entity_id, self.vendor.pk)
+
+    def test_supplier_id_carried_on_get(self):
+        """GET формы с ?supplier= кладёт скрытое поле supplier_id."""
+        h = self.client.get(
+            f"/system/products/create/?supplier={self.supplier.pk}").content.decode()
+        self.assertIn(f'name="supplier_id" value="{self.supplier.pk}"', h)
+
+    def test_create_attaches_product_to_supplier(self):
+        """POST с supplier_id создаёт продукт и привязывает к поставщику."""
+        r = self.client.post("/system/products/create/", {
+            "product_name": "Поставляемый продукт",
+            "supplier_id": str(self.supplier.pk), "vendor": ""})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.headers["Location"], f"/entities/{self.supplier.pk}/")
+        from apps.system.models import VendorProduct
+        p = VendorProduct.objects.get(product_name="Поставляемый продукт")
+        self.assertTrue(
+            self.supplier.supplier_profile.products.filter(pk=p.pk).exists())
