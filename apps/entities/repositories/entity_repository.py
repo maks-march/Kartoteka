@@ -1,11 +1,9 @@
 """Репозиторий доступа к данным участников рынка."""
 import re
 
-from django.db.models import Count, Q, Subquery, OuterRef, IntegerField, Value
-from django.db.models.functions import Coalesce
+from django.db.models import Count
 
 from apps.entities.models import Entity
-from apps.system.models import AutomationSystem
 from common.ordering import apply_ordering
 
 
@@ -19,29 +17,28 @@ class EntityRepository:
 
     @staticmethod
     def _annotate(qs):
-        """Добавляет счётчики продуктов и связанных систем.
+        """Добавляет счётчики продуктов и связанных систем (как в сводке).
 
-        systems_count — число РАЗЛИЧНЫХ систем, связанных с участником:
-        где он implementor в ObjectSystem, ЛИБО чей продукт
-        принадлежит этому вендору. Считаем подзапросом по AutomationSystem,
-        чтобы distinct работал корректно поверх разных связей.
+        products_count — свои вендорские продукты + поставляемые (для ФПЦ —
+        сумма; для вендора — только вендорские; для поставщика — только
+        поставляемые).
+
+        systems_count — внедрённые системы (число связей ObjectSystem, где
+        участник является исполнителем) + вендорские системы (число систем,
+        построенных на продуктах участника-вендора). Считаем связи, а не
+        различные системы: одна система на нескольких объектах — это несколько
+        внедрений (совпадает со сводкой).
         """
-        related_systems = (
-            AutomationSystem.objects
-            .filter(
-                Q(objectsystem__implementor=OuterRef("pk"))
-                | Q(product__vendor__entity=OuterRef("pk"))
-            )
-            .order_by()
-            .annotate(_g=Value(1))          # константный ключ группировки
-            .values("_g")
-            .annotate(c=Count("pk", distinct=True))
-            .values("c")
-        )
         return qs.annotate(
-            products_count=Count("vendor_profile__products", distinct=True),
-            systems_count=Coalesce(
-                Subquery(related_systems, output_field=IntegerField()), 0
+            products_count=(
+                Count("vendor_profile__products", distinct=True)
+                + Count("supplier_profile__products", distinct=True)
+            ),
+            systems_count=(
+                # Внедрения: связи ObjectSystem, где участник — исполнитель.
+                Count("implemented_object_systems", distinct=True)
+                # Вендорские системы: системы на продуктах этого вендора.
+                + Count("vendor_profile__products__systems", distinct=True)
             ),
         )
 

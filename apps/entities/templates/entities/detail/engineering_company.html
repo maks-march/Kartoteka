@@ -1,0 +1,82 @@
+{% extends "entities/detail/_base.html" %}
+{% load entity_extras %}
+
+{% comment %}Страница инжиниринговой компании: профиль (регион/вхожий объект)
++ компетенции; сводка по внедрениям; таблица внедрённых систем.{% endcomment %}
+
+{% block profile %}
+{% with prof=entity.engineering_profile %}
+<div class="info-block">
+    <h3 class="info-block-title">Профиль</h3>
+    <div class="top-row">
+        <div class="info-cards">
+            <div class="info-card">
+                <span class="info-label">Локация (регион)</span>
+                <span class="info-value">{{ prof.region|default:'Не указано' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Вхожий объект</span>
+                <span class="info-value">{% if prof.resident_object %}<a class="link" href="{% url 'object-detail' prof.resident_object.pk %}">{{ prof.resident_object.object_name }}</a>{% else %}Не указано{% endif %}</span>
+            </div>
+        </div>
+        <div class="info-card profile-card">
+            <span class="info-label">Профиль компании</span>
+            <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="info-block">
+    <div class="info-card">
+        <span class="info-label">Узкая компетенция по продуктам</span>
+        {% if prof.product_competencies.all %}
+        <div class="card-tags">
+            {% for p in prof.product_competencies.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+        </div>
+        {% else %}<span class="info-value">Не указано</span>{% endif %}
+    </div>
+    <div class="info-card gap">
+        <span class="info-label">Узкая компетенция по функции</span>
+        {% if prof.function_competencies.all %}
+        <div class="card-tags">
+            {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
+        </div>
+        {% else %}<span class="info-value">Не указано</span>{% endif %}
+    </div>
+</div>
+{% endwith %}
+{% endblock %}
+
+{% block summary %}
+<div class="summary-metrics">
+    <div class="metric"><span class="metric-num">{{ summary.implemented_count }}</span><span class="metric-label">Внедр. систем</span></div>
+</div>
+
+{% if summary.status_breakdown %}
+<div class="summary-group">
+    <div class="summary-group-title">Статусы внедрения</div>
+    <div class="summary-tags">
+        {% for s in summary.status_breakdown %}
+        <span class="tag {{ s.tag }}">{{ s.label }}: {{ s.count }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if summary.has_level_coverage %}
+<div class="summary-group">
+    <div class="summary-group-title">Покрытие по уровням</div>
+    <div class="summary-tags">
+        {% for l in summary.level_coverage %}
+        <span class="tag tag-{{ l.level }}{% if not l.count %} tag-off{% endif %}">{{ l.label }}: {{ l.count }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% include "core/_summary_group.html" with title="Классы внедрённых систем" group=summary.implemented_classes kind="class" %}
+{% endblock %}
+
+{% block tables %}
+{% include "entities/_implemented_systems.html" %}
+{% endblock %}

@@ -4,9 +4,9 @@
 (системы/объекты/участники), в компактный набор уникальных сущностей.
 """
 
-# Максимум элементов в одной группе тегов сводки. Если больше — показываем
-# первые SUMMARY_LIMIT и приписку «ещё N».
-SUMMARY_LIMIT = 5
+# Лимит по умолчанию отключён: показываем все элементы группы, а панель
+# сводки прокручивается (см. .summary-panel .summary-body в style.css).
+SUMMARY_LIMIT = None
 
 
 def unique_by(items, key):
@@ -26,12 +26,15 @@ def unique_by(items, key):
 
 
 def summary_group(items, key, limit=SUMMARY_LIMIT):
-    """Готовит группу для сводки: уникальные элементы, обрезанные до limit.
+    """Готовит группу для сводки: уникальные элементы.
 
-    Возвращает dict: {"items": [...до limit...], "total": N, "more": max(0, N-limit)}.
-    Это сводка — лишние элементы не выводим, показываем «ещё N».
+    Возвращает dict: {"items": [...], "total": N, "more": ...}.
+    По умолчанию (limit=None) показываем все элементы (more=0); панель
+    сводки прокручивается. Если limit задан — обрезаем и считаем «ещё N».
     """
     uniq = unique_by(items, key)
     total = len(uniq)
+    if limit is None:
+        return {"items": uniq, "total": total, "more": 0}
     shown = uniq[:limit]
     return {"items": shown, "total": total, "more": max(0, total - limit)}

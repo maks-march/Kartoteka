@@ -1,0 +1,28 @@
+{% extends "entities/detail/_base.html" %}
+{% load entity_extras %}
+
+{% comment %}Страница поставщика: профиль (во всю ширину), сводка по классам
+поставляемых продуктов, таблица поставляемых продуктов.{% endcomment %}
+
+{% block profile %}
+<div class="info-block">
+    <h3 class="info-block-title">Профиль</h3>
+    <div class="info-card profile-card span-full">
+        <span class="info-label">Профиль компании</span>
+        <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block summary %}
+<div class="summary-metrics">
+    <div class="metric"><span class="metric-num">{{ summary.implemented_count }}</span><span class="metric-label">Внедр. систем</span></div>
+    <div class="metric"><span class="metric-num">{{ summary.products_count }}</span><span class="metric-label">Продуктов</span></div>
+</div>
+
+{% include "core/_summary_group.html" with title="Классы поставляемых продуктов" group=summary.supplied_classes kind="class" %}
+{% endblock %}
+
+{% block tables %}
+{% include "entities/_supplied_products.html" %}
+{% endblock %}

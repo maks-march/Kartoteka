@@ -1,0 +1,20 @@
+{% comment %}Внедрённые системы участника-исполнителя (объект / система / статус).{% endcomment %}
+<div class="card">
+    <h2>Внедренные системы</h2>
+    <table>
+        <thead>
+            <tr><th>Объект</th><th>Система</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+            {% for link in implemented_links %}
+            <tr>
+                <td><a href="{% url 'object-detail' link.object.pk %}">{{ link.object.object_name }}</a></td>
+                <td><a href="{% url 'system-detail' link.system.pk %}">{{ link.system.autosystem_name }}</a></td>
+                <td><span class="tag {{ link.status_tag_class }}">{{ link.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">Нет связей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

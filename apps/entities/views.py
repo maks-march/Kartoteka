@@ -264,11 +264,13 @@ def _entity_list_render(request, template, view_mode):
     })
 
 
-@require_http_methods(["GET"])
-def entity_detail(request, pk):
-    """Подробная карточка участника со сводкой связанности."""
-    usecase = EntityUseCase()
-    entity = usecase.get(pk)
+def _entity_detail_context(entity):
+    """Собирает общий контекст детальной карточки участника (сводка + связи).
+
+    Используется всеми типовыми страницами участника. Возвращает dict с
+    ключами entity / implemented_links / vendor_products / supplied_products /
+    summary.
+    """
     implemented_links = entity.implemented_object_systems.select_related(
         "object", "system", "system__system_class",
         "system__product__vendor__entity",
@@ -330,9 +332,11 @@ def entity_detail(request, pk):
     ]
 
     # ---- Покрытие по уровням автоматизации L0..L4 (счётчики) ----
-    # У вендора считаем по его продуктовым системам, у исполнителей — по
-    # внедрённым системам.
-    if entity.is_vendor_type:
+    # У исполнителя (интегратор / инж.компания / ФПЦ) — по внедрённым
+    # системам; у чистого вендора — по его вендорским системам.
+    if entity.can_implement:
+        coverage_systems = [link.system for link in implemented if link.system]
+    elif entity.is_vendor_type:
         coverage_systems = product_systems
     else:
         coverage_systems = [link.system for link in implemented if link.system]
@@ -370,14 +374,91 @@ def entity_detail(request, pk):
         "is_vendor_type": entity.is_vendor_type,
         "is_supplier_type": entity.is_supplier_type,
         "is_integrator": entity.is_system_integrator_type,
+        "can_implement": entity.can_implement,
     }
-    return render(request, "entities/entity_detail.html", {
+    return {
         "entity": entity,
         "implemented_links": implemented_links,
         "vendor_products": vendor_products,
         "supplied_products": supplied_products,
         "summary": summary,
-    })
+    }
+
+
+# Слаг типа (в URL) -> имя маршрута типовой страницы участника.
+ENTITY_TYPE_ROUTES = {
+    "vendor": "entity-vendor",
+    "supplier": "entity-supplier",
+    "system_integrator": "entity-system-integrator",
+    "engineering_company": "entity-engineering",
+    "full_cycle_vendor": "entity-full-cycle",
+}
+# Слаг типа -> шаблон типовой страницы.
+_ENTITY_TYPE_TEMPLATES = {
+    "vendor": "entities/detail/vendor.html",
+    "supplier": "entities/detail/supplier.html",
+    "system_integrator": "entities/detail/system_integrator.html",
+    "engineering_company": "entities/detail/engineering_company.html",
+    "full_cycle_vendor": "entities/detail/full_cycle_vendor.html",
+}
+
+
+@require_http_methods(["GET"])
+def entity_detail(request, pk):
+    """Диспетчер: перенаправляет на типовую страницу участника по его типу.
+
+    Общей страницы больше нет — у каждого типа своя (entity/<id>/<тип>/).
+    Ссылки {% url 'entity-detail' pk %} продолжают работать через этот редирект.
+    """
+    entity = EntityUseCase().get(pk)
+    route = ENTITY_TYPE_ROUTES.get(entity.entity_type)
+    if route is None:
+        # Тип не задан — показываем список (нет специализированной страницы).
+        return redirect("entity-list")
+    return redirect(route, pk=pk)
+
+
+def _render_entity_type(request, pk, expected_type):
+    """Рендерит типовую страницу участника, проверяя соответствие типа.
+
+    Если тип участника не совпадает с URL — редиректим на его правильную
+    типовую страницу (диспетчер).
+    """
+    entity = EntityUseCase().get(pk)
+    if entity.entity_type != expected_type:
+        return entity_detail(request, pk)
+    return render(request, _ENTITY_TYPE_TEMPLATES[expected_type],
+                  _entity_detail_context(entity))
+
+
+@require_http_methods(["GET"])
+def entity_vendor(request, pk):
+    """Страница вендора."""
+    return _render_entity_type(request, pk, "vendor")
+
+
+@require_http_methods(["GET"])
+def entity_supplier(request, pk):
+    """Страница поставщика."""
+    return _render_entity_type(request, pk, "supplier")
+
+
+@require_http_methods(["GET"])
+def entity_system_integrator(request, pk):
+    """Страница системного интегратора."""
+    return _render_entity_type(request, pk, "system_integrator")
+
+
+@require_http_methods(["GET"])
+def entity_engineering(request, pk):
+    """Страница инжиниринговой компании."""
+    return _render_entity_type(request, pk, "engineering_company")
+
+
+@require_http_methods(["GET"])
+def entity_full_cycle(request, pk):
+    """Страница вендора полного цикла."""
+    return _render_entity_type(request, pk, "full_cycle_vendor")
 
 
 @require_http_methods(["GET", "POST"])

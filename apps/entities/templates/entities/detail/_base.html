@@ -1,0 +1,112 @@
+{% extends 'core/base.html' %}
+{% load entity_extras %}
+
+{% comment %}Минимальный базовый шаблон детальной карточки участника.
+
+Содержит общую «шапку» (название/тип/действия) и главную информацию
+(Контакты | Реквизиты). Типовые страницы наследуются и заполняют блоки:
+  profile — блок «Профиль» (после главной информации, в левой колонке);
+  summary — содержимое панели сводки (справа);
+  tables  — таблицы под карточкой (продукты, внедрённые системы и т.п.).
+{% endcomment %}
+
+{% block title %}{{ entity.entity_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-title-row">
+        <div>
+            <h1 style="margin-bottom:6px">{{ entity.entity_name }}</h1>
+            {% if entity.entity_type %}<span class="tag {{ entity.entity_type_tag_class }}">{{ entity.get_entity_type_display }}</span>{% endif %}
+            {% if entity.is_partner %}<span class="tag tag-ok" style="margin-left:6px">Партнёр</span>{% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <div class="actions">
+            <a href="{% url 'entity-edit' entity.pk %}" class="btn btn-secondary">Изменить</a>
+            <form action="{% url 'entity-delete' entity.pk %}" method="post" style="display:inline" onsubmit="return confirm('Удалить участника рынка? Связи с системами и объектами будут очищены.')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="detail-body">
+    <div class="detail-main">
+
+        {% comment %}Главная информация: Контакты | Реквизиты.{% endcomment %}
+        <div class="top-row">
+            <div class="info-block">
+                <h3 class="info-block-title">Контакты</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="info-label">КАМ (Key Account Manager)</span>
+                        <span class="info-value">{{ entity.kam_name|default:'Не указано' }}{% if entity.kam_phone %}<br>{{ entity.kam_phone }}{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Контакт от ЦК ПА</span>
+                        <span class="info-value">{{ entity.contact_person|default:'Не указано' }}{% if entity.contact_phone %}<br>{{ entity.contact_phone }}{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-block">
+                <h3 class="info-block-title">Реквизиты</h3>
+                <div class="info-cards-two">
+                    <div class="info-card">
+                        <span class="info-label">ИНН</span>
+                        <span class="info-value">{{ entity.inn|default:'Не указано' }}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Дата регистрации</span>
+                        <span class="info-value">{% if entity.registration_date %}{{ entity.registration_date|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Сайт</span>
+                        <span class="info-value">{% if entity.website %}<a class="link" href="{{ entity.website }}" target="_blank" rel="noopener">{{ entity.website }}</a>{% else %}Не указано{% endif %}</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">Презентация</span>
+                        <span class="info-value">{% if entity.presentation_url %}<a class="link" href="{{ entity.presentation_url }}" target="_blank" rel="noopener">Открыть</a>{% else %}Не указано{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% comment %}Профиль — индивидуально для типа участника.{% endcomment %}
+        {% block profile %}{% endblock %}
+
+        {% comment %}Финансовые показатели (общие).{% endcomment %}
+        {% if entity.financial_data_items %}
+        <div class="info-block">
+            <h3 class="info-block-title">Финансовые показатели</h3>
+            <div class="tech-grid">
+                {% for key, value in entity.financial_data_items %}
+                <div class="tech-tile">
+                    <span class="tech-key" title="{{ key }}">{{ key }}</span>
+                    <span class="tech-val">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div><!-- /.detail-main -->
+
+    {% comment %}Сводка связанности — индивидуально для типа.{% endcomment %}
+    <aside class="summary-panel">
+        <div class="summary-head">Сводка связанности</div>
+        <div class="summary-body">
+            {% block summary %}{% endblock %}
+        </div>
+    </aside>
+    </div><!-- /.detail-body -->
+</div>
+
+{% comment %}Таблицы под карточкой — индивидуально для типа.{% endcomment %}
+{% block tables %}{% endblock %}
+
+<div style="margin-top:10px">
+    <a href="{% url 'entity-list' %}" class="btn btn-secondary">← Назад к списку</a>
+</div>
+{% endblock %}

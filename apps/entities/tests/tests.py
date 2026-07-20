@@ -50,7 +50,7 @@ class EntityWebEndpointTests(TestCase):
 
     def test_detail_page(self):
         """Страница деталей участника открывается."""
-        r = self.client.get(f"/entities/{self.entity.pk}/")
+        r = self.client.get(f"/entities/{self.entity.pk}/", follow=True)
         self.assertEqual(r.status_code, 200)
 
     def test_create_requires_auth(self):
@@ -283,13 +283,13 @@ class EntityCountsAndViewsTests(TestCase):
 
     def test_detail_shows_products_block_for_vendor(self):
         """Деталь вендора показывает блок продуктов."""
-        h = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.vendor.pk}/", follow=True).content.decode()
         self.assertIn("Вендорские продукты", h)
         self.assertIn("Продукт-1", h)
 
     def test_detail_no_products_block_for_integrator(self):
         """Деталь интегратора не показывает блок продуктов."""
-        h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.integ.pk}/", follow=True).content.decode()
         self.assertNotIn("Вендорские продукты", h)
 
 
@@ -337,7 +337,7 @@ class DetailSummaryPanelTests(TestCase):
     def test_entity_summary_panel(self):
         # у исполнителя сводка показывает классы внедрённых систем
         """Панель сводки в деталях участника отображается корректно."""
-        h = self.client.get(f"/entities/{self.impl.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.impl.pk}/", follow=True).content.decode()
         self.assertIn("summary-panel", h)
         self.assertIn("Классы внедрённых систем", h)
         self.assertIn("SCADA", h)
@@ -345,11 +345,11 @@ class DetailSummaryPanelTests(TestCase):
 
     def test_entity_summary_products_only_for_vendor_types(self):
         """Блок продуктов в сводке — только для вендорских типов."""
-        hv = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
+        hv = self.client.get(f"/entities/{self.vendor.pk}/", follow=True).content.decode()
         # у вендора в сводке есть метрика продуктов и классы вендорских продуктов
         self.assertIn("Продуктов", hv)
         self.assertIn("Классы вендорских продуктов", hv)
-        hi = self.client.get(f"/entities/{self.impl.pk}/").content.decode()
+        hi = self.client.get(f"/entities/{self.impl.pk}/", follow=True).content.decode()
         # инжиниринговая компания — без продуктов и вендорских продуктов в сводке
         self.assertNotIn("Продуктов", hi)
         self.assertNotIn("Классы вендорских продуктов", hi)
@@ -758,7 +758,7 @@ class EntityTypingProfilesTests(TestCase):
         self._uc().save_engineering_profile(
             e, region="Сибирь", resident_object_id=self.obj.pk,
             product_ids=[], competencies=[(self.cls.pk, ind.pk)])
-        h = self.client.get(f"/entities/{e.pk}/").content.decode()
+        h = self.client.get(f"/entities/{e.pk}/", follow=True).content.decode()
         self.assertIn("Инжиниринговая компания", h)
         self.assertIn("Сибирь", h)
         self.assertIn("Химия", h)
@@ -1059,18 +1059,18 @@ class DetailLayoutTests(TestCase):
 
     def test_products_count_is_vendor_plus_supplied(self):
         """Счётчик «Продуктов» = вендорские + поставляемые (2 + 1 = 3)."""
-        r = self.client.get(f"/entities/{self.fcv.pk}/")
+        r = self.client.get(f"/entities/{self.fcv.pk}/", follow=True)
         self.assertEqual(r.context["summary"]["products_count"], 3)
 
     def test_summary_has_status_and_level_coverage(self):
         """Сводка содержит статусы внедрения и покрытие по уровням."""
-        h = self.client.get(f"/entities/{self.fcv.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.fcv.pk}/", follow=True).content.decode()
         self.assertIn("Статусы внедрения", h)
         self.assertIn("Покрытие по уровням", h)
 
     def test_supplied_products_shown_with_system_count(self):
         """Поставляемые продукты — со столбцом «Систем»."""
-        h = self.client.get(f"/entities/{self.fcv.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.fcv.pk}/", follow=True).content.decode()
         self.assertIn("Поставляемые продукты", h)
         self.assertIn("Постав-1", h)
         self.assertIn("<th>Систем</th>", h)
@@ -1113,20 +1113,20 @@ class SummaryPerTypeTests(TestCase):
 
     def test_integrator_shows_implemented_vendors(self):
         """У интегратора в сводке — вендоры установленных продуктов."""
-        h = self.client.get(f"/entities/{self.integ.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.integ.pk}/", follow=True).content.decode()
         self.assertIn("Вендоры установленных продуктов", h)
         self.assertIn("ВендорX", h)
         self.assertIn("Статусы внедрения", h)
 
     def test_vendor_shows_vendor_product_classes(self):
         """У вендора в сводке — классы вендорских продуктов, без внедрений."""
-        h = self.client.get(f"/entities/{self.vendor.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.vendor.pk}/", follow=True).content.decode()
         self.assertIn("Классы вендорских продуктов", h)
         self.assertNotIn("Вендоры установленных продуктов", h)
 
     def test_fcv_shows_both_product_class_groups_in_two_cols(self):
         """У ФПЦ вендорские и поставляемые классы — рядом в две колонки."""
-        h = self.client.get(f"/entities/{self.fcv.pk}/").content.decode()
+        h = self.client.get(f"/entities/{self.fcv.pk}/", follow=True).content.decode()
         self.assertIn("Классы вендорских продуктов", h)
         self.assertIn("Классы поставляемых продуктов", h)
         self.assertIn("summary-cols", h)
@@ -1135,7 +1135,7 @@ class SummaryPerTypeTests(TestCase):
         """У инж.компании нет продуктовых групп и вендоров установленных."""
         from apps.entities.usecases.entity_usecase import EntityUseCase
         eng = EntityUseCase().create(entity_name="ИКX", entity_type="engineering_company")
-        h = self.client.get(f"/entities/{eng.pk}/").content.decode()
+        h = self.client.get(f"/entities/{eng.pk}/", follow=True).content.decode()
         self.assertNotIn("Классы вендорских продуктов", h)
         self.assertNotIn("Классы поставляемых продуктов", h)
         self.assertNotIn("Вендоры установленных продуктов", h)
@@ -1181,3 +1181,101 @@ class IndustriesDisplayTests(TestCase):
         """У не-интегратора без отраслей — «—»."""
         e = self._uc().create(entity_name="Вен1", entity_type="vendor")
         self.assertEqual(e.industries_display, "—")
+
+
+class EntityTypePagesRoutingTests(TestCase):
+    """Раздельные страницы участника по типу + диспетчер entity-detail."""
+
+    def setUp(self):
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        uc = EntityUseCase()
+        self.by_type = {
+            t: uc.create(entity_name=f"Комп-{t}", entity_type=t)
+            for t in ["vendor", "supplier", "system_integrator",
+                      "engineering_company", "full_cycle_vendor"]
+        }
+
+    def test_dispatcher_redirects_to_type_page(self):
+        """entity/<id>/ редиректит на типовую страницу по типу участника."""
+        for t, e in self.by_type.items():
+            r = self.client.get(f"/entities/{e.pk}/")
+            self.assertEqual(r.status_code, 302)
+            self.assertEqual(r.headers["Location"], f"/entities/{e.pk}/{t}/")
+
+    def test_type_pages_render(self):
+        """Каждая типовая страница отдаётся со статусом 200."""
+        for t, e in self.by_type.items():
+            r = self.client.get(f"/entities/{e.pk}/{t}/")
+            self.assertEqual(r.status_code, 200)
+            self.assertContains(r, e.entity_name)
+
+    def test_wrong_type_url_redirects_to_correct(self):
+        """URL с неверным типом редиректит на правильную страницу участника."""
+        vendor = self.by_type["vendor"]
+        r = self.client.get(f"/entities/{vendor.pk}/supplier/")
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.headers["Location"], f"/entities/{vendor.pk}/vendor/")
+
+    def test_typeless_entity_falls_back_to_list(self):
+        """Участник без типа: диспетчер ведёт на список (нет своей страницы)."""
+        e = Entity.objects.create(entity_name="БезТипа")
+        r = self.client.get(f"/entities/{e.pk}/")
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.headers["Location"], "/entities/")
+
+
+class MiniCardCountersTests(TestCase):
+    """Счётчики мини-карточки согласованы со сводкой (продукты и системы)."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
+        from apps.objects.models import Object, ObjectSystem
+        from apps.entities.models import VendorProfile, SupplierProfile
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        from apps.entities.repositories.entity_repository import EntityRepository
+        self.repo = EntityRepository()
+        self.user = User.objects.create_user("mc", "mc@x.x", "pw")
+        self.cls = AutomationClass.objects.create(level=2, system_class="DCS")
+        uc = EntityUseCase()
+        # Вендор с продуктом
+        self.vendor = uc.create(entity_name="ВендорМК", entity_type="vendor")
+        vp = VendorProfile.objects.get(entity=self.vendor)
+        self.prod = VendorProduct.objects.create(
+            product_name="ПродуктМК", vendor=vp, system_class=self.cls)
+        # Система на продукте (вендорская система)
+        self.system = AutomationSystem.objects.create(
+            autosystem_name="СисМК", system_class=self.cls,
+            product=self.prod, creator=self.user)
+        # Поставщик, поставляет чужой продукт
+        self.supplier = uc.create(entity_name="ПоставщикМК", entity_type="supplier")
+        uc.save_supplier_products(self.supplier, product_ids=[self.prod.pk])
+        # Интегратор, внедрил одну систему на ДВУХ объектах (2 связи, 1 система)
+        self.integ = uc.create(entity_name="ИнтегМК", entity_type="system_integrator")
+        for i in range(2):
+            o = Object.objects.create(
+                object_name=f"ОбъМК{i}", hierarchy_level=1, creator=self.user)
+            ObjectSystem.objects.create(
+                object=o, system=self.system, implementor=self.integ)
+
+    def test_supplier_products_count_uses_supplied(self):
+        """У поставщика products_count = число поставляемых продуктов (не 0)."""
+        a = self.repo.get_by_id(self.supplier.pk)
+        self.assertEqual(a.products_count, 1)
+
+    def test_vendor_products_count_uses_vendor(self):
+        """У вендора products_count = число его вендорских продуктов."""
+        a = self.repo.get_by_id(self.vendor.pk)
+        self.assertEqual(a.products_count, 1)
+
+    def test_integrator_systems_count_counts_links_not_distinct(self):
+        """У интегратора systems_count = число внедрений (связей), а не систем.
+
+        Одна система на 2 объектах — это 2 внедрения (совпадает со сводкой).
+        """
+        a = self.repo.get_by_id(self.integ.pk)
+        self.assertEqual(a.systems_count, 2)
+
+    def test_vendor_systems_count_counts_product_systems(self):
+        """У вендора systems_count = число вендорских систем (на его продуктах)."""
+        a = self.repo.get_by_id(self.vendor.pk)
+        self.assertEqual(a.systems_count, 1)
