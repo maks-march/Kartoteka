@@ -975,7 +975,8 @@
     "system": 37,
     "status": "active",
     "implementation_date": null,
-    "implementor": 91
+    "implementor": 91,
+    "supplier": null
   }
 },
 {
@@ -986,7 +987,8 @@
     "system": 38,
     "status": "planned",
     "implementation_date": null,
-    "implementor": 94
+    "implementor": 94,
+    "supplier": 90
   }
 },
 {
@@ -997,7 +999,8 @@
     "system": 39,
     "status": "maintenance",
     "implementation_date": null,
-    "implementor": 93
+    "implementor": 93,
+    "supplier": 89
   }
 },
 {
@@ -1008,7 +1011,8 @@
     "system": 40,
     "status": "decommissioned",
     "implementation_date": null,
-    "implementor": 98
+    "implementor": 98,
+    "supplier": 101
   }
 },
 {
@@ -1019,7 +1023,8 @@
     "system": 41,
     "status": "active",
     "implementation_date": null,
-    "implementor": 96
+    "implementor": 96,
+    "supplier": 101
   }
 },
 {
@@ -1030,7 +1035,8 @@
     "system": 42,
     "status": "planned",
     "implementation_date": null,
-    "implementor": 92
+    "implementor": 92,
+    "supplier": null
   }
 },
 {
@@ -1041,7 +1047,8 @@
     "system": 43,
     "status": "maintenance",
     "implementation_date": null,
-    "implementor": 95
+    "implementor": 95,
+    "supplier": null
   }
 },
 {
@@ -1052,7 +1059,8 @@
     "system": 44,
     "status": "decommissioned",
     "implementation_date": null,
-    "implementor": 98
+    "implementor": 98,
+    "supplier": 101
   }
 },
 {
@@ -1063,7 +1071,8 @@
     "system": 45,
     "status": "active",
     "implementation_date": null,
-    "implementor": 97
+    "implementor": 97,
+    "supplier": 97
   }
 },
 {
@@ -1074,7 +1083,8 @@
     "system": 46,
     "status": "planned",
     "implementation_date": null,
-    "implementor": 96
+    "implementor": 96,
+    "supplier": 101
   }
 },
 {
@@ -1085,7 +1095,8 @@
     "system": 47,
     "status": "maintenance",
     "implementation_date": null,
-    "implementor": 93
+    "implementor": 93,
+    "supplier": 101
   }
 },
 {
@@ -1096,7 +1107,8 @@
     "system": 48,
     "status": "decommissioned",
     "implementation_date": null,
-    "implementor": 99
+    "implementor": 99,
+    "supplier": 101
   }
 },
 {
@@ -1107,7 +1119,8 @@
     "system": 49,
     "status": "active",
     "implementation_date": null,
-    "implementor": 99
+    "implementor": 99,
+    "supplier": 101
   }
 },
 {
@@ -1118,7 +1131,8 @@
     "system": 50,
     "status": "planned",
     "implementation_date": "2023-03-15",
-    "implementor": 102
+    "implementor": 102,
+    "supplier": 101
   }
 },
 {
@@ -1129,7 +1143,8 @@
     "system": 51,
     "status": "maintenance",
     "implementation_date": "2023-03-15",
-    "implementor": 103
+    "implementor": 103,
+    "supplier": 101
   }
 },
 {
@@ -1140,7 +1155,8 @@
     "system": 52,
     "status": "decommissioned",
     "implementation_date": "2023-03-15",
-    "implementor": 104
+    "implementor": 104,
+    "supplier": 101
   }
 },
 {
@@ -1151,7 +1167,8 @@
     "system": 53,
     "status": "active",
     "implementation_date": "2023-03-15",
-    "implementor": 102
+    "implementor": 102,
+    "supplier": 101
   }
 },
 {
@@ -1162,7 +1179,8 @@
     "system": 54,
     "status": "planned",
     "implementation_date": "2023-03-15",
-    "implementor": 103
+    "implementor": 103,
+    "supplier": null
   }
 },
 {
@@ -1173,7 +1191,8 @@
     "system": 55,
     "status": "maintenance",
     "implementation_date": "2023-03-15",
-    "implementor": 104
+    "implementor": 104,
+    "supplier": null
   }
 },
 {
@@ -1184,7 +1203,8 @@
     "system": 56,
     "status": "decommissioned",
     "implementation_date": "2023-03-15",
-    "implementor": 102
+    "implementor": 102,
+    "supplier": 104
   }
 },
 {
@@ -1195,7 +1215,8 @@
     "system": 57,
     "status": "active",
     "implementation_date": "2023-03-15",
-    "implementor": 103
+    "implementor": 103,
+    "supplier": 104
   }
 },
 {
@@ -1206,7 +1227,8 @@
     "system": 58,
     "status": "planned",
     "implementation_date": "2023-03-15",
-    "implementor": 104
+    "implementor": 104,
+    "supplier": 104
   }
 },
 {
@@ -1217,7 +1239,8 @@
     "system": 59,
     "status": "maintenance",
     "implementation_date": "2023-03-15",
-    "implementor": 102
+    "implementor": 102,
+    "supplier": 101
   }
 },
 {
@@ -1228,7 +1251,8 @@
     "system": 60,
     "status": "active",
     "implementation_date": "2023-11-01",
-    "implementor": 102
+    "implementor": 102,
+    "supplier": 101
   }
 },
 {
@@ -1239,7 +1263,8 @@
     "system": 60,
     "status": "maintenance",
     "implementation_date": "2023-11-01",
-    "implementor": 103
+    "implementor": 103,
+    "supplier": 101
   }
 },
 {
@@ -1250,7 +1275,8 @@
     "system": 60,
     "status": "planned",
     "implementation_date": "2023-11-01",
-    "implementor": 104
+    "implementor": 104,
+    "supplier": 101
   }
 },
 {
@@ -1261,7 +1287,8 @@
     "system": 60,
     "status": "active",
     "implementation_date": "2023-11-01",
-    "implementor": 102
+    "implementor": 102,
+    "supplier": 101
   }
 },
 {
@@ -1272,7 +1299,8 @@
     "system": 60,
     "status": "decommissioned",
     "implementation_date": "2023-11-01",
-    "implementor": 103
+    "implementor": 103,
+    "supplier": 101
   }
 },
 {

@@ -63,6 +63,16 @@ class ObjectSystemUseCase:
                     "вендор полного цикла"
                 )
             data["implementor"] = implementor
+        if "supplier" in data:
+            supplier_id = data.pop("supplier")
+            supplier = self._get_optional_entity(supplier_id, "Поставщик")
+            # Поставщиком может быть только поставщик или вендор полного цикла.
+            if supplier is not None and not supplier.can_supply:
+                raise ValidationError(
+                    "Поставщиком системы может быть только поставщик или вендор "
+                    "полного цикла"
+                )
+            data["supplier"] = supplier
         return data
 
     def attach(self, object_pk=None, system_pk=None, **data):

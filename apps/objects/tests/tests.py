@@ -928,9 +928,185 @@ class ObjectSystemImplementorRuleTests(TestCase):
         self.assertEqual(link.implementor_id, self.integr.pk)
 
     def test_form_excludes_vendor_and_supplier(self):
-        """Выпадающий список исполнителей в форме не содержит вендоров/поставщиков."""
+        """Список исполнителей в форме не содержит вендоров/поставщиков.
+
+        Проверяем именно блок пикера исполнителя (до пикера поставщика),
+        так как вендор/поставщик легитимно присутствуют в списке поставщика.
+        """
         h = self.client.get(f"/objects/{self.obj.pk}/attach-system/").content.decode()
-        self.assertNotIn("ВендорИмпл", h)
-        self.assertNotIn("ПоставщикИмпл", h)
-        self.assertIn("ИнтеграторИмпл", h)
-        self.assertIn("ФПЦИмпл", h)
+        # Блок исполнителя — от его пикера до пикера поставщика.
+        impl_block = h.split('id="selectedImplimentorId"')[0].split(
+            "Исполнитель внедрения", 1)[-1]
+        self.assertNotIn("ВендорИмпл", impl_block)
+        self.assertNotIn("ПоставщикИмпл", impl_block)
+        self.assertIn("ИнтеграторИмпл", impl_block)
+        self.assertIn("ФПЦИмпл", impl_block)
+        # В блоке поставщика должны быть только поставщик и ФПЦ.
+        supplier_block = h.split('id="supplierPicker"', 1)[-1]
+        self.assertIn("ПоставщикИмпл", supplier_block)
+        self.assertIn("ФПЦИмпл", supplier_block)
+        self.assertNotIn("ВендорИмпл", supplier_block)
+
+
+class ObjectSystemSupplierRuleTests(TestCase):
+    """ObjectSystem.supplier: только поставщик / вендор полного цикла.
+
+    Плюс флаг «Поставляется вендором» — supplier становится вендором продукта.
+    """
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
+        from apps.entities.models import VendorProfile
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
+        self.user = User.objects.create_user("sup", "s@x.x", "pw")
+        self.client.force_login(self.user)
+        uc = EntityUseCase()
+        self.vendor = uc.create(entity_name="ВендорС", entity_type="vendor")
+        self.supplier = uc.create(entity_name="ПоставщикС", entity_type="supplier")
+        self.integr = uc.create(entity_name="ИнтеграторС", entity_type="system_integrator")
+        self.fcv = uc.create(entity_name="ФПЦС", entity_type="full_cycle_vendor")
+        cls = AutomationClass.objects.create(level=2, system_class="DCS")
+        # Продукт вендора + система на нём (для флага «поставляется вендором»).
+        vp = VendorProfile.objects.get(entity=self.fcv)
+        self.product = VendorProduct.objects.create(
+            product_name="ПродС", vendor=vp, system_class=cls)
+        self.system = AutomationSystem.objects.create(
+            autosystem_name="СисС", system_class=cls, product=self.product, creator=self.user)
+        self.obj = Object.objects.create(
+            object_name="ОбъС", hierarchy_level=1, creator=self.user)
+        self.os_uc = ObjectSystemUseCase()
+
+    def test_supplier_ok(self):
+        """Поставщик допустим как supplier."""
+        link = self.os_uc.attach(object_pk=self.obj.pk, system=self.system.pk,
+                                  status="planned", supplier=self.supplier.pk)
+        self.assertEqual(link.supplier_id, self.supplier.pk)
+
+    def test_fcv_ok(self):
+        """Вендор полного цикла допустим как supplier."""
+        link = self.os_uc.attach(object_pk=self.obj.pk, system=self.system.pk,
+                                  status="planned", supplier=self.fcv.pk)
+        self.assertEqual(link.supplier_id, self.fcv.pk)
+
+    def test_vendor_rejected(self):
+        """Обычный вендор не может быть поставщиком системы."""
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self.os_uc.attach(object_pk=self.obj.pk, system=self.system.pk,
+                              status="planned", supplier=self.vendor.pk)
+
+    def test_integrator_rejected(self):
+        """Интегратор не может быть поставщиком системы."""
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self.os_uc.attach(object_pk=self.obj.pk, system=self.system.pk,
+                              status="planned", supplier=self.integr.pk)
+
+    def test_supplied_by_vendor_flag_sets_product_vendor(self):
+        """Флаг «Поставляется вендором» ставит supplier = вендор продукта (ФПЦ)."""
+        r = self.client.post(f"/objects/{self.obj.pk}/attach-system/", {
+            "system": str(self.system.pk), "status": "planned",
+            "supplied_by_vendor": "on"})
+        self.assertEqual(r.status_code, 302)
+        link = ObjectSystem.objects.get(object=self.obj, system=self.system)
+        self.assertEqual(link.supplier_id, self.fcv.pk)
+
+    def test_form_supplier_list_only_supplier_types(self):
+        """Список поставщика в форме — только поставщик и ФПЦ (не вендор/интегратор)."""
+        h = self.client.get(f"/objects/{self.obj.pk}/attach-system/").content.decode()
+        block = h.split('id="supplierPicker"', 1)[-1]
+        self.assertIn("ПоставщикС", block)
+        self.assertIn("ФПЦС", block)
+        self.assertNotIn("ВендорС", block)
+        self.assertNotIn("ИнтеграторС", block)
+
+
+class SupplierAddProductFormTests(TestCase):
+    """Форма добавления поставляемого продукта: существующий / новый."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, VendorProduct
+        from apps.entities.models import VendorProfile
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        self.user = User.objects.create_user("sap", "sap@x.x", "pw")
+        self.client.force_login(self.user)
+        uc = EntityUseCase()
+        self.supplier = uc.create(entity_name="ПоставщикФ", entity_type="supplier")
+        self.vendor = uc.create(entity_name="ВендорФ", entity_type="vendor")
+        cls = AutomationClass.objects.create(level=2, system_class="DCS")
+        vp = VendorProfile.objects.get(entity=self.vendor)
+        self.product = VendorProduct.objects.create(
+            product_name="СуществующийПродукт", vendor=vp, system_class=cls)
+
+    def test_form_opens_with_toggle(self):
+        """Форма открывается и содержит переключатель режимов."""
+        h = self.client.get(
+            f"/entities/{self.supplier.pk}/add-supplied-product/").content.decode()
+        self.assertIn("mode-toggle", h)
+        self.assertIn("СуществующийПродукт", h)
+
+    def test_attach_existing(self):
+        """Режим «существующий» привязывает продукт к поставщику."""
+        r = self.client.post(
+            f"/entities/{self.supplier.pk}/add-supplied-product/",
+            {"mode": "existing", "existing_product": str(self.product.pk)})
+        self.assertEqual(r.status_code, 302)
+        self.assertTrue(
+            self.supplier.supplier_profile.products.filter(pk=self.product.pk).exists())
+
+    def test_create_new(self):
+        """Режим «новый» создаёт продукт и привязывает к поставщику."""
+        r = self.client.post(
+            f"/entities/{self.supplier.pk}/add-supplied-product/",
+            {"mode": "create", "product_name": "НовыйФ", "vendor": ""})
+        self.assertEqual(r.status_code, 302)
+        from apps.system.models import VendorProduct
+        p = VendorProduct.objects.get(product_name="НовыйФ")
+        self.assertTrue(
+            self.supplier.supplier_profile.products.filter(pk=p.pk).exists())
+
+    def test_non_supplier_redirected(self):
+        """Не-поставщик не может открыть форму (редирект на карточку)."""
+        r = self.client.get(
+            f"/entities/{self.vendor.pk}/add-supplied-product/")
+        self.assertEqual(r.status_code, 302)
+
+
+class ObjectSystemSupplierFilterTests(TestCase):
+    """Список поставщиков в форме ограничен поставщиками продукта системы."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        self.user = User.objects.create_user("supf", "supf@x.x", "pw")
+        self.client.force_login(self.user)
+        uc = EntityUseCase()
+        # Два поставщика: один поставляет продукт системы, другой — нет.
+        self.sup_yes = uc.create(entity_name="ПоставщикДА", entity_type="supplier")
+        self.sup_no = uc.create(entity_name="ПоставщикНЕТ", entity_type="supplier")
+        cls = AutomationClass.objects.create(level=2, system_class="DCS")
+        self.product = VendorProduct.objects.create(product_name="ПродФильтр", system_class=cls)
+        uc.save_supplier_products(self.sup_yes, product_ids=[self.product.pk])
+        self.system = AutomationSystem.objects.create(
+            autosystem_name="СисФильтр", system_class=cls, product=self.product, creator=self.user)
+        self.obj = Object.objects.create(
+            object_name="ОбъФильтр", hierarchy_level=1, creator=self.user)
+
+    def test_system_side_lists_only_product_suppliers(self):
+        """Форма со стороны системы: в списке только поставщики продукта."""
+        h = self.client.get(f"/system/{self.system.pk}/attach-object/").content.decode()
+        block = h.split('id="supplierPicker"', 1)[-1].split('name="supplier"', 1)[0]
+        self.assertIn("ПоставщикДА", block)
+        self.assertNotIn("ПоставщикНЕТ", block)
+
+    def test_object_side_system_carries_supplier_ids(self):
+        """Форма со стороны объекта: у системы data-suppliers с id поставщиков продукта."""
+        h = self.client.get(f"/objects/{self.obj.pk}/attach-system/").content.decode()
+        import re
+        m = re.search(
+            r'data-id="%d"[^>]*data-suppliers="([^"]*)"' % self.system.pk, h)
+        self.assertIsNotNone(m)
+        ids = m.group(1).split(",") if m.group(1) else []
+        self.assertIn(str(self.sup_yes.pk), ids)
+        self.assertNotIn(str(self.sup_no.pk), ids)

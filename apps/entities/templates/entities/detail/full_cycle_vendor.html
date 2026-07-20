@@ -65,7 +65,7 @@
 
 {% if summary.has_level_coverage %}
 <div class="summary-group">
-    <div class="summary-group-title">Покрытие по уровням</div>
+    <div class="summary-group-title">Системы по уровням</div>
     <div class="summary-tags">
         {% for l in summary.level_coverage %}
         <span class="tag tag-{{ l.level }}{% if not l.count %} tag-off{% endif %}">{{ l.label }}: {{ l.count }}</span>

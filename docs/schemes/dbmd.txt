@@ -85,6 +85,8 @@ Table ObjectSystem {
   status auto_status [note: 'Статус ввода системы в эксплуатацию']
   implementation_date date [note: 'Дата ввода системы в эксплуатацию']
   implementor_id integer [ref: > Entity.id, note: 'Внедряющая компания']
+  supplier_id integer [ref: > Entity.id, note: 
+  'Поставщик системы на объект (только supplier / full_cycle_vendor; можно указать вендора продукта флагом «Поставляется вендором»)']
 }
 
 

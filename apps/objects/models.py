@@ -186,6 +186,17 @@ class ObjectSystem(models.Model):
         related_name="implemented_object_systems",
         verbose_name="Исполнитель внедрения",
     )
+    supplier = models.ForeignKey(
+        Entity,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="supplied_object_systems",
+        verbose_name="Поставщик",
+        help_text="Кто поставил систему на объект: поставщик или вендор "
+                  "полного цикла (можно указать вендора продукта флагом "
+                  "«Поставляется вендором»).",
+    )
 
     class Meta:
         """Мета-настройки: имена и уникальность пары (объект, система)."""

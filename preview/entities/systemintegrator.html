@@ -762,6 +762,7 @@ td a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
+    margin-bottom: 10px;
 }
 
 .info-cards-two {
@@ -797,6 +798,16 @@ td a:hover {
 }
 .info-card.gap {
     margin-top: 10px;
+}
+/* Отступ перед блоком (напр. «Профиль» после главной информации). */
+.info-block.gap {
+    margin-top: 20px;
+}
+/* Карточка «Профиль компании» на всю ширину под строкой плиток профиля;
+   отделяем от плиток небольшим отступом. */
+.profile-card.span-full {
+    grid-column: 1 / -1;
+    margin-top: 12px;
 }
 .info-card .desc-text {
     font-weight: 400;
@@ -1467,107 +1478,95 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
         </div>
 
         
-        <div class="info-block">
-            <h3 class="info-block-title">Профиль</h3>
-            <div class="top-row">
-                
-                
-                <div class="info-cards">
-                    <div class="info-card">
-                        <span class="info-label">Юридическое лицо</span>
-                        <span class="info-value"><a class="link" href="/owners/30/">ПАО «Восточно-Сибирская нефтегазовая компания»</a></span>
-                    </div>
-                </div>
-                
-                
+        
 
-                <div class="info-card profile-card">
-                    <span class="info-label">Профиль компании</span>
-                    <span class="info-value desc-text">ГК «Сибирский Инжиниринговый Холдинг» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП.</span>
-                </div>
-            </div>
+<div class="info-block gap">
+    <h3 class="info-block-title">Профиль</h3>
+    <div class="info-cards">
+        <div class="info-card">
+            <span class="info-label">Юридическое лицо</span>
+            <span class="info-value"><a class="link" href="/owners/30/">ПАО «Восточно-Сибирская нефтегазовая компания»</a></span>
         </div>
+    </div>
+    <div class="info-card profile-card span-full">
+        <span class="info-label">Профиль компании</span>
+        <span class="info-value desc-text">ГК «Сибирский Инжиниринговый Холдинг» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП.</span>
+    </div>
+</div>
 
+<div class="info-block">
+    <div class="info-card">
+        <span class="info-label">Вендоры-партнёры</span>
         
-        
-        
-        <div class="info-block">
-            <div class="info-card">
-                <span class="info-label">Вендоры-партнёры</span>
-                
-                <div class="card-tags">
-                    <a class="tag tag-blue" href="/entities/85/">Siemens AG</a><a class="tag tag-blue" href="/entities/86/">Honeywell International Inc.</a><a class="tag tag-blue" href="/entities/87/">Yokogawa Electric Corporation</a><a class="tag tag-blue" href="/entities/88/">AVEVA Group plc</a><a class="tag tag-blue" href="/entities/97/">Schneider Electric SE</a><a class="tag tag-blue" href="/entities/98/">Emerson Electric Co.</a>
-                </div>
-                
-            </div>
-            <div class="info-card gap">
-                <span class="info-label">Компетенции</span>
-                
-                <span class="info-value">Все отрасли и классы, кроме:</span>
-                <div class="card-tags" style="margin-top:6px">
-                    <span class="tag tag-danger">Все классы · Фарма</span><span class="tag tag-danger">WMS · Пищевая</span><span class="tag tag-danger">ERP · Все отрасли</span>
-                </div>
-                
-            </div>
+        <div class="card-tags">
+            <a class="tag tag-blue" href="/entities/85/">Siemens AG</a><a class="tag tag-blue" href="/entities/86/">Honeywell International Inc.</a><a class="tag tag-blue" href="/entities/87/">Yokogawa Electric Corporation</a><a class="tag tag-blue" href="/entities/88/">AVEVA Group plc</a><a class="tag tag-blue" href="/entities/97/">Schneider Electric SE</a><a class="tag tag-blue" href="/entities/98/">Emerson Electric Co.</a>
         </div>
         
+    </div>
+    <div class="info-card gap">
+        <span class="info-label">Компетенции</span>
         
+        <span class="info-value">Все отрасли и классы, кроме:</span>
+        <div class="card-tags" style="margin-top:6px">
+            <span class="tag tag-danger">Все классы · Фарма</span><span class="tag tag-danger">WMS · Пищевая</span><span class="tag tag-danger">ERP · Все отрасли</span>
+        </div>
+        
+    </div>
+</div>
+
+
 
         
         
 
     </div><!-- /.detail-main -->
+
     
-<aside class="summary-panel">
-    <div class="summary-head">Сводка связанности</div>
-    <div class="summary-body">
-        <div class="summary-metrics">
+    <aside class="summary-panel">
+        <div class="summary-head">Сводка связанности</div>
+        <div class="summary-body">
             
-            <div class="metric"><span class="metric-num">6</span><span class="metric-label">Внедр. систем</span></div>
-            
-            
-        </div>
+<div class="summary-metrics">
+    <div class="metric"><span class="metric-num">6</span><span class="metric-label">Внедр. систем</span></div>
+</div>
 
-        
-        
-        
-        <div class="summary-group">
-            <div class="summary-group-title">Статусы внедрения</div>
-            <div class="summary-tags">
-                
-                <span class="tag tag-blue">Планируется: 1</span>
-                
-                <span class="tag tag-ok">В эксплуатации: 3</span>
-                
-                <span class="tag tag-warn">Обслуживание: 1</span>
-                
-                <span class="tag tag-danger">Не эксплуатируется: 1</span>
-                
-            </div>
-        </div>
-        
 
+<div class="summary-group">
+    <div class="summary-group-title">Статусы внедрения</div>
+    <div class="summary-tags">
         
+        <span class="tag tag-blue">Планируется: 1</span>
         
-        <div class="summary-group">
-            <div class="summary-group-title">Покрытие по уровням</div>
-            <div class="summary-tags">
-                
-                <span class="tag tag-0 tag-off">L0: 0</span>
-                
-                <span class="tag tag-1 tag-off">L1: 0</span>
-                
-                <span class="tag tag-2">L2: 5</span>
-                
-                <span class="tag tag-3">L3: 1</span>
-                
-                <span class="tag tag-4 tag-off">L4: 0</span>
-                
-            </div>
-        </div>
+        <span class="tag tag-ok">В эксплуатации: 3</span>
         
+        <span class="tag tag-warn">Обслуживание: 1</span>
+        
+        <span class="tag tag-danger">Не эксплуатируется: 1</span>
+        
+    </div>
+</div>
 
+
+
+<div class="summary-group">
+    <div class="summary-group-title">Системы по уровням</div>
+    <div class="summary-tags">
         
+        <span class="tag tag-0 tag-off">L0: 0</span>
+        
+        <span class="tag tag-1 tag-off">L1: 0</span>
+        
+        <span class="tag tag-2">L2: 5</span>
+        
+        <span class="tag tag-3">L3: 1</span>
+        
+        <span class="tag tag-4 tag-off">L4: 0</span>
+        
+    </div>
+</div>
+
+
+
 <div class="summary-group">
     <div class="summary-group-title">Классы внедрённых систем</div>
     
@@ -1589,15 +1588,11 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
                 <span class="tag tag-3">L3 - EAM</span>
             
         
-        
     </div>
     
 </div>
 
 
-        
-        
-        
 <div class="summary-group">
     <div class="summary-group-title">Вендоры установленных продуктов</div>
     
@@ -1615,32 +1610,15 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
                 <span class="tag tag-blue"><a href="/entities/88/">AVEVA Group plc</a></span>
             
         
-        
     </div>
     
 </div>
 
-        
-        
 
-        
-        
-        
-
-        
-        
-        
-        
-    </div>
-</aside>
-
+        </div>
+    </aside>
     </div><!-- /.detail-body -->
 </div>
-
-
-
-
-
 
 
 
@@ -1692,6 +1670,7 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
         </tbody>
     </table>
 </div>
+
 
 
 <div style="margin-top:10px">

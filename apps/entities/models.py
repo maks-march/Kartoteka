@@ -148,6 +148,15 @@ class Entity(models.Model):
         return self.entity_type in self.IMPLEMENTOR_TYPES
 
     @property
+    def can_supply(self):
+        """Может ли участник поставлять систему на объект (ObjectSystem.supplier).
+
+        Разрешено поставщикам и вендорам полного цикла; запрещено обычным
+        вендорам, интеграторам и инжиниринговым компаниям.
+        """
+        return self.entity_type in self.SUPPLIER_TYPES
+
+    @property
     def is_vendor_type(self):
         """Тип, для которого заводится VendorProfile (vendor / full_cycle_vendor)."""
         return self.entity_type in self.VENDOR_TYPES

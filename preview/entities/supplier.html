@@ -762,6 +762,7 @@ td a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
+    margin-bottom: 10px;
 }
 
 .info-cards-two {
@@ -797,6 +798,16 @@ td a:hover {
 }
 .info-card.gap {
     margin-top: 10px;
+}
+/* Отступ перед блоком (напр. «Профиль» после главной информации). */
+.info-block.gap {
+    margin-top: 20px;
+}
+/* Карточка «Профиль компании» на всю ширину под строкой плиток профиля;
+   отделяем от плиток небольшим отступом. */
+.profile-card.span-full {
+    grid-column: 1 / -1;
+    margin-top: 12px;
 }
 .info-card .desc-text {
     font-weight: 400;
@@ -1467,49 +1478,71 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
         </div>
 
         
-        <div class="info-block">
-            <h3 class="info-block-title">Профиль</h3>
-            <div class="top-row">
-                
-
-                <div class="info-card profile-card span-full">
-                    <span class="info-label">Профиль компании</span>
-                    <span class="info-value desc-text">АО «Индустриальные Поставки и Комплектация» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП.</span>
-                </div>
-            </div>
-        </div>
-
         
-        
+<div class="info-block gap">
+    <h3 class="info-block-title">Профиль</h3>
+    <div class="info-card profile-card span-full">
+        <span class="info-label">Профиль компании</span>
+        <span class="info-value desc-text">АО «Индустриальные Поставки и Комплектация» — крупный игрок рынка промышленной автоматизации с более чем трёхдесятилетней историей. Компания реализует полный спектр работ: предпроектное обследование, разработку проектной и рабочей документации, поставку оборудования, пусконаладку, интеграцию систем уровней L0–L4 и последующее сервисное сопровождение. Накоплена экспертиза в нефтепереработке, нефтехимии, газопереработке и металлургии; действуют собственный учебный центр и круглосуточная линия технической поддержки. Компания придерживается стандартов функциональной безопасности МЭК 61508/61511 и практик информационной безопасности АСУ ТП.</span>
+    </div>
+</div>
+
 
         
         
 
     </div><!-- /.detail-main -->
+
     
-<aside class="summary-panel">
-    <div class="summary-head">Сводка связанности</div>
-    <div class="summary-body">
-        <div class="summary-metrics">
+    <aside class="summary-panel">
+        <div class="summary-head">Сводка связанности</div>
+        <div class="summary-body">
             
-            <div class="metric"><span class="metric-num">0</span><span class="metric-label">Внедр. систем</span></div>
-            
-            
-            <div class="metric"><span class="metric-num">11</span><span class="metric-label">Продуктов</span></div>
-            
-        </div>
+<div class="summary-metrics">
+    <div class="metric"><span class="metric-num">17</span><span class="metric-label">Поставлено систем</span></div>
+    <div class="metric"><span class="metric-num">11</span><span class="metric-label">Продуктов</span></div>
+</div>
 
-        
-        
 
-        
-        
-        
 
+<div class="summary-group">
+    <div class="summary-group-title">Системы по уровням</div>
+    <div class="summary-tags">
         
+        <span class="tag tag-0">L0: 2</span>
         
+        <span class="tag tag-1 tag-off">L1: 0</span>
         
+        <span class="tag tag-2">L2: 11</span>
         
+        <span class="tag tag-3">L3: 4</span>
+        
+        <span class="tag tag-4 tag-off">L4: 0</span>
+        
+    </div>
+</div>
+
+
+
+<div class="summary-group">
+    <div class="summary-group-title">Продукты по уровням</div>
+    <div class="summary-tags">
+        
+        <span class="tag tag-0">L0: 2</span>
+        
+        <span class="tag tag-1">L1: 1</span>
+        
+        <span class="tag tag-2">L2: 6</span>
+        
+        <span class="tag tag-3">L3: 2</span>
+        
+        <span class="tag tag-4 tag-off">L4: 0</span>
+        
+    </div>
+</div>
+
+
+
 <div class="summary-group">
     <div class="summary-group-title">Классы поставляемых продуктов</div>
     
@@ -1543,19 +1576,15 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
                 <span class="tag tag-2">L2 - ESD</span>
             
         
-        
     </div>
     
 </div>
 
-        
-        
-    </div>
-</aside>
 
+        </div>
+    </aside>
     </div><!-- /.detail-body -->
 </div>
-
 
 
 
@@ -1640,9 +1669,6 @@ nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
         </tbody>
     </table>
 </div>
-
-
-
 
 
 

@@ -217,6 +217,22 @@ def system_delete(request, pk):
     return redirect("system-list")
 
 
+def _system_product_suppliers(system):
+    """Возвращает участников-поставщиков продукта системы (Entity-список).
+
+    Пусто, если у системы нет продукта или у продукта нет поставщиков.
+    """
+    from apps.entities.models import Entity
+    product = getattr(system, "product", None)
+    if product is None:
+        return Entity.objects.none()
+    return (
+        Entity.objects.filter(supplier_profile__products=product)
+        .distinct()
+        .order_by("entity_name")
+    )
+
+
 @require_http_methods(["GET", "POST"])
 @login_required
 def system_attach_object(request, pk):
@@ -228,6 +244,17 @@ def system_attach_object(request, pk):
     system = usecase.get(pk)
     error = None
 
+    from apps.entities.models import Entity
+
+    def _supplier_from_post(post):
+        """Поставщик: вендор продукта системы (по флагу) либо выбранный."""
+        if post.get("supplied_by_vendor"):
+            product = getattr(system, "product", None)
+            vp = getattr(product, "vendor", None) if product else None
+            ve = getattr(vp, "entity", None) if vp else None
+            return ve.pk if ve else None
+        return post.get("supplier") or None
+
     if request.method == "POST":
         try:
             os_usecase.attach(
@@ -236,6 +263,7 @@ def system_attach_object(request, pk):
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
                 implementor=request.POST.get("implementor") or None,
+                supplier=_supplier_from_post(request.POST),
             )
             return redirect("system-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
@@ -243,13 +271,15 @@ def system_attach_object(request, pk):
 
     attached_ids = os_usecase.list_for_system(system).values_list("object_id", flat=True)
     objects = object_usecase.list().exclude(pk__in=attached_ids)
-    # Исполнителем внедрения может быть только интегратор / инж.компания / ФПЦ.
-    from apps.entities.models import Entity
+    # Исполнитель: интегратор / инж.компания / ФПЦ.
     entities = entity_usecase.list().filter(entity_type__in=Entity.IMPLEMENTOR_TYPES)
+    # Поставщик: только поставщики продукта этой системы (система фиксирована).
+    supplier_entities = _system_product_suppliers(system)
     return render(request, "system/system_object_form.html", {
         "system": system,
         "objects": objects,
         "entities": entities,
+        "supplier_entities": supplier_entities,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "error": error,
     })

@@ -1,0 +1,137 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Добавить поставляемый продукт — {{ entity.entity_name }}{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>Добавить поставляемый продукт</h1>
+    <p style="margin-bottom:15px; color:#666">
+        Поставщик: <a href="{% url 'entity-detail' entity.pk %}">{{ entity.entity_name }}</a>
+        <span class="tag {{ entity.entity_type_tag_class }}">{{ entity.get_entity_type_display }}</span>
+    </p>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    <!-- Переключение режима: существующий продукт / новый продукт -->
+    <div class="mode-toggle">
+        <button type="button" data-mode="existing" {% if active_mode == 'existing' %}class="active"{% endif %}>Выбрать существующий</button>
+        <button type="button" data-mode="create" {% if active_mode == 'create' %}class="active"{% endif %}>Создать новый</button>
+    </div>
+
+    <!-- ===== Режим 1: выбрать существующий продукт ===== -->
+    <div class="mode-section" data-mode="existing" {% if active_mode != 'existing' %}style="display:none"{% endif %}>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="existing">
+
+            <div class="picker" data-target="#selectedProductId" data-enable="#existingSubmitBtn">
+                <div class="form-group">
+                    <label>Поиск и выбор продукта</label>
+                    <div class="search-wrapper">
+                        <input type="text" class="picker-search" placeholder="Введите название продукта..." style="margin-bottom:0">
+                    </div>
+                    <p class="hint" style="margin-top:5px">Продукт может поставляться несколькими поставщиками.</p>
+                </div>
+
+                <div class="system-results-container">
+                    {% for p in available_products %}
+                    <div class="system-item" data-id="{{ p.pk }}" data-name="{{ p.product_name|lower }}">
+                        <span class="system-name">{{ p.product_name }}</span>
+                        <span class="system-info">{% if p.system_class %}{{ p.system_class.system_class }}{% endif %}{% if p.vendor %} · Вендор: {{ p.vendor.entity_name }}{% endif %}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="picker-no-results" style="{% if available_products %}display:none; {% endif %}padding:20px; text-align:center; color:#999;">
+                        Продукты не найдены
+                    </div>
+                </div>
+
+                <input type="hidden" name="existing_product" id="selectedProductId" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="existingSubmitBtn" disabled>Привязать</button>
+                <a href="{% url 'entity-detail' entity.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== Режим 2: создать новый продукт ===== -->
+    <div class="mode-section" data-mode="create" {% if active_mode != 'create' %}style="display:none"{% endif %}>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="create">
+
+            <div class="form-group">
+                <label>Название продукта</label>
+                <input type="text" name="product_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Вендор</label>
+                <div class="picker collapsible" data-target="#newSelectedVendorId" data-empty-text="Не указан">
+                    <div class="picker-header">
+                        <span class="picker-header-label">Вендор</span>
+                        <span class="picker-header-value empty-value">Не указан</span>
+                        <span class="picker-caret">▾</span>
+                    </div>
+                    <div class="picker-body">
+                        <div class="search-wrapper">
+                            <input type="text" class="picker-search" placeholder="Название вендора..." style="margin-bottom:0">
+                        </div>
+                        <div class="system-results-container">
+                            <div class="system-item selected" data-id="" data-keep>
+                                <span class="system-name">— Вендор не указан —</span>
+                            </div>
+                            {% for v in vendors %}
+                            <div class="system-item" data-id="{{ v.pk }}" data-name="{{ v.entity_name|lower }}">
+                                <span class="system-name">{{ v.entity_name }}</span>
+                                <span class="system-info">{{ v.get_entity_type_display }}</span>
+                            </div>
+                            {% endfor %}
+                            <div class="picker-no-results picker-empty">Вендоры не найдены</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="vendor" id="newSelectedVendorId" value="">
+                </div>
+                <p class="hint" style="margin-top:4px">Только вендоры и вендоры полного цикла (необязательно).</p>
+            </div>
+
+            <div class="form-group">
+                <label>Класс системы</label>
+                <select name="system_class">
+                    <option value="">— Не указан —</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls.pk }}">L{{ cls.level }} - {{ cls.system_class }}{% if cls.name_ru %} ({{ cls.name_ru }}){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Тип продукта</label>
+                <select name="product_type">
+                    <option value="">— Не указан —</option>
+                    {% for value, label in product_type_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Версия</label>
+                <input type="text" name="version" placeholder="напр. V9.1 SP2">
+            </div>
+
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea name="description" rows="3"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Создать и привязать</button>
+                <a href="{% url 'entity-detail' entity.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

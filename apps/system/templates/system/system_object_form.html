@@ -87,6 +87,39 @@
             <input type="hidden" name="implementor" id="selectedImplimentorId" value="{{ link.implementor_id|default:'' }}">
         </div>
 
+        <div class="form-group">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
+                <input type="checkbox" name="supplied_by_vendor" id="suppliedByVendor" style="width:auto"
+                       {% if link.supplier and system.product and link.supplier_id == system.product.vendor.entity_id %}checked{% endif %}>
+                Поставляется вендором
+            </label>
+            <p class="hint" style="margin-top:2px">Поставщиком станет вендор продукта этой системы.</p>
+        </div>
+
+        <div class="picker" data-target="#selectedSupplierId" id="supplierPicker">
+            <div class="form-group">
+                <label>Поставщик</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название поставщика..." style="margin-bottom:0">
+                </div>
+                <p class="hint" style="margin-top:2px">Только поставщик или вендор полного цикла.</p>
+            </div>
+            <div class="system-results-container">
+                <div class="system-item {% if not link.supplier_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Поставщик не указан —</span>
+                </div>
+                {% for entity in supplier_entities %}
+                <div class="system-item {% if link.supplier_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
+                    <span class="system-name">{{ entity.entity_name }}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results picker-empty">
+                    Участники рынка не найдены
+                </div>
+            </div>
+            <input type="hidden" name="supplier" id="selectedSupplierId" value="{{ link.supplier_id|default:'' }}">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="submitBtn" {% if not link %}disabled{% endif %}>{% if link %}Сохранить{% else %}Привязать{% endif %}</button>
             {% if link and next_page != 'system' %}
@@ -104,4 +137,15 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+(function () {
+    var cb = document.getElementById('suppliedByVendor');
+    var picker = document.getElementById('supplierPicker');
+    if (!cb || !picker) return;
+    function sync() { picker.style.display = cb.checked ? 'none' : ''; }
+    cb.addEventListener('change', sync);
+    sync();
+})();
+</script>
 {% endblock %}

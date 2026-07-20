@@ -374,6 +374,21 @@ def object_add_child(request, pk):
     })
 
 
+def _resolve_supplier_from_post(post, system):
+    """Определяет поставщика связи из POST-данных формы.
+
+    Если стоит флаг «Поставляется вендором» — поставщиком становится вендор
+    продукта системы (участник vendor/full_cycle_vendor). Иначе берётся
+    выбранный из списка supplier. Возвращает id участника или None.
+    """
+    if post.get("supplied_by_vendor"):
+        product = getattr(system, "product", None)
+        vendor_profile = getattr(product, "vendor", None) if product else None
+        vendor_entity = getattr(vendor_profile, "entity", None) if vendor_profile else None
+        return vendor_entity.pk if vendor_entity else None
+    return post.get("supplier") or None
+
+
 @require_http_methods(["GET", "POST"])
 @login_required
 def object_attach_system(request, pk):
@@ -387,25 +402,32 @@ def object_attach_system(request, pk):
 
     if request.method == "POST":
         try:
+            system_obj = system_usecase.get(int(request.POST.get("system")))
             os_usecase.attach(
                 object_pk=pk,
-                system=int(request.POST.get("system")),
+                system=system_obj.pk,
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
                 implementor=request.POST.get("implementor") or None,
+                supplier=_resolve_supplier_from_post(request.POST, system_obj),
             )
             return redirect("object-detail", pk=pk)
         except (ValidationError, ValueError, TypeError) as e:
             error = str(e)
 
     attached_ids = os_usecase.list_for_object(obj).values_list("system_id", flat=True)
-    systems = system_usecase.list().exclude(pk__in=attached_ids)
-    # Только те, кто может быть исполнителем внедрения (не вендор/поставщик).
+    systems = system_usecase.list().exclude(pk__in=attached_ids).prefetch_related(
+        "product__suppliers__entity"
+    )
+    # Исполнитель внедрения: только интегратор / инж.компания / ФПЦ.
     entities = entity_usecase.list().filter(entity_type__in=Entity.IMPLEMENTOR_TYPES)
+    # Поставщик: только поставщик / вендор полного цикла.
+    supplier_entities = entity_usecase.list().filter(entity_type__in=Entity.SUPPLIER_TYPES)
     return render(request, "objects/object_system_form.html", {
         "object": obj,
         "systems": systems,
         "entities": entities,
+        "supplier_entities": supplier_entities,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "error": error,
     })
@@ -438,6 +460,9 @@ def object_system_edit(request, pk):
 
     if request.method == "POST":
         try:
+            # Система для флага «Поставляется вендором»: новая (если сменили) или текущая.
+            sys_pk = int(request.POST.get("system")) if request.POST.get("system") else link.system_id
+            system_obj = system_usecase.get(sys_pk)
             link = os_usecase.update(
                 pk=pk,
                 object_pk=int(request.POST.get("object")) if request.POST.get("object") else None,
@@ -445,22 +470,28 @@ def object_system_edit(request, pk):
                 status=request.POST.get("status") or "planned",
                 implementation_date=request.POST.get("implementation_date") or None,
                 implementor=request.POST.get("implementor") or None,
+                supplier=_resolve_supplier_from_post(request.POST, system_obj),
             )
             return _object_system_redirect(link, next_page)
         except (ValidationError, ValueError, TypeError) as e:
             error = str(e)
 
-    # Только те, кто может быть исполнителем внедрения (не вендор/поставщик).
+    # Исполнитель внедрения: только интегратор / инж.компания / ФПЦ.
     entities = entity_usecase.list().filter(entity_type__in=Entity.IMPLEMENTOR_TYPES)
+    # Поставщик: только поставщик / вендор полного цикла.
+    supplier_entities = entity_usecase.list().filter(entity_type__in=Entity.SUPPLIER_TYPES)
 
     if next_page == "system":
-        # Форма как при создании со стороны системы: выбираем объект
+        # Форма как при создании со стороны системы: выбираем объект.
+        # Система фиксирована — поставщики ограничены поставщиками её продукта.
+        from apps.system.views import _system_product_suppliers
         attached_ids = os_usecase.list_for_system(link.system).values_list("object_id", flat=True)
         objects = object_usecase.list().exclude(pk__in=attached_ids) | object_usecase.list().filter(pk=link.object_id)
         return render(request, "system/system_object_form.html", {
             "system": link.system,
             "objects": objects.distinct(),
             "entities": entities,
+            "supplier_entities": _system_product_suppliers(link.system),
             "status_choices": ObjectSystem.STATUS_CHOICES,
             "link": link,
             "next_page": next_page,
@@ -469,11 +500,14 @@ def object_system_edit(request, pk):
 
     # Форма как при создании со стороны объекта: выбираем систему
     attached_ids = os_usecase.list_for_object(link.object).values_list("system_id", flat=True)
-    systems = system_usecase.list().exclude(pk__in=attached_ids) | system_usecase.list().filter(pk=link.system_id)
+    systems = (system_usecase.list().exclude(pk__in=attached_ids) | system_usecase.list().filter(pk=link.system_id)).prefetch_related(
+        "product__suppliers__entity"
+    )
     return render(request, "objects/object_system_form.html", {
         "object": link.object,
         "systems": systems.distinct(),
         "entities": entities,
+        "supplier_entities": supplier_entities,
         "status_choices": ObjectSystem.STATUS_CHOICES,
         "link": link,
         "next_page": next_page,

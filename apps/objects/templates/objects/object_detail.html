@@ -110,7 +110,7 @@
     <div class="table-wrap">
         <table>
             <thead>
-                <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Исполнитель</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
+                <tr><th>Система</th><th>Класс</th><th>Статус</th><th>Дата ввода</th><th>Исполнитель</th><th>Поставщик</th>{% if user.is_authenticated %}<th>Действия</th>{% endif %}</tr>
             </thead>
             <tbody>
                 {% for os in object_systems %}
@@ -120,6 +120,7 @@
                     <td><span class="tag {{ os.status_tag_class }}">{{ os.get_status_display }}</span></td>
                     <td>{% if os.implementation_date %}{{ os.implementation_date|date:"d.m.Y" }}{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                     <td>{% if os.implementor %}<a class="link" href="{% url 'entity-detail' os.implementor.pk %}">{{ os.implementor.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                    <td>{% if os.supplier %}<a class="link" href="{% url 'entity-detail' os.supplier.pk %}">{{ os.supplier.entity_name }}</a>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                     {% if user.is_authenticated %}
                     <td>
                         <div class="actions">

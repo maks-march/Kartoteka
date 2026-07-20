@@ -1066,7 +1066,7 @@ class DetailLayoutTests(TestCase):
         """Сводка содержит статусы внедрения и покрытие по уровням."""
         h = self.client.get(f"/entities/{self.fcv.pk}/", follow=True).content.decode()
         self.assertIn("Статусы внедрения", h)
-        self.assertIn("Покрытие по уровням", h)
+        self.assertIn("Системы по уровням", h)
 
     def test_supplied_products_shown_with_system_count(self):
         """Поставляемые продукты — со столбцом «Систем»."""
@@ -1279,3 +1279,41 @@ class MiniCardCountersTests(TestCase):
         """У вендора systems_count = число вендорских систем (на его продуктах)."""
         a = self.repo.get_by_id(self.vendor.pk)
         self.assertEqual(a.systems_count, 1)
+
+
+class SupplierSystemsCountTests(TestCase):
+    """Счётчик систем поставщика — по поставленным связям (не внедрённым)."""
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
+        from apps.objects.models import Object, ObjectSystem
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        from apps.entities.repositories.entity_repository import EntityRepository
+        self.repo = EntityRepository()
+        self.user = User.objects.create_user("ssc", "ssc@x.x", "pw")
+        uc = EntityUseCase()
+        self.supplier = uc.create(entity_name="ПоставщикСч", entity_type="supplier")
+        cls = AutomationClass.objects.create(level=2, system_class="DCS")
+        prod = VendorProduct.objects.create(product_name="ПрСч", system_class=cls)
+        sysm = AutomationSystem.objects.create(
+            autosystem_name="СисСч", system_class=cls, product=prod, creator=self.user)
+        # 2 объекта, где этот поставщик — поставщик системы
+        for i in range(2):
+            o = Object.objects.create(
+                object_name=f"ОбСч{i}", hierarchy_level=1, creator=self.user)
+            ObjectSystem.objects.create(object=o, system=sysm, supplier=self.supplier)
+
+    def test_mini_card_counts_supplied(self):
+        """Мини-карточка: systems_count = число поставленных связей."""
+        a = self.repo.get_by_id(self.supplier.pk)
+        self.assertEqual(a.systems_count, 2)
+
+    def test_summary_shows_supplied_count(self):
+        """Сводка поставщика: метрика «Поставлено систем» = 2."""
+        h = self.client.get(f"/entities/{self.supplier.pk}/supplier/").content.decode()
+        self.assertIn("Поставлено систем", h)
+        self.assertNotIn("Внедр. систем", h)
+        import re
+        m = dict((lbl, int(n)) for n, lbl in re.findall(
+            r'metric-num">(\d+)</span><span class="metric-label">([^<]+)</span>', h))
+        self.assertEqual(m.get("Поставлено систем"), 2)

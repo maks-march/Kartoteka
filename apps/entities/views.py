@@ -264,6 +264,22 @@ def _entity_list_render(request, template, view_mode):
     })
 
 
+def _level_coverage_from_classes(classes):
+    """Строит покрытие по уровням L0–L4 из набора классов автоматизации.
+
+    classes — итерируемое из AutomationClass (могут быть None, пропускаются).
+    Возвращает список [{level, label, count}] по всем уровням модели.
+    """
+    counts = {}
+    for cls in classes:
+        if cls is not None:
+            counts[cls.level] = counts.get(cls.level, 0) + 1
+    return [
+        {"level": lvl, "label": label, "count": counts.get(lvl, 0)}
+        for lvl, label in AutomationClass.LEVEL_CHOICES
+    ]
+
+
 def _entity_detail_context(entity):
     """Собирает общий контекст детальной карточки участника (сводка + связи).
 
@@ -293,6 +309,9 @@ def _entity_detail_context(entity):
 
     # Вендорские системы вендора — системы, построенные на его продуктах.
     product_systems = [s for p in vendor_products for s in p.systems.all()]
+
+    # Поставленные системы поставщика — связи ObjectSystem, где он поставщик.
+    supplied_systems_count = entity.supplied_object_systems.count()
 
     # ---- Сводка связанности (агрегат из таблиц ниже) ----
     implemented_classes = _summary_group(
@@ -340,16 +359,26 @@ def _entity_detail_context(entity):
         coverage_systems = product_systems
     else:
         coverage_systems = [link.system for link in implemented if link.system]
-    level_counts = {}
-    for sysm in coverage_systems:
-        cls = sysm.system_class
-        if cls is not None:
-            level_counts[cls.level] = level_counts.get(cls.level, 0) + 1
-    level_coverage = [
-        {"level": lvl, "label": label, "count": level_counts.get(lvl, 0)}
-        for lvl, label in AutomationClass.LEVEL_CHOICES
-    ]
+    level_coverage = _level_coverage_from_classes(
+        s.system_class for s in coverage_systems
+    )
     has_level_coverage = any(l["count"] for l in level_coverage)
+
+    # ---- Покрытие поставщика: по поставленным СИСТЕМАМ и по КЛАССАМ
+    #      поставляемых ПРОДУКТОВ (две отдельные группы с подписями). ----
+    supplied_systems = [
+        link.system for link in entity.supplied_object_systems.select_related(
+            "system__system_class"
+        ) if link.system
+    ]
+    supplied_systems_coverage = _level_coverage_from_classes(
+        s.system_class for s in supplied_systems
+    )
+    supplied_products_coverage = _level_coverage_from_classes(
+        p.system_class for p in supplied_products
+    )
+    has_supplied_systems_coverage = any(l["count"] for l in supplied_systems_coverage)
+    has_supplied_products_coverage = any(l["count"] for l in supplied_products_coverage)
 
     # Счётчик продуктов участника: вендорские + поставляемые.
     if entity.can_have_products:
@@ -362,6 +391,8 @@ def _entity_detail_context(entity):
         "products_count": products_count,
         # Вендорские системы вендора (число систем на его продуктах).
         "product_systems_count": len(product_systems),
+        # Поставленные системы поставщика (число связей, где он поставщик).
+        "supplied_systems_count": supplied_systems_count,
         "implemented_classes": implemented_classes,
         "vendor_classes": vendor_classes,
         "supplied_classes": supplied_classes,
@@ -370,6 +401,11 @@ def _entity_detail_context(entity):
         "status_breakdown": status_breakdown,
         "level_coverage": level_coverage,
         "has_level_coverage": has_level_coverage,
+        # Покрытие поставщика: по системам и по продуктам (две группы).
+        "supplied_systems_coverage": supplied_systems_coverage,
+        "supplied_products_coverage": supplied_products_coverage,
+        "has_supplied_systems_coverage": has_supplied_systems_coverage,
+        "has_supplied_products_coverage": has_supplied_products_coverage,
         # Флаги типа — какие группы сводки показывать.
         "is_vendor_type": entity.is_vendor_type,
         "is_supplier_type": entity.is_supplier_type,
@@ -528,3 +564,82 @@ def entity_delete(request, pk):
     usecase = EntityUseCase()
     usecase.delete(pk)
     return redirect("entity-list")
+
+
+def _add_product_to_supplier(entity, product_pk):
+    """Добавляет продукт в список поставляемых участнику, сохраняя прежние."""
+    profile = getattr(entity, "supplier_profile", None)
+    existing = list(profile.products.values_list("pk", flat=True)) if profile else []
+    if product_pk not in existing:
+        existing.append(product_pk)
+    EntityUseCase().save_supplier_products(entity, product_ids=existing)
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def supplier_add_product(request, pk):
+    """Добавление поставляемого продукта: выбрать существующий или создать новый.
+
+    Режимы (по образцу формы добавления дочернего объекта):
+    - existing — привязать существующий продукт к поставщику;
+    - create   — создать новый продукт и привязать к поставщику.
+    Доступно только участникам-поставщикам (supplier / full_cycle_vendor).
+    """
+    from apps.system.usecases.vendor_product_usecase import VendorProductUseCase
+    from apps.system.usecases.automation_class_usecase import AutomationClassUseCase
+    from apps.system.models import VendorProduct
+
+    entity = EntityUseCase().get(pk)
+    if not entity.is_supplier_type:
+        return redirect("entity-detail", pk=pk)
+
+    error = None
+    active_mode = "existing"
+    if request.method == "POST":
+        active_mode = request.POST.get("mode") or "existing"
+        try:
+            if active_mode == "existing":
+                product_id = request.POST.get("existing_product")
+                if not product_id:
+                    raise ValidationError("Необходимо выбрать продукт")
+                _add_product_to_supplier(entity, int(product_id))
+            else:
+                product = VendorProductUseCase().create(
+                    product_name=request.POST.get("product_name"),
+                    vendor=request.POST.get("vendor") or None,
+                    subsystem_classes=request.POST.getlist("subsystem_classes"),
+                    **_supplier_new_product_fields(request.POST),
+                )
+                _add_product_to_supplier(entity, product.pk)
+            return redirect("entity-detail", pk=pk)
+        except (ValidationError, ValueError, TypeError) as e:
+            error = str(e)
+
+    # Уже поставляемые — исключаем из списка «существующих».
+    profile = getattr(entity, "supplier_profile", None)
+    supplied_ids = list(profile.products.values_list("pk", flat=True)) if profile else []
+    available_products = (
+        VendorProduct.objects.exclude(pk__in=supplied_ids).select_related("vendor__entity", "system_class")
+    )
+    vendors = [e for e in EntityUseCase().list() if e.is_vendor_type]
+    return render(request, "entities/supplier_add_product_form.html", {
+        "entity": entity,
+        "available_products": available_products,
+        "vendors": vendors,
+        "classes": AutomationClassUseCase().list(),
+        "product_type_choices": VendorProduct.PRODUCT_TYPE_CHOICES,
+        "industry_categories": list(CategoryUseCase().list(level=1)),
+        "active_mode": active_mode,
+        "error": error,
+    })
+
+
+def _supplier_new_product_fields(post):
+    """Поля нового продукта из формы добавления поставляемого (минимальный набор)."""
+    return {
+        "product_type": post.get("product_type", "") or "",
+        "system_class": post.get("system_class") or None,
+        "description": post.get("description", "") or "",
+        "version": post.get("version", "") or "",
+        "industries": [i for i in post.getlist("industries") if i],
+    }

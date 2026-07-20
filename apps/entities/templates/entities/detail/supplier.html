@@ -16,9 +16,33 @@
 
 {% block summary %}
 <div class="summary-metrics">
-    <div class="metric"><span class="metric-num">{{ summary.implemented_count }}</span><span class="metric-label">Внедр. систем</span></div>
+    <div class="metric"><span class="metric-num">{{ summary.supplied_systems_count }}</span><span class="metric-label">Поставлено систем</span></div>
     <div class="metric"><span class="metric-num">{{ summary.products_count }}</span><span class="metric-label">Продуктов</span></div>
 </div>
+
+{% comment %}Покрытие по уровням: по фактически поставленным системам и по
+классам поставляемых продуктов — перед классами продуктов.{% endcomment %}
+{% if summary.has_supplied_systems_coverage %}
+<div class="summary-group">
+    <div class="summary-group-title">Системы по уровням</div>
+    <div class="summary-tags">
+        {% for l in summary.supplied_systems_coverage %}
+        <span class="tag tag-{{ l.level }}{% if not l.count %} tag-off{% endif %}">{{ l.label }}: {{ l.count }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if summary.has_supplied_products_coverage %}
+<div class="summary-group">
+    <div class="summary-group-title">Продукты по уровням</div>
+    <div class="summary-tags">
+        {% for l in summary.supplied_products_coverage %}
+        <span class="tag tag-{{ l.level }}{% if not l.count %} tag-off{% endif %}">{{ l.label }}: {{ l.count }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 
 {% include "core/_summary_group.html" with title="Классы поставляемых продуктов" group=summary.supplied_classes kind="class" %}
 {% endblock %}

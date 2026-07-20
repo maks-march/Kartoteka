@@ -11,7 +11,7 @@ class ObjectSystemRepository:
             ObjectSystem.objects.filter(object=obj)
             .select_related(
                 "system", "system__system_class", "system__product",
-                "system__product__vendor__entity", "implementor",
+                "system__product__vendor__entity", "implementor", "supplier",
             )
             .order_by("system__autosystem_name")
         )
@@ -20,7 +20,7 @@ class ObjectSystemRepository:
         """Возвращает связи (объекты), к которым привязана система."""
         return (
             ObjectSystem.objects.filter(system=system)
-            .select_related("object", "object__category", "implementor")
+            .select_related("object", "object__category", "implementor", "supplier")
             .order_by("object__hierarchy_level", "object__object_name")
         )
 
@@ -35,7 +35,7 @@ class ObjectSystemRepository:
         """Возвращает связь по id с подгруженными связями (или None)."""
         return (
             ObjectSystem.objects.filter(pk=pk)
-            .select_related("object", "system", "system__system_class", "system__product", "implementor")
+            .select_related("object", "system", "system__system_class", "system__product", "implementor", "supplier")
             .first()
         )
 

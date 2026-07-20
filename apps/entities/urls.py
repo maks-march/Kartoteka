@@ -13,6 +13,7 @@ from apps.entities.views import (
     entity_create,
     entity_edit,
     entity_delete,
+    supplier_add_product,
 )
 
 urlpatterns = [
@@ -27,6 +28,7 @@ urlpatterns = [
     path("<int:pk>/system_integrator/", entity_system_integrator, name="entity-system-integrator"),
     path("<int:pk>/engineering_company/", entity_engineering, name="entity-engineering"),
     path("<int:pk>/full_cycle_vendor/", entity_full_cycle, name="entity-full-cycle"),
+    path("<int:pk>/add-supplied-product/", supplier_add_product, name="supplier-add-product"),
     path("<int:pk>/edit/", entity_edit, name="entity-edit"),
     path("<int:pk>/delete/", entity_delete, name="entity-delete"),
 ]

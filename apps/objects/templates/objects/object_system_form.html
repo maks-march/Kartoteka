@@ -29,7 +29,8 @@
             <!-- Ограниченный блок со списком систем -->
             <div class="system-results-container">
                 {% for s in systems %}
-                <div class="system-item {% if link.system_id == s.pk %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}">
+                <div class="system-item {% if link.system_id == s.pk %}selected{% endif %}" data-id="{{ s.pk }}" data-name="{{ s.autosystem_name|lower }}"
+                     data-suppliers="{% if s.product %}{% for sp in s.product.suppliers.all %}{{ sp.entity_id }}{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}">
                     <span class="system-name">{{ s.autosystem_name }}</span>
                     <span class="system-info">L{{ s.system_class.level }} - {{ s.system_class.system_class }}{% if s.product %} · Продукт: {{ s.product.product_name }}{% endif %}</span>
                 </div>
@@ -80,6 +81,39 @@
             <input type="hidden" name="implementor" id="selectedImplimentorId" value="{{ link.implementor_id|default:'' }}">
         </div>
 
+        <div class="form-group">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
+                <input type="checkbox" name="supplied_by_vendor" id="suppliedByVendor" style="width:auto"
+                       {% if link.supplier and link.system.product and link.supplier_id == link.system.product.vendor.entity_id %}checked{% endif %}>
+                Поставляется вендором
+            </label>
+            <p class="hint" style="margin-top:2px">Поставщиком станет вендор продукта этой системы.</p>
+        </div>
+
+        <div class="picker" data-target="#selectedSupplierId" id="supplierPicker">
+            <div class="form-group">
+                <label>Поставщик</label>
+                <div class="search-wrapper">
+                    <input type="text" class="picker-search" placeholder="Введите название поставщика..." style="margin-bottom:0">
+                </div>
+                <p class="hint" style="margin-top:2px">Только поставщик или вендор полного цикла.</p>
+            </div>
+            <div class="system-results-container">
+                <div class="system-item {% if not link.supplier_id %}selected{% endif %}" data-id="" data-keep>
+                    <span class="system-name">— Поставщик не указан —</span>
+                </div>
+                {% for entity in supplier_entities %}
+                <div class="system-item {% if link.supplier_id == entity.pk %}selected{% endif %}" data-id="{{ entity.pk }}" data-entity-id="{{ entity.pk }}" data-name="{{ entity.entity_name|lower }}">
+                    <span class="system-name">{{ entity.entity_name }}</span>
+                </div>
+                {% endfor %}
+                <div class="picker-no-results picker-empty">
+                    Участники рынка не найдены
+                </div>
+            </div>
+            <input type="hidden" name="supplier" id="selectedSupplierId" value="{{ link.supplier_id|default:'' }}">
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="submitBtn" {% if not link %}disabled{% endif %}>{% if link %}Сохранить{% else %}Привязать{% endif %}</button>
             {% if link and next_page == 'system' %}
@@ -97,4 +131,70 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+// «Поставляется вендором»: при включении прячем выбор поставщика вручную
+// (поставщиком станет вендор продукта системы).
+(function () {
+    var cb = document.getElementById('suppliedByVendor');
+    var picker = document.getElementById('supplierPicker');
+    if (!cb || !picker) return;
+    function sync() { picker.style.display = cb.checked ? 'none' : ''; }
+    cb.addEventListener('change', sync);
+    sync();
+})();
+
+// Список поставщиков ограничен поставщиками продукта ВЫБРАННОЙ системы.
+(function () {
+    var sysInput = document.getElementById('selectedSystemId');
+    var picker = document.getElementById('supplierPicker');
+    var supHidden = document.getElementById('selectedSupplierId');
+    if (!sysInput || !picker) return;
+    var items = Array.from(picker.querySelectorAll('.system-item[data-entity-id]'));
+    var placeholder = picker.querySelector('.system-item[data-keep]');
+    var empty = picker.querySelector('.picker-empty');
+
+    function selectedSystemItem() {
+        var container = document.getElementById('selectedSystemId');
+        // Ищем выбранную систему по её data-id == значению скрытого поля.
+        var sid = sysInput.value;
+        return document.querySelector('.system-results-container .system-item[data-id="' + sid + '"]');
+    }
+
+    function allowedSupplierIds() {
+        var item = selectedSystemItem();
+        if (!item) return null;
+        var raw = item.getAttribute('data-suppliers') || '';
+        return raw ? raw.split(',') : [];
+    }
+
+    function apply() {
+        var allowed = allowedSupplierIds();
+        var anyShown = false;
+        items.forEach(function (it) {
+            var id = it.getAttribute('data-entity-id');
+            var show = allowed !== null && allowed.indexOf(id) !== -1;
+            it.style.display = show ? '' : 'none';
+            if (show) anyShown = true;
+            // Снимаем выбор с поставщика, который стал недоступен.
+            if (!show && it.classList.contains('selected')) {
+                it.classList.remove('selected');
+                if (placeholder) placeholder.classList.add('selected');
+                if (supHidden) {
+                    supHidden.value = '';
+                    supHidden.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        });
+        // Подсказка, если у продукта нет поставщиков.
+        if (empty) {
+            empty.style.display = (allowed !== null && !anyShown) ? '' : 'none';
+            if (allowed !== null && !anyShown) empty.textContent = 'У продукта этой системы нет поставщиков';
+        }
+    }
+
+    sysInput.addEventListener('change', apply);
+    apply();
+})();
+</script>
 {% endblock %}
