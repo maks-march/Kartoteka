@@ -6,19 +6,17 @@
 
 {% block profile %}
 {% with sip=entity.system_integrator_profile %}
-<div class="info-block">
+<div class="info-block gap">
     <h3 class="info-block-title">Профиль</h3>
-    <div class="top-row">
-        <div class="info-cards">
-            <div class="info-card">
-                <span class="info-label">Юридическое лицо</span>
-                <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}Не указано{% endif %}</span>
-            </div>
+    <div class="info-cards">
+        <div class="info-card">
+            <span class="info-label">Юридическое лицо</span>
+            <span class="info-value">{% if sip.managing_owner %}<a class="link" href="{% url 'owner-entity-detail' sip.managing_owner.pk %}">{{ sip.managing_owner.owner_name }}</a>{% else %}Не указано{% endif %}</span>
         </div>
-        <div class="info-card profile-card">
-            <span class="info-label">Профиль компании</span>
-            <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
-        </div>
+    </div>
+    <div class="info-card profile-card span-full">
+        <span class="info-label">Профиль компании</span>
+        <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
     </div>
 </div>
 

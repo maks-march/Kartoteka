@@ -755,6 +755,7 @@ td a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
+    margin-bottom: 10px;
 }
 
 .info-cards-two {
@@ -790,6 +791,16 @@ td a:hover {
 }
 .info-card.gap {
     margin-top: 10px;
+}
+/* Отступ перед блоком (напр. «Профиль» после главной информации). */
+.info-block.gap {
+    margin-top: 20px;
+}
+/* Карточка «Профиль компании» на всю ширину под строкой плиток профиля;
+   отделяем от плиток небольшим отступом. */
+.profile-card.span-full {
+    grid-column: 1 / -1;
+    margin-top: 12px;
 }
 .info-card .desc-text {
     font-weight: 400;
