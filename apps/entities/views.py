@@ -289,6 +289,9 @@ def entity_detail(request, pk):
 
     implemented = list(implemented_links)
 
+    # Вендорские системы вендора — системы, построенные на его продуктах.
+    product_systems = [s for p in vendor_products for s in p.systems.all()]
+
     # ---- Сводка связанности (агрегат из таблиц ниже) ----
     implemented_classes = _summary_group(
         (l.system.system_class for l in implemented if l.system and l.system.system_class),
@@ -327,15 +330,22 @@ def entity_detail(request, pk):
     ]
 
     # ---- Покрытие по уровням автоматизации L0..L4 (счётчики) ----
+    # У вендора считаем по его продуктовым системам, у исполнителей — по
+    # внедрённым системам.
+    if entity.is_vendor_type:
+        coverage_systems = product_systems
+    else:
+        coverage_systems = [link.system for link in implemented if link.system]
     level_counts = {}
-    for link in implemented:
-        cls = link.system.system_class if link.system else None
+    for sysm in coverage_systems:
+        cls = sysm.system_class
         if cls is not None:
             level_counts[cls.level] = level_counts.get(cls.level, 0) + 1
     level_coverage = [
         {"level": lvl, "label": label, "count": level_counts.get(lvl, 0)}
         for lvl, label in AutomationClass.LEVEL_CHOICES
     ]
+    has_level_coverage = any(l["count"] for l in level_coverage)
 
     # Счётчик продуктов участника: вендорские + поставляемые.
     if entity.can_have_products:
@@ -346,6 +356,8 @@ def entity_detail(request, pk):
     summary = {
         "implemented_count": len(implemented),
         "products_count": products_count,
+        # Вендорские системы вендора (число систем на его продуктах).
+        "product_systems_count": len(product_systems),
         "implemented_classes": implemented_classes,
         "vendor_classes": vendor_classes,
         "supplied_classes": supplied_classes,
@@ -353,6 +365,7 @@ def entity_detail(request, pk):
         "is_vendor": entity.can_have_products,
         "status_breakdown": status_breakdown,
         "level_coverage": level_coverage,
+        "has_level_coverage": has_level_coverage,
         # Флаги типа — какие группы сводки показывать.
         "is_vendor_type": entity.is_vendor_type,
         "is_supplier_type": entity.is_supplier_type,

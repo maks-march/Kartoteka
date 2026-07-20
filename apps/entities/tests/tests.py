@@ -356,7 +356,7 @@ class DetailSummaryPanelTests(TestCase):
 
 
 class SummaryLimitTests(TestCase):
-    """Сводка обрезает группу до 5 элементов и показывает «ещё N»."""
+    """Сводка показывает ВСЕ элементы группы (без «ещё N») — панель прокручивается."""
 
     def setUp(self):
         """Готовит тестовые данные перед каждым тестом."""
@@ -365,21 +365,23 @@ class SummaryLimitTests(TestCase):
         self.user = User.objects.create_user("lim", "lim@x.x", "pw")
         self.cls = AutomationClass.objects.create(level=2, system_class="SCADA")
         self.obj = Object.objects.create(object_name="ОбъектЛ", hierarchy_level=1, creator=self.user)
-        # 7 разных интеграторов -> в сводке максимум 5 + «ещё 2»
+        # 7 разных интеграторов -> в сводке показываются все 7, без «ещё N»
         for i in range(7):
             e = Entity.objects.create(entity_name=f"Инт{i}", entity_type="system_integrator")
             s = AutomationSystem.objects.create(
                 autosystem_name=f"С{i}", system_class=self.cls, creator=self.user)
             ObjectSystem.objects.create(object=self.obj, system=s, implementor=e)
 
-    def test_object_summary_caps_at_five(self):
-        """Сводка ограничивает группу пятью элементами и показывает «ещё N»."""
+    def test_object_summary_shows_all_no_more(self):
+        """Сводка показывает все элементы группы без приписки «ещё N»."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
-        # блок сводки
         panel = h.split('summary-panel', 1)[1]
-        # в группе «Интеграторы» показано 5 тегов-ссылок + «ещё 2»
-        self.assertIn("ещё 2", panel)
-        # метрика систем = 7 (не обрезается)
+        # приписки «ещё N» больше нет
+        self.assertNotIn("ещё ", panel)
+        # показаны все 7 интеграторов
+        for i in range(7):
+            self.assertIn(f"Инт{i}", panel)
+        # метрика систем = 7
         self.assertIn(">7<", panel)
 
 

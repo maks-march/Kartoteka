@@ -243,7 +243,9 @@ def system_attach_object(request, pk):
 
     attached_ids = os_usecase.list_for_system(system).values_list("object_id", flat=True)
     objects = object_usecase.list().exclude(pk__in=attached_ids)
-    entities = entity_usecase.list()
+    # Исполнителем внедрения может быть только интегратор / инж.компания / ФПЦ.
+    from apps.entities.models import Entity
+    entities = entity_usecase.list().filter(entity_type__in=Entity.IMPLEMENTOR_TYPES)
     return render(request, "system/system_object_form.html", {
         "system": system,
         "objects": objects,

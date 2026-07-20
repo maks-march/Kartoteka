@@ -126,11 +126,26 @@ class Entity(models.Model):
     SUPPLIER_TYPES = ("supplier", "full_cycle_vendor")
     # Типы с профилем инжиниринговой компании (регион/объект/компетенции).
     ENGINEERING_TYPES = ("engineering_company", "full_cycle_vendor")
+    # Типы, которые МОГУТ быть исполнителем внедрения системы на объекте.
+    # Вендоры и поставщики системы не внедряют — только интеграторы,
+    # инжиниринговые компании и вендоры полного цикла.
+    IMPLEMENTOR_TYPES = (
+        "system_integrator", "engineering_company", "full_cycle_vendor",
+    )
 
     @property
     def can_have_products(self):
         """Может ли у участника быть свои продукты (вендор/полн. цикл/поставщик)."""
         return self.entity_type in self.TYPES_WITH_PRODUCTS
+
+    @property
+    def can_implement(self):
+        """Может ли участник быть исполнителем внедрения (implementor).
+
+        Разрешено интеграторам, инжиниринговым компаниям и вендорам полного
+        цикла; запрещено вендорам и поставщикам.
+        """
+        return self.entity_type in self.IMPLEMENTOR_TYPES
 
     @property
     def is_vendor_type(self):

@@ -53,7 +53,16 @@ class ObjectSystemUseCase:
         """
         if "implementor" in data:
             implementor_id = data.pop("implementor")
-            data["implementor"] = self._get_optional_entity(implementor_id, "Исполнитель внедрения")
+            implementor = self._get_optional_entity(implementor_id, "Исполнитель внедрения")
+            # Исполнителем внедрения может быть только интегратор, инжиниринговая
+            # компания или вендор полного цикла — не вендор и не поставщик.
+            if implementor is not None and not implementor.can_implement:
+                raise ValidationError(
+                    "Исполнителем внедрения не может быть вендор или поставщик — "
+                    "только системный интегратор, инжиниринговая компания или "
+                    "вендор полного цикла"
+                )
+            data["implementor"] = implementor
         return data
 
     def attach(self, object_pk=None, system_pk=None, **data):

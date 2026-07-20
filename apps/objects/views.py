@@ -11,6 +11,7 @@ from apps.categories.usecases.category_usecase import CategoryUseCase
 from apps.system.usecases.system_usecase import SystemUseCase
 from apps.owners.usecases.owner_entity_usecase import OwnerEntityUseCase
 from apps.entities.usecases.entity_usecase import EntityUseCase
+from apps.entities.models import Entity
 from apps.objects.models import Object, ObjectSystem
 from apps.system.models import AutomationClass
 from common.summary import summary_group as _summary_group
@@ -399,7 +400,8 @@ def object_attach_system(request, pk):
 
     attached_ids = os_usecase.list_for_object(obj).values_list("system_id", flat=True)
     systems = system_usecase.list().exclude(pk__in=attached_ids)
-    entities = entity_usecase.list()
+    # Только те, кто может быть исполнителем внедрения (не вендор/поставщик).
+    entities = entity_usecase.list().filter(entity_type__in=Entity.IMPLEMENTOR_TYPES)
     return render(request, "objects/object_system_form.html", {
         "object": obj,
         "systems": systems,
@@ -448,7 +450,8 @@ def object_system_edit(request, pk):
         except (ValidationError, ValueError, TypeError) as e:
             error = str(e)
 
-    entities = entity_usecase.list()
+    # Только те, кто может быть исполнителем внедрения (не вендор/поставщик).
+    entities = entity_usecase.list().filter(entity_type__in=Entity.IMPLEMENTOR_TYPES)
 
     if next_page == "system":
         # Форма как при создании со стороны системы: выбираем объект

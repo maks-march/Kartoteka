@@ -214,6 +214,9 @@
 {% if entity.is_supplier_type %}{% include "entities/_supplied_products.html" %}{% endif %}
 {% endif %}
 
+{% comment %}Внедрённые системы — только у исполнителей внедрения
+(интегратор / инж.компания / ФПЦ). У вендора и поставщика блока нет.{% endcomment %}
+{% if entity.can_implement %}
 <div class="card">
     <h2>Внедренные системы</h2>
     <table>
@@ -233,6 +236,7 @@
         </tbody>
     </table>
 </div>
+{% endif %}
 
 <div style="margin-top:10px">
     <a href="{% url 'entity-list' %}" class="btn btn-secondary">← Назад к списку</a>

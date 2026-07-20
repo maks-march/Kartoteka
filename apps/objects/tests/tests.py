@@ -871,3 +871,66 @@ class ObjectSummaryExtendedTests(TestCase):
         """Группы сводки обёрнуты в двухколоночный контейнер."""
         h = self.client.get(f"/objects/{self.obj.pk}/").content.decode()
         self.assertIn("summary-cols", h)
+
+
+class ObjectSystemImplementorRuleTests(TestCase):
+    """Исполнитель внедрения: только интегратор / инж.компания / ФПЦ.
+
+    Вендоры и поставщики не могут внедрять — ни в форме (фильтр списка),
+    ни на бэкенде (валидация usecase).
+    """
+
+    def setUp(self):
+        from apps.system.models import AutomationClass, AutomationSystem
+        from apps.entities.usecases.entity_usecase import EntityUseCase
+        self.user = User.objects.create_user("impl", "i@x.x", "pw")
+        self.client.force_login(self.user)
+        uc = EntityUseCase()
+        self.vendor = uc.create(entity_name="ВендорИмпл", entity_type="vendor")
+        self.supplier = uc.create(entity_name="ПоставщикИмпл", entity_type="supplier")
+        self.integr = uc.create(entity_name="ИнтеграторИмпл", entity_type="system_integrator")
+        self.eng = uc.create(entity_name="ИнжИмпл", entity_type="engineering_company")
+        self.fcv = uc.create(entity_name="ФПЦИмпл", entity_type="full_cycle_vendor")
+        cls = AutomationClass.objects.create(level=2, system_class="DCS")
+        self.obj = Object.objects.create(object_name="ОбъИмпл", hierarchy_level=1, creator=self.user)
+        self.system = AutomationSystem.objects.create(
+            autosystem_name="СисИмпл", system_class=cls, creator=self.user)
+
+    def _attach(self, implementor):
+        from apps.objects.usecases.object_system_usecase import ObjectSystemUseCase
+        return ObjectSystemUseCase().attach(
+            object_pk=self.obj.pk, system=self.system.pk,
+            status="planned", implementor=implementor.pk)
+
+    def test_can_implement_flags(self):
+        """Свойство can_implement: True у интегратора/инж/ФПЦ, False у вендора/поставщика."""
+        self.assertTrue(self.integr.can_implement)
+        self.assertTrue(self.eng.can_implement)
+        self.assertTrue(self.fcv.can_implement)
+        self.assertFalse(self.vendor.can_implement)
+        self.assertFalse(self.supplier.can_implement)
+
+    def test_vendor_rejected_as_implementor(self):
+        """Вендор в качестве исполнителя — ValidationError."""
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self._attach(self.vendor)
+
+    def test_supplier_rejected_as_implementor(self):
+        """Поставщик в качестве исполнителя — ValidationError."""
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self._attach(self.supplier)
+
+    def test_integrator_allowed_as_implementor(self):
+        """Интегратор допустим как исполнитель."""
+        link = self._attach(self.integr)
+        self.assertEqual(link.implementor_id, self.integr.pk)
+
+    def test_form_excludes_vendor_and_supplier(self):
+        """Выпадающий список исполнителей в форме не содержит вендоров/поставщиков."""
+        h = self.client.get(f"/objects/{self.obj.pk}/attach-system/").content.decode()
+        self.assertNotIn("ВендорИмпл", h)
+        self.assertNotIn("ПоставщикИмпл", h)
+        self.assertIn("ИнтеграторИмпл", h)
+        self.assertIn("ФПЦИмпл", h)
