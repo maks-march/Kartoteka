@@ -462,7 +462,7 @@ class EntityTypingProfilesTests(TestCase):
 
     def test_web_supplier_saves_products(self):
         """HTML-форма поставщика сохраняет поставляемые продукты."""
-        from apps.entities.models import Entity, SupplierProfile
+        from apps.entities.models import Entity
         from apps.system.models import VendorProduct
         prod = VendorProduct.objects.create(product_name="ПродФорма")
         r = self.client.post("/entities/create/", {
@@ -498,22 +498,29 @@ class EntityTypingProfilesTests(TestCase):
         self.assertTrue(e.is_supplier_type)
         self.assertTrue(e.is_engineering_type)
 
-    def test_full_cycle_competency_preselects_own_products(self):
-        """Продукты этого вендора предвыбраны в специализации по продуктам (форма)."""
-        from apps.entities.models import VendorProfile
-        from apps.system.models import VendorProduct
+    def test_full_cycle_form_product_competency_only_for_engineering(self):
+        """У ФПЦ блок компетенции по продуктам помечен только для инж. компании
+        (data-for=engineering_company) и на старте скрыт; у инж. компании — виден."""
+        import re
         e = self._uc().create(entity_name="ФПЦпред", entity_type="full_cycle_vendor")
-        vp = VendorProfile.objects.get(entity=e)
-        own = VendorProduct.objects.create(product_name="СвойПрод", vendor=vp)
-        other = VendorProduct.objects.create(product_name="ЧужойПрод")
         h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
-        # свой продукт — группа "own" и отмечен selected
-        self.assertIn('data-group="own"', h)
-        self.assertIn("Продукты этого вендора", h)
-        # предвыбор: свой продукт попал в скрытые input'ы компетенции
-        self.assertIn(f'name="product_competencies" value="{own.pk}"', h)
-        # чужой продукт есть в списке, но НЕ предвыбран
-        self.assertNotIn(f'name="product_competencies" value="{other.pk}"', h)
+        # блок компетенции по продуктам помечен только для инж. компании
+        m = re.search(
+            r'<div class="form-group type-block" data-for="engineering_company"([^>]*)>',
+            h,
+        )
+        self.assertIsNotNone(m, "нет блока компетенции по продуктам для engineering_company")
+        # для ФПЦ этот блок на старте скрыт
+        self.assertIn("display:none", m.group(1))
+        # у инж. компании тот же блок не скрыт
+        eng = self._uc().create(entity_name="ИКпред", entity_type="engineering_company")
+        he = self.client.get(f"/entities/{eng.pk}/edit/").content.decode()
+        me = re.search(
+            r'<div class="form-group type-block" data-for="engineering_company"([^>]*)>',
+            he,
+        )
+        self.assertIsNotNone(me)
+        self.assertNotIn("display:none", me.group(1))
 
     def test_full_cycle_vendor_saves_supplier_and_engineering(self):
         """ФПЦ через форму сохраняет данные поставщика и инж. компании."""
@@ -623,7 +630,8 @@ class EntityTypingProfilesTests(TestCase):
         """Форма участника показывает блок интегратора для нужного типа."""
         from apps.owners.models import OwnerEntity
         OwnerEntity.objects.create(owner_name="Х")
-        v = self._uc().create(entity_name="ВенДляБлока", entity_type="vendor")
+        # Вендор нужен как потенциальный партнёр интегратора в пикере формы.
+        self._uc().create(entity_name="ВенДляБлока", entity_type="vendor")
         h = self.client.get("/entities/create/").content.decode()
         self.assertIn('data-for="system_integrator"', h)
         self.assertIn('name="managing_owner"', h)
@@ -948,12 +956,12 @@ class EntityProfileAPICoverageTests(TestCase):
         r = self.api.put(
             f"/api/entities/{fc.pk}/full-cycle-profile/",
             {"region": "Урал", "resident_object": self.obj.pk,
-             "product_competencies": [self.free_product.pk],
              "function_competencies": [{"system_class": self.cls.pk, "industry": self.industry.pk}]},
             format="json")
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.data["region"], "Урал")
-        self.assertEqual(r.data["products"], [self.free_product.pk])
+        # У ФПЦ больше нет компетенции по продуктам (поле products убрано).
+        self.assertNotIn("products", r.data)
         self.assertEqual(len(r.data["function_competencies"]), 1)
         r = self.api.get(f"/api/entities/{fc.pk}/full-cycle-profile/")
         self.assertEqual(r.status_code, 200)
@@ -1026,7 +1034,6 @@ class DetailLayoutTests(TestCase):
 
     def setUp(self):
         """Вендор+поставщик (ФПЦ) с продуктами и внедрённой системой."""
-        from apps.categories.models import Category
         from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
         from apps.objects.models import Object, ObjectSystem
         from apps.entities.models import VendorProfile, SupplierProfile
@@ -1081,7 +1088,6 @@ class SummaryPerTypeTests(TestCase):
 
     def setUp(self):
         """ФПЦ (вендор+поставщик), интегратор с внедрением на продукте вендора."""
-        from apps.categories.models import Category
         from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
         from apps.objects.models import Object, ObjectSystem
         from apps.entities.models import VendorProfile, SupplierProfile
@@ -1229,7 +1235,7 @@ class MiniCardCountersTests(TestCase):
     def setUp(self):
         from apps.system.models import AutomationClass, VendorProduct, AutomationSystem
         from apps.objects.models import Object, ObjectSystem
-        from apps.entities.models import VendorProfile, SupplierProfile
+        from apps.entities.models import VendorProfile
         from apps.entities.usecases.entity_usecase import EntityUseCase
         from apps.entities.repositories.entity_repository import EntityRepository
         self.repo = EntityRepository()

@@ -101,15 +101,37 @@ class RelatedFieldSortingTests(TestCase):
         cat_a = Category.objects.create(category_name="Альфа", object_level=1, creator=self.user)
         own_b = OwnerEntity.objects.create(owner_name="Бета-Холдинг")
         own_a = OwnerEntity.objects.create(owner_name="Альфа-Холдинг")
-        Object.objects.create(object_name="O1", hierarchy_level=1, category=cat_b, owner_entity=own_b, creator=self.user)
-        Object.objects.create(object_name="O2", hierarchy_level=1, category=cat_a, owner_entity=own_a, creator=self.user)
+        Object.objects.create(
+            object_name="O1",
+            hierarchy_level=1,
+            category=cat_b,
+            owner_entity=own_b,
+            creator=self.user,
+        )
+        Object.objects.create(
+            object_name="O2",
+            hierarchy_level=1,
+            category=cat_a,
+            owner_entity=own_a,
+            creator=self.user,
+        )
 
         self.cls_b = AutomationClass.objects.create(level=2, system_class="Бета-класс")
         self.cls_a = AutomationClass.objects.create(level=2, system_class="Альфа-класс")
         self.p_b = VendorProduct.objects.create(product_name="Бета-продукт")
         self.p_a = VendorProduct.objects.create(product_name="Альфа-продукт")
-        AutomationSystem.objects.create(autosystem_name="S1", system_class=self.cls_b, product=self.p_b, creator=self.user)
-        AutomationSystem.objects.create(autosystem_name="S2", system_class=self.cls_a, product=self.p_a, creator=self.user)
+        AutomationSystem.objects.create(
+            autosystem_name="S1",
+            system_class=self.cls_b,
+            product=self.p_b,
+            creator=self.user,
+        )
+        AutomationSystem.objects.create(
+            autosystem_name="S2",
+            system_class=self.cls_a,
+            product=self.p_a,
+            creator=self.user,
+        )
 
     def test_objects_sort_by_category_name(self):
         """Сортировка объектов по имени категории."""
@@ -147,7 +169,13 @@ class ViewModeAndNavTests(TestCase):
         """Готовит тестовые данные перед каждым тестом."""
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("vm", "vm@x.x", "pw")
-        Object.objects.create(object_name="Объект A", hierarchy_level=1, status="active", city="Омск", creator=self.user)
+        Object.objects.create(
+            object_name="Объект A",
+            hierarchy_level=1,
+            status="active",
+            city="Омск",
+            creator=self.user,
+        )
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
         AutomationSystem.objects.create(autosystem_name="Sys A", system_class=cls, creator=self.user)
 
@@ -233,10 +261,14 @@ class CountSortingTests(TestCase):
         from apps.system.models import AutomationClass, AutomationSystem
         self.user = User.objects.create_user("cnt", "cnt@x.x", "pw")
         cls = AutomationClass.objects.create(level=2, system_class="SCADA")
-        self.a = Object.objects.create(object_name="A", hierarchy_level=1, status="active", creator=self.user)  # 0 систем
+        # 0 систем
+        self.a = Object.objects.create(
+            object_name="A", hierarchy_level=1, status="active", creator=self.user)
         self.b = Object.objects.create(object_name="B", hierarchy_level=1, status="active", creator=self.user)  # 2
         self.c = Object.objects.create(object_name="C", hierarchy_level=1, status="active", creator=self.user)  # 1
-        self.s1 = AutomationSystem.objects.create(autosystem_name="S1", system_class=cls, creator=self.user)  # 2 объекта
+        # 2 объекта
+        self.s1 = AutomationSystem.objects.create(
+            autosystem_name="S1", system_class=cls, creator=self.user)
         self.s2 = AutomationSystem.objects.create(autosystem_name="S2", system_class=cls, creator=self.user)  # 1 объект
         ObjectSystem.objects.create(object=self.b, system=self.s1)
         ObjectSystem.objects.create(object=self.b, system=self.s2)

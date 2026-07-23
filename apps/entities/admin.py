@@ -3,6 +3,7 @@ from django.contrib import admin
 
 from apps.entities.models import (
     Entity, VendorProfile, SupplierProfile, SystemIntegratorProfile,
+    SystemIntegratorFunctionCompetency,
     EngineeringCompanyProfile, EngineeringCompanyFunctionCompetency,
     FullCycleVendorProfile, FullCycleFunctionCompetency,
 )
@@ -31,19 +32,27 @@ class SupplierProfileAdmin(admin.ModelAdmin):
     filter_horizontal = ["products"]
 
 
+class SystemIntegratorFunctionCompetencyInline(admin.TabularInline):
+    """Инлайн исключений компетенций (класс/индустрия) интегратора."""
+    model = SystemIntegratorFunctionCompetency
+    extra = 0
+    raw_id_fields = ["system_class", "industry"]
+
+
 @admin.register(SystemIntegratorProfile)
 class SystemIntegratorProfileAdmin(admin.ModelAdmin):
     """Админ-настройки профиля системного интегратора."""
     list_display = ["entity", "managing_owner"]
     raw_id_fields = ["entity", "managing_owner"]
     filter_horizontal = ["vendor_partners"]
+    inlines = [SystemIntegratorFunctionCompetencyInline]
 
 
 class FunctionCompetencyInline(admin.TabularInline):
     """Инлайн компетенций по функции для профиля инж. компании."""
     model = EngineeringCompanyFunctionCompetency
     extra = 0
-    raw_id_fields = ["system_class"]
+    raw_id_fields = ["system_class", "industry"]
 
 
 @admin.register(EngineeringCompanyProfile)
@@ -59,7 +68,7 @@ class FullCycleFunctionCompetencyInline(admin.TabularInline):
     """Инлайн компетенций по функции для профиля вендора полного цикла."""
     model = FullCycleFunctionCompetency
     extra = 0
-    raw_id_fields = ["system_class"]
+    raw_id_fields = ["system_class", "industry"]
 
 
 @admin.register(FullCycleVendorProfile)
@@ -67,5 +76,25 @@ class FullCycleVendorProfileAdmin(admin.ModelAdmin):
     """Админ-настройки профиля вендора полного цикла."""
     list_display = ["entity", "region", "resident_object"]
     raw_id_fields = ["entity", "resident_object"]
-    filter_horizontal = ["products"]
     inlines = [FullCycleFunctionCompetencyInline]
+
+
+@admin.register(EngineeringCompanyFunctionCompetency)
+class EngineeringCompanyFunctionCompetencyAdmin(admin.ModelAdmin):
+    """Компетенции по функции инж. компании (класс + индустрия)."""
+    list_display = ["profile", "system_class", "industry"]
+    raw_id_fields = ["profile", "system_class", "industry"]
+
+
+@admin.register(FullCycleFunctionCompetency)
+class FullCycleFunctionCompetencyAdmin(admin.ModelAdmin):
+    """Компетенции по функции вендора полного цикла (класс + индустрия)."""
+    list_display = ["profile", "system_class", "industry"]
+    raw_id_fields = ["profile", "system_class", "industry"]
+
+
+@admin.register(SystemIntegratorFunctionCompetency)
+class SystemIntegratorFunctionCompetencyAdmin(admin.ModelAdmin):
+    """Исключения компетенций интегратора (класс + индустрия)."""
+    list_display = ["profile", "system_class", "industry"]
+    raw_id_fields = ["profile", "system_class", "industry"]

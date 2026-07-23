@@ -65,6 +65,12 @@
                         {% if object.owner_entity %}<a class="link" href="{% url 'owner-entity-detail' object.owner_entity.pk %}">{{ object.owner_entity.owner_name }}</a>{% else %}Не указано{% endif %}
                     </span>
                 </div>
+                {% if object.hierarchy_level == 3 %}
+                <div class="info-card">
+                    <span class="info-label">Лицензиар</span>
+                    <span class="info-value">{{ object.licensor|default:'Не указано' }}</span>
+                </div>
+                {% endif %}
             </div>
         </div>
 

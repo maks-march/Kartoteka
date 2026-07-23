@@ -98,6 +98,19 @@ def _extract_engineering_fields(post):
     }
 
 
+def _extract_full_cycle_fields(post):
+    """Поля профиля вендора полного цикла из POST.
+
+    В отличие от инж. компании, у ФПЦ нет компетенции по продуктам
+    (её продукты — вендорские продукты), поэтому product_ids не передаём.
+    """
+    return {
+        "region": (post.get("region") or "").strip(),
+        "resident_object_id": post.get("resident_object") or None,
+        "competencies": _parse_competencies(post),
+    }
+
+
 def _form_context(**extra):
     """Общий контекст форм: справочники и т.п."""
     from apps.objects.usecases.object_usecase import ObjectUseCase
@@ -136,28 +149,15 @@ def _form_context(**extra):
     competency_own_products = [p for p in all_products_list if p.pk in own_product_ids]
     competency_other_products = [p for p in all_products_list if p.pk not in own_product_ids]
 
-    # Id продуктов, уже отмеченных как компетенция (для предвыбора при редактировании).
+    # Id продуктов, уже отмеченных как компетенция по продуктам (только для
+    # инж. компании; у ФПЦ такого поля нет).
     product_competency_ids = set()
-    if entity is not None:
-        if entity.entity_type == "full_cycle_vendor":
-            fcp = getattr(entity, "full_cycle_profile", None)
-            if fcp is not None:
-                product_competency_ids = set(fcp.products.values_list("pk", flat=True))
-            eng = getattr(entity, "engineering_profile", None)
-            if eng is not None:
-                product_competency_ids |= set(
-                    eng.product_competencies.values_list("pk", flat=True)
-                )
-        elif getattr(entity, "is_engineering_type", False):
-            eng = getattr(entity, "engineering_profile", None)
-            if eng is not None:
-                product_competency_ids = set(
-                    eng.product_competencies.values_list("pk", flat=True)
-                )
-    # Вендор полного цикла: продукты этого вендора входят в специализацию
-    # по умолчанию (предвыбраны на уровне подсказок интерфейса).
-    if entity is not None and entity.entity_type == "full_cycle_vendor":
-        product_competency_ids |= own_product_ids
+    if entity is not None and entity.entity_type == "engineering_company":
+        eng = getattr(entity, "engineering_profile", None)
+        if eng is not None:
+            product_competency_ids = set(
+                eng.product_competencies.values_list("pk", flat=True)
+            )
 
     classes = AutomationClassUseCase().list()
     # Справочник классов для combobox компетенции по функции: [{id, label, desc}]
@@ -315,7 +315,8 @@ def _entity_detail_context(entity):
 
     # ---- Сводка связанности (агрегат из таблиц ниже) ----
     implemented_classes = _summary_group(
-        (l.system.system_class for l in implemented if l.system and l.system.system_class),
+        (link.system.system_class
+         for link in implemented if link.system and link.system.system_class),
         key=lambda c: c.pk,
     )
     # Классы вендорских продуктов (для вендора / ФПЦ).
@@ -330,9 +331,9 @@ def _entity_detail_context(entity):
     )
     # Вендоры внедрённых систем (для системного интегратора): чей продукт стоит.
     implemented_vendors = _summary_group(
-        (l.system.product.vendor.entity
-         for l in implemented
-         if l.system and l.system.product and l.system.product.vendor),
+        (link.system.product.vendor.entity
+         for link in implemented
+         if link.system and link.system.product and link.system.product.vendor),
         key=lambda e: e.pk,
     )
 
@@ -362,7 +363,7 @@ def _entity_detail_context(entity):
     level_coverage = _level_coverage_from_classes(
         s.system_class for s in coverage_systems
     )
-    has_level_coverage = any(l["count"] for l in level_coverage)
+    has_level_coverage = any(lvl["count"] for lvl in level_coverage)
 
     # ---- Покрытие поставщика: по поставленным СИСТЕМАМ и по КЛАССАМ
     #      поставляемых ПРОДУКТОВ (две отдельные группы с подписями). ----
@@ -377,8 +378,8 @@ def _entity_detail_context(entity):
     supplied_products_coverage = _level_coverage_from_classes(
         p.system_class for p in supplied_products
     )
-    has_supplied_systems_coverage = any(l["count"] for l in supplied_systems_coverage)
-    has_supplied_products_coverage = any(l["count"] for l in supplied_products_coverage)
+    has_supplied_systems_coverage = any(lvl["count"] for lvl in supplied_systems_coverage)
+    has_supplied_products_coverage = any(lvl["count"] for lvl in supplied_products_coverage)
 
     # Счётчик продуктов участника: вендорские + поставляемые.
     if entity.can_have_products:
@@ -518,7 +519,7 @@ def entity_create(request):
                 vendor_partner_ids=request.POST.getlist("vendor_partners"),
                 exclusions=_parse_exclusions(request.POST),
             )
-            usecase.save_full_cycle_profile(entity, **_extract_engineering_fields(request.POST))
+            usecase.save_full_cycle_profile(entity, **_extract_full_cycle_fields(request.POST))
             return redirect("entity-detail", pk=entity.pk)
         except (ValidationError, Exception) as e:
             error = str(e)
@@ -549,7 +550,7 @@ def entity_edit(request, pk):
                 vendor_partner_ids=request.POST.getlist("vendor_partners"),
                 exclusions=_parse_exclusions(request.POST),
             )
-            usecase.save_full_cycle_profile(entity, **_extract_engineering_fields(request.POST))
+            usecase.save_full_cycle_profile(entity, **_extract_full_cycle_fields(request.POST))
             return redirect("entity-detail", pk=pk)
         except (ValidationError, Exception) as e:
             error = str(e)

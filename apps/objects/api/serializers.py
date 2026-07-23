@@ -78,6 +78,7 @@ class ObjectDetailSerializer(serializers.ModelSerializer):
             "street",
             "house",
             "title",
+            "licensor",
             "children",
             "creator_id",
             "creator_id_username",
@@ -111,6 +112,7 @@ class _ObjectExtraFieldsMixin(serializers.Serializer):
     street = serializers.CharField(max_length=255, required=False, allow_blank=True)
     house = serializers.CharField(max_length=255, required=False, allow_blank=True)
     title = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    licensor = serializers.CharField(max_length=255, required=False, allow_blank=True)
 
 
 class ObjectCreateSerializer(_ObjectExtraFieldsMixin):

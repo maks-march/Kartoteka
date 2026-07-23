@@ -646,6 +646,81 @@ class ObjectNewFieldsTests(TestCase):
         with self.assertRaises(DjangoValidationError):
             uc.update(pk=obj.pk, user=self.user, title="нельзя")
 
+    # ---------- ограничение licensor только уровнем 3 ----------
+    def test_licensor_allowed_only_for_level_3_on_create(self):
+        """Лицензиар допустим на уровне 3 при создании."""
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        l3 = ObjectUseCase().create(
+            user=self.user, object_name="Установка", hierarchy_level=3,
+            category=self.cat3.pk, licensor="UOP",
+        )
+        self.assertEqual(l3.licensor, "UOP")
+
+    def test_licensor_rejected_for_level_1_and_2_on_create(self):
+        """Лицензиар на уровнях 1 и 2 при создании отклоняется."""
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        with self.assertRaises(DjangoValidationError):
+            ObjectUseCase().create(
+                user=self.user, object_name="Завод", hierarchy_level=1,
+                category=self.cat1.pk, licensor="нельзя",
+            )
+        with self.assertRaises(DjangoValidationError):
+            ObjectUseCase().create(
+                user=self.user, object_name="Цех", hierarchy_level=2,
+                category=self.cat2.pk, licensor="нельзя",
+            )
+
+    def test_licensor_rejected_on_update_for_non_level_3(self):
+        """Лицензиар при обновлении объекта уровня 2 отклоняется."""
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        uc = ObjectUseCase()
+        obj = uc.create(user=self.user, object_name="Цех", hierarchy_level=2, category=self.cat2.pk)
+        with self.assertRaises(DjangoValidationError):
+            uc.update(pk=obj.pk, user=self.user, licensor="нельзя")
+
+    def test_web_create_level3_saves_licensor(self):
+        """HTML-создание уровня 3 сохраняет лицензиара; на уровне 1 поле игнорируется."""
+        from apps.objects.models import Object
+        self.client.force_login(self.user)
+        r = self.client.post("/objects/create/", {
+            "object_name": "Установка ККФ",
+            "hierarchy_level": "3",
+            "category": str(self.cat3.pk),
+            "status": "active",
+            "licensor": "Lummus",
+        })
+        self.assertEqual(r.status_code, 302)
+        obj = Object.objects.get(object_name="Установка ККФ")
+        self.assertEqual(obj.licensor, "Lummus")
+        # На уровне 1 поле licensor из формы не принимается.
+        r2 = self.client.post("/objects/create/", {
+            "object_name": "Завод НПЗ",
+            "hierarchy_level": "1",
+            "category": str(self.cat1.pk),
+            "status": "active",
+            "licensor": "должно игнорироваться",
+        })
+        self.assertEqual(r2.status_code, 302)
+        obj1 = Object.objects.get(object_name="Завод НПЗ")
+        self.assertEqual(obj1.licensor, "")
+
+    def test_object_detail_shows_licensor_only_for_level_3(self):
+        """Карточка объекта показывает «Лицензиар» только на уровне 3."""
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        uc = ObjectUseCase()
+        l3 = uc.create(user=self.user, object_name="Установка Л", hierarchy_level=3,
+                       category=self.cat3.pk, licensor="Технип")
+        l1 = uc.create(user=self.user, object_name="Завод Л", hierarchy_level=1,
+                       category=self.cat1.pk)
+        self.client.force_login(self.user)
+        h3 = self.client.get(f"/objects/{l3.pk}/").content.decode()
+        self.assertIn("Лицензиар", h3)
+        self.assertIn("Технип", h3)
+        h1 = self.client.get(f"/objects/{l1.pk}/").content.decode()
+        self.assertNotIn("Лицензиар", h1)
+
     # ---------- HTML формы ----------
     def test_web_create_with_new_fields_and_title_level3(self):
         """HTML-создание уровня 3 сохраняет новые поля и титульный номер."""
@@ -980,13 +1055,13 @@ class ObjectSystemSupplierRuleTests(TestCase):
     def test_supplier_ok(self):
         """Поставщик допустим как supplier."""
         link = self.os_uc.attach(object_pk=self.obj.pk, system=self.system.pk,
-                                  status="planned", supplier=self.supplier.pk)
+                                 status="planned", supplier=self.supplier.pk)
         self.assertEqual(link.supplier_id, self.supplier.pk)
 
     def test_fcv_ok(self):
         """Вендор полного цикла допустим как supplier."""
         link = self.os_uc.attach(object_pk=self.obj.pk, system=self.system.pk,
-                                  status="planned", supplier=self.fcv.pk)
+                                 status="planned", supplier=self.fcv.pk)
         self.assertEqual(link.supplier_id, self.fcv.pk)
 
     def test_vendor_rejected(self):

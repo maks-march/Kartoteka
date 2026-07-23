@@ -290,7 +290,6 @@ class FullCycleProfileView(APIView):
                 entity,
                 region=data.get("region", ""),
                 resident_object_id=data.get("resident_object"),
-                product_ids=data.get("product_competencies", []),
                 competencies=competencies,
             )
         except ValidationError as e:

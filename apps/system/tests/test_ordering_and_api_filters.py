@@ -20,9 +20,24 @@ class SystemOrderingTests(TestCase):
         self.pb = VendorProduct.objects.create(product_name="Бета-продукт")
         self.pa = VendorProduct.objects.create(product_name="Альфа-продукт")
         self.pg = VendorProduct.objects.create(product_name="Гамма-продукт")
-        AutomationSystem.objects.create(autosystem_name="Бета", system_class=self.cls, product=self.pb, creator=self.user)
-        AutomationSystem.objects.create(autosystem_name="Альфа", system_class=self.cls, product=self.pa, creator=self.user)
-        AutomationSystem.objects.create(autosystem_name="Гамма", system_class=self.cls, product=self.pg, creator=self.user)
+        AutomationSystem.objects.create(
+            autosystem_name="Бета",
+            system_class=self.cls,
+            product=self.pb,
+            creator=self.user,
+        )
+        AutomationSystem.objects.create(
+            autosystem_name="Альфа",
+            system_class=self.cls,
+            product=self.pa,
+            creator=self.user,
+        )
+        AutomationSystem.objects.create(
+            autosystem_name="Гамма",
+            system_class=self.cls,
+            product=self.pg,
+            creator=self.user,
+        )
 
     def _names(self, ordering):
         """Возвращает имена сущностей из ответа в порядке следования (вспомогательная)."""

@@ -61,6 +61,7 @@ Table Object {
   street varchar
   house varchar [note: 'Адрес производства (уровень 1)']
   title varchar [note: 'Кодовое расположение установки (только уровень 3)']
+  licensor varchar [note: 'Лицензиар технологии (только уровень 3, юридическая информация)']
 
   creator_id integer [note: 'Создатель']
   created_at datetime
@@ -315,14 +316,6 @@ Table FullCycleFunctionCompetency {
   industry_id integer [ref: > Category.id, note: 'Индустрия — категория 1-го уровня']
 }
 
-// Поставляемые продукты (M2M)
-Table FullCycleVendorProfile_products {
-  id integer [primary key]
-  fullcyclevendorprofile_id integer [ref: > FullCycleVendorProfile.id]
-  vendorproduct_id integer [ref: > VendorProduct.id]
-}
-
-
 // Группы таблиц: справочники (оранжевый), сущности (синий), связи (зелёный).
 TableGroup "Справочники" [color: #B86A00] {
   Category
@@ -352,7 +345,6 @@ TableGroup "Связи" [color: #2E6B2E] {
   EngineeringCompanyProfile_product_competencies
   EngineeringCompany_FunctionCompetency
   FullCycleFunctionCompetency
-  FullCycleVendorProfile_products
   VendorProduct_industries
 }
 

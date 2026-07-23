@@ -68,7 +68,6 @@ class EngineeringProfileSerializer(serializers.ModelSerializer):
 class FullCycleProfileSerializer(serializers.ModelSerializer):
     """Чтение dedicated профиля вендора полного цикла."""
     resident_object_name = serializers.CharField(source="resident_object.object_name", read_only=True)
-    products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     function_competencies = FullCycleFunctionCompetencySerializer(many=True, read_only=True)
 
     class Meta:
@@ -76,7 +75,7 @@ class FullCycleProfileSerializer(serializers.ModelSerializer):
         model = FullCycleVendorProfile
         fields = [
             "id", "region", "resident_object", "resident_object_name",
-            "products", "function_competencies",
+            "function_competencies",
         ]
 
 
@@ -180,12 +179,13 @@ class SystemIntegratorProfileWriteSerializer(serializers.Serializer):
 
 
 class FullCycleProfileWriteSerializer(serializers.Serializer):
-    """Запись dedicated профиля вендора полного цикла."""
+    """Запись dedicated профиля вендора полного цикла.
+
+    Компетенции по продуктам у ФПЦ нет (убрана) — только регион, вхожий
+    объект и компетенции по функции.
+    """
     region = serializers.CharField(required=False, allow_blank=True, default="")
     resident_object = serializers.IntegerField(required=False, allow_null=True)
-    product_competencies = serializers.ListField(
-        child=serializers.IntegerField(), required=False, default=list
-    )
     function_competencies = FunctionCompetencyWriteSerializer(
         many=True, required=False, default=list
     )

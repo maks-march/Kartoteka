@@ -80,3 +80,12 @@ class ObjectValidator:
             raise ValidationError(
                 "Титульный номер (title) можно указывать только для объектов 2-го и 3-го уровня"
             )
+
+    def validate_licensor(self, licensor, level):
+        """Лицензиар допустим только для объектов 3-го уровня."""
+        if licensor in (None, ""):
+            return
+        if level not in (3, "3"):
+            raise ValidationError(
+                "Лицензиар можно указывать только для объектов 3-го уровня"
+            )

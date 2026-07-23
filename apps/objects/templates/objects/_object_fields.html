@@ -143,6 +143,12 @@
         </div>
     </div>
 
+    <!-- licensor (лицензиар) — только для 3-го уровня, юридическая информация -->
+    <div class="form-group" id="licensorGroup" style="{% if object.hierarchy_level != 3 %}display:none{% endif %}">
+        <label>Лицензиар (только уровень 3)</label>
+        <input type="text" name="licensor" id="licensorInput" value="{{ object.licensor|default:'' }}" placeholder="Лицензиар технологии">
+    </div>
+
     <!-- Для L2/L3 юр. лицо не выбирается — наследуется от родителя. -->
     <div class="form-group" id="ownerInheritHint" style="display:none">
         <label>Юридическое лицо</label>
@@ -219,4 +225,5 @@
         <label>Титульный номер (уровни 2 и 3)</label>
         <input type="text" name="title" id="titleInput" value="{{ object.title|default:'' }}" placeholder="Титульный номер объекта">
     </div>
+
 </div>

@@ -7,6 +7,8 @@
     const parentInput = document.getElementById('selectedParentId');
     const titleGroup = document.getElementById('titleGroup');
     const titleInput = document.getElementById('titleInput');
+    const licensorGroup = document.getElementById('licensorGroup');
+    const licensorInput = document.getElementById('licensorInput');
 
     let parentAddresses = {};
     const paEl = document.getElementById('parentAddresses');
@@ -36,6 +38,19 @@
         }
     }
 
+    // licensor (лицензиар) редактируется только на 3-м уровне.
+    function toggleLicensor() {
+        if (!licensorGroup) return;
+        const level = parseInt(levelSelect.value, 10);
+        if (level === 3) {
+            licensorGroup.style.display = '';
+            if (licensorInput) licensorInput.disabled = false;
+        } else {
+            licensorGroup.style.display = 'none';
+            if (licensorInput) { licensorInput.value = ''; licensorInput.disabled = true; }
+        }
+    }
+
     // Подстановка адреса родителя в пустые поля (с возможностью правок).
     function applyParentAddress() {
         if (!parentInput) return;
@@ -47,7 +62,7 @@
         });
     }
 
-    levelSelect.addEventListener('change', function() { toggleParent(); toggleTitle(); });
+    levelSelect.addEventListener('change', function() { toggleParent(); toggleTitle(); toggleLicensor(); });
 
     const parentPicker = document.getElementById('parentPicker');
     if (parentPicker) {
@@ -56,5 +71,6 @@
 
     toggleParent();
     toggleTitle();
+    toggleLicensor();
 })();
 </script>

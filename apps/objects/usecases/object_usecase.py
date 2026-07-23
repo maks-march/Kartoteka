@@ -84,6 +84,7 @@ class ObjectUseCase:
         self.validator.validate_category(category_id, level)
         self.validator.validate_owner_entity(owner_entity_id)
         self.validator.validate_title(data.get("title"), level)
+        self.validator.validate_licensor(data.get("licensor"), level)
 
         # Наследование адреса от родителя: заполняем только те адресные поля,
         # которые не переданы явно (или переданы пустыми). title не наследуется.
@@ -139,6 +140,11 @@ class ObjectUseCase:
         if "title" in data:
             effective_level = data.get("hierarchy_level", obj.hierarchy_level)
             self.validator.validate_title(data.get("title"), effective_level)
+
+        # Валидация licensor: уровень — по новому значению, иначе текущий.
+        if "licensor" in data:
+            effective_level = data.get("hierarchy_level", obj.hierarchy_level)
+            self.validator.validate_licensor(data.get("licensor"), effective_level)
 
         if "hierarchy_level" in data and data["hierarchy_level"] != obj.hierarchy_level:
             # При смене уровня перепроверяем текущего родителя и категорию

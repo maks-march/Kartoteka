@@ -234,16 +234,11 @@ class Entity(models.Model):
                     .values_list("pk", flat=True)
                 )
 
-        # Вендор полного цикла: dedicated профиль (компетенции по функции +
-        # отрасли устанавливаемых продуктов).
+        # Вендор полного цикла: dedicated профиль (компетенции по функции).
         if self.entity_type == "full_cycle_vendor":
             fc = getattr(self, "full_cycle_profile", None)
             if fc is not None:
                 ids |= set(fc.function_competencies.values_list("industry_id", flat=True))
-                ids |= set(
-                    Category.objects.filter(industry_products__full_cycle_competent_vendors=fc)
-                    .values_list("pk", flat=True)
-                )
 
         return Category.objects.filter(pk__in=ids).order_by("category_name")
 
@@ -590,7 +585,7 @@ class EngineeringCompanyFunctionCompetency(models.Model):
 class FullCycleVendorProfile(models.Model):
     """Профиль вендора полного цикла (тип full_cycle_vendor).
 
-    Dedicated OneToOne profile (region + resident_object) + products M2M
+    Dedicated OneToOne profile (region + resident_object)
     + separate FullCycleFunctionCompetency (аналогично EngineeringCompanyProfile + FunctionCompetency).
     """
 
@@ -615,12 +610,6 @@ class FullCycleVendorProfile(models.Model):
         related_name="resident_full_cycle_vendors",
         verbose_name="Вхожий объект",
         help_text="Объект, на котором компания уже закрепилась и работает.",
-    )
-    products = models.ManyToManyField(
-        "system.VendorProduct",
-        blank=True,
-        related_name="full_cycle_competent_vendors",
-        verbose_name="Узкая компетенция по продуктам",
     )
 
     class Meta:

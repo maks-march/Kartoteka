@@ -12,7 +12,7 @@
         <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
     </div>
     <div class="info-card gap">
-        <span class="info-label">Продукты вендора</span>
+        <span class="info-label">Программные продукты</span>
         {% if vendor_products %}
         <div class="card-tags">
             {% for p in vendor_products %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}

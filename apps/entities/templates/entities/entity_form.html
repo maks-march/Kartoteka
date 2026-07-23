@@ -128,8 +128,10 @@
                     <p class="hint" style="margin-top:4px">Подставляется из выбранного объекта; можно отредактировать вручную.</p>
                 </div>
 
-                <!-- 3) Компетенция по продуктам: раскрываемая, с поиском, мультивыбор -->
-                <div class="form-group">
+                <!-- 3) Компетенция по продуктам: только для инж. компании
+                     (у вендора полного цикла это поле убрано). -->
+                <div class="form-group type-block" data-for="engineering_company"
+                     {% if entity.entity_type != "engineering_company" %}style="display:none"{% endif %}>
                     <label>Узкая компетенция по продуктам</label>
                     <div class="picker collapsible capsule-picker" id="productCompetenciesPicker" data-empty-text="Не выбрано">
                         <div class="picker-header">

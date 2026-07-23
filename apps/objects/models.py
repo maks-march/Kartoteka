@@ -106,6 +106,13 @@ class Object(models.Model):
         verbose_name="Титульный номер",
         help_text="Титульный номер объекта (уровни 2 и 3)",
     )
+    licensor = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Лицензиар",
+        help_text="Лицензиар технологии (только для объектов 3-го уровня)",
+    )
 
     creator = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
@@ -119,6 +126,7 @@ class Object(models.Model):
         ordering = ["hierarchy_level", "object_name"]
         verbose_name = "Объект производства"
         verbose_name_plural = "Объекты производства"
+
     def __str__(self):
         """Строковое представление: название и уровень иерархии."""
         return f"{self.object_name} (L{self.hierarchy_level})"

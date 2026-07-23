@@ -1,10 +1,11 @@
 {% extends "entities/detail/_base.html" %}
 {% load entity_extras %}
 
-{% comment %}Страница вендора полного цикла: профиль (регион/вхожий объект);
-сводка как у исполнителя (внедрения) + классы вендорских продуктов;
-таблицы: вендорские продукты и внедрённые системы. Компетенции по
-продуктам/функции и блок поставляемых продуктов у ФПЦ не показываем.{% endcomment %}
+{% comment %}Страница вендора полного цикла: профиль (регион/вхожий объект) +
+продукты вендора + компетенция по функции; сводка как у исполнителя
+(внедрения) + классы вендорских продуктов; таблицы: вендорские продукты и
+внедрённые системы. Компетенция по продуктам и блок поставляемых продуктов
+у ФПЦ не показываем.{% endcomment %}
 
 {% block profile %}
 {% with prof=entity.full_cycle_profile %}
@@ -23,6 +24,25 @@
     <div class="info-card profile-card span-full">
         <span class="info-label">Профиль компании</span>
         <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
+    </div>
+    <div class="info-card gap">
+        <span class="info-label">Программные продукты</span>
+        {% if vendor_products %}
+        <div class="card-tags">
+            {% for p in vendor_products %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+        </div>
+        {% else %}<span class="info-value">Не указано</span>{% endif %}
+    </div>
+</div>
+
+<div class="info-block">
+    <div class="info-card">
+        <span class="info-label">Узкая компетенция по функции</span>
+        {% if prof.function_competencies.all %}
+        <div class="card-tags">
+            {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
+        </div>
+        {% else %}<span class="info-value">Не указано</span>{% endif %}
     </div>
 </div>
 {% endwith %}

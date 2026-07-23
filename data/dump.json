@@ -527,6 +527,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "6-АВТ",
+    "licensor": "ВНИПИнефть",
     "creator": 1,
     "created_at": "2026-07-18T12:34:04.075Z",
     "updated_at": "2026-07-18T12:34:04.075Z"
@@ -556,6 +557,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "Г-43-107",
+    "licensor": "UOP",
     "creator": 1,
     "created_at": "2026-07-18T12:34:04.076Z",
     "updated_at": "2026-07-18T12:34:04.076Z"
@@ -643,6 +645,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "У-30",
+    "licensor": "ВНИИУС",
     "creator": 1,
     "created_at": "2026-07-18T12:34:04.081Z",
     "updated_at": "2026-07-18T12:34:04.081Z"
@@ -701,6 +704,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "ПП-500",
+    "licensor": "LyondellBasell",
     "creator": 1,
     "created_at": "2026-07-18T12:34:04.085Z",
     "updated_at": "2026-07-18T12:34:04.085Z"
@@ -846,6 +850,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "У-10",
+    "licensor": "ВНИПИнефть",
     "creator": 1,
     "created_at": "2026-07-18T15:06:10.481Z",
     "updated_at": "2026-07-18T15:06:10.481Z"
@@ -875,6 +880,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "ККФ-3",
+    "licensor": "UOP",
     "creator": 1,
     "created_at": "2026-07-18T15:06:10.484Z",
     "updated_at": "2026-07-18T15:06:10.484Z"
@@ -904,6 +910,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "ПП-2",
+    "licensor": "LyondellBasell",
     "creator": 1,
     "created_at": "2026-07-18T15:06:10.486Z",
     "updated_at": "2026-07-18T15:06:10.486Z"
@@ -933,6 +940,7 @@
     "street": "Заводская",
     "house": "1",
     "title": "ГО-ДТ",
+    "licensor": "Axens",
     "creator": 1,
     "created_at": "2026-07-18T15:06:10.489Z",
     "updated_at": "2026-07-18T15:06:10.489Z"
@@ -3819,10 +3827,7 @@
   "fields": {
     "entity": 97,
     "region": "Москва",
-    "resident_object": null,
-    "products": [
-      73
-    ]
+    "resident_object": null
   }
 },
 {
@@ -3831,10 +3836,7 @@
   "fields": {
     "entity": 98,
     "region": "Самара",
-    "resident_object": null,
-    "products": [
-      74
-    ]
+    "resident_object": null
   }
 },
 {
@@ -3843,11 +3845,7 @@
   "fields": {
     "entity": 99,
     "region": "Москва",
-    "resident_object": null,
-    "products": [
-      77,
-      76
-    ]
+    "resident_object": null
   }
 },
 {
@@ -3856,12 +3854,7 @@
   "fields": {
     "entity": 104,
     "region": "Москва / Санкт-Петербург / Казань",
-    "resident_object": null,
-    "products": [
-      85,
-      86,
-      84
-    ]
+    "resident_object": null
   }
 },
 {

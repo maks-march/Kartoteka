@@ -492,14 +492,14 @@ class SubsystemClassesTests(TestCase):
         self.assertTrue(s.subsystem_classes.exists())
         # меняем класс на обычный -> подсистемы должны очиститься
         s = self._uc().update(pk=s.pk, user=self.user, autosystem_name="X",
-                             system_class=self.wms.pk)
+                              system_class=self.wms.pk)
         self.assertEqual(s.subsystem_classes.count(), 0)
 
     def test_filter_by_composite_matches_subsystem(self):
         # система MES с подсистемой WMS
         """Фильтр по составному классу находит по подсистеме."""
         self._uc().create(user=self.user, autosystem_name="MES-sys",
-                         system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+                          system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         # отдельная WMS-система
         self._uc().create(user=self.user, autosystem_name="WMS-sys", system_class=self.wms.pk)
         names = sorted(s.autosystem_name for s in self._uc().list(system_class=self.mes.pk))
@@ -509,7 +509,7 @@ class SubsystemClassesTests(TestCase):
         # B-б: фильтр по WMS находит и отдельную WMS, и MES где WMS в подсистемах
         """Фильтр по обычному классу находит и по подсистеме."""
         self._uc().create(user=self.user, autosystem_name="MES-sys",
-                         system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+                          system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         self._uc().create(user=self.user, autosystem_name="WMS-sys", system_class=self.wms.pk)
         names = sorted(s.autosystem_name for s in self._uc().list(system_class=self.wms.pk))
         self.assertEqual(names, ["MES-sys", "WMS-sys"])
@@ -518,7 +518,7 @@ class SubsystemClassesTests(TestCase):
         # система, где класс совпадает и как основной, и (случайно) в подсистемах
         """Фильтр по подсистемам не даёт дубликатов."""
         s = self._uc().create(user=self.user, autosystem_name="MES-dup",
-                             system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
+                              system_class=self.mes.pk, subsystem_classes=[self.wms.pk])
         # добавим сам MES в подсистемы вручную не даём (self скрыт), проверяем что
         # фильтр по MES не задваивает строку
         results = list(self._uc().list(system_class=self.mes.pk))
@@ -527,7 +527,8 @@ class SubsystemClassesTests(TestCase):
     def test_form_shows_subsystem_block(self):
         """Форма показывает блок подсистем для составного класса."""
         from django.test import Client
-        c = Client(); c.force_login(self.user)
+        c = Client()
+        c.force_login(self.user)
         h = c.get("/system/create/").content.decode()
         self.assertIn("subsystemsBlock", h)
         self.assertIn("Классы подсистем", h)
@@ -539,7 +540,8 @@ class SubsystemClassesTests(TestCase):
         data-composite, чтобы фронт мог оставить только классы того же уровня
         (кроме основного и составных)."""
         from django.test import Client
-        c = Client(); c.force_login(self.user)
+        c = Client()
+        c.force_login(self.user)
         h = c.get("/system/create/").content.decode()
         # блок-список подсистем и скрытые input'ы мультивыбора
         self.assertIn('id="subsystemList"', h)
@@ -557,7 +559,8 @@ class SubsystemClassesTests(TestCase):
         AutomationClass.objects.create(
             level=3, system_class="LIMS", name_ru="ЛИМС",
             description="Лабораторная информационная система")
-        c = Client(); c.force_login(self.user)
+        c = Client()
+        c.force_login(self.user)
         h = c.get("/system/create/").content.decode()
         block = h.split('id="subsystemList"', 1)[1].split('id="subsystemInputs"', 1)[0]
         # в data-name присутствуют все три источника (в нижнем регистре)
@@ -854,7 +857,6 @@ class ProductCreateFromEntityCardTests(TestCase):
     к поставщику через query-параметры формы."""
 
     def setUp(self):
-        from apps.entities.models import Entity
         from apps.entities.usecases.entity_usecase import EntityUseCase
         self.user = User.objects.create_user("pcard", "p@x.x", "pw")
         self.client.force_login(self.user)

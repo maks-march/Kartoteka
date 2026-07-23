@@ -32,20 +32,24 @@ _OBJECT_TEXT_FIELDS = (
     "street",
     "house",
     "title",
+    "licensor",
 )
 
 
 def _extract_object_fields(post, level):
     """Собирает дополнительные поля объекта из POST (вспомогательная).
 
-    title принимаем только для уровней 2 и 3 (на остальных поле в форме скрыто,
-    на бэкенде дополнительно валидируется). Поля status/is_reconstructed/
-    start_date приводятся к нужным типам.
+    title принимаем только для уровней 2 и 3, licensor — только для уровня 3
+    (на остальных поля в форме скрыты, на бэкенде дополнительно валидируются).
+    Поля status/is_reconstructed/start_date приводятся к нужным типам.
     """
     data = {}
     for field in _OBJECT_TEXT_FIELDS:
         if field == "title" and level not in (2, 3):
             # Титульный номер применим только к уровням 2 и 3.
+            continue
+        if field == "licensor" and level != 3:
+            # Лицензиар применим только к уровню 3.
             continue
         data[field] = post.get(field, "") or ""
 
@@ -500,9 +504,10 @@ def object_system_edit(request, pk):
 
     # Форма как при создании со стороны объекта: выбираем систему
     attached_ids = os_usecase.list_for_object(link.object).values_list("system_id", flat=True)
-    systems = (system_usecase.list().exclude(pk__in=attached_ids) | system_usecase.list().filter(pk=link.system_id)).prefetch_related(
-        "product__suppliers__entity"
-    )
+    systems = (
+        system_usecase.list().exclude(pk__in=attached_ids)
+        | system_usecase.list().filter(pk=link.system_id)
+    ).prefetch_related("product__suppliers__entity")
     return render(request, "objects/object_system_form.html", {
         "object": link.object,
         "systems": systems.distinct(),

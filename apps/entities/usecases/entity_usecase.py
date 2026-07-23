@@ -226,12 +226,15 @@ class EntityUseCase:
         return self.repo.delete(obj)
 
     def save_full_cycle_profile(self, entity, region=None, resident_object_id=None,
-                                 product_ids=None, competencies=None):
+                                competencies=None):
         """Сохраняет поля dedicated профиля вендора полного цикла.
 
         competencies — список пар (system_class_id, industry).
         Вызывать только для entity типа full_cycle_vendor (профиль уже создан
         в _sync_profiles). Для остальных типов — ничего не делает.
+
+        Компетенции по продуктам у ФПЦ нет (убрана): его продукты — это
+        собственно вендорские продукты (VendorProfile), см. save_vendor_products.
         """
         if entity.entity_type != "full_cycle_vendor":
             return None
@@ -239,7 +242,7 @@ class EntityUseCase:
             FullCycleVendorProfile, FullCycleFunctionCompetency,
         )
         from apps.objects.models import Object
-        from apps.system.models import VendorProduct, AutomationClass
+        from apps.system.models import AutomationClass
 
         profile, _ = FullCycleVendorProfile.objects.get_or_create(entity=entity)
         profile.region = region or ""
@@ -248,12 +251,6 @@ class EntityUseCase:
         else:
             profile.resident_object = Object.objects.filter(pk=resident_object_id).first()
         profile.save()
-
-        # Компетенция по продуктам (M2M)
-        valid_products = VendorProduct.objects.filter(
-            pk__in=[p for p in (product_ids or []) if p not in (None, "", "None")]
-        )
-        profile.products.set(valid_products)
 
         # Компетенция по функции (пары класс + индустрия) — пересобираем целиком.
         # Ссылки nullable: пусто = «все». Требуется хотя бы одно непустое поле.
