@@ -74,15 +74,19 @@
         }
     }
 
-    /** Лицензиар выбирается только на 3-м уровне */
+    /** Лицензиар выбирается только на 3-м уровне; иначе поле скрыто и отключено. */
     function toggleLicensor() {
         if (!licensorGroup) return;
         const level = parseInt(levelSelect.value, 10);
         if (level === 3) {
             licensorGroup.style.display = '';
+            if (licensorInput) licensorInput.disabled = false;
         } else {
             licensorGroup.style.display = 'none';
-            if (licensorInput) licensorInput.value = '';
+            if (licensorInput) {
+                licensorInput.value = '';
+                licensorInput.disabled = true;
+            }
         }
     }
 
@@ -124,6 +128,7 @@
         toggleParent();
         toggleTitle();
         toggleOwner();
+        toggleLicensor();
     });
 
     // Пикер родителя пишет в скрытый input не через change, поэтому реагируем на клик.

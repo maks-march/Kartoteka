@@ -113,7 +113,7 @@
     </div>
 
     <!-- licensor (лицензиар) — только для 3-го уровня, юридическая информация -->
-    <div class="form-group" id="licensorGroup" style="{% if object.hierarchy_level and object.hierarchy_level != 3 %}display:none{% endif %}">
+    <div class="form-group" id="licensorGroup" style="{% if object.hierarchy_level != 3 %}display:none{% endif %}">
         <label>Лицензиар (только уровень 3)</label>
         <input type="text" name="licensor" id="licensorInput" value="{{ object.licensor|default:'' }}" placeholder="Лицензиар технологии">
     </div>

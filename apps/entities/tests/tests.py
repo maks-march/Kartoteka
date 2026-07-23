@@ -59,14 +59,14 @@ class EntityWebEndpointTests(TestCase):
         self.assertEqual(r.status_code, 302)
 
     def test_industries_not_editable_in_form(self):
-        """Форма участника не содержит ручного ввода отраслей — они вычисляются."""
+        """Форма участника не содержит поля отраслей — они вычисляются автоматически."""
         self.client.force_login(self.user)
         h = self.client.get("/entities/create/").content.decode()
         # прежнего пикера/поля отраслей быть не должно
         self.assertNotIn("industry-picker", h)
         self.assertNotIn('id="industriesValue"', h)
-        # есть пояснение об автоматическом определении отраслей
-        self.assertIn("Определяются автоматически", h)
+        # блок «Отрасли применения» полностью убран из формы
+        self.assertNotIn("Отрасли применения", h)
 
     def test_authenticated_crud_with_full_fields(self):
         """CRUD участника со всеми полями (авторизованный)."""
@@ -474,11 +474,13 @@ class EntityTypingProfilesTests(TestCase):
         self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
 
     def test_form_shows_supplier_block(self):
-        """Форма участника показывает блок поставщика для нужного типа."""
+        """Форма участника показывает блок поставщика только для типа supplier
+        (у ФПЦ поставляемые продукты в форме не задаются)."""
         from apps.system.models import VendorProduct
         VendorProduct.objects.create(product_name="ПродДляБлока")
         h = self.client.get("/entities/create/").content.decode()
-        self.assertIn('data-for="supplier full_cycle_vendor"', h)
+        self.assertIn('data-for="supplier"', h)
+        self.assertNotIn('data-for="supplier full_cycle_vendor"', h)
         self.assertIn('id="supplierProductsPicker"', h)
         self.assertIn('name="supplier_products"', h)
 
@@ -522,26 +524,31 @@ class EntityTypingProfilesTests(TestCase):
         self.assertIsNotNone(me)
         self.assertNotIn("display:none", me.group(1))
 
-    def test_full_cycle_vendor_saves_supplier_and_engineering(self):
-        """ФПЦ через форму сохраняет данные поставщика и инж. компании."""
+    def test_full_cycle_vendor_saves_engineering(self):
+        """ФПЦ через форму сохраняет данные инж. компании (регион, компетенции)."""
         from apps.entities.models import Entity
-        from apps.system.models import VendorProduct
         from apps.categories.models import Category
         ind = Category.objects.create(category_name="Химия", object_level=1)
-        prod = VendorProduct.objects.create(product_name="ФПЦпрод")
         r = self.client.post("/entities/create/", {
             "entity_name": "ФПЦФорма", "entity_type": "full_cycle_vendor",
-            "supplier_products": [str(prod.pk)],
             "region": "Урал",
             "comp_class": [str(self.cls.pk)], "comp_industry": [str(ind.pk)],
         })
         self.assertEqual(r.status_code, 302)
         e = Entity.objects.get(entity_name="ФПЦФорма")
-        # поставщик
-        self.assertEqual(list(e.supplier_profile.products.values_list("pk", flat=True)), [prod.pk])
         # инж. компания
         self.assertEqual(e.engineering_profile.region, "Урал")
         self.assertEqual(e.engineering_profile.function_competencies.count(), 1)
+
+    def test_full_cycle_form_hides_supplier_products_block(self):
+        """У ФПЦ форма не показывает блок поставляемых продуктов."""
+        e = self._uc().create(entity_name="ФПЦбезпост", entity_type="full_cycle_vendor")
+        h = self.client.get(f"/entities/{e.pk}/edit/").content.decode()
+        # блок поставщика помечен только для supplier → у ФПЦ на старте скрыт
+        import re
+        m = re.search(r'<div class="type-block" data-for="supplier"([^>]*)>', h)
+        self.assertIsNotNone(m)
+        self.assertIn("display:none", m.group(1))
 
     def test_system_integrator_profile_autocreated_and_removed(self):
         """Профиль интегратора авто-создаётся и удаляется при смене типа."""

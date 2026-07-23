@@ -629,8 +629,6 @@ td a:hover {
     min-width: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* Пропорции строк 3:1; нижний ряд (описание) тянется под контент. */
-    grid-template-rows: minmax(0, 3fr) minmax(min-content, 1fr);
     gap: 16px;
     align-items: stretch;
 }

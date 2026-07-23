@@ -187,10 +187,10 @@
                 </div>
             </div>
 
-            <!-- Системный интегратор / поставщик: спец. полей нет -->
-            <!-- Поставщик: множественная связь с продуктами (поставляемые продукты) -->
-            <div class="type-block" data-for="supplier full_cycle_vendor"
-                 {% if not entity.is_supplier_type %}style="display:none"{% endif %}>
+            <!-- Поставщик: множественная связь с продуктами (поставляемые продукты).
+                 Только для чистого поставщика; у ФПЦ поставляемые продукты не задаются. -->
+            <div class="type-block" data-for="supplier"
+                 {% if entity.entity_type != "supplier" %}style="display:none"{% endif %}>
                 <div class="form-group">
                     <label>Поставляемые продукты</label>
                     {% if all_products %}
@@ -362,10 +362,6 @@
         <!-- ===== Профиль ===== -->
         <div class="form-section">
             <h2>Профиль</h2>
-            <div class="form-group">
-                <label>Отрасли применения</label>
-                <p class="hint">Определяются автоматически по связям участника (продукты, поставки, компетенции) и показываются в карточке.</p>
-            </div>
             <div class="form-group">
                 <label>Профиль компании</label>
                 <textarea name="profile" rows="4">{{ entity.profile|default:'' }}</textarea>
