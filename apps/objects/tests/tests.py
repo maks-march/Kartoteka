@@ -1110,3 +1110,33 @@ class ObjectSystemSupplierFilterTests(TestCase):
         ids = m.group(1).split(",") if m.group(1) else []
         self.assertIn(str(self.sup_yes.pk), ids)
         self.assertNotIn(str(self.sup_no.pk), ids)
+
+
+class ObjectAddressByLevelTests(TestCase):
+    """Адрес: у L1 — полный, у L2/L3 — кодовое расположение (title)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("addr", "a@x.x", "pw")
+        self.l1 = Object.objects.create(
+            object_name="Завод", hierarchy_level=1, creator=self.user,
+            country="Россия", region="Тульская область", city="Тула")
+        self.l3 = Object.objects.create(
+            object_name="Установка", hierarchy_level=3, parent_object=self.l1,
+            creator=self.user, title="У-42", city="Тула")
+
+    def test_l1_shows_full_address(self):
+        h = self.client.get(f"/objects/{self.l1.pk}/").content.decode()
+        legal = h.split("Юридическая информация", 1)[1].split("Характеристики", 1)[0]
+        self.assertIn("Адрес", legal)
+        self.assertIn("Тульская область", legal)
+
+    def test_l3_shows_title_not_full_address(self):
+        h = self.client.get(f"/objects/{self.l3.pk}/").content.decode()
+        legal = h.split("Юридическая информация", 1)[1].split("Характеристики", 1)[0]
+        self.assertIn("У-42", legal)
+        self.assertNotIn("Тульская область", legal)
+
+    def test_reconstruction_in_characteristics(self):
+        h = self.client.get(f"/objects/{self.l1.pk}/").content.decode()
+        char = h.split("Характеристики", 1)[1].split("Сводка", 1)[0]
+        self.assertIn("Реконструкция", char)

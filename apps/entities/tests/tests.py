@@ -284,7 +284,8 @@ class EntityCountsAndViewsTests(TestCase):
     def test_detail_shows_products_block_for_vendor(self):
         """Деталь вендора показывает блок продуктов."""
         h = self.client.get(f"/entities/{self.vendor.pk}/", follow=True).content.decode()
-        self.assertIn("Вендорские продукты", h)
+        # У вендора блок продуктов озаглавлен «Программные продукты».
+        self.assertIn("Программные продукты", h)
         self.assertIn("Продукт-1", h)
 
     def test_detail_no_products_block_for_integrator(self):

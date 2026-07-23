@@ -48,8 +48,13 @@
                     <span class="info-value">{% if object.start_date %}{{ object.start_date|date:"d.m.Y" }}{% else %}Не указано{% endif %}</span>
                 </div>
                 <div class="info-card">
-                    <span class="info-label">Реконструкция</span>
-                    <span class="info-value">{% if object.is_reconstructed %}Да{% else %}Нет{% endif %}</span>
+                    <span class="info-label">Адрес</span>
+                    {% comment %}Для L1 — полный адрес; для L2/L3 — кодовое расположение (титул).{% endcomment %}
+                    {% if object.hierarchy_level == 1 %}
+                        {% if object.address_line %}<span class="info-value desc-text">{{ object.address_line }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}
+                    {% else %}
+                        <span class="info-value">{{ object.title|default:'Не указано' }}</span>
+                    {% endif %}
                 </div>
                 <div class="info-card">
                     <span class="info-label">Юридическое лицо</span>
@@ -77,12 +82,8 @@
                     </span>
                 </div>
                 <div class="info-card">
-                    <span class="info-label">Адрес</span>
-                    {% if object.address_line %}
-                        <span class="info-value desc-text">{{ object.address_line }}</span>
-                    {% else %}
-                        <span class="empty">Не указано</span>
-                    {% endif %}
+                    <span class="info-label">Реконструкция</span>
+                    <span class="info-value">{% if object.is_reconstructed %}Да{% else %}Нет{% endif %}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Мощность</span>

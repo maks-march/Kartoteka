@@ -11,12 +11,20 @@
         <span class="info-label">Профиль компании</span>
         <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
     </div>
+    <div class="info-card gap">
+        <span class="info-label">Продукты вендора</span>
+        {% if vendor_products %}
+        <div class="card-tags">
+            {% for p in vendor_products %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
+        </div>
+        {% else %}<span class="info-value">Не указано</span>{% endif %}
+    </div>
 </div>
 {% endblock %}
 
 {% block summary %}
 <div class="summary-metrics">
-    <div class="metric"><span class="metric-num">{{ summary.product_systems_count }}</span><span class="metric-label">Вендорские системы</span></div>
+    <div class="metric"><span class="metric-num">{{ summary.product_systems_count }}</span><span class="metric-label">Кол-во внедрений</span></div>
     <div class="metric"><span class="metric-num">{{ summary.products_count }}</span><span class="metric-label">Продуктов</span></div>
 </div>
 
@@ -34,6 +42,8 @@
 {% include "core/_summary_group.html" with title="Классы вендорских продуктов" group=summary.vendor_classes kind="class" %}
 {% endblock %}
 
+{% comment %}Продукты вендора: краткий блок тегов «Программные продукты» в
+профиле + полная таблица ниже.{% endcomment %}
 {% block tables %}
-{% include "entities/_vendor_products.html" %}
+{% include "entities/_vendor_products.html" with products_title="Программные продукты" %}
 {% endblock %}

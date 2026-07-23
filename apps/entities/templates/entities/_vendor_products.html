@@ -1,22 +1,28 @@
-{% comment %}Вендорские продукты участника (со счётчиком систем).{% endcomment %}
+{% comment %}Продукты участника-вендора: полная таблица со всеми полями.{% endcomment %}
 <div class="card">
     <div class="card-title-row">
-        <h2 style="margin:0">Вендорские продукты</h2>
+        <h2 style="margin:0">{{ products_title|default:"Вендорские продукты" }}</h2>
         {% if user.is_authenticated %}<a href="{% url 'product-create' %}?vendor={{ entity.pk }}" class="btn btn-primary">+ Добавить продукт</a>{% endif %}
     </div>
+    <div class="table-wrap">
     <table>
         <thead>
-            <tr><th>Продукт</th><th>Систем на продукте</th></tr>
+            <tr><th>Продукт</th><th>Тип</th><th>Класс</th><th>Версия</th><th>Отрасли</th><th>Систем</th></tr>
         </thead>
         <tbody>
             {% for product in vendor_products %}
             <tr>
                 <td><a class="link" href="{% url 'product-detail' product.pk %}">{{ product.product_name }}</a></td>
+                <td>{% if product.product_type %}<span class="tag {% if product.product_type == 'software' %}tag-blue{% elif product.product_type == 'hardware' %}tag-3{% else %}tag-ok{% endif %}">{{ product.get_product_type_display }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{% if product.system_class %}<span class="tag tag-{{ product.system_class.level }}">L{{ product.system_class.level }} - {{ product.system_class.system_class }}</span>{% else %}<span class="empty">Не указано</span>{% endif %}</td>
+                <td>{{ product.version|default:'Не указано' }}</td>
+                <td>{% if product.industries.all %}{{ product.industries_text }}{% else %}<span class="empty">Не указано</span>{% endif %}</td>
                 <td>{{ product.systems.count }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="2" class="empty">Нет продуктов</td></tr>
+            <tr><td colspan="6" class="empty">Нет продуктов</td></tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
