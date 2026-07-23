@@ -1,0 +1,168 @@
+<mxfile host="app.diagrams.net" agent="Kartoteka" version="24.0.0">
+  <diagram id="flow" name="Слои и поток вызова">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="480" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Слои и поток вызова" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="HTML- и API-представления вызывают ОДНИ И ТЕ ЖЕ use cases — бизнес-логика не дублируется." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="48" width="700" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="html" value="HTML view" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="API view" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="usecase" value="use case&#10;(бизнес-логика)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="250" y="155" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="repo" value="repository&#10;(доступ к данным)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="155" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="model" value="model&#10;(ORM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="630" y="155" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="db" value="БД" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="790" y="150" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="validator" value="validator&#10;(доменные проверки)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="290" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#6c8ebf;" edge="1" parent="1" source="html" target="usecase">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#6c8ebf;" edge="1" parent="1" source="api" target="usecase">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82b366;" edge="1" parent="1" source="usecase" target="repo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82b366;" edge="1" parent="1" source="repo" target="model">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#d79b00;" edge="1" parent="1" source="model" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#d6b656;dashed=1;" edge="1" parent="1" source="usecase" target="validator">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note" value="Правило зависимостей: представление → use case → repository → model.&#10;Обратных зависимостей нет; ORM не вызывается напрямую из представлений." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="440" y="290" width="410" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="tree" name="Структура каталогов">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t_title" value="Структура каталогов" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="proj_title" value="Проект" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="proj_tree" value="Kartoteka/&#10;├── config/ — настройки Django, корневые urls, wsgi/asgi&#10;├── common/ — общие утилиты (исключения, сортировка, сводки)&#10;├── apps/ — доменные приложения&#10;│&#160;&#160; ├── core/ — главная страница-хаб, теги сортировки&#10;│&#160;&#160; ├── users/ — аутентификация (вход/регистрация/профиль, JWT)&#10;│&#160;&#160; ├── owners/ — юр. лица (владельцы), иерархия владения&#10;│&#160;&#160; ├── categories/ — справочник категорий объектов&#10;│&#160;&#160; ├── objects/ — объекты производства и «система на объекте»&#10;│&#160;&#160; ├── system/ — классы автоматизации, продукты, системы&#10;│&#160;&#160; └── entities/ — участники рынка и профили типов&#10;├── static/ — css / js&#10;├── data/ — фикстуры (дампы данных)&#10;└── docs/ — документация, схемы БД, выгрузки" style="text;html=1;whiteSpace=pre;align=left;verticalAlign=top;fontFamily=Courier New;fontSize=12;spacingLeft=10;spacingTop=8;fillColor=#f5f5f5;strokeColor=#cccccc;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="85" width="430" height="330" as="geometry" />
+        </mxCell>
+
+        <mxCell id="app_title" value="Внутренняя структура доменного приложения (пример: objects)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="500" y="60" width="380" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="app_tree" value="apps/objects/&#10;├── models.py — Object, ObjectSystem&#10;├── admin.py — регистрация в админ-панели&#10;├── apps.py — конфигурация приложения&#10;├── urls.py — HTML-маршруты&#10;├── views.py — HTML-представления&#10;├── api/ — REST API&#10;│&#160;&#160; ├── serializers.py&#10;│&#160;&#160; ├── views.py&#10;│&#160;&#160; └── urls.py&#10;├── usecases/ — бизнес-логика&#10;│&#160;&#160; ├── object_usecase.py&#10;│&#160;&#160; ├── object_system_usecase.py&#10;│&#160;&#160; └── validators.py&#10;├── repositories/ — доступ к данным&#10;├── templates/objects/ — HTML-шаблоны&#10;├── migrations/ — миграции схемы БД&#10;└── tests/ — тесты" style="text;html=1;whiteSpace=pre;align=left;verticalAlign=top;fontFamily=Courier New;fontSize=12;spacingLeft=10;spacingTop=8;fillColor=#f5f5f5;strokeColor=#cccccc;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="85" width="360" height="380" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="relations" name="Ключевые связи доменов">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="520" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="r_title" value="Ключевые связи между доменами" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="object" value="Object&#10;(объект производства)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="objsys" value="ObjectSystem&#10;(система на объекте:&#10;статус, дата)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="250" y="150" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="autosys" value="AutomationSystem&#10;(автоматизир. система)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="150" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="product" value="VendorProduct&#10;(каталог продуктов)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="670" y="150" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="vprofile" value="VendorProfile" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="880" y="150" width="90" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="entity" value="Entity&#10;(участник рынка)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="150" width="80" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="autoclass" value="AutomationClass&#10;(класс L0–L4, подсистемы)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="460" y="300" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="category" value="Category&#10;(категории объектов)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="owner" value="OwnerEntity&#10;(юр. лицо — владелец)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="entity2" value="Entity&#10;(исполнитель / поставщик)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="250" y="300" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="re1" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#9673a6;" edge="1" parent="1" source="object" target="objsys">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#9673a6;" edge="1" parent="1" source="objsys" target="autosys">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re3" value="строится на" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#6c8ebf;fontSize=10;" edge="1" parent="1" source="autosys" target="product">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re4" value="автор" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#82b366;fontSize=10;" edge="1" parent="1" source="product" target="vprofile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re5" value="1:1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#82b366;fontSize=10;" edge="1" parent="1" source="vprofile" target="entity">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re6" value="класс" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#d79b00;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="autosys" target="autoclass">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re7" value="категория" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#d79b00;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="object" target="category">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re8" value="владелец (ЮЛ)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#d79b00;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="object" target="owner">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re9" value="implementor / supplier" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673a6;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="objsys" target="entity2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="Синий — доменные сущности · Зелёный — участники/профили · Оранжевый — справочники · Фиолетовый — связь-таблица" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="1000" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
