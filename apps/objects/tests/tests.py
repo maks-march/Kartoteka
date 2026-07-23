@@ -721,6 +721,31 @@ class ObjectNewFieldsTests(TestCase):
         h1 = self.client.get(f"/objects/{l1.pk}/").content.decode()
         self.assertNotIn("Лицензиар", h1)
 
+    # ---------- HTML формы: видимость полей по уровню ----------
+    def test_form_hides_owner_group_for_non_level_1(self):
+        """В форме редактирования L2/L3 группа «Юр. лицо» скрыта (display:none)."""
+        import re
+        from apps.objects.usecases.object_usecase import ObjectUseCase
+        uc = ObjectUseCase()
+        l1 = uc.create(user=self.user, object_name="Завод", hierarchy_level=1, category=self.cat1.pk)
+        l2 = uc.create(user=self.user, object_name="Цех", hierarchy_level=2,
+                       category=self.cat2.pk, parent=l1.pk)
+        self.client.force_login(self.user)
+        h2 = self.client.get(f"/objects/{l2.pk}/edit/").content.decode()
+        m = re.search(r'id="ownerGroup"[^>]*style="([^"]*)"', h2)
+        self.assertIsNotNone(m)
+        self.assertIn("display:none", m.group(1))
+        # На форме создания (по умолчанию L1) группа юр. лица видима.
+        h1 = self.client.get("/objects/create/").content.decode()
+        m1 = re.search(r'id="ownerGroup"[^>]*style="([^"]*)"', h1)
+        self.assertTrue(m1 is None or "display:none" not in m1.group(1))
+
+    def test_form_has_no_owner_inherit_hint_leftover(self):
+        """Устаревший подсказочный блок ownerInheritHint удалён из формы."""
+        self.client.force_login(self.user)
+        h = self.client.get("/objects/create/").content.decode()
+        self.assertNotIn('id="ownerInheritHint"', h)
+
     # ---------- HTML формы ----------
     def test_web_create_with_new_fields_and_title_level3(self):
         """HTML-создание уровня 3 сохраняет новые поля и титульный номер."""

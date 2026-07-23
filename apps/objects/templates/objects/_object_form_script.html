@@ -3,52 +3,41 @@
 (function() {
     const levelSelect = document.getElementById('levelSelect');
     if (!levelSelect) return;
-    const parentGroup = document.getElementById('parentGroup');
+
     const parentInput = document.getElementById('selectedParentId');
-    const titleGroup = document.getElementById('titleGroup');
+    const ownerInput = document.getElementById('selectedOwnerEntityId');
     const titleInput = document.getElementById('titleInput');
-    const licensorGroup = document.getElementById('licensorGroup');
     const licensorInput = document.getElementById('licensorInput');
 
     let parentAddresses = {};
     const paEl = document.getElementById('parentAddresses');
     try { parentAddresses = JSON.parse((paEl && paEl.textContent) || '{}'); } catch (e) { parentAddresses = {}; }
 
-    function toggleParent() {
-        if (!parentGroup) return;
-        const level = parseInt(levelSelect.value, 10);
-        if (level === 1) {
-            parentGroup.style.display = 'none';
-            if (parentInput) parentInput.value = '';
-        } else {
-            parentGroup.style.display = '';
+    // Полное скрытие группы поля, недоступного на текущем уровне: прячем блок
+    // и очищаем/отключаем поле, чтобы оно не отправлялось в POST.
+    function setFieldVisible(group, input, visible) {
+        if (!group) return;
+        group.style.display = visible ? '' : 'none';
+        if (input) {
+            input.disabled = !visible;
+            if (!visible) input.value = '';
         }
     }
 
-    // title редактируется только на 3-м уровне.
-    function toggleTitle() {
-        if (!titleGroup) return;
+    function refresh() {
         const level = parseInt(levelSelect.value, 10);
-        if (level === 3) {
-            titleGroup.style.display = '';
-            if (titleInput) titleInput.disabled = false;
-        } else {
-            titleGroup.style.display = 'none';
-            if (titleInput) { titleInput.value = ''; titleInput.disabled = true; }
-        }
-    }
 
-    // licensor (лицензиар) редактируется только на 3-м уровне.
-    function toggleLicensor() {
-        if (!licensorGroup) return;
-        const level = parseInt(levelSelect.value, 10);
-        if (level === 3) {
-            licensorGroup.style.display = '';
-            if (licensorInput) licensorInput.disabled = false;
-        } else {
-            licensorGroup.style.display = 'none';
-            if (licensorInput) { licensorInput.value = ''; licensorInput.disabled = true; }
-        }
+        // Родитель — только для L2/L3 (у L1 родителя нет).
+        setFieldVisible(document.getElementById('parentGroup'), parentInput, level !== 1);
+
+        // Юр. лицо (владелец) — указывается только у L1; у L2/L3 наследуется.
+        setFieldVisible(document.getElementById('ownerGroup'), ownerInput, level === 1);
+
+        // Титульный номер — для L2 и L3.
+        setFieldVisible(document.getElementById('titleGroup'), titleInput, level === 2 || level === 3);
+
+        // Лицензиар — только для L3.
+        setFieldVisible(document.getElementById('licensorGroup'), licensorInput, level === 3);
     }
 
     // Подстановка адреса родителя в пустые поля (с возможностью правок).
@@ -62,15 +51,13 @@
         });
     }
 
-    levelSelect.addEventListener('change', function() { toggleParent(); toggleTitle(); toggleLicensor(); });
+    levelSelect.addEventListener('change', refresh);
 
     const parentPicker = document.getElementById('parentPicker');
     if (parentPicker) {
         parentPicker.addEventListener('click', function() { setTimeout(applyParentAddress, 0); });
     }
 
-    toggleParent();
-    toggleTitle();
-    toggleLicensor();
+    refresh();
 })();
 </script>

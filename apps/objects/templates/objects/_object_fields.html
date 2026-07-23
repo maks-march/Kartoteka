@@ -112,9 +112,15 @@
         </div>
     </div>
 
+    <!-- licensor (лицензиар) — только для 3-го уровня, юридическая информация -->
+    <div class="form-group" id="licensorGroup" style="{% if object.hierarchy_level and object.hierarchy_level != 3 %}display:none{% endif %}">
+        <label>Лицензиар (только уровень 3)</label>
+        <input type="text" name="licensor" id="licensorInput" value="{{ object.licensor|default:'' }}" placeholder="Лицензиар технологии">
+    </div>
+
     <!-- Юридическое лицо (владелец): выбирается только для объектов 1-го уровня.
-         Для L2/L3 наследуется от родителя автоматически (без интерфейса). -->
-    <div class="form-group" id="ownerGroup">
+         Для L2/L3 наследуется от родителя автоматически — поле полностью скрыто. -->
+    <div class="form-group" id="ownerGroup" style="{% if object.hierarchy_level and object.hierarchy_level != 1 %}display:none{% endif %}">
         <label>Юридическое лицо</label>
         <div class="picker collapsible" data-target="#selectedOwnerEntityId" data-empty-text="Без юридического лица">
             <div class="picker-header">
@@ -141,18 +147,6 @@
             </div>
             <input type="hidden" name="owner_entity" id="selectedOwnerEntityId" value="{{ object.owner_entity_id|default:'' }}">
         </div>
-    </div>
-
-    <!-- licensor (лицензиар) — только для 3-го уровня, юридическая информация -->
-    <div class="form-group" id="licensorGroup" style="{% if object.hierarchy_level != 3 %}display:none{% endif %}">
-        <label>Лицензиар (только уровень 3)</label>
-        <input type="text" name="licensor" id="licensorInput" value="{{ object.licensor|default:'' }}" placeholder="Лицензиар технологии">
-    </div>
-
-    <!-- Для L2/L3 юр. лицо не выбирается — наследуется от родителя. -->
-    <div class="form-group" id="ownerInheritHint" style="display:none">
-        <label>Юридическое лицо</label>
-        <p class="hint">Наследуется от родителя. Указывается только у объектов 1-го уровня.</p>
     </div>
 </div>
 

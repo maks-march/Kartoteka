@@ -17,6 +17,8 @@
     const parentInput = document.getElementById('selectedParentId');
     const titleGroup = document.getElementById('titleGroup');
     const titleInput = document.getElementById('titleInput');
+    const licensorGroup = document.getElementById('licensorGroup');
+    const licensorInput = document.getElementById('licensorInput');
     const ownerGroup = document.getElementById('ownerGroup');
     const ownerInheritHint = document.getElementById('ownerInheritHint');
     const ownerInput = document.getElementById('selectedOwnerEntityId');
@@ -72,6 +74,18 @@
         }
     }
 
+    /** Лицензиар выбирается только на 3-м уровне */
+    function toggleLicensor() {
+        if (!licensorGroup) return;
+        const level = parseInt(levelSelect.value, 10);
+        if (level === 3) {
+            licensorGroup.style.display = '';
+        } else {
+            licensorGroup.style.display = 'none';
+            if (licensorInput) licensorInput.value = '';
+        }
+    }
+
     /** Подставляет адрес выбранного родителя в адресные поля.
      *
      * Отслеживает поля, заполненные автоматически (не тронутые пользователем):
@@ -122,5 +136,6 @@
 
     toggleParent();
     toggleTitle();
+    toggleLicensor();
     toggleOwner();
 })();

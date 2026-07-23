@@ -236,7 +236,7 @@
                         <option value="{{ oe.pk }}" {% if integrator_owner_id == oe.pk %}selected{% endif %}>{{ oe.owner_name }}</option>
                         {% endfor %}
                     </select>
-                    <p class="hint" style="margin-top:4px">Заполняется, если это внутренний интегратор холдинга (из OwnerEntity).</p>
+                    <p class="hint" style="margin-top:4px">Заполняется, если это внутренний интегратор холдинга (юр. лицо из справочника владельцев объектов).</p>
                 </div>
 
                 <div class="form-group">

@@ -169,13 +169,34 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ---- Показ блоков по типу участника ---- */
+    /* ---- Показ блоков по типу участника ----
+       Блок, недоступный для выбранного типа, полностью скрывается, а его поля
+       отключаются (disabled), чтобы неприменимые значения не уходили в POST.
+       Учитываем вложенные .type-block: поле активно, только если видимы ВСЕ
+       охватывающие его type-block'и. */
     const typeSelect = document.getElementById('entityTypeSelect');
+    function blockMatches(b, t) {
+        const types = (b.getAttribute('data-for') || '').split(' ');
+        return types.indexOf(t) !== -1;
+    }
     function refreshTypeBlocks() {
         const t = typeSelect ? typeSelect.value : '';
         document.querySelectorAll('.type-block').forEach(function (b) {
-            const types = (b.getAttribute('data-for') || '').split(' ');
-            b.style.display = types.indexOf(t) !== -1 ? '' : 'none';
+            b.style.display = blockMatches(b, t) ? '' : 'none';
+        });
+        // Отключаем поля внутри любого скрытого (в т.ч. родительского) type-block.
+        document.querySelectorAll('.type-block').forEach(function (b) {
+            let visible = blockMatches(b, t);
+            let anc = b.parentElement;
+            while (anc && visible) {
+                if (anc.classList && anc.classList.contains('type-block')) {
+                    visible = blockMatches(anc, t);
+                }
+                anc = anc.parentElement;
+            }
+            b.querySelectorAll('input, select, textarea').forEach(function (el) {
+                el.disabled = !visible;
+            });
         });
     }
     if (typeSelect) { typeSelect.addEventListener('change', refreshTypeBlocks); refreshTypeBlocks(); }
