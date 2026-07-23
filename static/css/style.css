@@ -619,6 +619,56 @@ td a:hover {
 
 /* Трёхколоночная раскладка детальной карточки объекта:
    юридическая информация | характеристики | сводка (по 33%). */
+/* ===== Карточка объекта: инфо-контейнер (сетка 2×2) + сводка ===== */
+.detail-body.detail-obj {
+    gap: 16px;
+    align-items: stretch;   /* сводка тянется на высоту инфо-контейнера */
+}
+.detail-body.detail-obj > .object-info-grid {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Пропорции строк 3:1; нижний ряд (описание) тянется под контент. */
+    grid-template-rows: minmax(0, 3fr) minmax(min-content, 1fr);
+    gap: 16px;
+    align-items: stretch;
+}
+/* Описание — нижний ряд на обе колонки. */
+.detail-body.detail-obj .object-info-grid > .obj-desc {
+    grid-column: 1 / -1;
+}
+/* Инфо-блоки растягиваются на всю высоту своей строки. */
+.detail-body.detail-obj .object-info-grid > .info-block {
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+/* Карточки внутри блока объекта: flex-колонка с растяжкой (как в grid) —
+   карточки равномерно заполняют высоту блока (без пустот). */
+.detail-body.detail-obj .object-info-grid > .info-block > .info-cards {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.detail-body.detail-obj .object-info-grid > .info-block > .info-cards > .info-card {
+    flex: 1 1 0;
+    justify-content: center;
+}
+.detail-body.detail-obj > .summary-panel {
+    flex: 0 0 30%;
+    width: 30%;
+    max-width: 30%;
+}
+@media (max-width: 1000px) {
+    .detail-body.detail-obj { flex-direction: column; }
+    .detail-body.detail-obj > .object-info-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+    .detail-body.detail-obj > .summary-panel { width: 100%; max-width: 100%; }
+}
+
 .detail-body.detail-3col {
     gap: 16px;
 }
@@ -669,8 +719,6 @@ td a:hover {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    /* Показываем все теги групп; при большом объёме — прокрутка панели. */
-    max-height: calc(100vh - 120px);
     overflow-y: auto;
 }
 /* Группы сводки в две колонки */

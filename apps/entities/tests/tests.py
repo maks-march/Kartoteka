@@ -1069,12 +1069,11 @@ class DetailLayoutTests(TestCase):
         self.assertIn("Статусы внедрения", h)
         self.assertIn("Системы по уровням", h)
 
-    def test_supplied_products_shown_with_system_count(self):
-        """Поставляемые продукты — со столбцом «Систем»."""
+    def test_supplied_products_not_shown_for_fcv(self):
+        """У ФПЦ блок поставляемых продуктов не показываем (задача 1.а.3.i)."""
         h = self.client.get(f"/entities/{self.fcv.pk}/", follow=True).content.decode()
-        self.assertIn("Поставляемые продукты", h)
-        self.assertIn("Постав-1", h)
-        self.assertIn("<th>Систем</th>", h)
+        self.assertNotIn("Поставляемые продукты", h)
+        self.assertNotIn("Постав-1", h)
 
 
 class SummaryPerTypeTests(TestCase):
@@ -1125,12 +1124,11 @@ class SummaryPerTypeTests(TestCase):
         self.assertIn("Классы вендорских продуктов", h)
         self.assertNotIn("Вендоры установленных продуктов", h)
 
-    def test_fcv_shows_both_product_class_groups_in_two_cols(self):
-        """У ФПЦ вендорские и поставляемые классы — рядом в две колонки."""
+    def test_fcv_shows_vendor_classes_not_supplied(self):
+        """У ФПЦ в сводке — классы вендорских продуктов, поставляемых нет."""
         h = self.client.get(f"/entities/{self.fcv.pk}/", follow=True).content.decode()
         self.assertIn("Классы вендорских продуктов", h)
-        self.assertIn("Классы поставляемых продуктов", h)
-        self.assertIn("summary-cols", h)
+        self.assertNotIn("Классы поставляемых продуктов", h)
 
     def test_engineering_no_product_groups(self):
         """У инж.компании нет продуктовых групп и вендоров установленных."""

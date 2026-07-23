@@ -29,9 +29,12 @@
         {% endif %}
     </div>
 
-    <div class="detail-body detail-3col">
-    <!-- ===== Колонка 1: Юридическая информация ===== -->
-    <div class="detail-col">
+    <div class="detail-body detail-obj">
+    {% comment %}Информационный контейнер (рядом со сводкой): сетка 2×2 —
+    верхний ряд [Юр.информация | Характеристики] (3 части высоты, растянуты),
+    нижний ряд [Описание на 2 колонки] (1 часть, тянется под контент).{% endcomment %}
+    <div class="object-info-grid">
+        <!-- Юридическая информация -->
         <div class="info-block">
             <h3 class="info-block-title">Юридическая информация</h3>
             <div class="info-cards">
@@ -64,10 +67,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ===== Колонка 2: Характеристики ===== -->
-    <div class="detail-col">
+        <!-- Характеристики -->
         <div class="info-block">
             <h3 class="info-block-title">Характеристики</h3>
             <div class="info-cards">
@@ -89,15 +90,19 @@
                     <span class="info-label">Мощность</span>
                     <span class="info-value">{{ object.capacity|default:'Не указано' }}</span>
                 </div>
-                <div class="info-card full">
-                    <span class="info-label">Описание</span>
-                    <span class="info-value desc-text">{% if object.notes %}{{ object.notes }}{% else %}Не указано{% endif %}</span>
-                </div>
+            </div>
+        </div>
+
+        <!-- Описание — нижний ряд, на обе колонки -->
+        <div class="info-block obj-desc">
+            <h3 class="info-block-title">Описание</h3>
+            <div class="info-card full">
+                <span class="info-value desc-text">{% if object.notes %}{{ object.notes }}{% else %}Не указано{% endif %}</span>
             </div>
         </div>
     </div>
 
-    <!-- ===== Колонка 3: Сводка ===== -->
+    <!-- ===== Сводка ===== -->
     {% include "objects/_object_summary.html" %}
     </div><!-- /.detail-body -->
 </div>

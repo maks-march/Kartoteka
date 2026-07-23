@@ -1,9 +1,10 @@
 {% extends "entities/detail/_base.html" %}
 {% load entity_extras %}
 
-{% comment %}Страница вендора полного цикла: профиль (регион/вхожий объект) +
-компетенции; сводка как у исполнителя (внедрения) + классы продуктов;
-таблицы: продукты (вендорские + поставляемые рядом) и внедрённые системы.{% endcomment %}
+{% comment %}Страница вендора полного цикла: профиль (регион/вхожий объект);
+сводка как у исполнителя (внедрения) + классы вендорских продуктов;
+таблицы: вендорские продукты и внедрённые системы. Компетенции по
+продуктам/функции и блок поставляемых продуктов у ФПЦ не показываем.{% endcomment %}
 
 {% block profile %}
 {% with prof=entity.full_cycle_profile %}
@@ -22,25 +23,6 @@
     <div class="info-card profile-card span-full">
         <span class="info-label">Профиль компании</span>
         <span class="info-value desc-text">{{ entity.profile|default:'Не указано' }}</span>
-    </div>
-</div>
-
-<div class="info-block">
-    <div class="info-card">
-        <span class="info-label">Узкая компетенция по продуктам</span>
-        {% if prof.products.all %}
-        <div class="card-tags">
-            {% for p in prof.products.all %}<a class="tag tag-blue" href="{% url 'product-detail' p.pk %}">{{ p.product_name }}</a>{% endfor %}
-        </div>
-        {% else %}<span class="info-value">Не указано</span>{% endif %}
-    </div>
-    <div class="info-card gap">
-        <span class="info-label">Узкая компетенция по функции</span>
-        {% if prof.function_competencies.all %}
-        <div class="card-tags">
-            {% for fc in prof.function_competencies.all %}<span class="tag {{ fc|competency_tag_class }}">{{ fc }}</span>{% endfor %}
-        </div>
-        {% else %}<span class="info-value">Не указано</span>{% endif %}
     </div>
 </div>
 {% endwith %}
@@ -76,16 +58,10 @@
 
 {% include "core/_summary_group.html" with title="Классы внедрённых систем" group=summary.implemented_classes kind="class" %}
 
-<div class="summary-cols">
-    {% include "core/_summary_group.html" with title="Классы вендорских продуктов" group=summary.vendor_classes kind="class" %}
-    {% include "core/_summary_group.html" with title="Классы поставляемых продуктов" group=summary.supplied_classes kind="class" %}
-</div>
+{% include "core/_summary_group.html" with title="Классы вендорских продуктов" group=summary.vendor_classes kind="class" %}
 {% endblock %}
 
 {% block tables %}
-<div class="product-cols">
-    {% include "entities/_vendor_products.html" %}
-    {% include "entities/_supplied_products.html" %}
-</div>
+{% include "entities/_vendor_products.html" %}
 {% include "entities/_implemented_systems.html" %}
 {% endblock %}
