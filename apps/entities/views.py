@@ -301,7 +301,7 @@ def _entity_detail_context(entity):
     if supplier_profile is not None:
         supplied_products = supplier_profile.products.select_related(
             "vendor__entity", "system_class"
-        ).prefetch_related("systems")
+        ).prefetch_related("systems", "industries")
     else:
         supplied_products = []
 

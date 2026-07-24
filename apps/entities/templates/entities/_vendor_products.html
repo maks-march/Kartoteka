@@ -1,7 +1,7 @@
 {% comment %}Продукты участника-вендора: полная таблица со всеми полями.{% endcomment %}
 <div class="card">
     <div class="card-title-row">
-        <h2 style="margin:0">{{ products_title|default:"Вендорские продукты" }}</h2>
+        <h2 style="margin:0">Вендорские продукты</h2>
         {% if user.is_authenticated %}<a href="{% url 'product-create' %}?vendor={{ entity.pk }}" class="btn btn-primary">+ Добавить продукт</a>{% endif %}
     </div>
     <div class="table-wrap">
